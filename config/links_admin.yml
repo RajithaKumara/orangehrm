@@ -1,0 +1,7 @@
+link3:
+  name: Orange Buzz
+  url: 'buzz/viewBuzz'
+  plugin: orangehrmLeavePlugin
+  target: '_new'
+  image: 'MyLeave.png'
+  ohrm_module: 'leave'

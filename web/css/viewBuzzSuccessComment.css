@@ -1,0 +1,68 @@
+.nfCommentMainContainer{
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    background: #FFF;
+    padding: 5px;
+    position: relative;
+    margin-top: -20px;
+    border: 1px solid #ddd;
+    margin-left: 100px;
+    margin-bottom: 20px;
+}
+.commentList{
+    margin-top: 20px;
+}
+.nfCommentRow{
+    padding: 5px;
+}
+
+#nfCommentFirstRow{
+    margin-bottom: 5px;
+}
+
+#nfCommentSecondRow{
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+}
+
+#nfCommentFourthRow{
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+}
+
+#nfCommentDate{
+    position: absolute;
+    right: 30px;
+    margin-top: 5px;
+    padding-right: 10px;
+    font-size: 9px;
+}
+
+#nfCommentUserName a{
+    color: #f38c28;
+}
+#nfCommentUserName{
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#nfCommentOptionWidget{ 
+    position: absolute;
+    right: 0px; 
+    padding-right: 10px;
+}
+
+#nfCommentLikeBtn{
+    padding-right: 10px;
+}
+
+#nfCommentLikesLabel{
+    padding-right: 10px;
+}
+
+#nfCommentContent{
+    font-size: 10px;
+    line-height: 1.5;
+    text-align: justify;
+    margin-right: 100px;
+}

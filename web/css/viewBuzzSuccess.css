@@ -1,0 +1,273 @@
+#nfPostMainContainer{
+    display: -moz-box; 
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    background: #FFF;
+    position: relative;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+#nfSubPostMainContainer{
+    display: -moz-box; 
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    background: #FFF;
+    position: relative;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+#nfPost{
+    display: -moz-box; 
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+}
+
+#nfSubPost{
+    display: -moz-box; 
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+}
+
+#nfPostTextBox{
+    padding: 10px;
+    background: #eee;
+    text-align: right;
+    clear: both;
+}
+
+#nfPostTextBox form textarea{
+    width: 106%;
+    margin-top: 20px;
+}
+
+.nfPostRow{
+    padding: 5px;
+}
+
+.nfSubPostRow{
+    padding: 5px;
+}
+
+#nfPostFirstRow{
+    margin-bottom: 5px;
+}
+
+#nfPostSecondRow{
+    display: -moz-box; 
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+}
+
+#nfSubPostSecondRow{
+    display: -moz-box; 
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+}
+
+#nfPostFourthRow{
+    display: -moz-box; 
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    margin-top: 10px;
+}
+
+#nfSubPostFourthRow{
+    display: -moz-box; 
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    margin-top: 10px;
+}
+
+#nfPostDate{
+    position: absolute;
+    right: 30px;
+    margin-top: 7px;
+    padding-right: 20px;
+    font-size: 10px;
+}
+
+#nfSubPostDate{
+    position: absolute;
+    right: 0px;
+    padding-right: 20px;
+    font-size: 10px;
+}
+
+#nfPostUserName a{
+    color: #f38c28;
+}
+
+#nfSubPostUserName a{
+    color: #f38c28;
+}
+
+#nfPostUserName{
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#nfSubPostUserName{
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#nfPostOptionWidget{
+    position: absolute;
+    right: 0px;
+    padding-right: 20px;
+}
+
+#nfPostShareBtn{
+    position: relative;
+    padding-right: 20px;
+}
+
+#nfSubPostShareBtn{
+    position: relative;
+    padding-right: 20px;
+}
+
+#nfPostLikeBtn{
+    position: relative;
+    padding-right: 20px;
+}
+
+#nfPostLikesLabel{
+    position: relative;
+    padding-right: 20px;
+    margin-left: 100px;
+}
+
+#nfProfilePic{
+    width: 100px;
+    height: 100px;
+}
+
+#nfSubPostProfilePic{
+    width: 100px;
+    height: 100px;
+}
+
+#nfPostContent{
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: justify;
+    margin-right: 110px;
+}
+
+#nfSubPostContent{
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: justify;
+    margin-right: 110px;
+}
+
+#nfContainer{
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+}
+
+#nfSubContainer{
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.nfShowComments{
+    margin: 0 auto;
+    width: 100%;
+}
+
+.spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px; /* half width of the spinner gif */
+    margin-top: -50px; /* half height of the spinner gif */
+    text-align:center;
+    z-index:1234;
+    overflow: auto;
+    width: 100px; /* width of the spinner gif */
+    height: 102px; /*hight of the spinner gif +2px to fix IE8 issue */
+
+}
+
+/*options widget*/
+.dropdown 
+{
+    color: #555;
+    margin: 3px -22px 0 0;
+    width: 143px;
+    position: relative;
+    height: 17px;
+    text-align:left;
+}
+.submenu
+{
+    background: #fff;
+    position: absolute;
+    top: -12px;
+    left: -20px;
+    z-index: 100;
+    width: 135px;
+    display: none;
+    margin-left: 10px;
+    padding: 40px 0 5px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+.dropdown li a 
+{
+    color: #555555;
+    display: block;
+    font-family: arial;
+    font-weight: bold;
+    padding: 6px 15px;
+    cursor: pointer;
+    text-decoration:none;
+}
+
+.dropdown li a:hover
+{
+    background:#155FB0;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+a.account 
+{
+    font-size: 11px;
+    line-height: 16px;
+    color: #555;
+    position: absolute;
+    z-index: 110;
+    display: block;
+    padding: 11px 0 0 20px;
+    height: 28px;
+    width: 121px;
+    margin: -11px 0 0 -10px;
+    text-decoration: none;
+    background: url(../images/arrow.png) 116px 17px no-repeat;
+    cursor:pointer;
+}
+.root
+{
+    list-style:none;
+    margin:0px;
+    padding:0px;
+    font-size: 11px;
+    padding: 11px 0 0 0px;
+    border-top:1px solid #dedede;
+}

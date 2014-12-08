@@ -1,0 +1,27 @@
+
+
+
+/*Main container*/
+#profileFeedContainer{
+    margin-top: 80px;
+    width: 45%;
+    min-width: 30%;
+    margin-left: 17.5%;
+    /*border: 1px solid #e1e2e3;*/
+    
+}
+.profileSideView{
+    position: fixed;
+    
+    margin-left:65%; /* half width of the spinner gif */
+    margin-top: 5px; /* half height of the spinner gif */
+    text-align:center;
+    z-index:123;
+    
+    width: 26.5%; /* width of the spinner gif */
+   
+
+}
+
+/*Main post area*/
+
