@@ -13,8 +13,11 @@
  */
 class getLogedToBuzzAction extends BuzzBaseAction {
 
+    protected $loggedInEmployeeNum;
+
     public function execute($request) {
         try {
+            $this->loggedInEmployeeNum = $this->getUser()->getEmployeeNumber();
             $this->getUserId();
             $postForm = new CreatePostForm();
             $token = $postForm->getCSRFToken();
@@ -22,7 +25,7 @@ class getLogedToBuzzAction extends BuzzBaseAction {
             $imageForm = new UploadPhotoForm();
             $token2 = $imageForm->getCSRFToken();
 
-            $arr = array('state' => 'loged');
+            $arr = array('state' => 'loged', 'empNum' => $this->loggedInEmployeeNum);
 
             echo json_encode($arr);
             die();
