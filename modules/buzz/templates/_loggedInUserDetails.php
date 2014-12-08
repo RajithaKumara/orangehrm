@@ -84,6 +84,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
     
     #gotoProfile:hover{
         cursor: pointer;
+        
     }
 
     #ddd input{
@@ -93,7 +94,17 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
         padding: 7px;
     }
 
-    .logoutLink{
+    .logoutLink:hover{
+        padding: 2px 5px;
+        background-color: #6B6B6B;
+        border-radius: 5px;
+    }
+    .ProfileLink:hover{
+        padding: 2px 5px;
+        background-color: #6B6B6B;
+        border-radius: 5px;
+    }
+    .homeLink:hover{
         padding: 2px 5px;
         background-color: #6B6B6B;
         border-radius: 5px;
@@ -133,10 +144,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
             <?php echo "Chief Technical Officer"; ?>
         </div>
         <div id="links">
-            <a class="name headerLink" href= '<?php echo url_for("buzz/viewBuzz"); ?>' >
+            <a class="homeLink name headerLink" href= '<?php echo url_for("buzz/viewBuzz"); ?>' >
                 <?php echo __("HOME"); ?>
             </a>
-            <a class="name headerLink" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $empNumber); ?>' >
+            <a class="ProfileLink name headerLink" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $empNumber); ?>' >
                 <?php echo __("PROFILE"); ?>
             </a>
             <a class="logoutLink name headerLink" href="<?php echo url_for('buzz/logOut'); ?>">

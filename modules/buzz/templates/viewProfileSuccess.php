@@ -235,6 +235,11 @@ include_component('buzz', 'viewProfileDetails', array('employee' => $employee,'l
         margin-left: 60%;
         
     }
+    .ProfileLink{
+        padding: 2px 5px;
+        background-color: #6B6B6B;
+        border-radius: 5px;
+    }
 </style>
 
         
