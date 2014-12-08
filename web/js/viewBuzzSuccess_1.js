@@ -198,8 +198,8 @@ $(document).ready(function () {
 
     });
     $('.hideModalPopUp').live("click", function (e) {
-        var id= e.target.id;
-        $("#"+id).modal('hide');
+        var id = e.target.id;
+        $("#" + id).modal('hide');
     });
 //    $(".postLike").live("click", function (e) {
 //        isAccess();
@@ -308,9 +308,9 @@ $(document).ready(function () {
 
             var value = $(elementId).val();
 
-            $('#commentLoadingBox'+elementId.split("_")[1]).show();
+            $('#commentLoadingBox' + elementId.split("_")[1]).show();
             //value = $.trim(value.replace(/[\t\n]+/g, ' '));
-            
+
             $(elementId).attr('placeholder', 'Write your comment...');
             var commentListId = "#commentListNew_" + elementId.split("_")[1];
             var data = {
@@ -567,7 +567,7 @@ $(document).ready(function () {
     $(".btnEditCommentNew").live("click", function (e) {
         var commentId = e.target.id.split("_")[1];
         var content = $("#editcommentBoxNew2_" + commentId).val();
-        
+
         $("#editcommenthideNew2_" + commentId).modal('hide');
 
 
@@ -708,21 +708,27 @@ $(document).ready(function () {
         }
 
     }
+    var loggedInEmpNum = -1;
     function isAccess() {
-                $.getJSON(getAccessUrl, {get_param: 'value'}, function (data) {
-
-                    if (data.state === 'loged') {
-
-                    } else {
-                        Redirect();
-                    }
-                });
+        $.getJSON(getAccessUrl, {get_param: 'value'}, function (data) {
+            if (loggedInEmpNum == -1) {
+                loggedInEmpNum = data.empNum;
+            } else if (loggedInEmpNum != data.empNum) {
+                location.reload();
             }
-            function Redirect()
-            {
 
-                window.location = loginpageURL;
+            if (data.state === 'loged') {
+
+            } else {
+                Redirect();
             }
+        });
+    }
+    function Redirect()
+    {
+
+        window.location = loginpageURL;
+    }
 
     setTimeout(refresh, refreshTime);
 
