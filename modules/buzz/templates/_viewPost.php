@@ -46,6 +46,13 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                 margin-top: -35px;
                 margin-bottom: -0px;
             }
+     #postBodyViewMore{
+                width: 150px;
+                height: 35px;
+                float: right;
+                margin-top: -35px;
+                margin-bottom: -0px;
+     }
     
     .textTopOfImage{
         color: white;
@@ -168,14 +175,13 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                 <?php } ?>
             </div>
         </div>
-        <style>
-            
-            
-            
-            
-        </style>
-
-        <!--Old Code of like, unlike and share buttons-->
+        <div id="postBodyViewMore">
+            <a href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeno_' . $postId ?>'> 
+                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
+                                  class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
+        </div>
+        
+        <!--new Code of like, unlike and share buttons-->
         <div id="postBodyThirdRowNew">
             <div class="likeLinknew"  id="<?php echo 'postLikebody_' . $postId ?>" > 
                 <?php
@@ -306,7 +312,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                         <div class="modal-body" style="height: 530px;background-color: gray;overflow-x: hidden;overflow-y: auto">
                             <div class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>'
                                  style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
-                                    id="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>' 
+                                    class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>' 
                                     src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                                      /></div>
                 
@@ -328,7 +334,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                         <div class="modal-body" style="height: 530px;background-color: gray;overflow-x: hidden;overflow-y: auto">
                             <div class="hideModalPopUp" id='<?php echo 'shareViewMore_' . $postId ?>'
                                  style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
-                                    id="hideModalPopUp" id='<?php echo 'shareViewMore_' . $postId ?>' 
+                                    class="hideModalPopUp" id='<?php echo 'shareViewMore_' . $postId ?>' 
                                     src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                                      /></div>
                 

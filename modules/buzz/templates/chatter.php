@@ -38,7 +38,7 @@
     #logo{
         width: 24%;
         
-        margin-top: 1.5%;
+        margin-left: -20px;
     }
 
     #buzzHeaderRight{
@@ -65,7 +65,7 @@
     <div id="buzzHeader">
         <div id="dashBoardHeaderBuzz">
         <div id="logo">
-            OHRM Buzz
+            <img id="gotoProfile" height="60px" style="" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/logo.png'); ?>">
         </div>
         <div id="buzzHeaderRight">
             <div id="buzzHeaderDetails">
