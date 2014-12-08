@@ -26,4 +26,4 @@ class orangehrmBuzzPluginAllTests {
 if (PHPUnit_MAIN_METHOD == 'orangehrmBuzzPluginAllTests::main') {
     orangehrmBuzzPluginAllTests::main();
 }
-?>
+
