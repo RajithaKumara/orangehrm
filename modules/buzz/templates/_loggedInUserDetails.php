@@ -73,7 +73,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
 
     #buzzSearchForm{
         margin-top: 18px;
-        position: fixed;
+        width: 230px;
+        //position: fixed;
         right: 38%;
     }
 
@@ -88,7 +89,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
     }
 
     #ddd input{
-        width: 400px;
+        width: 200px;
         border-radius: 5px 0 0 5px;
         border: none;
         padding: 7px;
@@ -109,19 +110,30 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
         background-color: #6B6B6B;
         border-radius: 5px;
     }
+    #buzzDetailContainer{
+        width: 600px;
+        float: right;
+    }
+    
+    @media all and (min-width: 900px) { #ddd input { width: 200px;  } }
+    @media all and (min-width: 1000px) { #ddd input { width: 200px;  } }
+    @media all and (min-width: 1100px) { #ddd input { width: 200px;  } }
+    @media all and (min-width: 1200px) { #ddd input { width: 200px;  } }
+    @media all and (min-width: 1300px) { #ddd input { width: 200px;  } }
+    @media all and (min-width: 1400px) { #ddd input { width: 200px;  } }
     
     
-    @media all and (min-width: 900px) { #ddd input { width: 100%;  } }
-    @media all and (min-width: 1000px) { #ddd input { width: 100%;  } }
-    @media all and (min-width: 1100px) { #ddd input { width: 100%;  } }
-    @media all and (min-width: 1200px) { #ddd input { width: 100%;  } }
-    @media all and (min-width: 1300px) { #ddd input { width: 400px;  } }
-    @media all and (min-width: 1400px) { #ddd input { width: 400px;  } }
-    @media all and (min-width: 1500px) { #ddd input { width: 400px;  } }
-    @media all and (min-width: 1500px) { #ddd input { width: 400px;  } }
-    @media all and (min-width: 1600px) { #ddd input { width: 400px;  } }
-    @media all and (min-width: 1700px) { #ddd input { width: 400px;  } }
-
+/*    @media all and (min-width: 900px) { #buzzSearchForm  { right:  300px;position: absolute;  } }
+    @media all and (min-width: 900px) { #buzzSearchForm  { right:  300px;  } }
+    @media all and (min-width: 1000px) { #buzzSearchForm  { right: 350px;  } }
+    @media all and (min-width: 1100px) { #buzzSearchForm  { right: 350px;  } }
+    @media all and (min-width: 1200px) { #buzzSearchForm  { right: 350px;  } }
+    @media all and (min-width: 1300px) { #buzzSearchForm  { right: 400px;  } }
+    @media all and (min-width: 1400px) { #buzzSearchForm  { right: 400px;  } }
+    @media all and (min-width: 1500px) { #buzzSearchForm  { right: 400px;  } }
+    @media all and (min-width: 1500px) { #buzzSearchForm  { right: 400px;  } }
+    @media all and (min-width: 1600px) { #buzzSearchForm  { right: 400px;  } }
+    @media all and (min-width: 1700px) { #buzzSearchForm  { right: 400px;  } }*/
 </style>
 
 <div id="buzzDetailContainer">

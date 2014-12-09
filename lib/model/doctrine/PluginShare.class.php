@@ -20,7 +20,7 @@ abstract class PluginShare extends BaseShare {
     public function isLike($id) {
         $likes = $this->getLike();
         $userId = $id;
-        if ($userId) {
+        if ($userId !="") {
             foreach ($likes as $like) {
                 if ($like->getEmployeeNumber() == $userId) {
                     return 'Unlike';
@@ -29,7 +29,7 @@ abstract class PluginShare extends BaseShare {
             return 'Like';
         } else {
             foreach ($likes as $like) {
-                if ($like->getEmployeeNumber() == null) {
+                if ($like->getEmployeeNumber() == '') {
                     return 'Unlike';
                 }
             }
@@ -138,7 +138,7 @@ abstract class PluginShare extends BaseShare {
     public function isUnLike($id) {
         $likes = $this->getUnlike();
         $userId = $id;
-        if ($userId) {
+        if ($userId!= '') {
             foreach ($likes as $like) {
                 if ($like->getEmployeeNumber() == $userId) {
                     return 'yes';
@@ -147,7 +147,7 @@ abstract class PluginShare extends BaseShare {
             return 'no';
         } else {
             foreach ($likes as $like) {
-                if ($like->getEmployeeNumber() == null) {
+                if ($like->getEmployeeNumber() == '') {
                     return 'yes';
                 }
             }

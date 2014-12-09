@@ -94,6 +94,9 @@ class uploadImageAction extends BuzzBaseAction{
         $share->setEmployeeNumber($this->getUserId());
         $share->setShareTime(date("Y-m-d H:i:s"));
         $share->setType(0);
+        $share->setNumberOfComments(0);
+        $share->setNumberOfLikes(0);
+        $share->setNumberOfUnlikes(0);
         $share->setPostId($this->post->getId());
         $service = $this->getBuzzService();
         $service->saveShare($share);

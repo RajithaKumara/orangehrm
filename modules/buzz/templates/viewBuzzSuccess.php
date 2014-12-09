@@ -45,6 +45,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             }
         }
     }
+    
+    
 </script>
 <div id="dashBoardBuzz">
     <div class="buzzRightBar">
@@ -246,6 +248,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             var loginpageURL = '<?php echo url_for('auth/login'); ?>';
             var addNewVideo = '<?php echo url_for('buzz/addNewVideo'); ?>';
             var viewOriginalPost = '<?php echo url_for('buzz/viewPost'); ?>';
+            var viewMoreShare = '<?php echo url_for('buzz/viewShare'); ?>';
             var viewLikedEmployees = '<?php echo url_for('buzz/viewLikedEmployees'); ?>';
             var addBuzzPostURL = '<?php echo url_for('buzz/addNewPost'); ?>';
             var addBuzzCommentURL = '<?php echo url_for('buzz/addNewComment'); ?>';
@@ -272,6 +275,30 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             });
 
         </script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+         $(".viewMoreShare").live("click", function (e) {
+        var idValue = e.target.id;
+        var shareId = idValue.split("_")[1];
+        //alert(idValue);
+        //var postId = idValue.split("_")[2];
+        var data = {
+            'shareId': shareId,
+        };
+        $.ajax({
+            url: viewMoreShare,
+            type: "POST",
+            data: data,
+            success: function (data) {
+                
+                $('#shareViewContent_' + shareId).replaceWith(data);
+                $('#shareViewMoreMod_' + shareId).modal();
+            }
+        });
+    });
+            });
+        </script>
+        
 
     </div>
 

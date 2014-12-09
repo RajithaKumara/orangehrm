@@ -198,6 +198,7 @@ class addNewVideoAction extends BuzzBaseAction {
         
         $post->setEmployeeNumber($userId);
         $post->setText($text);
+        
         $post->setPostTime(date("Y-m-d H:i:s"));
         
 
@@ -225,6 +226,7 @@ class addNewVideoAction extends BuzzBaseAction {
         $share->setEmployeeNumber($post->getEmployeeNumber());
         $share->setNumberOfComments(0);
         $share->setNumberOfLikes(0);
+        $share->setNumberOfUnlikes(0);
         $share->setShareTime(date("Y-m-d H:i:s"));
         $share->setType(0);
         return $share;
