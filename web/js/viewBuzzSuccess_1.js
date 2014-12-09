@@ -416,24 +416,27 @@ $(document).ready(function () {
         shownImgId = imageId;
         shownImgPostId = shareId;
         $("#img_" + shownImgId + "_" + shownImgPostId).show();
-        if ($("#img_" + parseInt(shownImgId + 1) + "_" + shownImgPostId).length > 0) {
+        if ($("#img_" + '2' + "_" + shownImgPostId).length > 0) {
             $("#imageNextBtn" + shownImgPostId).removeAttr("disabled");
         }
 
-        if ($("#img_" + parseInt(shownImgId - 1) + "_" + shownImgPostId).length > 0) {
+        if ($("#img_" + '2' + "_" + shownImgPostId).length > 0) {
             $("#imagePrevBtn" + shownImgPostId).removeAttr("disabled");
         }
     });
 
     $(".imageNextBtn").live("click", function (e) {
 //        alert(e.target.id);
+        if ($("#img_" + parseInt(shownImgId + 1) + "_" + shownImgPostId).length <= 0) {
+            $("#img_" + shownImgId + "_" + shownImgPostId).hide();
+        shownImgId = 1;
+        $("#img_" + shownImgId+ "_" + shownImgPostId).show();
+        }else{
         $("#img_" + shownImgId + "_" + shownImgPostId).hide();
         shownImgId = shownImgId + 1;
         $("#img_" + shownImgId + "_" + shownImgPostId).show();
-
-        if ($("#img_" + parseInt(shownImgId + 1) + "_" + shownImgPostId).length <= 0) {
-            $("#imageNextBtn" + shownImgPostId).attr("disabled", 'true');
-        }
+    }
+        
         $("#imagePrevBtn" + shownImgPostId).removeAttr("disabled");
 
 //        var visiblePhotoId = parseInt(e.target.id.split("_")[1]);
@@ -461,14 +464,30 @@ $(document).ready(function () {
     });
 
     $(".imagePrevBtn").live("click", function (e) {
-
+        if ($("#img_" + parseInt(shownImgId - 1) + "_" + shownImgPostId).length <= 0) {
+            if ($("#img_" + '5' + "_" + shownImgPostId).length > 0) {
+            $("#img_" + shownImgId + "_" + shownImgPostId).hide();
+        shownImgId = 5;
+        $("#img_" + shownImgId + "_" + shownImgPostId).show();
+            }else if ($("#img_" + '4' + "_" + shownImgPostId).length > 0) {
+            $("#img_" + shownImgId + "_" + shownImgPostId).hide();
+        shownImgId = 4;
+        $("#img_" + shownImgId + "_" + shownImgPostId).show();
+            }else if ($("#img_" + '3' + "_" + shownImgPostId).length > 0) {
+            $("#img_" + shownImgId + "_" + shownImgPostId).hide();
+        shownImgId = 3;
+        $("#img_" + shownImgId + "_" + shownImgPostId).show();
+            }else if ($("#img_" + '2' + "_" + shownImgPostId).length > 0) {
+            $("#img_" + shownImgId + "_" + shownImgPostId).hide();
+        shownImgId = 2;
+        $("#img_" + shownImgId + "_" + shownImgPostId).show();
+            }
+        }else{
         $("#img_" + shownImgId + "_" + shownImgPostId).hide();
         shownImgId = shownImgId - 1;
         $("#img_" + shownImgId + "_" + shownImgPostId).show();
-
-        if ($("#img_" + parseInt(shownImgId - 1) + "_" + shownImgPostId).length <= 0) {
-            $("#imagePrevBtn" + shownImgPostId).attr("disabled", 'true');
-        }
+    }
+        
         $("#imageNextBtn" + shownImgPostId).removeAttr("disabled");
 //        $(".postPhotoPrev").hide();
 //        var nextVisiblePhotoId = parseInt(e.target.id.split("_")[1]);

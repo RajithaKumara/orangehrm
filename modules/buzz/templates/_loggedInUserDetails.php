@@ -114,6 +114,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
         width: 600px;
         float: right;
     }
+    .ac_results{
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
     
     @media all and (min-width: 900px) { #ddd input { width: 200px;  } }
     @media all and (min-width: 1000px) { #ddd input { width: 200px;  } }
