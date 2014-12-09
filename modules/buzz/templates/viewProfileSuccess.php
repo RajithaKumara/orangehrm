@@ -471,6 +471,7 @@ include_component('buzz', 'viewProfileDetails', array('employee' => $employee,'l
             var refreshPageURL = '<?php echo url_for('buzz/refreshProfile'); ?>';
             var uploadImageURL = '<?php echo url_for('buzz/uploadImage'); ?>';
             var getAccessUrl = '<?php echo url_for('buzz/getLogedToBuzz'); ?>';
+            var refreshStatsURL = '<?php echo url_for('buzz/viewStatistics'); ?>';
         </script>
 
     </div>
