@@ -90,6 +90,13 @@
         overflow-y: auto;
         overflow-x: hidden;
     }
+    #likeRaw{
+        width: 100%;
+        border-radius: 5px;
+        background-color: #e3e3e3;
+        height: 60px;
+        overflow: hidden;
+    }
 
     
 </style>
@@ -99,7 +106,12 @@
     <img id="lessPostLiked" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;display: none" height="30px" width="30px"/>
 </div>
 <div id="ml_componentContainer" hidden="true">
-    <div id="rowOne">
+    <?php    foreach ($result_ml_shares as $result){ ?>
+    
+        <?php  include_component('buzz', 'viewPostPreview', array('post' => $result)); ?>
+    
+    <?php } ?>
+    <div hidden="true" id="rowOne">
         <div id="componentTitleImage">
             <img height="100px" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/most-liked-post.png"); ?>">
         </div>
@@ -132,7 +144,13 @@
     <img id="lessCommentLiked" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;display: none" height="30px" width="30px"/>
 </div>
 <div id="mc_componentContainer" hidden="true">
-    <div id="rowOne">
+    <?php    foreach ($result_mc_shares as $resultMc){ ?>
+    <div id="likeRaw">
+        <?php  include_component('buzz', 'viewPostPreview', array('post' => $resultMc)); ?>
+        
+    </div>
+    <?php } ?>
+    <div hidden="true" id="rowOne">
         <div id="componentTitleImage">
             <img height="100px"  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/most-shared-post.png"); ?>">
         </div>

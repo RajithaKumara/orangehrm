@@ -26,9 +26,44 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
         /*width: 120px;*/
     }
 </style>
+<div id="likeRaw">
 <li class="previewPost" id=<?php echo "post" . $postId; ?>>
+    <div id="picAndNameContainer">
+                <div id="profilePicContainer">
+                    <img alt="<?php echo __("Employee Photo"); ?>" 
+                         src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic"/>
+                </div>  
+                <div id="birthdayUserName">
+                        <?php
+        $photos = $sf_data->getRaw('originalPost')->getPhotos();
 
-    <div id="postBody" class="previewPost">
+//        var_dump(count($photos));die;
+        $imgCount = 1;
+        if (count($photos) == 1) {
+            ?>
+            <div style="overflow: hidden; text-align: center">
+                <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
+            </div>
+            <?php
+        } else if (count($photos) > 1) {
+
+            foreach ($photos as $photo) {
+                //echo get_class($photo);die;
+//                var_dump($photo->getPhoto());die;
+                ?>
+                <?php // echo base64_encode($photo->getPhoto()); ?>
+                <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
+                <?php
+                break;
+            }
+        }
+        ?>
+                
+                        <?php echo $employee['emp_firstname'] . " " . $postEmployeeName; ?>
+                    
+                </div>        
+     </div>
+    <div hidden="true" id="postBody" class="previewPost">
 
         <div id="postBodyFirstRow">
             
@@ -124,3 +159,5 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
         ?>
     </div>
 </li>
+</div>
+
