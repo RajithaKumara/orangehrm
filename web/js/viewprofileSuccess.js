@@ -1,6 +1,6 @@
 $(document).ready(function () {
-    
-    
+
+
     var noOfPhotosPreviewed = 1;
     $("#photofile").change(function () {
         if (noOfPhotosPreviewed > 5) {
@@ -9,7 +9,7 @@ $(document).ready(function () {
         var files = $("#photofile")[0].files;
         var imagesChoosed = $("#photofile")[0].files.length;
         for (var i = 1; i <= imagesChoosed; i++) {
-            readURL(files[i -1], noOfPhotosPreviewed);
+            readURL(files[i - 1], noOfPhotosPreviewed);
             noOfPhotosPreviewed++;
         }
 
@@ -50,7 +50,7 @@ $(document).ready(function () {
     });
 
     function reload() {
-        
+
         var lastPostId = {
             'lastPostId': $('#profileBuzz .lastLoadedPost').last().attr('id'),
             'profileUserId': trim($('#profileUserId').html())
@@ -66,7 +66,7 @@ $(document).ready(function () {
     }
 
     $(".loadMorePostsLink").live("click", function (e) {
-       
+
         var lastPostId = {
             'lastPostId': $('#profileBuzz .lastLoadedPost').last().attr('id'),
             'profileUserId': trim($('#profileUserId').html())
@@ -263,17 +263,17 @@ $(document).ready(function () {
 //        //$(".account").attr('id', '');
 //    });
 //
-    
-   
+
+
 
     /**
      * Edit share form pop up 
      */
-   
+
     /**
      * save edited form
      */
-   
+
 
 
 
@@ -465,3 +465,30 @@ $(document).ready(function () {
 
 }
 );
+
+$(window).scroll(function ()
+{
+
+    if ($(window).scrollTop() >= ($(document).height() - $(window).height()))
+    {
+        if ($('.loadMoreBox').css('display') == 'none') {
+            $('.loadMoreBox').show();
+            var lastPostId = {
+                'lastPostId': $('#profileBuzz .lastLoadedPost').last().attr('id'),
+                'profileUserId': trim($('#profileUserId').html())
+            };
+            alert($('#profileBuzz .lastLoadedPost').last().attr('id'));
+            alert($('#profileUserId').html());
+            alert(loadNextSharesURL);
+            $.ajax({
+                url: loadNextSharesURL,
+                type: "POST",
+                data: lastPostId,
+                success: function (data) {
+                    $('#profileBuzz').append(data);
+                }
+            });
+        }
+
+    }
+});

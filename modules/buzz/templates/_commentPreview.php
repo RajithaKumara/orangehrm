@@ -4,29 +4,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 ?>
-<style type="text/css">
-    #commentListContainerforpev{
-        -moz-border-radius: 10px;
-        -webkit-border-radius: 10px;
-        border-radius: 10px; /* future proofing */
-        -khtml-border-radius: 5px; /* for old Konqueror browsers */
-        border: 10px ;
-        height: 290px;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        background-color: #EBEBEB;
-    }
-    .commentprive{
-        -moz-border-radius: 10px;
-        -webkit-border-radius: 10px;
-        border-radius: 10px; /* future proofing */
-        -khtml-border-radius: 5px; /* for old Konqueror browsers */
-        padding:  10px ;
-        background-color: white;
-    }
-</style>
-<div id="commentListContainerforpev" style="padding: 10px">
+
+<div id="commentListContainerforpev">
     <ul class="commentList" id='<?php echo 'commentList_' . $postId ?>'>
         <?php
         $count = 0;
@@ -96,7 +77,7 @@
                         <div id="commentColumnOne">
                             <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/>
                         </div>
-                        <div id="commentColumnTwo" style="margin-left: 70px;margin-top: -60px;">
+                        <div class="cmnt_prev_commentColTwo" id="commentColumnTwo">
                             <div id="commentEmployeeName">
                                 <a class="name" href="javascript:void(0);"><?php echo $commentEmployeeName; ?></a>
                             </div>
@@ -115,7 +96,7 @@
                         <div id="commentColumnThree">
                             <?php if ($commentEmployeeId == $loggedInUser) { ?>
                                 <div id="commentOptionWidget">
-                                    <div class="dropdown" style="margin-top: -60px">
+                                    <div class="dropdown cmnt_prev_drop_down">
                                         <a class="account" id=<?php echo 'c' . $commentId ?>></a>
                                         <div class="submenu" id=<?php echo 'submenuc' . $commentId ?>>
                                             <ul class = "root">
@@ -146,9 +127,9 @@
                                 <div class="textTopOfImageComment" id='<?php echo 'commentLiketext_' . $commentId ?>'><?php echo $commentNoOfLikes ?></div>
                             </div>
                             <div class="unlikeCommentnew" id='<?php echo 'commentUnLikebody_' . $commentId ?>' style="background-color: <?php
-                             if ($isUnlike == 'yes') {
-                                 echo 'red';
-                             }
+                            if ($isUnlike == 'yes') {
+                                echo 'red';
+                            }
                             ?>">
                                 <a href="javascript:void(0)" class="commentUnlike2" id=<?php echo 'commentUnlike_' . $commentId ?>> <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/un-like.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                                                                                                                                           height="30" width="30"/></a>
@@ -160,10 +141,10 @@
             </li>
         <?php } ?>
     </ul>
-    <div class="commentLoadingBox" style="display: none">
+    <div class="commentLoadingBox">
         <div id="commentBody">
 
-            <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="70" style="margin-left: 40%; margin-top: 5px" />
+            <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="70"/>
         </div>
     </div>
     <div id="postFifthRow" class="postRow">

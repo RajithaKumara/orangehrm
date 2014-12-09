@@ -105,6 +105,9 @@ border-radius: 5px;  future proofing
 
 }
 
+#postBody #img-spinner{
+    margin-left: 40%; margin-top: 5px
+}
 #sharedPostBody{
     border: 1px solid #d0d1d5;
     border-radius: 2px;
@@ -336,10 +339,6 @@ overflow: hidden;
     vertical-align: top;
 }
 
-#commentColumnTwo{
-    //width: 92%;
-}
-
 #commentColumnTwoRowOne{
     display: -webkit-box;    
     display: -moz-box;
@@ -531,10 +530,10 @@ a.commentAccount
 }
 .postCommentBox{
     font-size: 16px;
-font-family: "SourceSansProLight";
-border-radius: 4px 4px 4px 4px;
-min-width: 99.5%;
-padding: 11px 11px 11px 10px;
+    font-family: "SourceSansProLight";
+    border-radius: 4px 4px 4px 4px;
+    min-width: 99.5%;
+    padding: 11px 11px 11px 10px;
 }
 
 .root
@@ -550,4 +549,88 @@ padding: 11px 11px 11px 10px;
     display: -webkit-box;    display: -moz-box;
     -webkit-box-orient: horizontal;    -moz-box-orient: horizontal;
     overflow-x: hidden;
+    overflow: hidden;border-top-right-radius: 5px;
+}
+
+#loadVideo{
+    float: right;
+    margin-right: 50px;
+    margin-bottom: -20px;
+    z-index: 200;
+}
+
+.img_del{
+    color: red; 
+    font-size: 9px; 
+    font-weight: 900; 
+    padding: 3px; 
+    background-color: black; 
+    position: relative; 
+    left: 17px; 
+    top: -5px;
+}
+
+.closeFeed{
+    margin-left: 95%;
+    margin-bottom: 5px
+}
+
+.tabLabel{
+    font-size: 12px; 
+    font-weight: normal
+}
+
+#imageThumbnails{
+    display:inline-block; 
+    margin-top: 10px;
+}
+
+#postLinkData{
+    display:none;
+}
+#spinner{
+    display:none;
+}
+#page2, #page3{
+    display: none;
+}
+
+#imgUpBtnPara{
+    text-align: right
+}
+
+.loadMoreBox{
+    display: none;
+}
+
+#lodingGif{
+    background: transparent;
+}
+
+#lodingGif #img-spinner{
+    margin-left: 40%; margin-top: 5px;
+}
+#commentListContainerforpev{
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    -khtml-border-radius: 5px; /* for old Konqueror browsers */
+    border: 10px ;
+    height: 290px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    background-color: #EBEBEB;
+    padding: 10px;
+}
+
+.cmnt_prev_commentColTwo{
+    margin-left: 70px;
+}
+
+.cmnt_prev_drop_down{
+    margin-top: -60px;
+}
+
+.commentLoadingBox{
+    display: none;
 }

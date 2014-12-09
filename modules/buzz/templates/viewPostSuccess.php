@@ -19,20 +19,19 @@
  */
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
-use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
+//use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessComment'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/tooltip_css/jquery.qtip.min'));
-use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
+//use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip.min'));
 
 //include_component('buzz', 'viewPost', array('post' => $share));
-
 ?>
 
 
-               
-                <div id="photoPage" style="height: 400px;top: 15px;left: 12px;width: 450px;margin-bottom: -20px;position: absolute;overflow-y: auto">
-                    <div id="postBody" style="margin-top: 0px">
+
+<div id="photoPage" style="height: 400px;top: 15px;left: 12px;width: 450px;margin-bottom: -20px;position: absolute;overflow-y: auto">
+    <div id="postBody" style="margin-top: 0px">
 
         <div id="postBodyFirstRow">
             <div id="postFirstRowColumnOne">
@@ -141,29 +140,29 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
         <!--Old Code of like, unlike and share buttons-->
         <div hidden="true" id="postBodyThirdRowNew">
             <div class="likeLinknew"  id="<?php echo 'postLikebody_' . $postId ?>" style="background-color: <?php
-            if ($isLike == 'Unlike') {
-                echo 'orange';
-            }
-            ?>">
+                if ($isLike == 'Unlike') {
+                    echo 'orange';
+                }
+                ?>">
                 <a href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLike_' . $postId ?>'> <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
                                                                                                                                           class="<?php echo $isLike . ' postLike'; ?>" height="40" width="40"/></a>
                 <div class="textTopOfImage" id='<?php echo 'postLiketext_' . $postId ?>'><?php echo $postNoOfLikes ?></div>
             </div>
             <div class="unlikeLinknew" id='<?php echo 'postUnLikebody_' . $postId ?>' style="background-color: <?php
-            if ($isUnlike == 'yes') {
-                echo 'red';
-            }
-            ?>">
+                 if ($isUnlike == 'yes') {
+                     echo 'red';
+                 }
+                ?>">
                 <a href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlike_' . $postId ?>> <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/un-like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>' 
                                                                                                                  height="40" width="40"/></a>
                 <div class="textTopOfImage" id='<?php echo 'postUnLiketext_' . $postId ?>'><?php echo $postUnlike ?></div>
             </div>
 
             <div class="shareLinknew" id='<?php echo 'postSharebody_' . $postId ?>' style="background-color: <?php
-            if ($shareCount > 0) {
-                echo 'green';
-            }
-            ?>">
+                 if ($shareCount > 0) {
+                     echo 'green';
+                 }
+                ?>">
                 <a href="javascript:void(0)" class="postShare" id=<?php echo 'postShare_' . $postId ?>> <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/share.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
                                                                                                               height="40" width="40"/></a>
                 <div class="textTopOfImage"><?php echo $shareCount ?></div>
@@ -171,7 +170,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
         </div>
 
-       
+
 
         <div id="postBodySecondRow" >
             <div id='<?php echo 'postContent_' . $postId ?>'>
@@ -210,7 +209,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                         </div>
                     </div>
                     <!--SUB POST END-->
-                    
+
                     <?php
                 } else {
                     echo BuzzTextParserService::parseText($originalPostContent);
@@ -387,10 +386,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
             }
         </script>
 
-        
 
-    
-        
+
+
+
 
 
         <div id="postBodyThirdRow">
@@ -405,33 +404,32 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
             </div>
         </div>
 
-        
-        
+
+
 
     </div>
+</div>
+<div id="photoPageComment" style=" ;top: 5px;left: 467px;width: 320px;margin-bottom: -20px;position: absolute;background-color: gray">
+    <div id="postBodyFirstRow photo" class="photoViewEmp">
+        <div id="postFirstRowColumnOne" style="width: 50px;height: 50px;overflow: hidden">
+            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
+        </div>
+        <div id="postFirstRowColumnTwo" style="width: 60%;">
+            <div id="postEmployeeName" >
+                <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
+                    <?php echo $postEmployeeName; ?>
+                </a>
+            </div>
+            <div id="postDateTime">
+                <div id="postDate">
+                    <?php echo $postDate; ?>
                 </div>
-                <div id="photoPageComment" style=" ;top: 5px;left: 467px;width: 320px;margin-bottom: -20px;position: absolute;background-color: gray">
-                    <div id="postBodyFirstRow photo" class="photoViewEmp">
-                        <div id="postFirstRowColumnOne" style="width: 50px;height: 50px;overflow: hidden">
-                            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
-                        </div>
-                        <div id="postFirstRowColumnTwo" style="width: 60%;">
-                            <div id="postEmployeeName" >
-                                <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
-                                    <?php echo $postEmployeeName; ?>
-                                </a>
-                            </div>
-                            <div id="postDateTime">
-                                <div id="postDate">
-                                    <?php echo $postDate; ?>
-                                </div>
-                                <div id="postTime">
-                                    <?php echo $postTime; ?>
-                                </div>
-                            </div>                        
-                        </div>
-                    </div>
-                    <?php include_component('buzz', 'commentPreview', array('commentList' => $commentList, 'editForm' => $editForm, 'loggedInUser' => $loggedInUser, 'postId' => $postId, 'commentForm' => $commentForm)); ?>
+                <div id="postTime">
+                    <?php echo $postTime; ?>
+                </div>
+            </div>                        
+        </div>
+    </div>
+    <?php include_component('buzz', 'commentPreview', array('commentList' => $commentList, 'editForm' => $editForm, 'loggedInUser' => $loggedInUser, 'postId' => $postId, 'commentForm' => $commentForm)); ?>
 
-                </div>
-           
+</div>
