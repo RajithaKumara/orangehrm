@@ -61,6 +61,14 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                 margin-bottom: -0px;
                 margin-right: -60px;
      }
+     #postBodyReadMore{
+                width: 50px;
+                height: 35px;
+                float: right;
+                margin-top: -30px;
+                margin-bottom: 0px;
+                //margin-right: -60px;
+     }
     
     .textTopOfImage{
         color: white;
@@ -110,7 +118,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
         height: 30px;
         
         margin-top: -25px;
-        margin-bottom: -0px;
+        margin-bottom: 10px;
         float:right;
     }
     .textTopOfImageComment{
@@ -356,7 +364,13 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
             </div>
             
         </div>
-
+        <?php if(strlen($originalPostContent)>760){ ?>
+        <div class="viewMorveShare"  id="postBodyReadMore">
+            
+                    <img  class="viewMoreShare" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/icons/readmore-icon.png"); ?>" border="0" id='<?php echo 'shareViewMore_' . $postId ?>'
+                          style="z-index: 9999"     height="30" width="30"/>
+        </div>
+        <?php } ?>
         <?php if (count($originalPost->getLinks()) > 0) { ?>
             <?php foreach ($originalPost->getLinks() as $link) { ?>
                 <?php if ($link->getType() == 1) { ?>
