@@ -72,6 +72,9 @@ abstract class PluginShare extends BaseShare {
         $count=  $this->getBuzzConfigService()->getBuzzLikeCount();
         $arrayOfEmployees = array();
         foreach ($this->getLike() as $value) {
+            if($count<=0){
+                break;
+            }
             $empId = $value->getEmployeeNumber();
             $empName = $value->getEmployeeLike()->getFirstAndLastNames();
             if ($empName == " ") {
@@ -82,8 +85,12 @@ abstract class PluginShare extends BaseShare {
                 $count--;
             }
             
+            
         }
         foreach ($this->getLike() as $value) {
+            if($count<=0){
+                break;
+            }
             $empId = $value->getEmployeeNumber();
             $empName = $value->getEmployeeLike()->getFirstAndLastNames();
             if ($empName == " ") {
@@ -95,9 +102,7 @@ abstract class PluginShare extends BaseShare {
             $arrayOfEmployees[] = $empName;
             $count--;
             }
-            if($count<=0){
-                break;
-            }
+            
         }
         
         return $arrayOfEmployees;

@@ -82,6 +82,7 @@ class shareAPostAction extends BuzzBaseAction {
         $share->setEmployeeNumber($this->getUserId());
         $share->setNumberOfComments(0);
         $share->setNumberOfLikes(0);
+        $share->setNumberOfUnlikes(0);
         $share->setText($this->shareText);
         $share->setShareTime(date("Y-m-d H:i:s"));
         $share->setType('1');

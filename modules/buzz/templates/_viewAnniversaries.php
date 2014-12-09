@@ -122,7 +122,7 @@
 
 </style>
 <div class ="rightBarBodyAll">
-    <div class="rightBarHeading" id="rightBarHeadingAnniv"><?php echo 'UPCOMING ANNIVERSARY' ?> 
+    <div class="rightBarHeading" id="rightBarHeadingAnniv"><?php echo 'UPCOMING ANNIVERSARIES' ?> 
         <img id="moreAniversary" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" style="float: right;margin-top: -3px;margin-right: -10px" height="30px" width="30px"/>
         <img id="lessAniversary" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" style="float: right;margin-top: -3px;margin-right: -10px;display: none" height="30px" width="30px"/>
 
@@ -130,7 +130,20 @@
     <div class ="rightBarBody">
         <div class="toggling" hidden="true" id="upcomingAnnivMonth"><?php echo date('M Y'); ?></div>
         <ul class="toggling" hidden="true" id="upcomingAnnivList">    
-
+            <?php if(count($employeeList)==0){?>
+         <li id="anniversaryPost">
+            <div id="annivPicAndNameContainer">
+                
+                <div id="anniversaryUserName">
+                    <a href="#" class="name" id="name2">
+                        <?php echo _("No Anniversaries For This Month"); ?>
+                    </a>
+                </div>        
+            </div>
+            
+            
+        </li>
+    <?php } ?>
             <?php foreach ($anniversaryEmpList as $employee) { ?>
                 <li id="anniversaryPost">
                     <div id="annivPicAndNameContainer">

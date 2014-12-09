@@ -33,7 +33,7 @@ class CreatePostForm extends sfForm {
      */
     public function configure() {
         $textArea = new sfWidgetFormTextarea();
-        $textArea->setAttribute('placeholder', 'What is in your mind?');
+        $textArea->setAttribute('placeholder', 'What\'s on your mind?');
         $textArea->setAttribute('rows', '2');
         $textArea->setAttribute('cols', '40');
         $this->widgets = array(

@@ -8,7 +8,14 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 //use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
 ?>
 <style type="text/css">
-
+    .imageNextBtn:hover{
+        background-color: white;
+        opacity: .5;
+    }
+    .imagePrevBtn:hover{
+        background-color: white;
+        opacity: .5;
+    }
     .likeLinknew{
         background-color: transparent;
         opacity: 0.8;
@@ -69,7 +76,11 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
         font-size: 14px;
     }
     #noOfUnLikesLinknew{
-        margin-left: 60%;
+        margin-left: 170px;
+        font-size: 14px;
+    }
+    #noOfSharesLinknew{
+        margin-left:130px;
         font-size: 14px;
     }
 
@@ -448,7 +459,11 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
         <div class="modal hide" style="width: 800px;height: 600px;left: 40%;top: 60%" id='<?php echo "showPhotos" . $postId; ?>'>
             <div class="modal-body" style="height: 530px;background-color: gray" id="modalnewlook">
 
-                <div class="hidePhotoPopUp" id='<?php echo "hidePhotos_" . $postId; ?>' style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white">x</div>
+                <div class="hideModalPopUp" id='<?php echo "showPhotos" . $postId; ?>'
+                                 style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                                    class="hideModalPopUp" id='<?php echo "showPhotos" . $postId; ?>' 
+                                    src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                                     /></div>
                 <div id="photoPage" style="height: 400px;top: 15px;left: 12px;width: 450px;margin-bottom: -20px;position: absolute">
                     <?php
                     $imgCount = 1;
@@ -658,6 +673,16 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
+            <div id="noOfSharesLinknew" style="margin-top: 5px;">
+                <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' style="
+                   color: #232323;
+                   font-family: 'SourceSansProLight';
+                   text-decoration: none;">
+                    <span id="<?php echo 'noOfShares_' . $postId;?>"><?php echo $postShareCount; ?></span><?php echo " " . __("people "); ?>
+                    <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
+                          height="16" width="16"/><?php echo __(" this"); ?>
+                </a>
+            </div>
             <div id="noOfUnLikesLinknew" style="margin-top: 5px;">
                 <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' style="
                    color: #232323;
@@ -674,8 +699,8 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
             <a href="javascript:void(0)" class="postViewMoreCommentsLink" id=<?php echo 'postViewMoreCommentsLink_' . $postId ?>>
                 <?php
                 $commentCount = $post->getComment()->count();
-                if ($commentCount > 2) {
-                    echo __("View") . " " . ($commentCount - 2) . " ";
+                if ($commentCount > $initialcommentCount) {
+                    echo __("View") . " " . ($commentCount - $initialcommentCount) . " ";
                     echo __("more comments");
                     echo __(" out of" . " " . $commentCount . " " . "comments");
                 }
@@ -723,7 +748,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                 $commentLikeEmployes = $comment->getLikedEmployeeList();
                 $peopleLikeArray = $comment->getLikedEmployees();
 //                            $peopleLikeArray = array("Aruna Tebel", "Dewmal Anicitus");
-                if ($count >= 2) {
+                if ($count >= $initialcommentCount) {
                     $display = 'none';
                 }
                 $count++;

@@ -26,7 +26,7 @@ protected $buzzService;
         $this->editForm = new CommentForm();
         //$this->uploadImageForm = new UploadPhotoForm(); //image upload form
        
-        //$this->initializePostList();
+        $this->intializeConstant();
         
        
         
@@ -43,7 +43,7 @@ protected $buzzService;
         $this->postContent = $post->getText();
         $this->postNoOfLikes = $post->getLike()->count();
         $this->postUnlike= $post->getNumberOfUnlikes();
-        $this->shareCount= $post->calShareCount();
+        $this->postShareCount= $post->calShareCount();
         $this->postType = $post->getType();
         $this->employeeID = $post->getEmployeeNumber();
         $this->commentList = $post->getComment();
@@ -60,6 +60,14 @@ protected $buzzService;
         $this->originalPostTime = $this->originalPost->getTime();
         $this->originalPostContent = $this->originalPost->getText();
         $this->likeEmployeList = $post->getLikedEmployeeList();
+    }
+     protected function intializeConstant() {
+        $buzzConfigService = $this->getBuzzConfigService();
+        $this->shareCount = $buzzConfigService->getBuzzShareCount();
+        $this->initialcommentCount = $buzzConfigService->getBuzzInitialCommentCount();
+        $this->viewMoreComment = $buzzConfigService->getBuzzViewCommentCount();
+        $this->likeCount = $buzzConfigService->getBuzzLikeCount();
+        $this->refeshTime = $buzzConfigService->getRefreshTime();
     }
     
      /**
