@@ -712,8 +712,8 @@ $(document).ready(function () {
     });
 
     function refresh() {
-        var refreshTime = trim($("#refreshTime").html());
-//        var refreshTime = 3000;
+//        var refreshTime = trim($("#refreshTime").html());
+        var refreshTime = 3000;
 
         if (new Date().getTime() - time >= refreshTime) {
             //$('#spinner').show();
@@ -733,6 +733,8 @@ $(document).ready(function () {
             if (loggedInEmpNum == -1) {
                 loggedInEmpNum = data.empNum;
             } else if (loggedInEmpNum != data.empNum) {
+                location.reload();
+            } else if(data.empNum == null){
                 location.reload();
             }
 
