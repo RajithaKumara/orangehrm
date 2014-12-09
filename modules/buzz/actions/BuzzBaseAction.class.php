@@ -19,9 +19,10 @@ abstract class BuzzBaseAction extends sfAction{
         $cookie_name='buzzCookie';
         
         if(UserRoleManagerFactory::getUserRoleManager()->getUser()!=null){
-           
+            $cookie_valuve='';
+            if($this->getUser()){
             $cookie_valuve = $this->getUser()->getEmployeeNumber();
-            
+            }
             setcookie($cookie_name, $cookie_valuve, time() + 3600 * 24 * 30, "/");
             return $cookie_valuve;
         } elseif (isset($_COOKIE[$cookie_name])) {

@@ -135,6 +135,17 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 background: #ccc;
                 border: 5px solid white;
             }
+             #postBodySecondRowPop{
+    padding: 5px;
+    margin-top: -3px;
+    text-align: justify;
+    background-color: white;
+    border-radius: 0 0 4px 4px;
+    line-height: 1.5;
+    font-family: 'SourceSansProLight';
+    font-size: 16px;
+    
+}
         </style>
 
         <!--Old Code of like, unlike and share buttons-->
@@ -172,7 +183,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
 
 
-        <div id="postBodySecondRow" >
+        <div id="postBodySecondRowPop" >
             <div id='<?php echo 'postContent_' . $postId ?>'>
                 <?php echo BuzzTextParserService::parseText($postContent); ?>
                 <?php
@@ -202,7 +213,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                             </div>
                         </div>
 
-                        <div id="postBodySecondRow">
+                        <div id="postBodySecondRowPop">
                             <div id="postContent">
                                 <?php echo BuzzTextParserService::parseText($originalPostContent); ?>
                             </div>

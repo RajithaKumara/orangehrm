@@ -568,6 +568,26 @@ $(document).ready(function () {
 
 
     });
+    $(".viewMoreShare").live("click", function (e) {
+        var idValue = e.target.id;
+        var shareId = idValue.split("_")[1];
+       
+        //var postId = idValue.split("_")[2];
+        var data = {
+            'shareId': shareId,
+        };
+        $.ajax({
+            url: viewMoreShare,
+            type: "POST",
+            data: data,
+            success: function (data) {
+                
+                $('#shareViewContent_' + shareId).replaceWith(data);
+                $('#shareViewMoreMod_' + shareId).modal();
+            }
+        });
+    });
+       
     /**
      * share post popup window view
      */

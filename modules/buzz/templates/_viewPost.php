@@ -269,7 +269,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 
             <div class="shareLinknew" id='<?php echo 'postSharebody_' . $postId ?>' >
                 <?php
-            if ($shareCount > 0) { ?>
+            if ($postShareCount > 0) { ?>
                 <a href="javascript:void(0)" class="postShare" id=<?php echo 'postShareyes_' . $postId ?>> 
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" 
                           border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
@@ -302,7 +302,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 
         <div id="postBodySecondRow" >
             <div id='<?php echo 'postContent_' . $postId ?>'>
-                <?php echo BuzzTextParserService::parseText($postContent); 
+                <?php var_dump($postContent); 
                 ?>
                 <?php
                 if ($postType == '1') {
@@ -357,7 +357,8 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                     </div>
                     <?php
                 } else {
-                   echo BuzzTextParserService::parseText($originalPostContent);
+                    
+                    var_dump($originalPostContent);
                     
                 }
                 ?>
@@ -535,7 +536,11 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
         <div class="modal hide" style="width: 550px;height: 600px;left: 50%;top: 60%"  id='<?php echo 'posthide_' . $postId ?>'>
             
             <div class="modal-body" style="height: 530px;background-color: gray">
-                <div class="hideModalPopUp" id='<?php echo 'posthide_' . $postId ?>' style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white">x</div>
+                <div class="hideModalPopUp" id='<?php echo 'posthide_' . $postId ?>'
+                                 style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                                    class="hideModalPopUp" id='<?php echo 'posthide_' . $postId ?>' 
+                                    src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                                     /></div>
                 <div style="height: 380px;top: 15px;left: 12px;width: 500px;margin-bottom: -20px;position: absolute;background-color: white;border-radius: 10px;overflow-y: auto;padding: 10px; ">
                     <form id="frmCreateComment" method="" action="" style="margin-top: 10px;"
                       enctype="multipart/form-data">
@@ -620,8 +625,11 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
         <div class="modal hide" style="width: 800px;height: 700px;left: 40%;top:50%;overflow-x: hidden" id='<?php echo 'editposthide_' . $postId ?>'>
             
             <div class="modal-body" style="background-color: gray;overflow-x: hidden;overflow-y: auto">
-                <div class="hideModalPopUp" id='<?php echo 'editposthide_' . $postId ?>' style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white">x</div>
-                
+                <div class="hideModalPopUp" id='<?php echo 'editposthide_' . $postId ?>'
+                                 style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                                    class="hideModalPopUp" id='<?php echo 'editposthide_' . $postId ?>'
+                                    src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                                     /></div>
                 <div id="postBodySecondRow" style="border-radius: 5px;padding: 20px;">
                     
                     <h3><?php echo __('Edit your post'); ?></h3>
