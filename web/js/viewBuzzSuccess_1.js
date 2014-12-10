@@ -141,6 +141,7 @@ $(document).ready(function () {
     });
 
     $("#gotoProfile").click(function () {
+        alert("HSHS");
         var id = $('#searchChatter_emp_name_empId').val();
         if (id.length <= 0) {
             alert('select User');
@@ -307,7 +308,6 @@ $(document).ready(function () {
             var elementId = "#" + e.target.id;
 
             var value = $(elementId).val();
-
             $('#commentLoadingBox' + elementId.split("_")[1]).show();
             //value = $.trim(value.replace(/[\t\n]+/g, ' '));
 

@@ -39,9 +39,9 @@ class addNewCommentAction extends BuzzBaseAction {
 
     public function execute($request) {
         try {
-            
             $this->loggedInUser = $this->getUserId();
             $this->commentText = $request->getParameter('commentText');
+            echo $this->commentText; die;
             $this->shareId = $request->getParameter('shareId');
             $this->error = 'no';
 
@@ -73,10 +73,7 @@ class addNewCommentAction extends BuzzBaseAction {
         $this->commentId = $this->comment->getId();
         $this->commentNoOfLikes = $this->comment->getNumberOfLikes();
         $this->isLikeComment = $this->comment->isLike($this->getUserId());
-        $this->commentEmployeeId = $this->getUserId();
-        
-                
-                
+        $this->commentEmployeeId = $this->getUserId();                
                 
                 
         $this->commentNoOfLikes = $this->comment->getNumberOfLikes();

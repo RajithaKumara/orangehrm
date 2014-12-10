@@ -510,7 +510,7 @@ a.commentAccount
 .submitBtn{
     background-color: #33ac3f;
     border: none;
-    padding: 8px 20px;
+    padding: 5px 20px;
     border-radius: 3px;
     margin-right: 10px;
     /*margin-bottom: 8px;*/
@@ -518,13 +518,14 @@ a.commentAccount
     font-size: 15px;
     font-size: 16px;
     font-family: "SourceSansProRegular";
+    margin-bottom: 10px;
 }
 
 .commentSubmitBtn{
     margin-left: 86%;
     padding-right: 2px;
     padding-left: 2px;
-    margin-top: -39px;
+    margin-top: -60px;
     font-size: 16px;
     width: 12.9%;
 }

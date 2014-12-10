@@ -178,7 +178,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
                             </div>
                         <div id="commentRowTwo">
                             <div class="commentContent"id='<?php echo 'commentContentNew_' . $commentId ?>'>
-                                <?php echo BuzzTextParserService::parseText($commentContent); ?>
+                                <?php echo BuzzTextParserService::parseText($commentContent);?>
                             </div>
                         </div>
 

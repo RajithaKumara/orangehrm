@@ -39,6 +39,7 @@
     margin:auto;
 }
 .headerLink{
+    padding: 2px 5px;
     font-size: 0.45em;
     margin-left: 6px;
     color: white;
@@ -88,7 +89,7 @@
 }
 
 
-@media all and (min-width: 900px) { #ddd input { width: 100%;  } }
+/*@media all and (min-width: 900px) { #ddd input { width: 100%;  } }
 @media all and (min-width: 1000px) { #ddd input { width: 100%;  } }
 @media all and (min-width: 1100px) { #ddd input { width: 100%;  } }
 @media all and (min-width: 1200px) { #ddd input { width: 100%;  } }
@@ -97,4 +98,4 @@
 @media all and (min-width: 1500px) { #ddd input { width: 400px;  } }
 @media all and (min-width: 1500px) { #ddd input { width: 400px;  } }
 @media all and (min-width: 1600px) { #ddd input { width: 400px;  } }
-@media all and (min-width: 1700px) { #ddd input { width: 400px;  } }
+@media all and (min-width: 1700px) { #ddd input { width: 400px;  } }*/

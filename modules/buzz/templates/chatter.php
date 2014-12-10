@@ -65,7 +65,7 @@
     <div id="buzzHeader">
         <div id="dashBoardHeaderBuzz">
         <div id="logo">
-            <img id="gotoProfile" height="60px" style="" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/logo.png'); ?>">
+            <img height="60px" style="" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/logo.png'); ?>">
         </div>
         <div id="buzzHeaderRight">
             <div id="buzzHeaderDetails">

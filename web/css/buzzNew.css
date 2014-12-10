@@ -24,7 +24,7 @@
 
     #postTextBox form textarea{
         width: 107.5%;
-        margin: 8px 10px;
+        margin: 10px 10px 0px 10px;
         border: none;
         border-radius: 8px;
         height: 10%;
@@ -33,6 +33,7 @@
     }
     input[type="file"] {
         height: 30px;
+        padding: 0;
     }
 
     #dashBoardBuzz{
@@ -82,10 +83,11 @@
     }
     .tabButton{
         text-align: left;
-        padding: 4px;
+        padding: 8px;
         background: #B2B2B2;
-        width: 32.05%;
-    }
+        width: 220px;
+        height: 40px; 
+   }
 
     .tb_one{
         -webkit-border-top-left-radius: 5px;
@@ -172,6 +174,10 @@
     .rightBarHeading:hover, .rightBarHeading:hover{
         cursor: pointer;
         background-color: #F07C00;
+    }
+    
+    .rightBarHeading:active{
+        border: 1px solid black;
     }
 
     li{
