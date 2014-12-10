@@ -43,6 +43,9 @@
     font-size: 0.45em;
     margin-left: 6px;
     color: white;
+    padding: 2px 5px;
+    
+    border-radius: 5px;
 }
 
 #buzzSearchForm, #ddd, #gotoProfile{
@@ -85,6 +88,20 @@
 .homeLink:hover{
     padding: 2px 5px;
     background-color: #6B6B6B;
+    border-radius: 5px;
+}
+.homeLink{
+    padding: 2px 5px;
+    border-radius: 5px;
+}
+.logoutLink{
+    padding: 2px 5px;
+    
+    border-radius: 5px;
+}
+.ProfileLink{
+    padding: 2px 5px;
+    
     border-radius: 5px;
 }
 

@@ -219,6 +219,13 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             var refreshPageURL = '<?php echo url_for('buzz/refreshPage'); ?>';
             var uploadImageURL = '<?php echo url_for('buzz/uploadImage'); ?>';
             var refreshStatsURL = '<?php echo url_for('buzz/viewStatistics'); ?>';</script>
+                <style type="text/css">
+            .homeLink{
+    padding: 2px 5px;
+    background-color: #6B6B6B;
+    border-radius: 5px;
+}
+        </style>
 
     </div>
 

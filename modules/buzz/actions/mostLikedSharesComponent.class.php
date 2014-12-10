@@ -32,8 +32,10 @@ class mostLikedSharesComponent extends sfComponent {
 
     public function execute($request) {
         $this->setBuzzService(new BuzzService());
-        $mostLikedShares = $this->buzzService->getMostLikedShares(mostLikedSharesComponent::SHARE_COUNT);
-        $mostCommentedShares = $this->buzzService->getMostCommentedShares(mostLikedSharesComponent::SHARE_COUNT);
+        $mostLikeShareCount= $this->getBuzzConfigService()->getMostLikeShareCount();
+        $mostLikePostCount= $this->getBuzzConfigService()->getMostLikePostCount();
+        $mostLikedShares = $this->buzzService->getMostLikedShares($mostLikeShareCount);
+        $mostCommentedShares = $this->buzzService->getMostCommentedShares($mostLikePostCount);
 
         $this->result_ml_shares = array();
         $this->result_ml_shares_like_count = array();
@@ -58,6 +60,18 @@ class mostLikedSharesComponent extends sfComponent {
         if (!$this->buzzService) {
             $this->buzzService = $nfService;
         }
+    }
+    
+    
+    /**
+     * 
+     * @return BuzzConfigService
+     */
+    private function getBuzzConfigService() {
+        if (!$this->buzzConfigService) {
+            $this->buzzConfigService = new BuzzConfigService();
+        }
+        return $this->buzzConfigService;
     }
 
 }

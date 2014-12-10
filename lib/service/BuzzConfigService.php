@@ -27,7 +27,8 @@ class BuzzConfigService extends ConfigService{
     const KEY_NEWSFEED_LIKE_COUNT = 'buzz_like_count';
     const KEY_REFRESH_TIME='buzz_refresh_time';
     const KEY_TIME_FORMAT='buzz_time_format';
-
+    const KEY_MOST_LIKE_POSTS='buzz_most_like_posts';
+    const KEY_MOST_LIKE_SHARES='buzz_most_like_shares';
 
     public function getBuzzKeeyValuve($key){
         return $this->_getConfigValue($key);
@@ -55,6 +56,14 @@ class BuzzConfigService extends ConfigService{
     
     public function getTimeFormat(){
         return $this->getBuzzKeeyValuve(BuzzConfigService:: KEY_TIME_FORMAT);
+    }
+    
+    public function getMostLikePostCount(){
+        return $this->getBuzzKeeyValuve(BuzzConfigService:: KEY_MOST_LIKE_POSTS);
+    }
+    
+     public function getMostLikeShareCount(){
+        return $this->getBuzzKeeyValuve(BuzzConfigService:: KEY_MOST_LIKE_SHARES);
     }
     
 }

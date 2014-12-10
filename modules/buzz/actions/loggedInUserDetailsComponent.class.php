@@ -36,8 +36,10 @@ class loggedInUserDetailsComponent extends sfComponent {
         $this->employee = $this->buzzService->getEmployee($this->empNumber);
         if ($this->employee) {
             $this->name = $this->employee->getFirstAndMiddleName();
+            $this->jobtitle = ' '.$this->employee->getJobTitleName();
         } else {
             $this->name = 'Admin';
+            $this->jobtitle='  ';
         }
     }
 

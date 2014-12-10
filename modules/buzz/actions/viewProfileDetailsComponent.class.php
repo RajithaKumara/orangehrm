@@ -27,7 +27,7 @@ class viewProfileDetailsComponent extends sfComponent {
             $this->locations = $this->employee->getLocationAsString();
         } else {
             $this->fullName = 'Admin';
-            $this->jobtitle = 'Admin';
+            
         }
     }
 

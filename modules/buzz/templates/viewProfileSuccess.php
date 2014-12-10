@@ -44,11 +44,11 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             ?> 
         </ul>
         <div class="loadMoreBox">
-            <div id="postBody">
+            <div id="lodingGif">
                 <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="70"/>
             </div>
         </div>
-        <div id="loadMorePosts">
+        <div hidden="true" id="loadMorePosts">
             <a href="javascript:void(0)" class="loadMorePostsLink" id=<?php echo $postId ?>><?php echo __("Load more posts"); ?></a>
         </div> 
         <div id="profileUserId" hidden="true"><?php echo $profileUserId; ?></div>
@@ -77,6 +77,19 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             var getAccessUrl = '<?php echo url_for('buzz/getLogedToBuzz'); ?>';
             var refreshStatsURL = '<?php echo url_for('buzz/viewStatistics'); ?>';
         </script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                
 
+                $("#gotoProfile").click(function () {
+                    var id = $('#searchChatter_emp_name_empId').val();
+                    if (id.length <= 0) {
+                        alert('select User');
+                    } else {
+                        window.location = profilePage + id;
+                    }
+                });
+            });
+            </script>
     </div>
 </div>

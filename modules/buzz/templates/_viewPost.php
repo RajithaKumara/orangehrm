@@ -302,7 +302,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 
         <div id="postBodySecondRow" >
             <div id='<?php echo 'postContent_' . $postId ?>'>
-                <?php var_dump($postContent); 
+                <?phpecho BuzzTextParserService::parseText($postContent); 
                 ?>
                 <?php
                 if ($postType == '1') {
@@ -358,7 +358,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                     <?php
                 } else {
                     
-                    var_dump($originalPostContent);
+                    echo BuzzTextParserService::parseText($originalPostContent);
                     
                 }
                 ?>

@@ -477,9 +477,7 @@ $(window).scroll(function ()
                 'lastPostId': $('#profileBuzz .lastLoadedPost').last().attr('id'),
                 'profileUserId': trim($('#profileUserId').html())
             };
-            alert($('#profileBuzz .lastLoadedPost').last().attr('id'));
-            alert($('#profileUserId').html());
-            alert(loadNextSharesURL);
+            
             $.ajax({
                 url: loadNextSharesURL,
                 type: "POST",

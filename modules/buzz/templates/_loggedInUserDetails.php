@@ -37,8 +37,8 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/loggedInUserDetails')
         <div id="userName">
             <?php echo $name; ?>
         </div>
-        <div id="companyPosition">
-            <?php echo "Chief Technical Officer"; ?>
+        <div id="companyPosition" style="height: 15px;">
+            <?php echo $jobtitle; ?>
         </div>
         <div id="links">
             <a class="homeLink name headerLink" href= '<?php echo url_for("buzz/viewBuzz"); ?>' >

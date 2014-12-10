@@ -4,7 +4,9 @@ INSERT INTO `ohrm_config`(`property`, `value`) VALUES ('buzz_refresh_time','6000
         ('buzz_initial_comments','2'),
         ('buzz_viewmore_comment','5'),
         ('buzz_like_count','5'),
-        ('buzz_time_format','h:i a');
+        ('buzz_time_format','h:i a'),
+        ('buzz_most_like_posts','5'),
+        ('buzz_most_like_shares','5');
 --
 -- Inserting News feed Module to The Database
 --
