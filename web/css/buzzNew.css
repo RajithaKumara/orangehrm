@@ -148,7 +148,7 @@
         background-color: #f6f6f6;
         margin-top:  0;
         z-index: 200;
-
+        border: 1px solid #dedede;
     }
 
     .rightBarHeading{
@@ -174,10 +174,6 @@
     .rightBarHeading:hover, .rightBarHeading:hover{
         cursor: pointer;
         background-color: #F07C00;
-    }
-    
-    .rightBarHeading:active{
-        border: 1px solid black;
     }
 
     li{
