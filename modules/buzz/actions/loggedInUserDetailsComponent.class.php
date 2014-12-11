@@ -43,19 +43,30 @@ class loggedInUserDetailsComponent extends sfComponent {
         }
     }
 
-    public function getUserId() {
-
-        $cookie_name = 'buzzCookie';
-
-        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
-
+    public function getUserId(){
+        
+        $cookie_name='buzzCookie';
+        
+        if(UserRoleManagerFactory::getUserRoleManager()->getUser()!=null){
+           
+            
             $cookie_valuve = $this->getUser()->getEmployeeNumber();
-
-            setcookie($cookie_name, $cookie_valuve, time() + 3600 * 24 * 30, "/");
-            return $cookie_valuve;
-        } elseif (isset($_COOKIE[$cookie_name])) {
+            if($cookie_valuve==""){
+                 setcookie($cookie_name, 'Admin', time() + 3600 * 24 * 30, "/");
+            }else{
+                setcookie($cookie_name,$cookie_valuve , time() + 3600 * 24 * 30, "/"); 
+            }
+            
+           
+              
+            return  $cookie_valuve;
+        }elseif (isset($_COOKIE[$cookie_name]) ){
+            if($_COOKIE[$cookie_name]=='Admin'){
+                return '';
+            }
+               
             return $_COOKIE[$cookie_name];
-        } else {
+        }else{
             throw new Exception('User Didnot Have');
         }
     }

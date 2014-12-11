@@ -29,6 +29,8 @@ class BuzzConfigService extends ConfigService{
     const KEY_TIME_FORMAT='buzz_time_format';
     const KEY_MOST_LIKE_POSTS='buzz_most_like_posts';
     const KEY_MOST_LIKE_SHARES='buzz_most_like_shares';
+    const KEY_POST_LENTH='buzz_post_text_lenth';
+    const KEY_POST_TEXT_HEIGHT='buzz_post_text_lines';
 
     public function getBuzzKeeyValuve($key){
         return $this->_getConfigValue($key);
@@ -36,6 +38,10 @@ class BuzzConfigService extends ConfigService{
     
     public function getBuzzShareCount(){
         return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_NEWSFEED_SHARE_COUNT);
+    }
+    
+    public function getBuzzPostTextLenth(){
+        return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_POST_LENTH);
     }
     
     public function getBuzzInitialCommentCount(){

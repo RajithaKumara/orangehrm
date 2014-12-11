@@ -329,23 +329,11 @@ class buzzDao extends BaseDao {
         try {
             $result = Doctrine::getTable('Share')->find($id);
 
-            if (!$result) {
-                throw new Exception("Share Not Found hear");
-            }
-
-            return $result;
 // @codeCoverageIgnoreStart
-        } catch (Exception $e) {
-            throw new DaoException($e->getMessage(), $e->getCode(), $e);
-        }
+            if (!$result) {
+                throw new Exception("Share Not Found");
+            }
 // @codeCoverageIgnoreEnd
-    }
-
-    public function saveAttachment(Attachment $attachment) {
-        try {
-
-            $attachment->save();
-
 
             return $result;
 // @codeCoverageIgnoreStart
@@ -365,9 +353,11 @@ class buzzDao extends BaseDao {
         try {
             $result = Doctrine::getTable('Post')->find($id);
 
+// @codeCoverageIgnoreStart
             if (!$result) {
                 throw new Exception("Post Not Found");
             }
+// @codeCoverageIgnoreEnd
 
             return $result;
 // @codeCoverageIgnoreStart
@@ -387,9 +377,11 @@ class buzzDao extends BaseDao {
         try {
             $result = Doctrine::getTable('Comment')->find($id);
 
+// @codeCoverageIgnoreStart
             if (!$result) {
-                throw new Exception("comment Not Found");
+                throw new Exception("Comment Not Found");
             }
+// @codeCoverageIgnoreEnd
 
             return $result;
 // @codeCoverageIgnoreStart
@@ -408,11 +400,11 @@ class buzzDao extends BaseDao {
     public function getLikeOnShareById($id) {
         try {
             $result = Doctrine::getTable('LikeOnShare')->find($id);
-
+// @codeCoverageIgnoreStart
             if (!$result) {
                 throw new Exception("Like Not Found");
             }
-
+// @codeCoverageIgnoreEnd
             return $result;
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -431,9 +423,11 @@ class buzzDao extends BaseDao {
         try {
             $result = Doctrine::getTable('LikeOnComment')->find($id);
 
+// @codeCoverageIgnoreStart
             if (!$result) {
-                throw new Exception("like Not Found");
+                throw new Exception("Like Not Found");
             }
+// @codeCoverageIgnoreEnd
 
             return $result;
 // @codeCoverageIgnoreStart
@@ -748,8 +742,8 @@ class buzzDao extends BaseDao {
      */
     public function savePhoto($photo) {
         try {
-            $savedPhoto = $photo->save();
-            return $savedPhoto;
+            $photo->save();
+            return $photo;
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
             throw new DaoException($e->getMessage(), $e->getCode(), $e);

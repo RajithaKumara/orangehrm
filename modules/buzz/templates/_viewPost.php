@@ -47,29 +47,27 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 
     }
     #postBodyThirdRowNew{
-        width: 110px;
-        height: 35px;
-        float: right;
-        margin-top: -35px;
-        margin-bottom: -0px;
-    }
-    #postBodyViewMore{
-        width: 150px;
-        height: 35px;
-        float: right;
-        margin-top: -65px;
-        margin-bottom: -0px;
-        margin-right: -60px;
-    }
-    #postBodyReadMore{
-        width: 50px;
-        height: 35px;
-        float: right;
-        margin-top: -30px;
-        margin-bottom: 0px;
-        //margin-right: -60px;
-    }
-
+                width: 110px;
+                height: 35px;
+                float: right;
+                margin-top: -35px;
+                margin-bottom: -0px;
+            }
+     #postBodyViewMore{
+                float: right;
+    height: 35px;
+    margin: -36px 0 0 -460px;
+    width: 150px;
+     }
+     #postBodyReadMore{
+                width: 50px;
+                height: 35px;
+                float: right;
+                margin-top: -30px;
+                margin-bottom: 0px;
+                //margin-right: -60px;
+     }
+    
     .textTopOfImage{
         color: white;
         font-size: 20px;
@@ -150,6 +148,9 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
         background: #ccc;
         border: 5px solid white;
     }
+            .viewMoreShare:hover{
+                cursor: pointer;
+            }
 
 </style>
 <li id=<?php echo "post" . $postId; ?>>
@@ -295,7 +296,16 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 
         <div id="postBodySecondRow" >
             <div id='<?php echo 'postContent_' . $postId ?>'>
-                <?php echo BuzzTextParserService::parseText($postContent);
+                <?php if (strlen($postContent) > 500) {
+                            $subContent= substr($postContent, 0,500);
+                             echo BuzzTextParserService::parseText($subContent.'...');
+                            ?><a  class="viewMoreShare"  id='<?php echo 'shareViewMore_' . $postId ?>'
+                                style="z-index: 9999"     ><?php echo _('Read More');?></a>
+                
+                            <?php
+                        } else {
+                            echo BuzzTextParserService::parseText($postContent);
+                        }
                 ?>
                 <?php
                 if ($postType == '1') {
@@ -326,7 +336,16 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 
                         <div id="postBodySecondRow">
                             <div id="postContent">
-                                <?php echo BuzzTextParserService::parseText($originalPostContent);
+                                <?php 
+                                if (strlen($originalPostContent) > 500) {
+                            $subContent= substr($originalPostContent, 0,500);
+                             echo BuzzTextParserService::parseText($subContent.'...');
+                            ?>
+                            <?php
+                        } else {
+                            echo BuzzTextParserService::parseText($originalPostContent);
+                        }
+                               
                                 ?>
                             </div>
                         </div>
@@ -350,19 +369,22 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                     <?php
                 } else {
 
-                    echo BuzzTextParserService::parseText($originalPostContent);
-                }
+                        if (strlen($originalPostContent) > 500) {
+                            $subContent= substr($originalPostContent, 0,500);
+                             echo BuzzTextParserService::parseText($subContent.'...');
+                            ?><a  class="viewMoreShare"  id='<?php echo 'shareViewMore_' . $postId ?>'
+                                style="z-index: 9999"     ><?php echo _('Read More');?></a>
+                
+                            <?php
+                        } else {
+                            echo BuzzTextParserService::parseText($originalPostContent);
+                        }
+                    }
                 ?>
             </div>
-
+            
         </div>
-        <?php if (strlen($originalPostContent) > 760) { ?>
-            <div class="viewMorveShare"  id="postBodyReadMore">
-
-                <img  class="viewMoreShare" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/icons/readmore-icon.png"); ?>" border="0" id='<?php echo 'shareViewMore_' . $postId ?>'
-                      style="z-index: 9999"     height="30" width="30"/>
-            </div>
-        <?php } ?>
+        
         <?php if (count($originalPost->getLinks()) > 0) { ?>
             <?php foreach ($originalPost->getLinks() as $link) { ?>
                 <?php if ($link->getType() == 1) { ?>
@@ -534,12 +556,12 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                         /></div>
                 <div style="height: 380px;top: 15px;left: 12px;width: 500px;margin-bottom: -20px;position: absolute;background-color: white;border-radius: 10px;overflow-y: auto;padding: 10px; ">
                     <form id="frmCreateComment" method="" action="" style="margin-top: 10px;"
-                          enctype="multipart/form-data">
-                              <?php
-                              $placeholder = 'Whats on your mind';
-                              echo $commentForm['comment']->render(array('id' => "shareBox_" . $postId,
-                                  'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2', 'placeholder' => $placeholder));
-                              ?>
+                      enctype="multipart/form-data">
+                          <?php
+                          $placeholder = 'Whats on your mind';
+                          echo $commentForm['comment']->render(array('id' => "shareBox_" . $postId,
+                              'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2', 'placeholder' => $placeholder));
+                          ?>
 
                     </form>
                     <div id="sharedPostBody">
@@ -565,10 +587,16 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                             </div>
                         </div>
 
-                        <div id="postBodySecondRow">
-                            <div id="postContent">
-                                <?php echo BuzzTextParserService::parseText($originalPostContent); ?>
-                            </div>
+                    <div id="postBodySecondRow">
+                        <div id="postContent">
+                            
+                            <?php  
+                            if(strlen($originalPostContent)>500){
+                                echo BuzzTextParserService::parseText(substr($originalPostContent, 0,500).'...');
+                            }else{
+                            echo BuzzTextParserService::parseText($originalPostContent);
+                            } 
+                            ?>
                         </div>
                     </div>
                     <?php if (count($originalPost->getLinks()) > 0) { ?>
@@ -611,6 +639,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                 </div>
             </div>
         </div>
+        </div>
         <!-- end share post pop up window-->
         <!-- start edit post popup window-->
         <div class="modal hide" style="width: 800px;height: 700px;left: 40%;top:50%;overflow-x: hidden" id='<?php echo 'editposthide_' . $postId ?>'>
@@ -633,7 +662,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                                   <?php
                                   $editForm->setDefault('comment', $postContent);
                                   echo $editForm['comment']->render(array('id' => "editshareBox_" . $postId,
-                                      'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                      'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2'));
                                   ?>
 
                         </form>
@@ -643,7 +672,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                                   <?php
                                   $editForm->setDefault('comment', $originalPostContent);
                                   echo $editForm['comment']->render(array('id' => "editshareBox_" . $postId,
-                                      'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                      'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2'));
                                   ?>
 
                         </form>

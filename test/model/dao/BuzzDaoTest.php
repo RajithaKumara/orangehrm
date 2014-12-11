@@ -108,6 +108,17 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $result = $this->buzzDao->deleteLikeForShare($like);
         $this->assertEquals('1', $result);
     }
+    
+     public function testDeleteLikeOnshareByAdmin() {
+        $like = new LikeOnShare();
+        $like->setId(20);
+        $like->setShareId(1);
+        //$like->setEmployeeNumber(1);
+        $like->setLikeTime('2015-01-10 12:12:12');
+
+        $result = $this->buzzDao->deleteLikeForShare($like);
+        $this->assertEquals('0', $result);
+    }
 
     /**
      * this is function to test save comment on share to database
@@ -165,6 +176,19 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('1', $result);
     }
 
+     /**
+     * this is function to test save deletion of like on comment to database
+     */
+    public function testDeletLikeOnCommentByAdmin() {
+        $like = new LikeOnComment();
+        $like->setId(20);
+        $like->setCommentId(1);
+       // $like->setEmployeeNumber(1);
+        $like->setLikeTime('2015-01-10 12:12:12');
+
+        $result = $this->buzzDao->deleteLikeForComment($like);
+        $this->assertEquals('0', $result);
+    }
     /**
      * this is function to test updates in the database
      */
@@ -221,4 +245,315 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(21, $likeOnShare->getId());
     }
 
+    /**
+     * this is functoin to test get Employee by id
+     */
+    public function testGetEmployeeByNumber() {
+        $employee = $this->buzzDao->getEmployee(1);
+
+        $this->assertEquals(1, $employee->getEmpNumber());
+    }
+    /**
+     * test shares by user Id
+     */
+    public function testGetNoOfSharesBy(){
+        $employee = $this->buzzDao->getNoOfSharesBy(1);
+
+        $this->assertEquals(1, $employee);
+    }
+    
+    /**
+     * test number of comment by id
+     */
+    public function testGetNoOfSharesByAdmin(){
+        $employee = $this->buzzDao->getNoOfSharesBy('');
+
+        $this->assertEquals(0, $employee);
+    }
+    
+    /**
+     * test comment by user Id
+     */
+    public function testGetNoOfCommentBy(){
+        $employee = $this->buzzDao->getNoOfCommentsBy(1);
+
+        $this->assertEquals(2, $employee);
+    }
+    
+    /**
+     * test number of comment by Admin
+     */
+    public function testGetNoOfCommentByAdmin(){
+        $employee = $this->buzzDao->getNoOfCommentsBy('');
+
+        $this->assertEquals(0, $employee);
+    }
+        /**
+     * test comment by user Id
+     */
+    public function testGetNoOfCommentFor(){
+        $employee = $this->buzzDao->getNoOfCommentsFor(1);
+
+        $this->assertEquals(2, $employee);
+    }
+    
+    /**
+     * test number of comment by Admin
+     */
+    public function testGetNoOfCommentForAdmin(){
+        $employee = $this->buzzDao->getNoOfCommentsFor('');
+
+        $this->assertEquals(0, $employee);
+    }
+    /**
+     * test shares by user Id
+     */
+    public function testGetNoOfSharesLikeBy(){
+        $employee = $this->buzzDao->getNoOfShareLikesFor(1);
+
+        $this->assertEquals(2, $employee);
+    }
+    
+    /**
+     * test number of comment by id
+     */
+    public function testGetNoOfSharesLikeByAdmin(){
+        $employee = $this->buzzDao->getNoOfShareLikesFor('');
+
+        $this->assertEquals(0, $employee);
+    }
+    
+    
+      /**
+     * test comment by user Id
+     */
+    public function testGetNoOfCommentLikeBy(){
+        $employee = $this->buzzDao->getNoOfCommentLikesFor(1);
+
+        $this->assertEquals(2, $employee);
+    }
+    
+    /**
+     * test number of comment by Admin
+     */
+    public function testGetNoOfCommentLikeByAdmin(){
+        $employee = $this->buzzDao->getNoOfCommentLikesFor('');
+
+        $this->assertEquals(0, $employee);
+    }
+    
+    
+    /**
+     * this is function to test save likes on share to database
+     */
+    public function testUnLikeOnShare() {
+        $like = new UnLikeOnShare();
+        $like->setShareId(1);
+        $like->setEmployeeNumber(1);
+        $like->setLikeTime('2015-01-10 12:12:12');
+
+        $result = $this->buzzDao->saveUnLikeForShare($like);
+        $this->assertEquals('2015-01-10 12:12:12', $result->getLikeTime());
+    }
+
+    /**
+     * this is function to test delete likes on share
+     */
+    public function testDeleteUnLikeOnshare() {
+        $like = new UnLikeOnShare();
+        $like->setId(20);
+        $like->setShareId(1);
+        $like->setEmployeeNumber(1);
+        $like->setLikeTime('2015-01-10 12:12:12');
+
+        $result = $this->buzzDao->deleteUnLikeForShare($like);
+        $this->assertEquals('1', $result);
+    }
+    
+    /**
+     * this is function to test delete likes on share
+     */
+    public function testDeleteUnLikeOnshareByAdmin() {
+        $like = new UnLikeOnShare();
+        $like->setId(20);
+        $like->setShareId(1);
+        //$like->setEmployeeNumber(1);
+        $like->setLikeTime('2015-01-10 12:12:12');
+
+        $result = $this->buzzDao->deleteUnLikeForShare($like);
+        $this->assertEquals('0', $result);
+    }
+    
+    /**
+     * this is function to test save likes on comment
+     */
+    public function testUnLikeOnComment() {
+        $like = new UnLikeOnComment();
+        $like->setCommentId(1);
+        $like->setEmployeeNumber(1);
+        $like->setLikeTime('2015-01-10 12:12:12');
+
+        $result = $this->buzzDao->saveUnLikeForComment($like);
+        $this->assertEquals('2015-01-10 12:12:12', $result->getLikeTime());
+    }
+
+    /**
+     * this is function to test delete likes on the comment
+     */
+    public function testDeletUnLikeOnComment() {
+        $like = new UnLikeOnComment();
+        $like->setId(20);
+        $like->setCommentId(1);
+        $like->setEmployeeNumber(1);
+        $like->setLikeTime('2015-01-10 12:12:12');
+
+        $result = $this->buzzDao->deleteUnLikeForComment($like);
+        $this->assertEquals('1', $result);
+    }
+    
+     /**
+     * this is function to test save likes on comment
+     */
+    public function testAdminUnLikeOnComment() {
+        $like = new UnLikeOnComment();
+        $like->setCommentId(1);
+        //$like->setEmployeeNumber('');
+        $like->setLikeTime('2015-01-10 12:12:12');
+
+        $result = $this->buzzDao->saveUnLikeForComment($like);
+        $this->assertEquals('2015-01-10 12:12:12', $result->getLikeTime());
+    }
+
+    /**
+     * this is function to test delete likes on the comment
+     */
+    public function testDeletAdminUnLikeOnComment() {
+        $like = new UnLikeOnComment();
+        
+        $like->setCommentId(1);
+        $like->setEmployeeNumber('');
+        
+
+        $result = $this->buzzDao->deleteUnLikeForComment($like);
+        $this->assertEquals('0', $result);
+    }
+    
+    /**
+     * test saving photo
+     */
+     public function testSavingPhoto() {
+        $photo = new Photo();
+        $photo->setFileType('jpg');
+        $photo->setPostId(1);
+        $photo->setFilename('test/photo.jpg');
+
+        $result = $this->buzzDao->savePhoto($photo);
+        $this->assertEquals('jpg', $result->getFileType());
+    }
+    
+    /**
+     * test 
+     */
+    public function testAnivesary(){
+       
+        $result = $this->buzzDao->getEmployeesHavingAnniversaryOn(4);
+        $this->assertEquals('0', Count($result));
+    }
+    
+     /**
+     * test 
+     */
+    public function testMostLikeShares(){
+       
+        $result = $this->buzzDao->getMostLikedShares(4);
+        $this->assertEquals('1', Count($result));
+    }
+    
+     /**
+     * test 
+     */
+    public function testMostCommentedShares(){
+       
+        $result = $this->buzzDao->getMostCommentedShares(4);
+        $this->assertEquals('1', Count($result));
+    }
+    
+     /**
+     * test 
+     */
+    public function testGetEmployeeList(){
+       
+        $result = $this->buzzDao->getEmployeeList();
+        $this->assertEquals('3', Count($result));
+    }
+    
+     /**
+     * test 
+     */
+    public function testGetEmployeePicture(){
+       
+        $result = $this->buzzDao->getEmployeePicture(1);
+        $this->assertEquals('7', Count($result));
+    }
+    
+    /**
+     * test 
+     */
+    public function testGetMoreShares(){
+       
+        $result = $this->buzzDao->getMoreShares(1,0);
+        $this->assertEquals('0', Count($result));
+    }
+    /**
+     * test 
+     */
+    public function testGetMoreProfileShares() {
+        $result = $this->buzzDao->getMoreProfileShares(1,0,1);
+        $this->assertEquals('0', Count($result));
+    }
+    /**
+     * test 
+     */
+    public function testGetMoreProfileSharesByAdmin() {
+        $result = $this->buzzDao->getMoreProfileShares(1,0,'');
+        $this->assertEquals('0', Count($result));
+    }
+    /**
+     * test 
+     */
+    public function testgetSharesByUserId(){
+        $result = $this->buzzDao->getSharesByUserId(1,2);
+        $this->assertEquals('1', Count($result));
+    }
+    
+    /**
+     * test 
+     */
+    public function testgetSharesByAdmin(){
+        $result = $this->buzzDao->getSharesByUserId(1,'');
+        $this->assertEquals('0', Count($result));
+    }
+    
+     /**
+     * test 
+     */
+    public function testgetFrofileShareUptoId(){
+        $result = $this->buzzDao->getProfileSharesUptoId(1,2);
+        $this->assertEquals('2', Count($result));
+    }
+    
+    /**
+     * test 
+     */
+    public function testgetFrofileShareUptoIdByAdmin(){
+        $result = $this->buzzDao->getProfileSharesUptoId(1,'');
+        $this->assertEquals('0', Count($result));
+    }
+     /**
+     * test 
+     */
+    public function testgetShareUpToId(){
+        $result = $this->buzzDao->getSharesUptoId(1);
+        $this->assertEquals('3', Count($result));
+    }
 }

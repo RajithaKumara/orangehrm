@@ -25,6 +25,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/buzzNew'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 ?>
+<div id="profileFullContainer">
 <div class="buzzProfileRightBar">
     <?php
     include_component('buzz', 'viewProfileDetails', array('employee' => $employee, 'logedInUserId' => $loggedInUser));
@@ -54,6 +55,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
         <div id="profileUserId" hidden="true"><?php echo $profileUserId; ?></div>
 
         <script  type="text/javascript">
+           
+            var viewMoreShare = '<?php echo url_for('buzz/viewShare'); ?>';
             var profilePage = '<?php echo url_for('buzz/viewProfile?empNumber='); ?>';
             var getCsrfUrl = '<?php echo url_for('buzz/getFormCsrfToken'); ?>';
             var loginpageURL = '<?php echo url_for('auth/login'); ?>';
@@ -93,4 +96,5 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             });
             </script>
     </div>
+</div>
 </div>

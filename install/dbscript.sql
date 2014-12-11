@@ -10,8 +10,23 @@ INSERT INTO `ohrm_config`(`property`, `value`) VALUES ('buzz_refresh_time','6000
 --
 -- Inserting News feed Module to The Database
 --
-INSERT INTO `ohrm_module`( `name`, `status`) VALUES ('buzz','1');
+INSERT INTO `ohrm_module`( `name`, `status`) VALUES ('buzz','0');
+INSERT INTO `ohrm_data_group` (`name`, `description`, `can_read`, `can_create`, `can_update`, `can_delete`) VALUES
+('buzz_link', 'buzz link permition ', 1, 1, 1, 0);
 
+SET @buzz_link_data_group_id := (SELECT id FROM `ohrm_data_group` WHERE `name` = 'buzz_link');
+
+INSERT INTO `ohrm_user_role_data_group` (`user_role_id`, `data_group_id`, `can_read`, `can_create`, `can_update`, `can_delete`, `self`) VALUES
+(2, @buzz_link_data_group_id, 1, 1, 1, 0, 0),
+(3, @buzz_link_data_group_id, 1, 1, 1, 0, 0);
+
+INSERT INTO `ohrm_data_group` (`name`, `description`, `can_read`, `can_create`, `can_update`, `can_delete`) VALUES
+('buzz_link_admin', 'buzz link permition for admin', 1, 1, 1, 0);
+
+SET @buzz_link_admin_data_group_id := (SELECT id FROM `ohrm_data_group` WHERE `name` = 'buzz_link_admin');
+
+INSERT INTO `ohrm_user_role_data_group` (`user_role_id`, `data_group_id`, `can_read`, `can_create`, `can_update`, `can_delete`, `self`) VALUES
+(1, @buzz_link_admin_data_group_id, 1, 1, 1, 0, 0);
 -- SET @buzz_module_id := (SELECT `id` FROM `ohrm_module` WHERE `name` = 'buzz');
 
 -- INSERT INTO `ohrm_screen`(`name`, `module_id`, `action_url`) VALUES 

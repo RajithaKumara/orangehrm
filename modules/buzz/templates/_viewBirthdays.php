@@ -76,6 +76,17 @@
         border-radius: 5px;
         background-color: #e3e3e3;
     }
+    #birthdayPostNull{
+        height: 52px;
+       padding: 4px;
+        
+    }
+    #birthdayPostNull{
+        height: 52px;
+       padding: 4px;
+        border-radius: 5px;
+        
+    }
 
     #upcomingBdaysMonth{
         //background-color: #EBEBEB;
@@ -112,15 +123,15 @@
 <div class="toggling" id="upcomingBdaysMonth"><?php echo date('M Y'); ?></div>
 <ul class="toggling" id="upcomingBdaysList">    
     <?php if(count($employeeList)==0){?>
-         <li id="birthdayPost">
-            <div id="picAndNameContainer">
+         <li id="birthdayPostNull">
+           
                 
                 <div id="birthdayUserName">
                     <a href="#" class="name" id="name2">
                         <?php echo _("No Birthdays For This Month"); ?>
                     </a>
                 </div>        
-            </div>
+            
             
             
         </li>

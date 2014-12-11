@@ -1,7 +1,8 @@
-link3:
+link1:
   name: Orange Buzz
   url: 'buzz/viewBuzz'
   plugin: orangehrmBuzzPlugin
   target: '_new'
   image: 'orange.png'
+  requiredPermissions: {'data_group': {'buzz_link': {'canRead': true, 'canCreate': false, 'canUpdate': false, 'canDelete': false}}}
   ohrm_module: 'buzz'

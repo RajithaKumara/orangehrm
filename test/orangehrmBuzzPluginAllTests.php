@@ -11,9 +11,10 @@ class orangehrmBuzzPluginAllTests {
         $suite = new PHPUnit_Framework_TestSuite('orangehrmBuzzPluginAllTest');
 
 
-//        $suite->addTestFile(dirname(__FILE__) . '/model/dao/BuzzDaoTest.php');
-//        $suite->addTestFile(dirname(__FILE__) . '/model/service/BuzzServiceTest.php');
-
+        $suite->addTestFile(dirname(__FILE__) . '/model/dao/BuzzDaoTest.php');
+       $suite->addTestFile(dirname(__FILE__) . '/model/service/BuzzServiceTest.php');
+       $suite->addTestFile(dirname(__FILE__) . '/model/service/BuzzConfigServiceTest.php');
+       $suite->addTestFile(dirname(__FILE__) . '/model/service/BuzzTextParserServiceTest.php');
         return $suite;
     }
 

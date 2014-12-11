@@ -82,6 +82,13 @@
         padding: 4px;
         background-color: #e3e3e3;
     }
+    #anniversaryPostNull{
+        height: 70px;
+        //border: 2px solid white;
+        
+        padding: 4px;
+        
+    }
 
     #upcomingAnnivMonth{
         //background-color: #EBEBEB;
@@ -116,7 +123,7 @@
         float:left;
         padding: 6px;
         background-color: #cfcfcf;
-        width: 73.6%;
+        width: 213px;
         border-radius: 0 0 8px;
     }
 
@@ -130,15 +137,15 @@
     <div class ="rightBarBody">
         <div class="toggling" hidden="true" id="upcomingAnnivMonth"><?php echo date('M Y'); ?></div>
         <ul class="toggling" hidden="true" id="upcomingAnnivList">    
-            <?php if(count($employeeList)==0){?>
-         <li id="anniversaryPost">
-            <div id="annivPicAndNameContainer">
+            <?php if(count($anniversaryEmpList)==0){?>
+         <li id="anniversaryPostNull">
+            
                 
                 <div id="anniversaryUserName">
                     <a href="#" class="name" id="name2">
                         <?php echo _("No Anniversaries For This Month"); ?>
                     </a>
-                </div>        
+                     
             </div>
             
             

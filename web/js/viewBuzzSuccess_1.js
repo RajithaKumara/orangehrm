@@ -556,8 +556,14 @@ $(document).ready(function () {
         $("#posthide_" + idValue.split("_")[1]).modal('hide');
 
         var share = $("#shareBox_" + idValue.split("_")[1]).val();
+        var data = {
+            'postId': idValue.split("_")[2] ,
+            'textShare': share
+        };
         $.ajax({
-            url: shareShareURL + "?postId=" + idValue.split("_")[2] + "&textShare=" + share,
+            url: shareShareURL ,
+            type: 'POST',
+            data: data,
             success: function (data) {
                 $('#buzz').prepend(data);
                 reload();

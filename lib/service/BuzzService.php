@@ -116,9 +116,11 @@ class BuzzService extends BaseService {
     public function getMoreShares($limit, $fromId) {
         try {
             $shares = $this->getBuzzDao()->getMoreShares($limit, $fromId);
+            // @codeCoverageIgnoreStart
             if(count($shares)>0){
             $this->lastLoadedPostId = $shares->getLast()->getId();
             }
+            // @codeCoverageIgnoreEnd
             return $shares;
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -130,9 +132,11 @@ class BuzzService extends BaseService {
     public function getMoreProfileShares($limit, $fromId, $userId) {
         try {
             $shares = $this->getBuzzDao()->getMoreProfileShares($limit, $fromId, $userId);
+            // @codeCoverageIgnoreStart
             if(count($shares)>0){
             $this->lastLoadedPostId = $shares->getLast()->getId();
             }
+            // @codeCoverageIgnoreEnd
             return $shares;
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {

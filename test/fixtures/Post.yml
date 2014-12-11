@@ -19,9 +19,33 @@ Comment:
 
 LikeOnShare:
   0: {id: 21, employee_number: '1', share_id: '1', like_time: '2014-01-01 00:00:00'}
-  1: {id: 20, employee_number: '1', share_id: '1', like_time: '2014-01-01 00:00:00'}
+  1: {id: 20, employee_number: '2', share_id: '1', like_time: '2014-01-01 00:00:00'}
   
 LikeOnComment:
   0: {id: 21, employee_number: '1', comment_id: '1', like_time: '2014-01-01 00:00:00'}
-  1: {id: 20, employee_number: '1', comment_id: '1', like_time: '2014-01-01 00:00:00'}
+  1: {id: 20, employee_number: '2', comment_id: '1', like_time: '2014-01-01 00:00:00'}
+  
+Photo:
+  0: {id: 1, post_id: '1', filename: 'test.jpg', file_type: 'jpg'}
+  1: {id: 2, post_id: '2', filename: 'test2.jpg', file_type: 'jpg'}
 
+Link:
+  0: {id: 1, post_id: 1, type : '1', link: 'testLink.com' }
+  
+UnLikeOnShare:
+  0: {id: 21, employee_number: '1', share_id: '1', like_time: '2014-01-01 00:00:00'}
+  1: {id: 20, employee_number: '2', share_id: '1', like_time: '2014-01-01 00:00:00'}
+  
+UnLikeOnComment:
+  0: {id: 21, employee_number: '1', comment_id: '1', like_time: '2014-01-01 00:00:00'}
+  1: {id: 20, employee_number: '2', comment_id: '1', like_time: '2014-01-01 00:00:00'}
+
+Config:
+  0: {property: "buzz_share_count", value: '10'}
+  1: {property: "buzz_initial_comments", value: '5'}
+  2: {property: 'buzz_viewmore_comment', value: '5'}
+  3: {property: 'buzz_like_count', value: '5'}
+  4: {property: 'buzz_refresh_time', value: '60000'}
+  5: {property: 'buzz_time_format', value: 'h:i'}
+  6: {property: 'buzz_most_like_posts', value: '5'}
+  7: {property: 'buzz_most_like_shares', value: '5'}

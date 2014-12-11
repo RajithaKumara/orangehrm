@@ -86,11 +86,13 @@ class BuzzTextParserService {
         return false;  // Problem with url
      }
     $meta = stream_get_meta_data($fp);
+// @codeCoverageIgnoreStart
     if ($meta === false)
     {
         fclose($fp);
         return false;  // Problem reading data from url
     }
+ // @codeCoverageIgnoreEnd
     $wrapper_data = $meta["wrapper_data"];
     if(is_array($wrapper_data)){
       foreach(array_keys($wrapper_data) as $hh){
@@ -104,5 +106,4 @@ class BuzzTextParserService {
     fclose($fp);
     return false;
   }
-
 }
