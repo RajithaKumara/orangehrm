@@ -49,3 +49,5 @@ Config:
   5: {property: 'buzz_time_format', value: 'h:i'}
   6: {property: 'buzz_most_like_posts', value: '5'}
   7: {property: 'buzz_most_like_shares', value: '5'}
+  8: {property: 'buzz_post_text_lines', value: '5'}
+  9: {property: 'buzz_post_text_lenth', value: '500'}

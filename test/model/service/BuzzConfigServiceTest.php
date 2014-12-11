@@ -57,6 +57,24 @@ class BuzzConfigServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(60000,$count);
     }
     
+     /**
+     * test ititial comment count onfiguration
+     */
+    public function testGetInitialTextLenth(){
+        $count =$this->buzzConfigService->getBuzzPostTextLenth();
+        
+        $this->assertEquals(500,$count);
+    }
+    
+    /**
+     * test ititial refresh Configuration
+     */
+    public function testGetTextLines(){
+        $count =$this->buzzConfigService->getBuzzPostTextLines();
+        
+        $this->assertEquals(5,$count);
+    }
+    
     /**
      * test ititial more comment Configuration
      */

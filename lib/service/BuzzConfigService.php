@@ -43,6 +43,9 @@ class BuzzConfigService extends ConfigService{
     public function getBuzzPostTextLenth(){
         return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_POST_LENTH);
     }
+     public function getBuzzPostTextLines(){
+        return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_POST_TEXT_HEIGHT);
+    }
     
     public function getBuzzInitialCommentCount(){
         return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_NEWSFEED_INITIAL_COMMENT_COUNT);

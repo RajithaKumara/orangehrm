@@ -68,6 +68,8 @@ protected $buzzService;
         $this->viewMoreComment = $buzzConfigService->getBuzzViewCommentCount();
         $this->likeCount = $buzzConfigService->getBuzzLikeCount();
         $this->refeshTime = $buzzConfigService->getRefreshTime();
+        $this->postLenth = $buzzConfigService->getBuzzPostTextLenth();
+        $this->postLines = $buzzConfigService->getBuzzPostTextLines();
     }
     
      /**

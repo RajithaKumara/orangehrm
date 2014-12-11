@@ -296,8 +296,8 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 
         <div id="postBodySecondRow" >
             <div id='<?php echo 'postContent_' . $postId ?>'>
-                <?php if (strlen($postContent) > 500) {
-                            $subContent= substr($postContent, 0,500);
+                <?php if (strlen($postContent) > $postLenth) {
+                            $subContent= substr($postContent, 0,$postLenth);
                              echo BuzzTextParserService::parseText($subContent.'...');
                             ?><a  class="viewMoreShare"  id='<?php echo 'shareViewMore_' . $postId ?>'
                                 style="z-index: 9999"     ><?php echo _('Read More');?></a>
@@ -337,8 +337,8 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                         <div id="postBodySecondRow">
                             <div id="postContent">
                                 <?php 
-                                if (strlen($originalPostContent) > 500) {
-                            $subContent= substr($originalPostContent, 0,500);
+                                if (strlen($originalPostContent) > $postLenth) {
+                            $subContent= substr($originalPostContent, 0,$postLenth);
                              echo BuzzTextParserService::parseText($subContent.'...');
                             ?>
                             <?php
@@ -369,8 +369,8 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                     <?php
                 } else {
 
-                        if (strlen($originalPostContent) > 500) {
-                            $subContent= substr($originalPostContent, 0,500);
+                        if (strlen($originalPostContent) > $postLenth) {
+                            $subContent= substr($originalPostContent, 0,$postLenth);
                              echo BuzzTextParserService::parseText($subContent.'...');
                             ?><a  class="viewMoreShare"  id='<?php echo 'shareViewMore_' . $postId ?>'
                                 style="z-index: 9999"     ><?php echo _('Read More');?></a>
