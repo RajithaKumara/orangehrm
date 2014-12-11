@@ -116,7 +116,7 @@
         float:left;
         padding: 6px;
         background-color: #cfcfcf;
-        width: 74.1%;
+        width: 73.6%;
         border-radius: 0 0 8px;
     }
 

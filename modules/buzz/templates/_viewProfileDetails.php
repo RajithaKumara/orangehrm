@@ -1,6 +1,5 @@
 <?php
-
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -19,14 +18,16 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
 
         });
         $("#flipPersonal").click(function () {
-            
-                $("#panelPersonal").toggle(300);;
-                $("#moreDetails").toggle(300);
-                $("#lessDetails").toggle(300);
-                $("#panelStat").toggle(300);;
-                $("#moreStat").toggle(300);
-                $("#lessStat").toggle(300);
-            
+
+            $("#panelPersonal").toggle(300);
+            ;
+            $("#moreDetails").toggle(300);
+            $("#lessDetails").toggle(300);
+            $("#panelStat").toggle(300);
+            ;
+            $("#moreStat").toggle(300);
+            $("#lessStat").toggle(300);
+
 
         });
         $("#flipJob").click(function () {
@@ -38,12 +39,14 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
 
         });
         $("#flipStat").click(function () {
-            $("#panelPersonal").toggle(300);;
-                $("#moreDetails").toggle(300);
-                $("#lessDetails").toggle(300);
-                $("#panelStat").toggle(300);;
-                $("#moreStat").toggle(300);
-                $("#lessStat").toggle(300);
+            $("#panelPersonal").toggle(300);
+            ;
+            $("#moreDetails").toggle(300);
+            $("#lessDetails").toggle(300);
+            $("#panelStat").toggle(300);
+            ;
+            $("#moreStat").toggle(300);
+            $("#lessStat").toggle(300);
 
         });
     });
@@ -63,7 +66,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
     #panelsecond
     {
 
-        
+
         width: 58%;
         float: right;
         text-align: left;
@@ -86,11 +89,11 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
     #panelContact,#flipContact
     {
         width: 100%;
-        
+
         padding:5px;
         text-align:left;
         background-color: #484343;
-    color: #fff;
+        color: #fff;
         border:solid 1px #c3c3c3;
     }
     #flipContact:hover{
@@ -101,7 +104,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
         background-color: #98a09f;
         color: #fff;
         width: 100%;
-        
+
         padding:4px;
         display: none;
     }
@@ -110,18 +113,18 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
     {
         background: rgb(40, 134, 49);
         background: -moz-linear-gradient(90deg, rgb(40, 134, 49) 20%, rgb(124, 202, 132) 100%);
-         background: -webkit-linear-gradient( gray 20%, gray 100%);
+        background: -webkit-linear-gradient( gray 20%, gray 100%);
         background: -o-linear-gradient(90deg, rgb(40, 134, 49) 20%, rgb(124, 202, 132) 100%);
         background: -ms-linear-gradient(90deg, rgb(40, 134, 49) 20%, rgb(124, 202, 132) 100%);
         background: linear-gradient( #f3f3f3, #ececec);
         color: #5d5d5d;
         font-size: 22px;
         padding: 15px;
-        
+
         border: 2px solid #dedede;
         z-index: 99999;
-        
-        border-radius: 8px;
+
+        border-radius: 8px 8px 0 0;
         font-family: SourceSansProExtraLight;
         margin-top: 0px;
     }
@@ -130,26 +133,27 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
     }
     #panelPersonal
     {
-       // background-color: #EBEBEB;
+        // background-color: #EBEBEB;
         padding: 5px;
-        
-       // max-height: 100px;
+
+        // max-height: 100px;
         overflow-y:auto;
         margin-bottom: 0px;
         height: 130px;
         overflow-y: auto;
         overflow-x: hidden;
-        
+        border: 1px solid #d0d1d5;
+        border-radius: 0 0 8px 8px;
     }
-    
+
     #panelJob,#flipJob
     {
         width: 100%;
-        
+
         padding:5px;
         text-align:left;
         background-color: #484343;
-    color: #fff;
+        color: #fff;
         border:solid 1px #c3c3c3;
     }
     #flipJob:hover{
@@ -158,50 +162,52 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
     #panelJob
     {
         background-color: #98a09f;
-    color: #fff;
+        color: #fff;
         width: 80%;
-        
+
         padding:4px;
         display: none;
     }
-    
+
     #panelStat
     {
-       padding: 5px;
-        
-       // max-height: 100px;
+        padding: 5px;
+
+        // max-height: 100px;
         overflow-y:auto;
         margin-bottom: 20px;
         height: 150px;
         overflow-y: auto;
         overflow-x: hidden;
         display: none;
-        
+        border: 1px solid #dedede;
+        border-radius: 0 0 8px 8px;
+
     }
     #flipStat
     {
         background: rgb(40, 134, 49);
-       background: -moz-linear-gradient(90deg, rgb(40, 134, 49) 20%, rgb(124, 202, 132) 100%);
-       background: -webkit-linear-gradient( gray 20%, gray 100%);
-       background: -o-linear-gradient(90deg, rgb(40, 134, 49) 20%, rgb(124, 202, 132) 100%);
+        background: -moz-linear-gradient(90deg, rgb(40, 134, 49) 20%, rgb(124, 202, 132) 100%);
+        background: -webkit-linear-gradient( gray 20%, gray 100%);
+        background: -o-linear-gradient(90deg, rgb(40, 134, 49) 20%, rgb(124, 202, 132) 100%);
         background: -ms-linear-gradient(90deg, rgb(40, 134, 49) 20%, rgb(124, 202, 132) 100%);
-     background: linear-gradient( #f3f3f3, #ececec);
+        background: linear-gradient( #f3f3f3, #ececec);
         color: #5d5d5d;
         font-size: 22px;
         padding: 15px;
-        
+
         border: 2px solid #dedede;
         z-index: 99999;
-        
-        border-radius: 8px;
+
+        border-radius: 8px 8px 0 0;
         font-family: SourceSansProExtraLight;
         margin-top: 0px;
     }
     #flipStat:hover{
         cursor: pointer;
     }
-    
-      
+
+
 
 
     .rightBarHeading:hover, .rightBarHeading:hover{
@@ -215,20 +221,20 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
     }
     #empPicPof{
         border: 5px solid #FFFFFF;
-      
+
     }
-   
+
 
 
 </style>
 <div class="rightBarBodyAllProf">
     <div style="height: 260px;overflow: hidden">
-    <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $empNum); ?>" border="0" id="empPicPof" 
-         width="105%"  style=""/>
+        <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $empNum); ?>" border="0" id="empPicPof" 
+             width="105%"  style=""/>
     </div>
 </div>
-    <div class="rightBarBodyAllProf">
-    <div id="flipPersonal"><?php echo $fullName;?>
+<div class="rightBarBodyAllProf">
+    <div id="flipPersonal"><?php echo $fullName; ?>
         <img  id="lessDetails" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;border: 0px solid #f6f6f6;" height="30px" width="30px"/>
 
         <img id="moreDetails" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;display: none" height="30px" width="30px"/>
@@ -238,46 +244,46 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
 
         <div id="panelfirst">Gender</div>
         <div id="panelsecond"> <?php
-            echo ": ".$gender;
-            ?></div>
+echo ": " . $gender;
+?></div>
 
         <div id="panelfirst">Birth Day</div>
         <div id="panelsecond"> <?php
-            echo ": ".$birthDay;
-            ?></div>
+echo ": " . $birthDay;
+?></div>
         <div id="panelfirst">Locations</div>
         <div id="panelsecond"> <?php
-            echo ": ".$locations;
-            ?></div>
-        
+            echo ": " . $locations;
+?></div>
+
         <div id="panelfirst">Work Email</div>
         <div id="panelsecond"> <?php
-            echo ": ".$workEmail;
-            ?></div>
+            echo ": " . $workEmail;
+?></div>
         <div id="panelfirst">Work Tel</div>
         <div id="panelsecond"> <?php
-            echo ": ".$workTel;
-            ?></div>
+            echo ": " . $workTel;
+?></div>
         <div id="panelfirst">Job Title</div>
-        <div id="panelsecond"> <?php 
-            echo ": ".$jobtitle;
-            ?></div>
+        <div id="panelsecond"> <?php
+            echo ": " . $jobtitle;
+?></div>
     </div>
-    </div>
-    <div class="rightBarBodyAllProf">
-    <div id="flipStat"><?php echo 'YOUR STATISTICS'?>
-    <img  id="lessStat" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;border: 0px solid #f6f6f6;display: none" height="30px" width="30px"/>
+</div>
+<div class="rightBarBodyAllProf">
+    <div id="flipStat"><?php echo 'YOUR STATISTICS' ?>
+        <img  id="lessStat" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;border: 0px solid #f6f6f6;display: none" height="30px" width="30px"/>
 
         <img id="moreStat" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;" height="30px" width="30px"/>
 
     </div>
     <div id="panelStat">
 
-         <div id="statisticsComponent">
-            <?php include_component('buzz', 'viewStatistics', array('loggedInUserId' => $logedInUser)); ?>
+        <div id="statisticsComponent">
+<?php include_component('buzz', 'viewStatistics', array('loggedInUserId' => $logedInUser)); ?>
         </div>
-        
+
     </div>
-    </div>
+</div>
 
 

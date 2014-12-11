@@ -48,13 +48,13 @@
 <div id="statTable">
     <table class="hovertable" style="width: 101%">
         
-        <tr onmouseover="this.style.backgroundColor = '#F07C00';" onmouseout="this.style.backgroundColor = '#EBEBEB';">
+        <tr>
             <td><?php echo __("Shares"); ?></td><td><?php echo $noOfShares; ?></td>
         </tr>
-        <tr onmouseover="this.style.backgroundColor = '#F07C00';" onmouseout="this.style.backgroundColor = '#EBEBEB';">
+        <tr>
             <td><?php echo __("Comments"); ?></td><td><?php echo $noOfComments; ?></td>
         </tr>
-        <tr onmouseover="this.style.backgroundColor = '#F07C00';" onmouseout="this.style.backgroundColor = '#EBEBEB';">
+        <tr>
             <td><?php echo __("Likes"); ?></td><td><?php echo $noOfShareLikesRecieved + $noOfCommentLikesRecieved; ?></td>
         </tr>
 

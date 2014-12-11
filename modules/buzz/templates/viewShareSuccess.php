@@ -26,13 +26,12 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip.min'));
 
 //include_component('buzz', 'viewPost', array('post' => $share));
-
 ?>
 
 
-               
-                <div id="photoPage" style="height: 400px;top: 15px;left: 12px;width: 450px;margin-bottom: -20px;position: absolute;overflow-y: auto">
-                    <div id="postBody" style="margin-top: 0px">
+
+<div id="photoPage" style="height: 400px;top: 15px;left: 12px;width: 450px;margin-bottom: -20px;position: absolute;overflow-y: auto">
+    <div id="postBody" style="margin-top: 0px">
 
         <div id="postBodyFirstRow">
             <div id="postFirstRowColumnOne">
@@ -137,16 +136,16 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 border: 5px solid white;
             }
             #postBodySecondRowPop{
-    padding: 5px;
-    margin-top: -3px;
-    text-align: justify;
-    background-color: white;
-    border-radius: 0 0 4px 4px;
-    line-height: 1.5;
-    font-family: 'SourceSansProLight';
-    font-size: 16px;
-    
-}
+                padding: 5px;
+                margin-top: -3px;
+                text-align: justify;
+                background-color: white;
+                border-radius: 0 0 4px 4px;
+                line-height: 1.5;
+                font-family: 'SourceSansProLight';
+                font-size: 16px;
+
+            }
         </style>
 
         <!--Old Code of like, unlike and share buttons-->
@@ -182,11 +181,11 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
         </div>
 
-       
+
 
         <div id="postBodySecondRowPop"  >
             <div id='<?php echo 'postContent_' . $postId ?>'>
-                <?php echo BuzzTextParserService::parseText($postContent); ?>
+                <?php echo BuzzTextParserService::parseText($postContent);?>
                 <?php
                 if ($postType == '1') {
                     ?>
@@ -221,7 +220,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                         </div>
                     </div>
                     <!--SUB POST END-->
-                    
+
                     <?php
                 } else {
                     echo BuzzTextParserService::parseText($originalPostContent);
@@ -398,10 +397,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
             }
         </script>
 
-        
 
-    
-        
+
+
+
 
 
         <div id="postBodyThirdRow">
@@ -416,33 +415,32 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
             </div>
         </div>
 
-        
-        
+
+
 
     </div>
+</div>
+<div id="photoPageComment" style=" ;top: 5px;left: 467px;width: 320px;margin-bottom: -20px;position: absolute;background-color: gray">
+    <div id="postBodyFirstRow photo" class="photoViewEmp">
+        <div id="postFirstRowColumnOne" style="width: 50px;height: 50px;overflow: hidden">
+            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
+        </div>
+        <div id="postFirstRowColumnTwo" style="width: 60%;">
+            <div id="postEmployeeName" >
+                <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
+                    <?php echo $postEmployeeName; ?>
+                </a>
+            </div>
+            <div id="postDateTime">
+                <div id="postDate">
+                    <?php echo $postDate; ?>
                 </div>
-                <div id="photoPageComment" style=" ;top: 5px;left: 467px;width: 320px;margin-bottom: -20px;position: absolute;background-color: gray">
-                    <div id="postBodyFirstRow photo" class="photoViewEmp">
-                        <div id="postFirstRowColumnOne" style="width: 50px;height: 50px;overflow: hidden">
-                            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
-                        </div>
-                        <div id="postFirstRowColumnTwo" style="width: 60%;">
-                            <div id="postEmployeeName" >
-                                <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
-                                    <?php echo $postEmployeeName; ?>
-                                </a>
-                            </div>
-                            <div id="postDateTime">
-                                <div id="postDate">
-                                    <?php echo $postDate; ?>
-                                </div>
-                                <div id="postTime">
-                                    <?php echo $postTime; ?>
-                                </div>
-                            </div>                        
-                        </div>
-                    </div>
-                    <?php include_component('buzz', 'commentPreview', array('commentList' => $commentList, 'editForm' => $editForm, 'loggedInUser' => $loggedInUser, 'postId' => $postId, 'commentForm' => $commentForm)); ?>
+                <div id="postTime">
+                    <?php echo $postTime; ?>
+                </div>
+            </div>                        
+        </div>
+    </div>
+    <?php include_component('buzz', 'commentPreview', array('commentList' => $commentList, 'editForm' => $editForm, 'loggedInUser' => $loggedInUser, 'postId' => $postId, 'commentForm' => $commentForm)); ?>
 
-                </div>
-           
+</div>

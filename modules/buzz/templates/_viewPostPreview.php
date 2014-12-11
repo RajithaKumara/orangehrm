@@ -62,7 +62,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
                 <?php echo $employee['emp_firstname'] . " " . $postEmployeeName; ?>
 
             </div>  <br>  
-            <div class="post_prev_content" id="post_prev_content_<?php echo $postId;?>">
+            <div class="post_prev_content" id="post_prev_content_<?php echo $postId; ?>">
                 <div id="postBodySecondRow" class="previewSecondRow">
                     <div id='<?php echo 'postContent_' . $postId ?>'>
                         <?php echo BuzzTextParserService::parseText($postContent); ?>
@@ -92,22 +92,26 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
                                 </div>
                             </div>
                             <!--SUB POST END-->
-                            <div class="modal hide" id='<?php echo 'shareViewMoreMod_' . $postId ?>'>
 
-<!--                                <div class="modal-header">
-                                    <a class="close" data-dismiss="modal">×</a>
-                                </div>-->
-
-                                <div class="modal-body">
-                                    <div class="postView" id='<?php echo 'shareViewContent_' . $postId ?>'>
-                                    </div>
-                                </div>
-                            </div>
                             <?php
                         } else {
                             echo BuzzTextParserService::parseText($originalPostContent);
                         }
                         ?>
+
+                    </div>
+                </div>
+            </div>
+            <!-- pop up-->
+            <div class="modal hide" style="width: 800px;height: 700px;left: 40%;top:20%;overflow-x: hidden" id='<?php echo 'shareViewMoreMod2_' . $postId ?>'>
+                <div class="modal-body" style="height: 530px;background-color: gray;overflow-x: hidden">
+                    <div class="hideModalPopUp" id='<?php echo 'shareViewMoreMod_' . $postId ?>'
+                         style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                            class="hideModalPopUp" id='<?php echo 'shareViewMoreMod_' . $postId ?>' 
+                            src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                            /></div>
+
+                    <div class="shareView" id='<?php echo 'shareViewContent2_' . $postId ?>'>
                     </div>
                 </div>
             </div>

@@ -56,16 +56,25 @@
 
     #ml_componentContainer div{
         overflow: hidden;
-        max-height: 130px;
+        /*max-height: 130px;*/
         font-size: 95%;
         margin-top: 3px;
+    }
+    
+    #ml_componentContainer .modal{
+        overflow: hidden;
+        /*max-height: 130px;*/
+        font-size: 140%;
+        margin-top: 3px;
+        top: 10%;
+        
     }
     
     #mc_componentContainer div{
         overflow: hidden;
         max-height: 130px;
         font-size: 95%;
-        margin: 1px;
+        margin-top: 3px;
     }
 
     #ml_componentContainer{
