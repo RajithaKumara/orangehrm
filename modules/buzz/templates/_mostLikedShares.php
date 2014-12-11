@@ -1,5 +1,4 @@
-<?php
-/**
+<?php /**
  * OrangeHRM Enterprise is a closed sourced comprehensive Human Resource Management (HRM)
  * System that captures all the essential functionalities required for any enterprise.
  * Copyright (C) 2006 OrangeHRM Inc., http://www.orangehrm.com
@@ -59,7 +58,7 @@
         overflow: hidden;
         max-height: 130px;
         font-size: 95%;
-        margin: 1px;
+        margin-top: 3px;
     }
     
     #mc_componentContainer div{
@@ -108,7 +107,7 @@
 <div id="ml_componentContainer" hidden="true">
     <?php    foreach ($result_ml_shares as $result){ ?>
     
-        <?php  include_component('buzz', 'viewPostPreview', array('post' => $result)); ?>
+        <?php include_component('buzz', 'viewPostPreview', array('post' => $result)); ?>
     
     <?php } ?>
     <div hidden="true" id="rowOne">

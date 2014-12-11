@@ -35,7 +35,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/loggedInUserDetails')
     </div>
     <div id="leftSide">
         <div id="userName">
-            <?php echo $name; ?>
+            <a class="name headerEmpName" href="<?php echo url_for("buzz/viewProfile?empNumber=" . $empNumber); ?>"><?php echo $name; ?></a>
         </div>
         <div id="companyPosition" style="height: 15px;">
             <?php echo $jobtitle; ?>
@@ -53,9 +53,9 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/loggedInUserDetails')
         </div>
     </div>
     <div id="rightSide">
-        <img alt="<?php echo __("Employee Photo"); ?>" 
+        <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $empNumber); ?>"><img alt="<?php echo __("Employee Photo"); ?>" 
              src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $empNumber); ?>" 
-             border="0" id="empPic"/>
+             border="0" id="empPic"/></a>
     </div>
 </div>
 

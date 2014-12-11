@@ -27,137 +27,136 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
     }
 </style>
 <div id="likeRaw">
-<li class="previewPost" id=<?php echo "post" . $postId; ?>>
-    <div id="picAndNameContainer">
-                <div id="profilePicContainer">
-                    <img alt="<?php echo __("Employee Photo"); ?>" 
-                         src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic"/>
-                </div>  
-                <div id="birthdayUserName">
-                        <?php
-        $photos = $sf_data->getRaw('originalPost')->getPhotos();
+    <li class="previewPost" id=<?php echo "post" . $postId; ?>>
+        <div id="picAndNameContainer">
+            <div id="profilePicContainer">
+                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" 
+                                                                                                   src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic"/></a>
+            </div>  
+            <div id="birthdayUserName">
+                <?php
+                $photos = $sf_data->getRaw('originalPost')->getPhotos();
 
 //        var_dump(count($photos));die;
-        $imgCount = 1;
-        if (count($photos) == 1) {
-            ?>
-            <div style="overflow: hidden; text-align: center">
-                <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
-            </div>
-            <?php
-        } else if (count($photos) > 1) {
-
-            foreach ($photos as $photo) {
-                //echo get_class($photo);die;
-//                var_dump($photo->getPhoto());die;
-                ?>
-                <?php // echo base64_encode($photo->getPhoto()); ?>
-                <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
-                <?php
-                break;
-            }
-        }
-        ?>
-                
-                        <?php echo $employee['emp_firstname'] . " " . $postEmployeeName; ?>
-                    
-                </div>        
-     </div>
-    <div hidden="true" id="postBody" class="previewPost">
-
-        <div id="postBodyFirstRow">
-            
-            <div id="postFirstRowColumnTwo" class="previewFirstRowColTwo">
-                <div id="postEmployeeName" >
-                    <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
-                        <?php echo $postEmployeeName; ?>
-                    </a>
-                </div>                       
-            </div>
-        </div>
-
-        <div id="postBodySecondRow" class="previewSecondRow">
-            <div id='<?php echo 'postContent_' . $postId ?>'>
-                <?php echo BuzzTextParserService::parseText($postContent); ?>
-                <?php
-                if ($postType == '1') {
+                $imgCount = 1;
+                if (count($photos) == 1) {
                     ?>
-                    <!--SUB POST START-->
-                    <div id="sharedPostBody">
-
-                        <div id="postBodyFirstRow">
-                            <div id="postFirstRowColumnOne">
-                                <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic" height="40" width="30"/>
-                            </div>
-                            <div id="postFirstRowColumnTwo">
-                                <div id="postEmployeeName" >
-                                    <a class="originalPostView" href="javascript:void(0);" id='<?php echo 'postView_' . $postId . '_' . $originalPostId ?>' >
-                                        <?php echo $originalPostSharerName; ?>
-                                    </a>
-                                </div>                       
-                            </div>
-                        </div>
-
-                        <div id="postBodySecondRow">
-                            <div id="postContent">
-                                <?php echo BuzzTextParserService::parseText($originalPostContent); ?>
-                            </div>
-                        </div>
-                    </div>
-                    <!--SUB POST END-->
-                    <div class="modal hide" id='<?php echo 'postViewOriginal_' . $postId ?>'>
-
-                        <div class="modal-header">
-                            <a class="close" data-dismiss="modal">×</a>
-                        </div>
-
-                        <div class="modal-body">
-
-                            <div class="postView" id='<?php echo 'postViewContent_' . $postId ?>'>
-                            </div>
-                        </div>
+                    <div style="overflow: hidden; text-align: center">
+                        <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
                     </div>
                     <?php
-                } else {
-                    echo BuzzTextParserService::parseText($originalPostContent);
+                } else if (count($photos) > 1) {
+
+                    foreach ($photos as $photo) {
+                        //echo get_class($photo);die;
+//                var_dump($photo->getPhoto());die;
+                        ?>
+                        <?php // echo base64_encode($photo->getPhoto()); ?>
+                        <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
+                        <?php
+                        break;
+                    }
                 }
                 ?>
+
+                <?php echo $employee['emp_firstname'] . " " . $postEmployeeName; ?>
+
+            </div>  <br>  
+            <div class="post_prev_content" id="post_prev_content_<?php echo $postId;?>">
+                <div id="postBodySecondRow" class="previewSecondRow">
+                    <div id='<?php echo 'postContent_' . $postId ?>'>
+                        <?php echo BuzzTextParserService::parseText($postContent); ?>
+                        <?php
+                        if ($postType == '1') {
+                            ?>
+                            <!--SUB POST START-->
+                            <div id="sharedPostBody">
+
+                                <div id="postBodyFirstRow">
+                                    <div id="postFirstRowColumnOne">
+                                        <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $originalPostEmpNumber); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic" height="40" width="30"/>
+                                    </div>
+                                    <div id="postFirstRowColumnTwo">
+                                        <div id="postEmployeeName" >
+                                            <a class="originalPostView" href="javascript:void(0);" id='<?php echo 'postView_' . $postId . '_' . $originalPostId ?>' >
+                                                <?php echo $originalPostSharerName; ?>
+                                            </a>
+                                        </div>                       
+                                    </div>
+                                </div>
+
+                                <div id="postBodySecondRow">
+                                    <div id="postContent">
+                                        <?php echo BuzzTextParserService::parseText($originalPostContent); ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--SUB POST END-->
+                            <div class="modal hide" id='<?php echo 'shareViewMoreMod_' . $postId ?>'>
+
+<!--                                <div class="modal-header">
+                                    <a class="close" data-dismiss="modal">×</a>
+                                </div>-->
+
+                                <div class="modal-body">
+                                    <div class="postView" id='<?php echo 'shareViewContent_' . $postId ?>'>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php
+                        } else {
+                            echo BuzzTextParserService::parseText($originalPostContent);
+                        }
+                        ?>
+                    </div>
+                </div>
             </div>
         </div>
+        <div  id="postBody" class="previewPost">
 
-        <?php if (count($originalPost->getLinks()) > 0) { ?>
-            <?php foreach ($originalPost->getLinks() as $link) { ?>
-                <?php if ($link->getType() == 1) { ?>
-                    <iframe src="<?php echo $link->getLink(); ?>" width="100%" height="250" style="margin-top: 5px " frameborder="0" allowfullscreen></iframe >
+            <div id="postBodyFirstRow">
 
-                <?php } ?>  
+                <div id="postFirstRowColumnTwo" class="previewFirstRowColTwo">
+                    <div id="postEmployeeName" >
+                        <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
+                            <?php echo $postEmployeeName; ?>
+                        </a>
+                    </div>                       
+                </div>
+            </div>
+            <?php if (count($originalPost->getLinks()) > 0) { ?>
+                <?php foreach ($originalPost->getLinks() as $link) { ?>
+                    <?php if ($link->getType() == 1) { ?>
+                        <iframe src="<?php echo $link->getLink(); ?>" width="100%" height="250" style="margin-top: 5px " frameborder="0" allowfullscreen></iframe >
+
+                    <?php } ?>  
+                <?php } ?>    
             <?php } ?>    
-        <?php } ?>    
-        <?php
-        $photos = $sf_data->getRaw('originalPost')->getPhotos();
+            <?php
+            $photos = $sf_data->getRaw('originalPost')->getPhotos();
 
 //        var_dump(count($photos));die;
-        $imgCount = 1;
-        if (count($photos) == 1) {
-            ?>
-            <div style="overflow: hidden; text-align: center">
-                <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
-            </div>
-            <?php
-        } else if (count($photos) > 1) {
-
-            foreach ($photos as $photo) {
-                //echo get_class($photo);die;
-//                var_dump($photo->getPhoto());die;
+            $imgCount = 1;
+            if (count($photos) == 1) {
                 ?>
-                <?php // echo base64_encode($photo->getPhoto()); ?>
-                <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
+                <div style="overflow: hidden; text-align: center">
+                    <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
+                </div>
                 <?php
-                break;
+            } else if (count($photos) > 1) {
+
+                foreach ($photos as $photo) {
+                    //echo get_class($photo);die;
+//                var_dump($photo->getPhoto());die;
+                    ?>
+                    <?php // echo base64_encode($photo->getPhoto()); ?>
+                    <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
+                    <?php
+                    break;
+                }
             }
-        }
-        ?>
-    </div>
-</li>
+            ?>
+        </div>
+    </li>
 </div>
 

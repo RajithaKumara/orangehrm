@@ -41,7 +41,6 @@ class addNewCommentAction extends BuzzBaseAction {
         try {
             $this->loggedInUser = $this->getUserId();
             $this->commentText = $request->getParameter('commentText');
-            echo $this->commentText; die;
             $this->shareId = $request->getParameter('shareId');
             $this->error = 'no';
 

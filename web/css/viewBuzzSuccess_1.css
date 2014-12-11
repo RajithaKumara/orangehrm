@@ -636,3 +636,11 @@ a.commentAccount
 .commentLoadingBox{
     display: none;
 }
+
+.post_prev_content{
+    margin-left: -10px;
+}
+
+.headerEmpName{
+    color: white;
+}

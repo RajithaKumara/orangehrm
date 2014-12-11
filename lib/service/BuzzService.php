@@ -200,6 +200,7 @@ class BuzzService extends BaseService {
     public function getPostById($postId) {
         try {
             return $this->getBuzzDao()->getPostById($postId);
+//            $this->getBuzzDao()->getPostById($postId)->getText(); die;
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
             throw new Exception("Post Not Found");

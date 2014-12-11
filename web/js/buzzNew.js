@@ -228,29 +228,30 @@ $(document).ready(function () {
                 //div.style.backgroundColor = 'black';
             });
         });
-        
+        var modalVisible = false;
         $(".closeFeed").live("click", function (e) {
                 $("#postLinkData").hide();
                 $("#postLinkState").html('no');
             });
-            $(".originalPostView").live("click", function (e) {
-                var idValue = e.target.id;
-                var shareId = idValue.split("_")[1];
-                var postId = idValue.split("_")[2];
-                var data = {
-                    'postId': postId,
-                };
-                $.ajax({
-                    url: viewOriginalPost,
-                    type: "POST",
-                    data: data,
-                    success: function (data) {
-
-                        $('#postViewContent_' + shareId).replaceWith(data);
-                        $('#postViewOriginal_' + shareId).modal();
-                    }
-                });
-            });
+//            $(".originalPostView").live("click", function (e) {
+//                var idValue = e.target.id;
+//                var shareId = idValue.split("_")[1];
+//                //var postId = idValue.split("_")[2];
+//                modalVisible = true;
+//                var data = {
+//                    'postId': postId,
+//                };
+//                $.ajax({
+//                    url: viewOriginalPost,
+//                    type: "POST",
+//                    data: data,
+//                    success: function (data) {
+//
+//                        $('#postViewContent_' + shareId).replaceWith(data);
+//                        $('#postViewOriginal_' + shareId).modal();
+//                    }
+//                });
+//            });
             function isAccess() {
                 $.getJSON(getAccessUrl, {get_param: 'value'}, function (data) {
 

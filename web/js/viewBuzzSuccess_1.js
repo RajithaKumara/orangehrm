@@ -1,3 +1,4 @@
+var modalVisible = false;
 $(document).ready(function () {
     /**
      * Submitting a new post
@@ -141,7 +142,6 @@ $(document).ready(function () {
     });
 
     $("#gotoProfile").click(function () {
-        alert("HSHS");
         var id = $('#searchChatter_emp_name_empId').val();
         if (id.length <= 0) {
             alert('select User');
@@ -413,6 +413,7 @@ $(document).ready(function () {
         $(".imagePrevBtn").attr("disabled", 'true');
         $(".imageNextBtn").attr("disabled", 'true');
         $("#showPhotos" + shareId).modal();
+        modalVisible = true;
         shownImgId = imageId;
         shownImgPostId = shareId;
         $("#img_" + shownImgId + "_" + shownImgPostId).show();
@@ -571,8 +572,9 @@ $(document).ready(function () {
     $(".viewMoreShare").live("click", function (e) {
         var idValue = e.target.id;
         var shareId = idValue.split("_")[1];
-       
+
         //var postId = idValue.split("_")[2];
+        modalVisible = true;
         var data = {
             'shareId': shareId,
         };
@@ -581,13 +583,13 @@ $(document).ready(function () {
             type: "POST",
             data: data,
             success: function (data) {
-                
+
                 $('#shareViewContent_' + shareId).replaceWith(data);
                 $('#shareViewMoreMod_' + shareId).modal();
             }
         });
     });
-       
+
     /**
      * share post popup window view
      */
@@ -707,24 +709,27 @@ $(document).ready(function () {
     /**
      * original post view
      */
-    $(".originalPostView").live("click", function (e) {
-        var idValue = e.target.id;
-        var shareId = idValue.split("_")[1];
-        var postId = idValue.split("_")[2];
-        var data = {
-            'postId': postId,
-        };
-        $.ajax({
-            url: viewOriginalPost,
-            type: "POST",
-            data: data,
-            success: function (data) {
-
-                $('#postViewContent_' + shareId).replaceWith(data);
-                $('#postViewOriginal_' + shareId).modal();
-            }
-        });
-    });
+//    $(".originalPostView").live("click", function (e) {
+//        var idValue = e.target.id;
+//        var shareId = idValue.split("_")[1];
+//        var postId = idValue.split("_")[2];
+//        modalVisible = true;
+//        //alert("MODAL VISIBLE" + modalVisible);
+//                
+//        var data = {
+//            'postId': postId,
+//        };
+//        $.ajax({
+//            url: viewOriginalPost,
+//            type: "POST",
+//            data: data,
+//            success: function (data) {
+//
+//                $('#postViewContent_' + shareId).replaceWith(data);
+//                $('#postViewOriginal_' + shareId).modal();
+//            }
+//        });
+//    });
 
     $(".postCommentBox").live('click', function (e) {
         var idValue = e.target.className;
@@ -732,14 +737,17 @@ $(document).ready(function () {
     });
 
     function refresh() {
-        var refreshTime = trim($("#refreshTime").html());
-//        var refreshTime = 3000;
-
+//        var refreshTime = trim($("#refreshTime").html());
+        var refreshTime = 5000;
+//        alert(modalVisible);
         if (new Date().getTime() - time >= refreshTime) {
             //$('#spinner').show();
 //            $('#buzz').remove();
 //            alert("fhhe");
-            reload();
+            if (!modalVisible) {
+                
+                reload();
+            }
             setTimeout(refresh, refreshTime);
         } else {
 
@@ -749,13 +757,16 @@ $(document).ready(function () {
     }
     var loggedInEmpNum = -1;
     function isAccess() {
+//        alert(modalVisible);
         $.getJSON(getAccessUrl, {get_param: 'value'}, function (data) {
             if (loggedInEmpNum == -1) {
                 loggedInEmpNum = data.empNum;
             } else if (loggedInEmpNum != data.empNum) {
-                location.reload();
-            } else if (data.empNum == null) {
-                location.reload();
+                if (!modalVisible) {
+                    location.reload();
+                }
+            } else if (loggedInEmpNum == null) {
+                //location.reload();
             }
 
             if (data.state === 'loged') {
@@ -776,6 +787,24 @@ $(document).ready(function () {
     $(".tabButton").live("click", function () {
         $(".tabButton").removeClass('tabSelected');
         $(this).addClass('tabSelected');
+    });
+
+    $(".post_prev_content").live("click", function (e) {
+        var id = e.target.id;
+        var postId = id.split("_")[1];
+        var data = {
+            'shareId': postId,
+        };
+        $.ajax({
+            url: viewMoreShare,
+            type: "POST",
+            data: data,
+            success: function (data) {
+
+                $('#shareViewContent_' + postId).replaceWith(data);
+                $('#shareViewMoreMod_' + postId).modal();
+            }
+        });
     });
 
     $(window).scroll(function ()
@@ -803,7 +832,6 @@ $(document).ready(function () {
     });
 }
 );
-
 /**
  * Activates the clicked tab
  * @param {type} pageId

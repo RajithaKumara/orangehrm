@@ -158,7 +158,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 
         <div id="postBodyFirstRow">
             <div id="postFirstRowColumnOne">
-                <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
+                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" /></a>
             </div>
             <div id="postFirstRowColumnTwo">
                 <div id="postEmployeeName" >
@@ -302,7 +302,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 
         <div id="postBodySecondRow" >
             <div id='<?php echo 'postContent_' . $postId ?>'>
-                <?phpecho BuzzTextParserService::parseText($postContent); 
+                <?php echo BuzzTextParserService::parseText($postContent); 
                 ?>
                 <?php
                 if ($postType == '1') {
@@ -312,7 +312,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 
                         <div id="postBodyFirstRow">
                             <div id="postFirstRowColumnOne">
-                                <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic" height="40" width="30"/>
+                                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic" height="40" width="30"/></a>
                             </div>
                             <div id="postFirstRowColumnTwo">
                                 <div id="postEmployeeName" >
@@ -555,7 +555,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
 
                     <div id="postBodyFirstRow">
                         <div id="postFirstRowColumnOne">
-                            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic" height="40" width="30"/>
+                            <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic" height="40" width="30"/></a>
                         </div>
                         <div id="postFirstRowColumnTwo">
                             <div id="postEmployeeName" >
@@ -819,11 +819,11 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                     <div id="commentBody">
                         <div id="commentRowOne">
                             <div id="commentColumnOne">
-                                <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/>
+                                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/></a>
                             </div>
                             <div id="commentColumnTwo">
                                 <div id="commentEmployeeName">
-                                    <a class="name" href="javascript:void(0);"><?php echo $commentEmployeeName; ?></a>
+                                    <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' ><?php echo $commentEmployeeName; ?></a>
                                 </div>
                                 <div id="commentEmployeeJobTitle">
                                     <?php echo $commentEmployeeJobTitle; ?>

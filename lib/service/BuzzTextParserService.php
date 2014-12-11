@@ -74,7 +74,7 @@ class BuzzTextParserService {
                     '" height="18" width="18" />';
             $text = str_replace($key, $emoticonPath, $text);
         }
-        return $text;
+        return str_replace("\n", "<br />", $text);  
     }
     
     public static function isImage($url){
