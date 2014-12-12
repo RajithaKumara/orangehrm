@@ -11,7 +11,7 @@
  *
  * @author dewmal
  */
-class viewProfileAction extends BuzzBaseAction {
+class viewProfileAction extends BaseBuzzAction {
 
     protected $buzzService;
     protected $buzzConfigService;

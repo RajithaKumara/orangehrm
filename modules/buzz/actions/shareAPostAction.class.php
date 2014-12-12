@@ -24,7 +24,7 @@
  *
  * @author aruna
  */
-class shareAPostAction extends BuzzBaseAction {
+class shareAPostAction extends BaseBuzzAction {
 
     /**
      * this is function to get buzzService

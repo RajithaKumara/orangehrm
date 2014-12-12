@@ -11,7 +11,7 @@
  *
  * @author dewmal
  */
-class getFormCsrfTokenAction extends BuzzBaseAction{
+class getFormCsrfTokenAction extends BaseBuzzAction{
     
     public function execute($request) {
         try{

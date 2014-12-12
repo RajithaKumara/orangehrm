@@ -19,7 +19,7 @@
  *  
  */
 
-class viewPostAction extends BuzzBaseAction{
+class viewPostAction extends BaseBuzzAction{
      /**
      * this is function to get buzzService
      * @return BuzzService 
@@ -87,9 +87,9 @@ class viewPostAction extends BuzzBaseAction{
         $this->commentList = $post->getComment();
         $this->postEmployeeName = $post->getEmployeeFirstLastName();
         $this->isLike = $post->isLike($this->loggedInUser);
-        if($post->isUnLike($this->loggedInUser)){
-        $this->isUnlike= 'yes';
-        }
+       
+        $this->isUnlike= $post->isUnLike($this->loggedInUser);
+        
         $this->originalPost = $post->getPostShared();
         $this->originalPostId = $this->originalPost->getId();
         $this->originalPostEmpNumber = $this->originalPost->getEmployeeNumber();

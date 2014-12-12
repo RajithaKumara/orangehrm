@@ -24,7 +24,7 @@
  *
  * @author aruna
  */
-class getLikedEmployeeListAction extends BuzzBaseAction {
+class getLikedEmployeeListAction extends BaseBuzzAction {
 
     public function execute($request) {
         try {

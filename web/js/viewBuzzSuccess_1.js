@@ -7,7 +7,7 @@ $(document).ready(function () {
         isAccess();
         var x = $("#createPost_content").val();
         if (x == null || trim(x).length < 1) {
-            alert("First write some thing ");
+            
 
         } else {
             $('.postLoadingBox').show();
@@ -92,18 +92,20 @@ $(document).ready(function () {
 
     $("#frmUploadImage").on("submit", function (e) {
         isAccess();
-        activateTab('page1');
-        $("#tabLink1").attr("class", "tabButton tb_one tabSelected");
-        $("#tabLink2").removeClass("tabSelected");
+        
+        
         noOfPhotosPreviewed = 1;
         e.preventDefault();
         var imageFiles = $("#photofile")[0].files;
         var photoText = $("#phototext").val();
-
+        if(imageFiles.length>0){
+            activateTab('page1');
+        $("#tabLink1").attr("class", "tabButton tb_one tabSelected");
+        $("#tabLink2").removeClass("tabSelected");
         var str = "";
         if (imageFiles.length > 5) {
             //Handel proper validation here...
-            alert("Max");
+            
             return;
         }
         $('.postLoadingBox').show();
@@ -139,6 +141,7 @@ $(document).ready(function () {
                 formData = new FormData();
             }
         });
+    }
     });
 
     $("#gotoProfile").click(function () {
@@ -297,17 +300,17 @@ $(document).ready(function () {
             }
         });
     });
-
-
-    /**
-     * Commenting on a share.
-     */
-    $(".commentBox").live("keydown", function (e) {
+   
+ 
+    $(".commentSubmitBtn").live("click", function (e) {
         isAccess();
-        if ((e.keyCode === 13) && !e.shiftKey) {
+       
             var elementId = "#" + e.target.id;
-
+            
             var value = $(elementId).val();
+            
+            if(trim(value).length > 1){
+                
             $('#commentLoadingBox' + elementId.split("_")[1]).show();
             //value = $.trim(value.replace(/[\t\n]+/g, ' '));
 
@@ -328,8 +331,43 @@ $(document).ready(function () {
                 }
             });
         }
+        
     });
 
+    /**
+     * Commenting on a share.
+     */
+    $(".commentBox").live("keydown", function (e) {
+        isAccess();
+        if ((e.keyCode === 13) && !e.shiftKey) {
+            var elementId = "#" + e.target.id;
+
+            var value = $(elementId).val();
+            if(trim(value).length > 1){
+            $('#commentLoadingBox' + elementId.split("_")[1]).show();
+            //value = $.trim(value.replace(/[\t\n]+/g, ' '));
+
+            $(elementId).attr('placeholder', 'Write your comment...');
+            var commentListId = "#commentListNew_" + elementId.split("_")[1];
+            var data = {
+                'commentText': value,
+                'shareId': elementId.split("_")[1]
+            };
+            $.ajax({
+                url: addBuzzCommentURL,
+                type: 'POST',
+                data: data,
+                success: function (data) {
+                    $(commentListId).append(data);
+                    $('.commentLoadingBox').hide();
+                    $(elementId).val('');
+                }
+            });
+        }}
+    
+       
+    });
+ 
     /**
      * Option widget
      */

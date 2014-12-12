@@ -24,7 +24,7 @@
  *
  * @author aruna
  */
-class uploadImageAction extends BuzzBaseAction{
+class uploadImageAction extends BaseBuzzAction{
 
     protected $photos = array();
 

@@ -19,7 +19,7 @@
  *  
  */
 
-class viewLikedEmployeesAction extends BuzzBaseAction {
+class viewLikedEmployeesAction extends BaseBuzzAction {
     
      /**
      * this is function to get buzzService

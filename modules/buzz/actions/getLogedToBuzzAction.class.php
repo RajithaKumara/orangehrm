@@ -11,7 +11,7 @@
  *
  * @author dewmal
  */
-class getLogedToBuzzAction extends BuzzBaseAction {
+class getLogedToBuzzAction extends BaseBuzzAction {
 
     protected $loggedInEmployeeNum;
 

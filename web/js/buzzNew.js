@@ -12,25 +12,29 @@ $(document).ready(function () {
             var UnlikeLabelId = "#noOfUnLikes_" + idValue.split("_")[1];
             var existingUnLikes = parseInt($(UnlikeLabelId).html());
             var action = "like";
+             $("[id=postUnlikeno_" + idValue.split("_")[1]+']').show();
+             $("[id=postUnlikeyes_" + idValue.split("_")[1]+']').hide();
+             $("[id=postLikeyes_" + idValue.split("_")[1]+']').show();
+             $("[id=postLikeno_" + idValue.split("_")[1]+']').hide();
+            
             $.getJSON(shareLikeURL + "?shareId=" + idValue.split("_")[1] + "&likeAction=" + action,
                     {get_param: 'value'}, function (data) {
                 if (data.states === 'savedLike') {
                     var likes = trim($('#postLiketext_' + idValue.split("_")[1]).html());
                     likes++;
-                    $(likeLabelId).html((existingLikes + 1));
-                    $('#postLiketext_' + idValue.split("_")[1]).html(likes);
-                    $("#postLikeyes_" + idValue.split("_")[1]).show();
-                    $("#postLikeno_" + idValue.split("_")[1]).hide();
+                    $("[id=noOfLikes_" + idValue.split("_")[1]+']').html(data.likeCount);
+                    $('[id=postLiketext_' + idValue.split("_")[1]+']').html(likes);
+                    
                     //div.style.backgroundColor = 'orange';
                 }
                 if (data.deleted === 'yes') {
-                    $(UnlikeLabelId).html((existingUnLikes - 1));
+                    $("[id=noOfUnLikes_" + idValue.split("_")[1]+']').html(data.unlikeCount);
                     var likes = trim($('#postUnLiketext_' + idValue.split("_")[1]).html());
                     likes--;
                     //$('#postUnLiketext_' + idValue.split("_")[1]).html(likes);
                 }
-                $("#postUnlikeno_" + idValue.split("_")[1]).show();
-                    $("#postUnlikeyes_" + idValue.split("_")[1]).hide();
+                
+               
             });
         });
         $(".postUnlike2").live("click", function (e) {
@@ -46,28 +50,27 @@ $(document).ready(function () {
             var existingLikes = parseInt($(likeLabelId).html());
             var UnlikeLabelId = "#noOfUnLikes_" + idValue.split("_")[1];
             var existingUnLikes = parseInt($(UnlikeLabelId).html());
-            
+            $("[id=postLikeno_" + idValue.split("_")[1]+']').show();
+            $("[id=postLikeyes_" + idValue.split("_")[1]+']').hide();
+            $("[id=postUnlikeyes_" + idValue.split("_")[1]+']').show();
+            $("[id=postUnlikeno_" + idValue.split("_")[1]+']').hide()
             var action = "unlike";
             $.getJSON(shareLikeURL + "?shareId=" + idValue.split("_")[1] + "&likeAction=" + action,
                     {get_param: 'value'}, function (data) {
                 if (data.deleted === 'yes') {
-                    var likes = trim($('#postLiketext_' + idValue.split("_")[1]).html());
+                    var likes = trim($("#postLiketext_" + idValue.split("_")[1]).html());
                     likes--;
-                    //$('#postLiketext_' + idValue.split("_")[1]).html(likes);
-                    $(likeLabelId).html((existingLikes - 1));
+                    
+                    $("[id=noOfLikes_" + idValue.split("_")[1]+']').html(data.likeCount);
                 }
                 if (data.states === 'savedUnLike') {
                     var likes = trim($('#postUnLiketext_' + idValue.split("_")[1]).html());
                     likes++;
-                    $('#postUnLiketext_' + idValue.split("_")[1]).html(likes);
-                    $(UnlikeLabelId).html((existingUnLikes + 1));
+                    $("[id=postUnLiketext_" + idValue.split("_")[1]+']').html(data.unlikeCount);
+                    $("[id=noOfUnLikes_" + idValue.split("_")[1]+']').html(data.unlikeCount);
                 }
-                $("#postLikeno_" + idValue.split("_")[1]).show();
-                    $("#postLikeyes_" + idValue.split("_")[1]).hide();
-                    $("#postUnlikeyes_" + idValue.split("_")[1]).show();
-                    $("#postUnlikeno_" + idValue.split("_")[1]).hide()
-                //div2.style.backgroundColor = 'red';
-                //div.style.backgroundColor = 'black';
+                
+                
             });
         });
         $(".btnSaveVideo").live('click', function (e) {
@@ -165,38 +168,29 @@ $(document).ready(function () {
                     }
                 });
         $(".commentLike").live("click", function (e) {
-            isAccess();
-            var idValue = e.target.id;
-            
-            var id = "commentLikebody_" + trim(idValue.split("_")[1]);
-            var div = document.getElementById(id);
-            var id2 = "commentUnLikebody_" + trim(idValue.split("_")[1]);
-            var div2 = document.getElementById(id2);
-            var likeLabelId = "#commentNoOfLikes_" + idValue.split("_")[1];
-            //var existingLikes = parseInt($(likeLabelId).html().split(" ")[0]);
-            var action = "like";
-            $.getJSON(commentLikeURL + "?commentId=" + idValue.split("_")[1] + "&likeAction=" + action,
-                    {get_param: 'value'}, function (data) {
-                if (data.states === 'savedLike') {
-                    var likes = trim($('#commentNoOfLiketext_' + idValue.split("_")[1]).html());
-                    likes++;
-                    
-                    $('#commentNoOfLiketext_' + idValue.split("_")[1]).html(likes);
-                    //alert($('#commentLiketext_' + idValue.split("_")[1]).html());
-                    //div.style.backgroundColor = 'orange';
-                    $("#commentLikeyes_" + idValue.split("_")[1]).show();
-                    $("#commentLikeno_" + idValue.split("_")[1]).hide();
-                }
-                if (data.deleted === 'yes') {
-                    var likes = trim($('#commentNoOfUnLiketext_' + idValue.split("_")[1]).html());
-                    likes--;
-                    $('#commentNoOfUnLiketext_' + idValue.split("_")[1]).html(likes);
-                    $("#commentUnLikeno_" + idValue.split("_")[1]).show();
-                    $("#commentUnLikeyes_" + idValue.split("_")[1]).hide();
-                }
-               // div2.style.backgroundColor = 'black';
-            });
+        isAccess();
+        var idValue = e.target.id;
+
+        var id = "commentLikebody_" + trim(idValue.split("_")[1]);
+
+        $("#commentUnLikeno_" + idValue.split("_")[1]).show();
+        $("#commentUnLikeyes_" + idValue.split("_")[1]).hide();
+        $("#commentLikeyes_" + idValue.split("_")[1]).show();
+        $("#commentLikeno_" + idValue.split("_")[1]).hide();
+
+        var action = "like";
+        $.getJSON(commentLikeURL + "?commentId=" + idValue.split("_")[1] + "&likeAction=" + action,
+                {get_param: 'value'}, function (data) {
+            if (data.states === 'savedLike') {
+                $('#commentNoOfLiketext_' + idValue.split("_")[1]).html(data.likeCount);
+            }
+            if (data.deleted === 'yes') {
+
+                $('#commentNoOfUnLiketext_' + idValue.split("_")[1]).html(data.unlikeCount);
+            }
+
         });
+    });
         $(".commentUnlike2").live("click", function (e) {
 
             isAccess();
@@ -213,14 +207,14 @@ $(document).ready(function () {
                 if (data.deleted === 'yes') {
                     var likes = trim($('#commentNoOfLiketext_' + idValue.split("_")[1]).html());
                     likes--;
-                    $('#commentNoOfLiketext_' + idValue.split("_")[1]).html(likes);
+                    $('#commentNoOfLiketext_' + idValue.split("_")[1]).html(data.likeCount);
                     $("#commentLikeno_" + idValue.split("_")[1]).show();
                     $("#commentLikeyes_" + idValue.split("_")[1]).hide();
                 }
                 if (data.states === 'savedUnLike') {
                     var likes = trim($('#commentNoOfUnLiketext_' + idValue.split("_")[1]).html());
                     likes++;
-                    $('#commentNoOfUnLiketext_' + idValue.split("_")[1]).html(likes);
+                    $('#commentNoOfUnLiketext_' + idValue.split("_")[1]).html(data.unlikeCount);
                     $("#commentUnLikeyes_" + idValue.split("_")[1]).show();
                     $("#commentUnLikeno_" + idValue.split("_")[1]).hide();
                 }

@@ -22,7 +22,7 @@
 class buzzDao extends BaseDao {
 
     /**
-     * get most resent share by giving limit
+     * get most recent share by giving limit
      * 
      * @param int $limit
      * @return share collection
@@ -87,21 +87,18 @@ class buzzDao extends BaseDao {
     public function getNoOfShareLikesFor($userId) {
         $q = Doctrine_Manager::getInstance()->getCurrentConnection();
         if ($userId == '') {
-            $result = $q->execute(
-                    "SELECT *
-                FROM ohrm_buzz_share
-                INNER JOIN ohrm_buzz_like_on_share ON ohrm_buzz_like_on_share.share_id=ohrm_buzz_share.id
-                WHERE ohrm_buzz_share.employee_number is NULL "
-            );
-            return $result->rowCount();
+            $queryLastBlock = "is NULL";
+        }else{
+            $queryLastBlock = "= " . $userId;
         }
-        $result = $q->execute(
+        
+        $shareLikesPerEmployee = $q->execute(
                 "SELECT *
                 FROM ohrm_buzz_share
                 INNER JOIN ohrm_buzz_like_on_share ON ohrm_buzz_like_on_share.share_id=ohrm_buzz_share.id
-                WHERE ohrm_buzz_share.employee_number = " . $userId
+                WHERE ohrm_buzz_share.employee_number " . $queryLastBlock
         );
-        return $result->rowCount();
+        return $shareLikesPerEmployee->rowCount();
     }
 
     public function getNoOfCommentLikesFor($userId) {

@@ -19,7 +19,7 @@
  *  
  */
 
-class viewShareAction extends BuzzBaseAction {
+class viewShareAction extends BaseBuzzAction {
 
     /**
      * this is function to get buzzService

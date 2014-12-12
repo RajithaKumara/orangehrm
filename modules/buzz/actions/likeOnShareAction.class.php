@@ -24,7 +24,7 @@
  *
  * @author aruna
  */
-class likeOnShareAction extends BuzzBaseAction {
+class likeOnShareAction extends BaseBuzzAction {
 
     /**
      * this is function to get buzzService
@@ -50,10 +50,14 @@ class likeOnShareAction extends BuzzBaseAction {
         $this->editForm = new CommentForm();
         $this->share = $this->getBuzzService()->getShareById($this->shareId);
        
-             
+        if ($this->likeAction == 'unlike'){
+            $this->unlikeOnShare();
+        }  else {
+            $this->likeOnShare();
+        }     
         
         
-         $this->likeOnShare();
+         
         try {
 
             
@@ -71,48 +75,53 @@ class likeOnShareAction extends BuzzBaseAction {
      */
     public function likeOnShare() {
         $like = $this->setLike();
-        $unlike= $this->setUnLike();
-        
-        if ($this->likeAction == 'unlike') {
-            $delete='no';
-            if ($this->share->isLike($this->loggedInUser) == 'Unlike') {
-                
-                $this->getBuzzService()->deleteLikeForShare($like);
-                $delete='yes';
-                
-            }
-            if($this->share->isUnLike($this->loggedInUser)== 'no') {
-                $this->getBuzzService()->saveUnLikeForShare($unlike);
-                $this->likeLabel = 'Like';
-                  $arr = array ('states'=>'savedUnLike','deleted'=>$delete);
+        $unlike = $this->setUnLike();
 
-                    echo json_encode($arr);
-                    die();
-            }
-            
-              $arr = array ('states'=>'Like','deleted'=>$delete);
-
-    echo json_encode($arr);
-    die();
-        } else {
-            $delete='no';
-            if ($this->share->isUnLikeUser($this->loggedInUser)=='yes') {
-                $this->getBuzzService()->deleteUnLikeForShare($unlike);
-                $delete='yes';
-            }
-            if ($this->share->isLike($this->loggedInUser) == 'Like') {
-                $this->getBuzzService()->saveLikeForShare($like);
-                $this->likeLabel = 'Like';
-                $arr = array ('states'=>'savedLike','deleted'=>$delete);
-
-    echo json_encode($arr);
-    die();
-            }
-            $arr = array ('states'=>'Liked','deleted'=>$delete);
-
-    echo json_encode($arr);
-    die();
+        $state='Liked';
+        $delete = 'no';
+        if ($this->share->isUnLikeUser($this->loggedInUser) == 'yes') {
+            $this->getBuzzService()->deleteUnLikeForShare($unlike);
+            $delete = 'yes';
         }
+        
+        if ($this->share->isLike($this->loggedInUser) == 'Like') {
+            $this->getBuzzService()->saveLikeForShare($like);
+            $this->likeLabel = 'Like';
+            
+            $state='savedLike';
+            
+        }
+        $shareSaved = $this->getBuzzService()->getShareById($this->shareId);
+        
+        $arr = array('states' => $state, 'deleted' => $delete,'likeCount'=>$shareSaved->getNumberOfLikes(),'unlikeCount'=>$shareSaved->getNumberOfUnlikes());
+        echo json_encode($arr);
+        die();
+    }
+
+    public function unlikeOnShare() {
+        $like = $this->setLike();
+        $unlike = $this->setUnLike();
+        $delete = 'no';
+        $state='Like';
+        if ($this->share->isLike($this->loggedInUser) == 'Unlike') {
+
+            $this->getBuzzService()->deleteLikeForShare($like);
+            $delete = 'yes';
+        }
+        
+        if ($this->share->isUnLike($this->loggedInUser) == 'no') {
+            $this->getBuzzService()->saveUnLikeForShare($unlike);
+            $this->likeLabel = 'Like';
+            
+            $state='savedUnLike';
+        }
+
+        $shareSaved = $this->getBuzzService()->getShareById($this->shareId);
+        
+        $arr = array('states' => $state, 'deleted' => $delete,'likeCount'=>$shareSaved->getNumberOfLikes(),'unlikeCount'=>$shareSaved->getNumberOfUnlikes());
+
+        echo json_encode($arr);
+        die();
     }
 
     /**

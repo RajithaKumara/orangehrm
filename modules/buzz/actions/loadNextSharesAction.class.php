@@ -24,7 +24,7 @@
  *
  * @author aruna
  */
-class loadNextSharesAction extends BuzzBaseAction {
+class loadNextSharesAction extends BaseBuzzAction {
 
     protected $buzzService;
 

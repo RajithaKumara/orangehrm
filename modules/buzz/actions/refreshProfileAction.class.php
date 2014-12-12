@@ -24,7 +24,7 @@
  *
  * @author aruna
  */
-class refreshProfileAction extends BuzzBaseAction {
+class refreshProfileAction extends BaseBuzzAction {
 
     protected $buzzService;
 

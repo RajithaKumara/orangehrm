@@ -11,7 +11,7 @@
  *
  * @author dewmal
  */
-class loadMoreProfileAction extends BuzzBaseAction {
+class loadMoreProfileAction extends BaseBuzzAction {
 
     protected $buzzService;
 

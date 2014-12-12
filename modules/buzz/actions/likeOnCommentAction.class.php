@@ -24,7 +24,7 @@
  *
  * @author aruna
  */
-class likeOnCommentAction extends BuzzBaseAction {
+class likeOnCommentAction extends BaseBuzzAction {
 
     /**
      * this is function to get buzzService
@@ -49,8 +49,12 @@ class likeOnCommentAction extends BuzzBaseAction {
         try {
 
             $this->comment = $this->getBuzzService()->getCommentById($this->commentId);
-
+            if ($this->likeAction == 'unlike') {
+            $this->unlikeOnComment();
+        } else {
             $this->likeOnComment();
+        }
+            
         } catch (Exception $ex) {
             
         }
@@ -62,43 +66,47 @@ class likeOnCommentAction extends BuzzBaseAction {
      */
     public function likeOnComment() {
         $like = $this->setLike();
-        $unlike= $this->setUnLike();
-        $delete='no';
-        if ($this->likeAction == 'unlike') {
-            if ($this->comment->isLike($this->loggedInUser) == 'Unlike') {
-                $this->getBuzzService()->deleteLikeForComment($like);
-                $delete='yes';
-            }
-            if($this->comment->isUnLike($this->loggedInUser) =='no') {
-                $this->getBuzzService()->saveUnLikeForComment($unlike);
-                $this->likeLabel = 'Like';
-                 $arr = array ('states'=>'savedUnLike','deleted'=>$delete);
-
-    echo json_encode($arr);
-    die();
-            }
-            $arr = array ('states'=>'Like','deleted'=>$delete);
-
-    echo json_encode($arr);
-    die();
-        } else {
-            if ($this->comment->isUnLike($this->loggedInUser)=='yes') {
-                $this->getBuzzService()->deleteUnLikeForComment($unlike);
-                $delete='yes';
-            }
-            if ($this->comment->isLike($this->loggedInUser) == 'Like') {
-                $this->getBuzzService()->saveLikeForComment($like);
-                $this->likeLabel = 'Like';
-                $arr = array ('states'=>'savedLike','deleted'=>$delete);
-
-    echo json_encode($arr);
-    die();
-            }
-            $arr = array ('states'=>'Liked','deleted'=>$delete);
-
-    echo json_encode($arr);
-    die();
+        $unlike = $this->setUnLike();
+        $delete = 'no';
+        $state = 'Like';
+        if ($this->comment->isUnLike($this->loggedInUser) == 'yes') {
+            $this->getBuzzService()->deleteUnLikeForComment($unlike);
+            $delete = 'yes';
         }
+        if ($this->comment->isLike($this->loggedInUser) == 'Like') {
+            $this->getBuzzService()->saveLikeForComment($like);
+            $state = 'savedLike';
+        }
+        $commentSaved = $this->getBuzzService()->getCommentById($this->commentId);
+
+        $arr = array('states' => $state, 'deleted' => $delete, 'likeCount' => $commentSaved->getNumberOfLikes(), 'unlikeCount' => $commentSaved->getNumberOfUnlikes());
+
+        echo json_encode($arr);
+        die();
+    }
+
+    private function unlikeOnComment(){
+        $like = $this->setLike();
+        $unlike = $this->setUnLike();
+        $delete = 'no';
+        $state = 'Like';
+        if ($this->comment->isLike($this->loggedInUser) == 'Unlike') {
+            $this->getBuzzService()->deleteLikeForComment($like);
+            $delete = 'yes';
+        }
+        if ($this->comment->isUnLike($this->loggedInUser) == 'no') {
+            $this->getBuzzService()->saveUnLikeForComment($unlike);
+            $this->likeLabel = 'Like';
+            $state = 'savedUnLike';
+            
+        }
+        
+        $commentSaved = $this->getBuzzService()->getCommentById($this->commentId);
+
+        $arr = array('states' => $state, 'deleted' => $delete, 'likeCount' => $commentSaved->getNumberOfLikes(), 'unlikeCount' => $commentSaved->getNumberOfUnlikes());
+
+        echo json_encode($arr);
+        die();
     }
 
     /**

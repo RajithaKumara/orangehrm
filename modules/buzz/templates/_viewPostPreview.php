@@ -105,9 +105,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
             <!-- pop up-->
             <div class="modal hide" style="width: 800px;height: 700px;left: 40%;top:20%;overflow-x: hidden" id='<?php echo 'shareViewMoreMod2_' . $postId ?>'>
                 <div class="modal-body" style="height: 530px;background-color: gray;overflow-x: hidden">
-                    <div class="hideModalPopUp" id='<?php echo 'shareViewMoreMod_' . $postId ?>'
+                    <div class="hideModalPopUp" id='<?php echo 'shareViewMoreMod2_' . $postId ?>'
                          style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
-                            class="hideModalPopUp" id='<?php echo 'shareViewMoreMod_' . $postId ?>' 
+                            class="hideModalPopUp" id='<?php echo 'shareViewMoreMod2_' . $postId ?>' 
                             src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                             /></div>
 

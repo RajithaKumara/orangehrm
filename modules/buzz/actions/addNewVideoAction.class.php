@@ -11,7 +11,7 @@
  *
  * @author dewmal
  */
-class addNewVideoAction extends BuzzBaseAction {
+class addNewVideoAction extends BaseBuzzAction {
      /**
      * this is function to get buzzService
      * @return BuzzService 

@@ -24,20 +24,7 @@
  *
  * @author aruna
  */
-class addNewPostAction extends BuzzBaseAction {
-
-    /**
-     * this is function to get buzzService
-     * @return BuzzService 
-     */
-    public function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->buzzService = new BuzzService();
-        }
-        return $this->buzzService;
-    }
-
-    
+class addNewPostAction extends BaseBuzzAction {
 
     public function execute($request) {
 

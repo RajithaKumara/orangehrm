@@ -24,81 +24,7 @@
  *
  * @author aruna
  */
-class viewBuzzAction extends BuzzBaseAction {
-
-    protected $buzzService;
-    protected $buzzConfigService;
-
-    public function execute($request) {
-
-        $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
-        $this->setLayout($template . '/chatter');
-        $this->intializeConstant();
-        $this->postForm = $this->getPostForm();
-        $this->commentForm = $this->getCommentForm();
-        $this->editForm = new CommentForm();
-        $this->uploadImageForm = new UploadPhotoForm(); //image upload form
-        $this->setBuzzService(new BuzzService());
-        $this->initializePostList();
-        try {
-            $this->loggedInUser = $this->getUserId();
-        } catch (Exception $ex) {
-           $this->redirect('auth/login');
-        }
-
-
-        $this->videoForm = new CreateVideoForm();  // video form added
-        $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetween(date("Y-m-d"), date('Y-m-t'));
-        $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOn(date("m"));
-    }
-
-    /**
-     * Retrieving the list of posts from database.
-     */
-    protected function initializePostList() {
-        $buzzService = $this->getBuzzService();
-
-        $this->postList = $buzzService->getShares($this->shareCount);
-    }
-
-    protected function intializeConstant() {
-        $buzzConfigService = $this->getBuzzConfigService();
-        $this->shareCount = $buzzConfigService->getBuzzShareCount();
-        $this->commentCount = $buzzConfigService->getBuzzInitialCommentCount();
-        $this->viewMoreComment = $buzzConfigService->getBuzzViewCommentCount();
-        $this->likeCount = $buzzConfigService->getBuzzLikeCount();
-        $this->refeshTime = $buzzConfigService->getRefreshTime();
-    }
-
-    /**
-     * 
-     * @param type $buzzService
-     */
-    protected function setBuzzService($buzzService) {
-        $this->buzzService = $buzzService;
-    }
-
-    /**
-     * 
-     * @return BuzzService
-     */
-    private function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->setBuzzService(new BuzzService());
-        }
-        return $this->buzzService;
-    }
-
-    /**
-     * 
-     * @return BuzzConfigService
-     */
-    private function getBuzzConfigService() {
-        if (!$this->buzzConfigService) {
-            $this->buzzConfigService = new BuzzConfigService();
-        }
-        return $this->buzzConfigService;
-    }
+class viewBuzzAction extends BaseBuzzAction {
 
     /**
      * 
@@ -136,6 +62,47 @@ class viewBuzzAction extends BuzzBaseAction {
             $this->setCommentForm(new CommentForm());
         }
         return $this->commentForm;
+    }
+
+
+    public function execute($request) {
+
+        $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
+        $this->setLayout($template . '/chatter');
+        $this->setConfigurationValues();
+        $this->postForm = $this->getPostForm();
+        $this->commentForm = $this->getCommentForm();
+        $this->editForm = new CommentForm();
+        $this->uploadImageForm = new UploadPhotoForm(); //image upload form
+        $this->buzzService=  $this->getBuzzService();
+       // $this->setBuzzService(new BuzzService());
+        $this->initializePostList();
+        try {
+            $this->loggedInUser = $this->getUserId();
+        } catch (Exception $ex) {
+            $this->redirect('auth/login');
+        }
+
+
+        $this->videoForm = new CreateVideoForm();  // video form added
+        $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetween(date("Y-m-d"), date('Y-m-t'));
+        $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOn(date("m"));
+    }
+
+    /**
+     * Retrieving the list of posts from database.
+     */
+    protected function initializePostList() {
+        $this->postList = $this->getBuzzService()->getShares($this->shareCount);
+    }
+
+    protected function setConfigurationValues() {
+        $buzzConfigService = $this->getBuzzConfigService();
+        $this->shareCount = $buzzConfigService->getBuzzShareCount();
+        $this->commentCount = $buzzConfigService->getBuzzInitialCommentCount();
+        $this->viewMoreComment = $buzzConfigService->getBuzzViewCommentCount();
+        $this->likeCount = $buzzConfigService->getBuzzLikeCount();
+        $this->refeshTime = $buzzConfigService->getRefreshTime();
     }
 
 }

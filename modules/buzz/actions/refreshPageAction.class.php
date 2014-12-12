@@ -24,7 +24,7 @@
  *
  * @author aruna
  */
-class refreshPageAction extends BuzzBaseAction {
+class refreshPageAction extends BaseBuzzAction {
 
     protected $buzzService;
 

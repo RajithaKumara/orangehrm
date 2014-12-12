@@ -24,7 +24,7 @@
  *
  * @author aruna
  */
-class viewStatisticsAction extends BuzzBaseAction {
+class viewStatisticsAction extends BaseBuzzAction {
 
     protected $buzzService;
 

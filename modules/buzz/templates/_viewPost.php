@@ -759,7 +759,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                           echo $commentForm['comment']->render(array('id' => "commentBoxNew_" . $postId,
                               'class' => 'commentBox', 'rows' => '1', 'style' => 'font-size: 16px; font-family: "SourceSansProLight"; border-radius: 5px 5px 5px 5px; min-width: 99.5%; padding: 10px 0 10px 10px;', 'placeholder' => $placeholderd));
                           ?>
-                    <button id="postSubmitBtn" class="commentSubmitBtn submitBtn">Comment</button>
+                 <input type="button" value="Comment"  id='<?php echo 'commentBoxNew_' . $postId; ?>' class="commentSubmitBtn submitBtn">
                 </form>
             </div>
         </div>

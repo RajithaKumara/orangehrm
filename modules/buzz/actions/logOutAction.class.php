@@ -11,7 +11,7 @@
  *
  * @author dewmal
  */
-class logOutAction extends BuzzBaseAction{
+class logOutAction extends BaseBuzzAction{
     
     public function execute($request) {
         $this->logOut();
