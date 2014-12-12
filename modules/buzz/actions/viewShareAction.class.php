@@ -72,16 +72,16 @@ class viewShareAction extends BuzzBaseAction {
         $this->postTime = $post->getTime();
         $this->postContent = $post->getText();
         $this->postNoOfLikes = $post->getLike()->count();
-       // $this->postUnlike = $post->getNumberOfUnlikes();
-        //$this->shareCount = $post->calShareCount();
+       $this->postUnlike= $post->getNumberOfUnlikes();
+        $this->postShareCount= $post->calShareCount();
         $this->postType = $post->getType();
         $this->employeeID = $post->getEmployeeNumber();
         $this->commentList = $post->getComment();
         $this->postEmployeeName = $post->getEmployeeFirstLastName();
         $this->isLike = $post->isLike($this->loggedInUser);
-       // if ($post->isUnLike($this->loggedInUser)) {
-         //   $this->isUnlike = 'yes';
-       // }
+       if($post->isUnLike($this->loggedInUser)=='yes'){
+        $this->isUnlike= 'yes';
+        }
         $this->originalPost = $post->getPostShared();
         $this->originalPostId = $this->originalPost->getId();
         $this->originalPostEmpNumber = $this->originalPost->getEmployeeNumber();
