@@ -307,7 +307,7 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
     public function testGetEmployeePicture(){
        
         $result = $this->buzzService->getEmployeePicture(1);
-        $this->assertEquals('7', Count($result));
+        $this->assertTrue($result instanceof EmpPicture);
     }
     
     /**
