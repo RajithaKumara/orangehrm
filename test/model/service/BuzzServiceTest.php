@@ -484,17 +484,17 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
      public function testSavingPhoto() {
         $photo = new Photo();
-        $buzzDao = $this->getMock('buzzDao', array('getSharesUptoId'));
+        $buzzDao = $this->getMock('buzzDao', array('savePhoto'));
 
         $buzzDao->expects($this->once())
-                ->method('getSharesUptoId')
+                ->method('savePhoto')
                 ->with($photo)
-                ->will($this->returnValue(array()));
+                ->will($this->returnValue($photo));
 
          $this->buzzService->setBuzzDao($buzzDao); 
 
         $result = $this->buzzService->savePhoto($photo);
-        $this->assertEquals('jpg', $result->getFileType());
+        $this->assertTrue($result instanceof Photo);
     }
       
     /**
@@ -509,107 +509,120 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test shares by user Id
      */
     public function testGetNoOfSharesBy(){
-        $employee = $this->buzzService->getNoOfSharesBy(1);
+        $buzzDao = $this->getMock('buzzDao', array('getNoOfSharesBy'));
 
-        $this->assertEquals(1, $employee);
-    }
-    
-    /**
-     * test number of comment by id
-     */
-    public function testGetNoOfSharesByAdmin(){
-        $employee = $this->buzzService->getNoOfSharesBy('');
+        $buzzDao->expects($this->once())
+                ->method('getNoOfSharesBy')
+                ->with(1)
+                ->will($this->returnValue(1));
 
-        $this->assertEquals(0, $employee);
+         $this->buzzService->setBuzzDao($buzzDao);
+        $result = $this->buzzService->getNoOfSharesBy(1);
+
+        $this->assertEquals(1, $result);
     }
-    
+      
     /**
      * test comment by user Id
      */
     public function testGetNoOfCommentBy(){
-        $employee = $this->buzzService->getNoOfCommentsBy(1);
+        $buzzDao = $this->getMock('buzzDao', array('getNoOfCommentsBy'));
 
-        $this->assertEquals(2, $employee);
+        $buzzDao->expects($this->once())
+                ->method('getNoOfCommentsBy')
+                ->with(1)
+                ->will($this->returnValue(2));
+
+         $this->buzzService->setBuzzDao($buzzDao);
+        $result = $this->buzzService->getNoOfCommentsBy(1);
+
+        $this->assertEquals(2, $result);
     }
     
-    /**
-     * test number of comment by Admin
-     */
-    public function testGetNoOfCommentByAdmin(){
-        $employee = $this->buzzService->getNoOfCommentsBy('');
-
-        $this->assertEquals(0, $employee);
-    }
         /**
      * test comment by user Id
      */
     public function testGetNoOfCommentFor(){
-        $employee = $this->buzzService->getNoOfCommentsFor(1);
+        $buzzDao = $this->getMock('buzzDao', array('getNoOfCommentsFor'));
 
-        $this->assertEquals(2, $employee);
+        $buzzDao->expects($this->once())
+                ->method('getNoOfCommentsFor')
+                ->with(1)
+                ->will($this->returnValue(2));
+
+         $this->buzzService->setBuzzDao($buzzDao);
+        $result = $this->buzzService->getNoOfCommentsFor(1);
+
+        $this->assertEquals(2, $result);
     }
     
-    /**
-     * test number of comment by Admin
-     */
-    public function testGetNoOfCommentForAdmin(){
-        $employee = $this->buzzService->getNoOfCommentsFor('');
-
-        $this->assertEquals(0, $employee);
-    }
     /**
      * test shares by user Id
      */
     public function testGetNoOfSharesLikeBy(){
-        $employee = $this->buzzService->getNoOfShareLikesFor(1);
+        $buzzDao = $this->getMock('buzzDao', array('getNoOfShareLikesFor'));
 
-        $this->assertEquals(2, $employee);
-    }
-    
-    /**
-     * test number of comment by id
-     */
-    public function testGetNoOfSharesLikeByAdmin(){
-        $employee = $this->buzzService->getNoOfShareLikesFor('');
+        $buzzDao->expects($this->once())
+                ->method('getNoOfShareLikesFor')
+                ->with(1)
+                ->will($this->returnValue(2));
 
-        $this->assertEquals(0, $employee);
+         $this->buzzService->setBuzzDao($buzzDao);
+        $result = $this->buzzService->getNoOfShareLikesFor(1);
+
+        $this->assertEquals(2, $result);
     }
-    
-    
+   
       /**
      * test comment by user Id
      */
     public function testGetNoOfCommentLikeBy(){
-        $employee = $this->buzzService->getNoOfCommentLikesFor(1);
+        $buzzDao = $this->getMock('buzzDao', array('getNoOfCommentLikesFor'));
 
-        $this->assertEquals(2, $employee);
-    }
-    
-    /**
-     * test number of comment by Admin
-     */
-    public function testGetNoOfCommentLikeByAdmin(){
-        $employee = $this->buzzService->getNoOfCommentLikesFor('');
+        $buzzDao->expects($this->once())
+                ->method('getNoOfCommentLikesFor')
+                ->with(1)
+                ->will($this->returnValue(2));
 
-        $this->assertEquals(0, $employee);
+         $this->buzzService->setBuzzDao($buzzDao);
+        $result = $this->buzzService->getNoOfCommentLikesFor(1);
+
+        $this->assertEquals(2, $result);
     }
     
       /**
      * test 
      */
     public function testMostLikeShares(){
-       
-        $result = $this->buzzService->getMostLikedShares(4);
-        $this->assertEquals('1', Count($result));
+        $shareIds= array(1,2);
+                
+       $buzzDao = $this->getMock('buzzDao', array('getMostLikedShares'));
+
+        $buzzDao->expects($this->once())
+                ->method('getMostLikedShares')
+                ->with(2)
+                ->will($this->returnValue($shareIds));
+
+         $this->buzzService->setBuzzDao($buzzDao);
+        $result = $this->buzzService->getMostLikedShares(2);
+        $this->assertEquals('2', Count($result));
     }
     
      /**
      * test 
      */
     public function testMostCommentedShares(){
-       
-        $result = $this->buzzService->getMostCommentedShares(4);
-        $this->assertEquals('1', Count($result));
+        $shareIds= array(1,2);
+       $buzzDao = $this->getMock('buzzDao', array('getMostCommentedShares'));
+
+        $buzzDao->expects($this->once())
+                ->method('getMostCommentedShares')
+                ->with(2)
+                ->will($this->returnValue($shareIds));
+
+         $this->buzzService->setBuzzDao($buzzDao);
+        $result = $this->buzzService->getMostCommentedShares(2);
+        $this->assertEquals('2', Count($result));
     }
     
       

@@ -45,6 +45,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $post->setText('this is test Post');
         $post->setPostTime('2015-01-10 12:12:12');
         $result = $this->buzzDao->savePost($post);
+        $this->assertTrue($result instanceof Post);
         $this->assertEquals('2015-01-10 12:12:12', $result->getPostTime());
     }
 
@@ -54,6 +55,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
     public function testGetShares() {
         $result = $this->buzzDao->getShares(2);
         $this->assertEquals(2, count($result));
+        $this->assertTrue($result->getFirst() instanceof Share);
     }
 
     /**
@@ -61,7 +63,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      */
     public function testGetPostFromShare() {
         $result = $this->buzzDao->getShares(2);
-        $this->assertEquals(2, $result->getFirst()->getPostShared()->getId());
+        $this->assertTrue($result->getFirst()->getPostShared() instanceof Post);
     }
 
     /**
@@ -187,7 +189,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $like->setLikeTime('2015-01-10 12:12:12');
 
         $result = $this->buzzDao->deleteLikeForComment($like);
-        $this->assertEquals('0', $result);
+        $this->assertEquals('1', $result);
     }
     /**
      * this is function to test updates in the database
@@ -268,7 +270,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
     public function testGetNoOfSharesByAdmin(){
         $employee = $this->buzzDao->getNoOfSharesBy('');
 
-        $this->assertEquals(0, $employee);
+        $this->assertEquals(1, $employee);
     }
     
     /**
@@ -286,7 +288,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
     public function testGetNoOfCommentByAdmin(){
         $employee = $this->buzzDao->getNoOfCommentsBy('');
 
-        $this->assertEquals(0, $employee);
+        $this->assertEquals(1, $employee);
     }
         /**
      * test comment by user Id
@@ -294,7 +296,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
     public function testGetNoOfCommentFor(){
         $employee = $this->buzzDao->getNoOfCommentsFor(1);
 
-        $this->assertEquals(2, $employee);
+        $this->assertEquals(3, $employee);
     }
     
     /**
@@ -330,7 +332,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
     public function testGetNoOfCommentLikeBy(){
         $employee = $this->buzzDao->getNoOfCommentLikesFor(1);
 
-        $this->assertEquals(2, $employee);
+        $this->assertEquals(3, $employee);
     }
     
     /**
@@ -515,8 +517,8 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      * test 
      */
     public function testGetMoreProfileSharesByAdmin() {
-        $result = $this->buzzDao->getMoreProfileShares(1,0,'');
-        $this->assertEquals('0', Count($result));
+        $result = $this->buzzDao->getMoreProfileShares(1,5,'');
+        $this->assertEquals('1', Count($result));
     }
     /**
      * test 
@@ -531,7 +533,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      */
     public function testgetSharesByAdmin(){
         $result = $this->buzzDao->getSharesByUserId(1,'');
-        $this->assertEquals('0', Count($result));
+        $this->assertEquals('1', Count($result));
     }
     
      /**
@@ -547,13 +549,13 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      */
     public function testgetFrofileShareUptoIdByAdmin(){
         $result = $this->buzzDao->getProfileSharesUptoId(1,'');
-        $this->assertEquals('0', Count($result));
+        $this->assertEquals('1', Count($result));
     }
      /**
      * test 
      */
     public function testgetShareUpToId(){
         $result = $this->buzzDao->getSharesUptoId(1);
-        $this->assertEquals('3', Count($result));
+        $this->assertEquals('4', Count($result));
     }
 }
