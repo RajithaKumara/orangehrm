@@ -117,7 +117,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                     </div>
 
                     <div id="commentColumnTwo">
-                        <div hidden="true" id="commentBodyThirdRowNew">
+                        <div id="commentBodyThirdRowNew">
                             <div class="likeCommentnew"  id="<?php echo 'commentLikebody_' . $commentId ?>" style="background-color: <?php
                             if ($isLikeComment == 'Unlike') {
                                 echo 'orange';
