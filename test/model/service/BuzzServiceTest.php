@@ -403,7 +403,14 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test 
      */
     public function testGetMoreShares(){
-       
+       $buzzDao = $this->getMock('buzzDao', array('getMoreShares'));
+
+        $buzzDao->expects($this->once())
+                ->method('getMoreShares')
+                ->with(1,0)
+                ->will($this->returnValue(array()));
+
+         $this->buzzService->setBuzzDao($buzzDao); 
         $result = $this->buzzService->getMoreShares(1,0);
         $this->assertEquals('0', Count($result));
     }
@@ -411,53 +418,65 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test 
      */
     public function testGetMoreProfileShares() {
+        $buzzDao = $this->getMock('buzzDao', array('getMoreProfileShares'));
+
+        $buzzDao->expects($this->once())
+                ->method('getMoreProfileShares')
+                ->with(1,0,1)
+                ->will($this->returnValue(array()));
+
+         $this->buzzService->setBuzzDao($buzzDao); 
         $result = $this->buzzService->getMoreProfileShares(1,0,1);
         $this->assertEquals('0', Count($result));
     }
-    /**
-     * test 
-     */
-    public function testGetMoreProfileSharesByAdmin() {
-        $result = $this->buzzService->getMoreProfileShares(1,0,'');
-        $this->assertEquals('0', Count($result));
-    }
+   
     /**
      * test 
      */
     public function testgetSharesByUserId(){
+        $buzzDao = $this->getMock('buzzDao', array('getSharesByUserId'));
+
+        $buzzDao->expects($this->once())
+                ->method('getSharesByUserId')
+                ->with(1,2)
+                ->will($this->returnValue(array()));
+
+         $this->buzzService->setBuzzDao($buzzDao); 
         $result = $this->buzzService->getSharesByUserId(1,2);
-        $this->assertEquals('1', Count($result));
-    }
-    
-    /**
-     * test 
-     */
-    public function testgetSharesByAdmin(){
-        $result = $this->buzzService->getSharesByUserId(1,'');
         $this->assertEquals('0', Count($result));
     }
     
+        
      /**
      * test 
      */
     public function testgetFrofileShareUptoId(){
+        $buzzDao = $this->getMock('buzzDao', array('getProfileSharesUptoId'));
+
+        $buzzDao->expects($this->once())
+                ->method('getProfileSharesUptoId')
+                ->with(1,2)
+                ->will($this->returnValue(array()));
+
+         $this->buzzService->setBuzzDao($buzzDao); 
         $result = $this->buzzService->getProfileSharesUptoId(1,2);
-        $this->assertEquals('2', Count($result));
-    }
-    
-    /**
-     * test 
-     */
-    public function testgetFrofileShareUptoIdByAdmin(){
-        $result = $this->buzzService->getProfileSharesUptoId(1,'');
         $this->assertEquals('0', Count($result));
     }
+    
      /**
      * test 
      */
     public function testgetShareUpToId(){
+        $buzzDao = $this->getMock('buzzDao', array('getSharesUptoId'));
+
+        $buzzDao->expects($this->once())
+                ->method('getSharesUptoId')
+                ->with(1)
+                ->will($this->returnValue(array()));
+
+         $this->buzzService->setBuzzDao($buzzDao); 
         $result = $this->buzzService->getSharesUptoId(1);
-        $this->assertEquals('3', Count($result));
+        $this->assertEquals('0', Count($result));
     }
     
      /**
@@ -465,9 +484,14 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
      public function testSavingPhoto() {
         $photo = new Photo();
-        $photo->setFileType('jpg');
-        $photo->setPostId(1);
-        $photo->setFilename('test/photo.jpg');
+        $buzzDao = $this->getMock('buzzDao', array('getSharesUptoId'));
+
+        $buzzDao->expects($this->once())
+                ->method('getSharesUptoId')
+                ->with($photo)
+                ->will($this->returnValue(array()));
+
+         $this->buzzService->setBuzzDao($buzzDao); 
 
         $result = $this->buzzService->savePhoto($photo);
         $this->assertEquals('jpg', $result->getFileType());
