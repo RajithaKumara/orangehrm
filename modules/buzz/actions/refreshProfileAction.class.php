@@ -26,7 +26,7 @@
  */
 class refreshProfileAction extends BaseBuzzAction {
 
-    protected $buzzService;
+  
 
     public function execute($request) {
         try {
@@ -43,24 +43,7 @@ class refreshProfileAction extends BaseBuzzAction {
         }
     }
 
-    /**
-     * 
-     * @param type $buzzService
-     */
-    protected function setBuzzService($buzzService) {
-        $this->buzzService = $buzzService;
-    }
-
-    /**
-     * 
-     * @return BuzzService
-     */
-    private function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->setBuzzService(new BuzzService());
-        }
-        return $this->buzzService;
-    }
+   
 
     /**
      * 

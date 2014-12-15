@@ -74,51 +74,84 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
         </div>
         <style>
             .likeLinknew{
-                background-color: black;
-                opacity: 0.8;
+        background-color: transparent;
+        opacity: 0.8;
 
-                width: 40px;
-                margin-left: 0px;
-                z-index: 999;
-                position: absolute;
+        width: 35px;
+        margin-left: 0px;
+        z-index: 1;
+        position: absolute;
 
-            } 
-            .unlikeLinknew{
-                background-color: black;
-                opacity: 0.8;
+    } 
+    .unlikeLinknew{
+        background-color: transparent;
+        opacity: 0.8;
 
-                width: 40px;
-                margin-left: 40px;
-                z-index: 999;
-                position: absolute;
+        width: 35px;
+        margin-left: 35px;
+        z-index: 1;
+        position: absolute;
 
+    }
+    .likeLinknew:hover{
+        background-color: white;
+        opacity: 0.8;
+    } 
+    .unlikeLinknew:hover{
+        background-color: white;
+        opacity: 0.8;
+
+    }
+    .shareLinknew{
+        background-color: transparent;
+        opacity: 0.8;
+
+        width: 35px;
+        margin-left: 70px;
+        z-index: 1;
+        position: absolute;
+
+    }
+           #postBodyThirdRowNew{
+                width: 110px;
+                height: 35px;
+                float: right;
+                margin-top: -35px;
+                margin-bottom: -0px;
             }
-            .shareLinknew{
-                background-color: black;
-                opacity: 0.8;
-
-                width: 40px;
-                margin-left: 80px;
-                z-index: 999;
-                position: absolute;
-
+     #postBodyThirdRowNewPopUP{
+                width: 110px;
+                height: 35px;
+                float: right;
+                margin-top: -0px;
+                margin-bottom: -35px;
+               
             }
-            #postBodyThirdRowNew{
-                width: 100%;
-                height: 40px;
-                margin-left: 59.7%;
-                margin-top: -20px;
-                margin-bottom: -20px;
-            }
-            .textTopOfImage{
-                color: white;
-                font-size: 20px;
-                margin-left: 23px;
-                margin-top: -27px;
-                z-index: 9998;
-                position: absolute;
+     
+     #postBodyViewMore{
+                float: right;
+    height: 35px;
+    margin: -36px 0 0 -460px;
+    width: 150px;
+     }
+     #postBodyReadMore{
+                width: 50px;
+                height: 35px;
+                float: right;
+                margin-top: -30px;
+                margin-bottom: 0px;
+                //margin-right: -60px;
+     }
+    
+    .textTopOfImage{
+        color: white;
+        font-size: 20px;
+        margin-left: 23px;
+        margin-top: -27px;
+        z-index: 9998;
+        position: absolute;
 
-            }
+    }
             .imageContainer {
                 position: relative;
                 width: 100%;
