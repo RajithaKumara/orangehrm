@@ -1,4 +1,4 @@
-<?php
+<?php //
 /*
  * OrangeHRM Enterprise is a closed sourced comprehensive Human Resource Management (HRM) 
  * System that captures all the essential functionalities required for any enterprise. 
@@ -123,11 +123,6 @@
                     <?php } ?>
 
                 </div>
-                <div id="buttonDiv">
-                    <input type="button" class="btnBackHide" name="btnSaveDependent" id='<?php echo 'btnhideLike_' . $id ?>' value="<?php echo __("Back"); ?> " />
-
-
-                </div>
             </div>
         </div>
     <?php } else { ?>
@@ -164,9 +159,7 @@
                             <?php } ?>
                         </div>
                     <?php } ?>
-                    <div id="buttonDiv">
-                        <input type="button" class="btnBackHideComment" name="btnSaveDependent" id='<?php echo 'btnhideLikecomment_' . $id ?>' value="<?php echo __("Back"); ?> " />
-                    </div>
+                    
                 </div>
             </div>
         </div>

@@ -60,6 +60,7 @@ protected $buzzService;
         $this->originalPostTime = $this->originalPost->getTime();
         $this->originalPostContent = $this->originalPost->getText();
         $this->likeEmployeList = $post->getLikedEmployeeList();
+        //$this->sharedEmployeeList = $this->originalPost()->getSharedEmployeeList();
     }
      protected function intializeConstant() {
         $buzzConfigService = $this->getBuzzConfigService();

@@ -11,7 +11,9 @@
  * @version    SVN: $Id: Builder.php 7490 2010-03-29 19:53:27Z jwage $
  */
 abstract class PluginShare extends BaseShare {
+
     protected $buzzConfigService;
+
     /**
      * check loged In User Like this post
      * @param int $id
@@ -20,10 +22,10 @@ abstract class PluginShare extends BaseShare {
     public function isLike($id) {
         $likes = $this->getLike();
         $userId = $id;
-        if ($userId !="") {
-            
+        if ($userId != "") {
+
             foreach ($likes as $like) {
-                
+
                 if ($like->getEmployeeNumber() == $userId) {
                     return 'Unlike';
                 }
@@ -71,10 +73,10 @@ abstract class PluginShare extends BaseShare {
      * @return Employee Collection
      */
     public function getLikedEmployees($loggedInUserId) {
-        $count=  $this->getBuzzConfigService()->getBuzzLikeCount();
+        $count = $this->getBuzzConfigService()->getBuzzLikeCount();
         $arrayOfEmployees = array();
         foreach ($this->getLike() as $value) {
-            if($count<=0){
+            if ($count <= 0) {
                 break;
             }
             $empId = $value->getEmployeeNumber();
@@ -86,11 +88,9 @@ abstract class PluginShare extends BaseShare {
                 $arrayOfEmployees[] = $empName;
                 $count--;
             }
-            
-            
         }
         foreach ($this->getLike() as $value) {
-            if($count<=0){
+            if ($count <= 0) {
                 break;
             }
             $empId = $value->getEmployeeNumber();
@@ -100,78 +100,117 @@ abstract class PluginShare extends BaseShare {
             }
             if ($empId == $loggedInUserId) {
                 
-            }else{
-            $arrayOfEmployees[] = $empName;
-            $count--;
+            } else {
+                $arrayOfEmployees[] = $empName;
+                $count--;
             }
-            
         }
-        
+
         return $arrayOfEmployees;
     }
-    
-    public function getLikedEmployeeList(){
+
+    /**
+     * Returns the lits of emloyees who liked the share.
+     * @return Employee Collection
+     */
+    public function getSharedEmployees($loggedInUserId) {
+        $count = $this->getBuzzConfigService()->getPostShareCount();
         $arrayOfEmployees = array();
         foreach ($this->getLike() as $value) {
-            
+            if ($count <= 0) {
+                break;
+            }
+            $empId = $value->getEmployeeNumber();
+            $empName = $value->getEmployeeLike()->getFirstAndLastNames();
+            if ($empName == " ") {
+                $empName = 'Admin';
+            }if ($empId == $loggedInUserId) {
+                $empName = "you shared this";
+                $arrayOfEmployees[] = $empName;
+                $count--;
+            }
+        }
+        foreach ($this->getLike() as $value) {
+            if ($count <= 0) {
+                break;
+            }
+            $empId = $value->getEmployeeNumber();
+            $empName = $value->getEmployeeLike()->getFirstAndLastNames();
+            if ($empName == " ") {
+                $empName = 'Admin';
+            }
+            if ($empId == $loggedInUserId) {
+                
+            } else {
+                $arrayOfEmployees[] = $empName;
+                $count--;
+            }
+        }
+
+        return $arrayOfEmployees;
+    }
+
+    public function getLikedEmployeeList() {
+        $arrayOfEmployees = array();
+        foreach ($this->getLike() as $value) {
+
             $arrayOfEmployees[] = $value->getEmployeeLike();
-        
-           
         }
         return $arrayOfEmployees;
     }
-    
-      /**
+
+    /**
      * 
      * @return buzzConfigService
      */
     private function getBuzzConfigService() {
-       if (!$this->buzzConfigService) {
-            $this->buzzConfigService= new BuzzConfigService();
+        if (!$this->buzzConfigService) {
+            $this->buzzConfigService = new BuzzConfigService();
         }
-        
+
         return $this->buzzConfigService;
     }
-    
-    public function getDate(){
+
+    public function getDate() {
         return set_datepicker_date_format($this->getShareTime());
     }
-    
-    public function getTime(){
-        $timeFormat=  $this->getBuzzConfigService()->getTimeFormat();
-        return date($timeFormat, strtotime($this->getShareTime()));;
+
+    public function getTime() {
+        $timeFormat = $this->getBuzzConfigService()->getTimeFormat();
+        return date($timeFormat, strtotime($this->getShareTime()));
+        ;
     }
-    
+
     public function isUnLike($id) {
         $likes = $this->getUnlike();
         $userId = $id;
-        
-        if ($userId!= "") {
-            
+
+        if ($userId != "") {
+
             foreach ($likes as $like) {
                 if ($like->getEmployeeNumber() == $userId) {
-                    
+
                     return 'yes';
-                    
                 }
             }
-            
+
             return 'no';
         } else {
-            
+
             foreach ($likes as $like) {
                 if ($like->getEmployeeNumber() == "") {
-                    
+
                     return 'yes';
                 }
             }
             return 'no';
         }
     }
+
     public function isUnLikeUser($id) {
         $likes = $this->getUnlike();
         $userId = $id;
-        if ($userId!= "") {
+        if ($userId != "") {
             foreach ($likes as $like) {
                 if ($like->getEmployeeNumber() == $userId) {
                     return 'yes';
@@ -187,11 +226,20 @@ abstract class PluginShare extends BaseShare {
             return 'no';
         }
     }
-    
-    public function calShareCount(){
-        $post=  $this->getPostShared();
-        return count($post->getShare())-1;
+
+    public function calShareCount() {
+        $post = $this->getPostShared();
+        return count($post->getShare()) - 1;
     }
 
+    public function getSharedEmployeeNames() {
+        $sharedEmpArray = array();
+        $post = $this->getPostShared();
+        $sharesList = $post->getShare();
+        foreach ($sharesList as $share) {
+            array_push($sharedEmpArray, $share->getEmployeePostShared());
+        }
+        return $sharedEmpArray;
+    }
 
 }

@@ -257,7 +257,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
         <div id="postBodySecondRowPop"  >
             <div id='<?php echo 'postContent_' . $postId ?>'>
-                <?php echo BuzzTextParserService::parseText($postContent);?>
+                <?php echo BuzzTextParserService::parseText($postContent); ?>
                 <?php
                 if ($postType == '1') {
                     ?>
@@ -459,6 +459,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 -webkit-border-radius: 10px;
                 border-radius: 10px; /* future proofing */
                 -khtml-border-radius: 5px; /* for old Konqueror browsers */
+            }
+
+            #commentBodyThirdRowNew{
+                display: none;
             }
         </style>
         <script type="text/javascript">{

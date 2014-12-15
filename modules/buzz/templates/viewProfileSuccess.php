@@ -80,6 +80,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             var getAccessUrl = '<?php echo url_for('buzz/getLogedToBuzz'); ?>';
             var refreshStatsURL = '<?php echo url_for('buzz/viewStatistics'); ?>';
             var viewMoreShare = '<?php echo url_for('buzz/viewShare'); ?>';
+            var getSharedEmployeeListURL = '<?php echo url_for('buzz/getSharedEmployeeList'); ?>';
         </script>
         <script type="text/javascript">
             $(document).ready(function () {

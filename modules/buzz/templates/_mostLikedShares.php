@@ -58,7 +58,6 @@
         overflow: hidden;
         /*max-height: 130px;*/
         font-size: 95%;
-        margin-top: 3px;
     }
     
     #ml_componentContainer .modal{
@@ -98,12 +97,19 @@
         overflow-y: auto;
         overflow-x: hidden;
     }
-    #likeRaw{
+    .likeRaw{
         width: 100%;
         border-radius: 5px;
         background-color: #e3e3e3;
         height: 60px;
         overflow: hidden;
+        border: 1px solid #ccc;
+        margin-bottom: 4px;
+        padding: 4px;
+    }
+    
+    .likeRaw:hover{
+        cursor: pointer;
     }
 
     
@@ -153,10 +159,10 @@
 </div>
 <div id="mc_componentContainer" hidden="true">
     <?php    foreach ($result_mc_shares as $resultMc){ ?>
-    <div id="likeRaw">
+    <!--<div id="likeRaw">-->
         <?php  include_component('buzz', 'viewPostPreview', array('post' => $resultMc)); ?>
         
-    </div>
+    <!--</div>-->
     <?php } ?>
     <div hidden="true" id="rowOne">
         <div id="componentTitleImage">

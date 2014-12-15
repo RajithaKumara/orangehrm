@@ -26,14 +26,27 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
         /*width: 120px;*/
     }
 </style>
-<div id="likeRaw">
+<!-- pop up-->
+<div class="modal hide" style="width: 800px;height: 700px;left: 40%;top:20%;overflow-x: hidden" id='<?php echo 'shareViewMoreMod3_' . $postId ?>'>
+    <div class="modal-body" style="height: 530px;background-color: gray;overflow-x: hidden">
+        <div class="hideModalPopUp" id='<?php echo 'shareViewMoreMod3_' . $postId ?>'
+             style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                class="hideModalPopUp" id='<?php echo 'shareViewMoreMod3_' . $postId ?>' 
+                src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                />
+        </div>
+
+        <div class="shareView" id='<?php echo 'shareViewContent3_' . $postId ?>'>
+        </div>
+    </div>
+</div>
+<div class="likeRaw" id="likeRaw_<?php echo $postId; ?>">
     <li class="previewPost" id=<?php echo "post" . $postId; ?>>
         <div id="picAndNameContainer">
             <div id="profilePicContainer">
-                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" 
-                                                                                                   src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic"/></a>
+                <img class="profPic" id="profPic_<?php echo $postId; ?>" alt="<?php echo __("Employee Photo"); ?>"src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic"/></a>
             </div>  
-            <div id="birthdayUserName">
+            <div class="birthdayUserName" id="birthdayUserName_<?php echo $postId; ?>">
                 <?php
                 $photos = $sf_data->getRaw('originalPost')->getPhotos();
 
@@ -102,19 +115,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
                     </div>
                 </div>
             </div>
-            <!-- pop up-->
-            <div class="modal hide" style="width: 800px;height: 700px;left: 40%;top:20%;overflow-x: hidden" id='<?php echo 'shareViewMoreMod2_' . $postId ?>'>
-                <div class="modal-body" style="height: 530px;background-color: gray;overflow-x: hidden">
-                    <div class="hideModalPopUp" id='<?php echo 'shareViewMoreMod2_' . $postId ?>'
-                         style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
-                            class="hideModalPopUp" id='<?php echo 'shareViewMoreMod2_' . $postId ?>' 
-                            src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
-                            /></div>
 
-                    <div class="shareView" id='<?php echo 'shareViewContent2_' . $postId ?>'>
-                    </div>
-                </div>
-            </div>
         </div>
         <div  id="postBody" class="previewPost">
 

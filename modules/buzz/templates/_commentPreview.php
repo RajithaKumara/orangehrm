@@ -5,10 +5,11 @@
  * and open the template in the editor.
  */
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessComment'));
 ?>
 
 <div id="commentListContainerforpev">
-    <ul class="commentList" id='<?php echo 'commentList_' . $postId ?>'>
+    <ul class="popupCommentList" id='<?php echo 'commentList_' . $postId ?>'>
         <?php
         $count = 0;
         $display = 'block';
@@ -115,7 +116,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
                         </div>
                     </div>
 
-                    <div hidden="true" id="commentColumnTwo">
+                    <div id="commentColumnTwo">
                         <div hidden="true" id="commentBodyThirdRowNew">
                             <div class="likeCommentnew"  id="<?php echo 'commentLikebody_' . $commentId ?>" style="background-color: <?php
                             if ($isLikeComment == 'Unlike') {

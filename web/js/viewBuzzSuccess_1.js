@@ -203,7 +203,7 @@ $(document).ready(function () {
     });
     $('.hideModalPopUp').live("click", function (e) {
         var id = e.target.id;
-        $("#" + id).modal('hide');
+        $(".modal").modal('hide');
     });
 //    $(".postLike").live("click", function (e) {
 //        isAccess();
@@ -281,6 +281,45 @@ $(document).ready(function () {
             }
         });
     });
+    $(".postNoofSharesTooltip").live("hover", function (e) {
+        isAccess();
+        var idValue = e.target.id;
+        var shareId = idValue.split("_")[1];
+        var data = {
+            'id': shareId,
+            'type': 'post',
+            'event': 'hover'
+        };
+        $.ajax({
+            url: getSharedEmployeeListURL,
+            type: "POST",
+            data: data,
+            success: function (data) {
+                $('#' + idValue).attr('title', '');
+                $('#' + idValue).attr('title', data);
+            }
+        });
+    });
+
+    $(".postNoofSharesTooltip").live("click", function (e) {
+        isAccess();
+        var idValue = e.target.id;
+        var shareId = idValue.split("_")[1];
+        var data = {
+            'id': shareId,
+            'type': 'post',
+            'event': 'click'
+        };
+        $.ajax({
+            url: getSharedEmployeeListURL,
+            type: "POST",
+            data: data,
+            success: function (data) {
+                $("#postlikehidebody_" + shareId).replaceWith(data);
+            }
+        });
+        $("#postlikehide_" + shareId).modal();
+    });
 
     $(".commentNoofLikesTooltip").live("hover", function (e) {
         isAccess();
@@ -351,7 +390,7 @@ $(document).ready(function () {
             var commentListId = "#commentListNew_" + elementId.split("_")[1];
             var data = {
                 'commentText': value,
-                'shareId': elementId.split("_")[1]
+                'shareId': elementId.split("_")[1],
             };
             $.ajax({
                 url: addBuzzCommentURL,
@@ -359,6 +398,7 @@ $(document).ready(function () {
                 data: data,
                 success: function (data) {
                     $(commentListId).append(data);
+                    $(".popupCommentList").append(data);
                     $('.commentLoadingBox').hide();
                     $(elementId).val('');
                 }
@@ -440,6 +480,7 @@ $(document).ready(function () {
      * Show images in modal..
      */
     $(".postPhoto").live("click", function (e) {
+        $(".modal").modal('hide');
         var shareId = parseInt(e.target.id.split("_")[1]);
         var imageId = parseInt(e.target.id.split("_")[0]);
 //        if ($("#btn_1_" + shareId).length <= 0) {
@@ -605,14 +646,15 @@ $(document).ready(function () {
         $("#loadingDataModal").modal();
         var share = $("#shareBox_" + idValue.split("_")[1]).val();
         var data = {
-            'postId': idValue.split("_")[2] ,
+            'postId': idValue.split("_")[2],
             'textShare': share
         };
         $.ajax({
-            url: shareShareURL ,
+            url: shareShareURL,
             type: 'POST',
             data: data,
             success: function (data) {
+                $(".modal").modal("hide");
                 $('#buzz').prepend(data);
                 $("#loadingDataModal").modal('hide');
                 $("#successDataModal").modal();
@@ -681,7 +723,7 @@ $(document).ready(function () {
 
     });
     /**
-     * view liked employee list for comment
+     * view liked employee list for post
      */
     $(".postNoofLikesTooltip").live("click", function (e) {
         var idValue = e.target.id;
@@ -689,7 +731,7 @@ $(document).ready(function () {
         var likeLabelId = "#noOfLikes_" + idValue.split("_")[1];
         var existingLikes = parseInt($(likeLabelId).html());
         if (existingLikes > 0) {
-            var action = "post"
+            var action = "post";
 
             var data = {
                 'id': shareId,
@@ -725,9 +767,12 @@ $(document).ready(function () {
         var commentId = idValue.split("_")[1];
         var likeLabelId = "#commentNoOfLikes_" + idValue.split("_")[1];
         var existingLikes = parseInt($(likeLabelId).html().split(" ")[0]);
-
+        //$("#commentlikehidebody_" + commentId).replaceWith("data");
+//        $("#commentlikehide_" + commentId).removeClass('hide');
+        //alert($("#commentlikehide_" + commentId).length);
+        //$("#commentlikehide_" + commentId).modal();
         if (existingLikes > 0) {
-            var action = "comment"
+            var action = "comment";
             var data = {
                 'id': commentId,
                 'actions': action
@@ -737,20 +782,21 @@ $(document).ready(function () {
                 type: 'POST',
                 data: data,
                 success: function (data) {
-                    $("#commentlikehidebody_" + commentId).replaceWith(data);
+//                    alert(data);
+                    $("#postlikehidebody_" + commentId).replaceWith(data);
                 }
             });
-            $("#commentlikehide_" + commentId).modal();
+            $("#postlikehide_" + commentId).modal();
         }
     });
     /**
      * hide liked employee list for comment
      */
-    $(".btnBackHideComment").live("click", function (e) {
-        var idValue = e.target.id;
-        var commentId = idValue.split("_")[1];
-        $("#commentlikehide_" + commentId).modal('hide');
-    });
+//    $(".btnBackHideComment").live("click", function (e) {
+//        var idValue = e.target.id;
+//        var commentId = idValue.split("_")[1];
+//        $("#commentlikehide_" + commentId).modal('hide');
+//    });
     $("#spinner").bind("ajaxSend", function () {
         //$(this).show();
     }).bind("ajaxStop", function () {
@@ -847,23 +893,77 @@ $(document).ready(function () {
         $(this).addClass('tabSelected');
     });
 
-    $(".post_prev_content").live("click", function (e) {
+    $(".likeRaw").live("click", function (e) {
         var id = e.target.id;
         var postId = id.split("_")[1];
         var data = {
-            'shareId': postId,
+            'shareId': postId
         };
         $.ajax({
             url: viewMoreShare,
             type: "POST",
             data: data,
             success: function (data) {
-
-                $('#shareViewContent2_' + postId).replaceWith(data);
-                $('#shareViewMoreMod2_' + postId).modal();
+//                alert(data);
+                $('#shareViewContent3_' + postId).replaceWith(data);
+                $('#shareViewMoreMod3_' + postId).modal();
             }
         });
     });
+
+//    $(".post_prev_content").live("click", function (e) {
+//        var id = e.target.id;
+//        var postId = id.split("_")[1];
+//        var data = {
+//            'shareId': postId
+//        };
+//        $.ajax({
+//            url: viewMoreShare,
+//            type: "POST",
+//            data: data,
+//            success: function (data) {
+//
+//                $('#shareViewContent2_' + postId).replaceWith(data);
+//                $('#shareViewMoreMod2_' + postId).modal();
+//            }
+//        });
+//    });
+
+//    $(".birthdayUserName").live("click", function (e) {
+//        var id = e.target.id;
+//        var postId = id.split("_")[1];
+//        var data = {
+//            'shareId': postId
+//        };
+//        $.ajax({
+//            url: viewMoreShare,
+//            type: "POST",
+//            data: data,
+//            success: function (data) {
+//
+//                $('#shareViewContent2_' + postId).replaceWith(data);
+//                $('#shareViewMoreMod2_' + postId).modal();
+//            }
+//        });
+//    });
+
+//    $(".profPic").live("click", function (e) {
+//        var id = e.target.id;
+//        var postId = id.split("_")[1];
+//        var data = {
+//            'shareId': postId
+//        };
+//        $.ajax({
+//            url: viewMoreShare,
+//            type: "POST",
+//            data: data,
+//            success: function (data) {
+//
+//                $('#shareViewContent2_' + postId).replaceWith(data);
+//                $('#shareViewMoreMod2_' + postId).modal();
+//            }
+//        });
+//    });
 
     $(window).scroll(function ()
     {

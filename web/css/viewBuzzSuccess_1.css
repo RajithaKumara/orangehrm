@@ -244,6 +244,17 @@ overflow: hidden;
     margin-top: 5px;
 }
 
+/*Like, Share and Number of likes label row*/
+#commentBodyThirdRow{
+    display: -webkit-box;    
+    display: -moz-box;
+    -webkit-box-orient: horizontal;    
+    -moz-box-orient: horizontal;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-top: 5px;
+}
+
 #postBodyFourthRow{
     text-align: center;
     padding-top: 5px;
