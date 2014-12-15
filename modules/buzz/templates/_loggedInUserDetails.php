@@ -30,8 +30,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/loggedInUserDetails')
             echo $searchForm->render();
             ?>
         </form>
-        <img id="gotoProfile" height="30px" style="background-color: white;margin-top: 6px; border-radius: 0 5px 5px 0;" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/search.png'); ?>">
-        <!--<button id="gotoProfile" class="submitBtn" >Go!</button>-->
+        <img id="gotoProfile" height="30px" style="" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/search.png'); ?>">
     </div>
     <div id="leftSide">
         <div id="userName">
@@ -53,9 +52,11 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/loggedInUserDetails')
         </div>
     </div>
     <div id="rightSide">
-        <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $empNumber); ?>"><img alt="<?php echo __("Employee Photo"); ?>" 
-             src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $empNumber); ?>" 
-             border="0" id="empPic"/></a>
+        <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $empNumber); ?>">
+            <img alt="<?php echo __("Employee Photo"); ?>" 
+                 src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $empNumber); ?>" 
+                 border="0" id="empPic"/>
+        </a>
     </div>
 </div>
 
