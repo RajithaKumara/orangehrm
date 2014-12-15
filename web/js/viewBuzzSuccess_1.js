@@ -904,7 +904,7 @@ $(document).ready(function () {
             type: "POST",
             data: data,
             success: function (data) {
-//                alert(data);
+                alert(data);
                 $('#shareViewContent3_' + postId).replaceWith(data);
                 $('#shareViewMoreMod3_' + postId).modal();
             }
