@@ -47,6 +47,7 @@ abstract class BaseBuzzAction extends sfAction {
             if ($cookie_valuve == "") {
                 //get it from the configuration
                 setcookie(self::COOKIE_NAME, 'Admin', time() + 3600 * 24 * 30, "/");
+                
             } else {
                 setcookie(self::COOKIE_NAME, $cookie_valuve, time() + 3600 * 24 * 30, "/");
             }
@@ -54,10 +55,11 @@ abstract class BaseBuzzAction extends sfAction {
             $employeeNumber = $cookie_valuve;
         } elseif (isset($_COOKIE[self::COOKIE_NAME])) {
             if ($_COOKIE[self::COOKIE_NAME] == 'Admin') {
-                $employeeNumber = '';
+                $employeeNumber = null;
+                 
+            }else{
+                $employeeNumber = $_COOKIE[self::COOKIE_NAME];
             }
-
-            $employeeNumber = $_COOKIE[self::COOKIE_NAME];
         } else {
             throw new Exception('User Didnot Have');
         }

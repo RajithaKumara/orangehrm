@@ -16,7 +16,7 @@ $(document).ready(function () {
              $("[id=postUnlikeyes_" + idValue.split("_")[1]+']').hide();
              $("[id=postLikeyes_" + idValue.split("_")[1]+']').show();
              $("[id=postLikeno_" + idValue.split("_")[1]+']').hide();
-            
+             
             $.getJSON(shareLikeURL + "?shareId=" + idValue.split("_")[1] + "&likeAction=" + action,
                     {get_param: 'value'}, function (data) {
                 if (data.states === 'savedLike') {

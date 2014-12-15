@@ -218,9 +218,12 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
         background-color: #f6f6f6;
         border-radius: 8px;
         margin-bottom: 5px;
+         border: 2px solid #dedede;
+       
     }
     #empPicPof{
-        border: 5px solid #FFFFFF;
+       
+       
 
     }
 

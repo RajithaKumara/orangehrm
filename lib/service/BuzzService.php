@@ -33,6 +33,10 @@ class BuzzService extends BaseService {
         }
         return $this->buzzDao;
     }
+    
+    public function setBuzzDao($buzzDao){
+        $this->buzzDao=$buzzDao;
+    }
 
     /**
      * get most resent share by giving limit
@@ -43,10 +47,11 @@ class BuzzService extends BaseService {
      */
     public function getShares($limit) {
         try {
-            if ($this->getBuzzDao()->getShares($limit)->getLast()) {
-                BuzzService::$lastLoadedPostId = $this->getBuzzDao()->getShares($limit)->getLast()->getId();
+            $shares=$this->getBuzzDao()->getShares($limit);
+           if(count($shares)>0){
+                BuzzService::$lastLoadedPostId = $shares->getLast()->getId();
             }
-            return $this->getBuzzDao()->getShares($limit);
+            return $shares;
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
             throw new DaoException($e->getMessage(), $e->getCode(), $e);
@@ -271,16 +276,16 @@ class BuzzService extends BaseService {
      * @throws DaoException
      */
     public function saveLikeForShare($like) {
-        try {
+       // try {
             $share = $like->getShareLike();
             $numberOfLikes = $share->getNumberOfLikes() + 1;
             $share->setNumberOfLikes($numberOfLikes);
             $this->getBuzzDao()->saveShare($share);
             return $this->getBuzzDao()->saveLikeForShare($like);
 // @codeCoverageIgnoreStart
-        } catch (Exception $e) {
-            throw new Exception("Share Not Found");
-        }
+//        } catch (Exception $e) {
+//            throw new Exception("Share Not Found");
+//        }
 // @codeCoverageIgnoreEnd
     }
 

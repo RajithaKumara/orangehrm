@@ -186,14 +186,38 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             }
             ?> 
         </ul>
+         <!--start loading window popup window-->
+         <div class="modal hide" id="loadingDataModal" style="top: 80%;left: 50%;">
+
+            <div class="modal-body" style="height: 30px;background-color: white;top: 50%;left: 50%;">
+                
+                <div id="loadingModalBody" style="width: 100%">
+                        <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/vload.gif"); ?>" 
+                             height="12" style="margin-top:9px ;margin-left: 40%;" />
+
+                    </div>
+
+
+            </div>
+        </div>
+         <!--end loading window pop up window-->
+         <!--start Success popup window-->
+         <div class="modal hide" id="successDataModal" style="top: 80%;left: 50%;">
+
+            <div class="modal-body" style="height: 40px;background-color: white;top: 50%;left: 50%;">
+                
+                <!--<div id="successHeader" style="width: 100%;height: 20px;background-color: green;">Success</div>-->
+                <div id="successBody" style="width: 100%;height: 20px;color: green;font-size: 25px;">SuccessFully Saved</div>
+
+            </div>
+        </div>
+         <!--end loading window pop up window-->
         <div class="loadMoreBox">
             <div id="lodingGif">
                 <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="70" />
             </div>
         </div>
-        <div hidden="true" id="loadMorePosts">
-            <!--<a href="javascript:void(0)" class="loadMorePostsLink" id=<?php // echo $postId  ?>><?php // echo __("Load more posts");  ?></a>-->
-        </div> 
+        
         <div id="loggedInUserId" hidden="true"><?php echo $loggedInUser; ?></div>
 
         <script  type="text/javascript">

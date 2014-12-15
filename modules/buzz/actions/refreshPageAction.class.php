@@ -26,7 +26,7 @@
  */
 class refreshPageAction extends BaseBuzzAction {
 
-    protected $buzzService;
+   
 
     public function execute($request) {
         try{
@@ -51,16 +51,7 @@ class refreshPageAction extends BaseBuzzAction {
         $this->buzzService = $buzzService;
     }
 
-    /**
-     * 
-     * @return BuzzService
-     */
-    private function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->setBuzzService(new BuzzService());
-        }
-        return $this->buzzService;
-    }
+   
 
     /**
      * 

@@ -147,7 +147,7 @@ $(document).ready(function () {
     $("#gotoProfile").click(function () {
         var id = $('#searchChatter_emp_name_empId').val();
         if (id.length <= 0) {
-            alert('select User');
+            
         } else {
             window.location = profilePage + id;
         }
@@ -413,10 +413,13 @@ $(document).ready(function () {
 
     $(".deleteShare").live("click", function (e) {
         var shareId = e.target.id.split("_")[1];
+        $("#loadingDataModal").modal();
         $.ajax({
             url: shareDeleteURL + "?shareId=" + shareId,
             success: function (data) {
                 $("#post" + shareId).hide();
+                $("#loadingDataModal").modal('hide');
+               
             }
         });
     });
@@ -558,7 +561,7 @@ $(document).ready(function () {
         var shareId = e.target.id.split("_")[1];
         var content = $("#editshareBox_" + shareId).val();
         $("#editposthide_" + shareId).modal('hide');
-
+        $("#loadingDataModal").modal();
 
         $.ajax({
             url: shareEditURL + "?shareId=" + shareId + "&textShare=" + content,
@@ -566,6 +569,9 @@ $(document).ready(function () {
 
                 $("#postContent_" + shareId).replaceWith(data);
                 reload();
+                $("#loadingDataModal").modal('hide');
+                 $("#successDataModal").modal();
+                 setTimeout(hideSuccessModal, 3000);
                 setTimeout(refresh, 10000);
             }
         });
@@ -573,15 +579,19 @@ $(document).ready(function () {
 
     });
 
-
+    function hideSuccessModal(){
+        $("#successDataModal").modal('hide');
+    }
 
     $(".deleteComment").live("click", function (e) {
         var commentId = e.target.id.split("_")[1];
+        $("#loadingDataModal").modal();
 
         $.ajax({
             url: commentDeleteURL + "?commentId=" + commentId,
             success: function (data) {
                 $("#commentNew_" + commentId).remove();
+                $("#loadingDataModal").modal('hide');
             }
         });
     });
@@ -592,7 +602,7 @@ $(document).ready(function () {
     $(".btnShare").live("click", function (e) {
         var idValue = e.target.id;
         $("#posthide_" + idValue.split("_")[1]).modal('hide');
-
+        $("#loadingDataModal").modal();
         var share = $("#shareBox_" + idValue.split("_")[1]).val();
         var data = {
             'postId': idValue.split("_")[2] ,
@@ -604,7 +614,9 @@ $(document).ready(function () {
             data: data,
             success: function (data) {
                 $('#buzz').prepend(data);
-                reload();
+                $("#loadingDataModal").modal('hide');
+                $("#successDataModal").modal();
+                 setTimeout(hideSuccessModal, 3000);
                 setTimeout(refresh, 10000);
             }
         });
@@ -616,7 +628,7 @@ $(document).ready(function () {
     $(".viewMoreShare").live("click", function (e) {
         var idValue = e.target.id;
         var shareId = idValue.split("_")[1];
-
+        $("#loadingDataModal").modal();
         //var postId = idValue.split("_")[2];
 //        modalVisible = true;
         var data = {
@@ -628,6 +640,7 @@ $(document).ready(function () {
             data: data,
             success: function (data) {
                 $('#shareViewContent1_' + shareId).replaceWith(data);
+                $("#loadingDataModal").modal('hide');
                 $('#shareViewMoreMod1_' + shareId).modal();
             }
         });
@@ -653,13 +666,14 @@ $(document).ready(function () {
         var content = $("#editcommentBoxNew2_" + commentId).val();
 
         $("#editcommenthideNew2_" + commentId).modal('hide');
-
+        $("#loadingDataModal").modal();
 
         $.ajax({
             url: commentEditURL + "?commentId=" + commentId + "&textComment=" + content,
             success: function (data) {
                 $("#commentContentNew_" + commentId).replaceWith(data);
                 reload();
+                $("#loadingDataModal").modal('hide');
                 setTimeout(refresh, 10000);
             }
         });
@@ -758,7 +772,7 @@ $(document).ready(function () {
         var postId = idValue.split("_")[2];
 //        modalVisible = true;
         //alert("MODAL VISIBLE" + modalVisible);
-
+        $("#loadingDataModal").modal();
         var data = {
             'postId': postId,
         };
@@ -769,6 +783,7 @@ $(document).ready(function () {
             success: function (data) {
 
                 $('#postViewContent_' + shareId).replaceWith(data);
+                $("#loadingDataModal").modal('hide');
                 $('#postViewOriginal_' + shareId).modal();
             }
         });

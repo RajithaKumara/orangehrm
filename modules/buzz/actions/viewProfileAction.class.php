@@ -13,8 +13,8 @@
  */
 class viewProfileAction extends BaseBuzzAction {
 
-    protected $buzzService;
-    protected $buzzConfigService;
+    
+   
 
     public function execute($request) {
         $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
@@ -66,28 +66,6 @@ class viewProfileAction extends BaseBuzzAction {
      */
     protected function setBuzzService($buzzService) {
         $this->buzzService = $buzzService;
-    }
-
-    /**
-     * 
-     * @return BuzzService
-     */
-    private function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->setBuzzService(new BuzzService());
-        }
-        return $this->buzzService;
-    }
-
-    /**
-     * 
-     * @return BuzzConfigService
-     */
-    private function getBuzzConfigService() {
-        if (!$this->buzzConfigService) {
-            $this->buzzConfigService = new BuzzConfigService();
-        }
-        return $this->buzzConfigService;
     }
 
     /**

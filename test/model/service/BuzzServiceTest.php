@@ -40,43 +40,80 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testSavePost() {
         $post = New Post();
+        $buzzDao = $this->getMock('buzzDao', array('savePost'));
 
-        $post->setEmployeeNumber('1');
-        $post->setText('this is test Post');
-        $post->setPostTime('2015-01-10 12:12:12');
+        $buzzDao->expects($this->once())
+                ->method('savePost')
+                ->with($post)
+                ->will($this->returnValue($post));
+
+         $this->buzzService->setBuzzDao($buzzDao);       
         $result = $this->buzzService->savePost($post);
-        $this->assertEquals('2015-01-10 12:12:12', $result->getPostTime());
+        $this->assertTrue($result instanceof Post);
     }
 
     /**
      * this is function to test getting shares data from the database
      */
     public function testGetShares() {
+        $buzzDao = $this->getMock('buzzDao', array('getShares'));
+
+        $buzzDao->expects($this->once())
+                ->method('getShares')
+                ->with(2)
+                ->will($this->returnValue(array()));
+
+         $this->buzzService->setBuzzDao($buzzDao);  
         $result = $this->buzzService->getShares(2);
-        $this->assertEquals(2, count($result));
+        $this->assertTrue(is_array($result));
     }
 
     /**
      * this is function to test getting post from share
      */
     public function testGetPostFromShare() {
-        $result = $this->buzzService->getShares(2);
-        $this->assertEquals(2, $result->getFirst()->getPostShared()->getId());
+        $post= new Post();
+        $share= new Share();
+        $share->setPostShared($post);
+        $buzzDao = $this->getMock('buzzDao', array('getShareById'));
+
+        $buzzDao->expects($this->once())
+                ->method('getShareById')
+                ->with(1)
+                ->will($this->returnValue($share));
+
+         $this->buzzService->setBuzzDao($buzzDao);     
+        $result = $this->buzzService->getShareById(1);
+        $this->assertTrue($result->getPostShared() instanceof Post);
     }
 
     /**
      * this is function to test delete post
      */
     public function testDeletePost() {
+        $buzzDao = $this->getMock('buzzDao', array('deletePost'));
+
+        $buzzDao->expects($this->once())
+                ->method('deletePost')
+                ->with('1')
+                ->will($this->returnValue('1'));
+        $this->buzzService->setBuzzDao($buzzDao);
         $result = $this->buzzService->deletePost('1');
 
-        $this->assertEquals(1, $result);
+        $this->assertEquals('1', $result);
     }
 
     /**
      * this is function to test delete shares from the database
      */
     public function testDeleteShare() {
+        $buzzDao = $this->getMock('buzzDao', array('deleteShare'));
+
+        $buzzDao->expects($this->once())
+                ->method('deleteShare')
+                ->with('1')
+                ->will($this->returnValue('1'));
+        $this->buzzService->setBuzzDao($buzzDao);
         $result = $this->buzzService->deleteShare('1');
 
         $this->assertEquals(1, $result);
@@ -169,45 +206,97 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * this is functoin to test get share by id
      */
     public function testGetShareById() {
-        $share = $this->buzzService->getShareById(1);
+        
+        $share= new Share();
+       
+        $buzzDao = $this->getMock('buzzDao', array('getShareById'));
 
-        $this->assertEquals(1, $share->getId());
+        $buzzDao->expects($this->once())
+                ->method('getShareById')
+                ->with(1)
+                ->will($this->returnValue($share));
+
+         $this->buzzService->setBuzzDao($buzzDao);    
+        $result = $this->buzzService->getShareById(1);
+
+        $this->assertTrue($result instanceof Share);
     }
 
     /**
      * this is functoin to test get post by id
      */
     public function testGetPostById() {
-        $post = $this->buzzService->getPostById(1);
+        $post= new Post();
+       
+        $buzzDao = $this->getMock('buzzDao', array('getPostById'));
 
-        $this->assertEquals(1, $post->getId());
+        $buzzDao->expects($this->once())
+                ->method('getPostById')
+                ->with(1)
+                ->will($this->returnValue($post));
+
+         $this->buzzService->setBuzzDao($buzzDao);    
+        $result = $this->buzzService->getPostById(1);
+
+        $this->assertTrue($result instanceof Post);
+        
     }
 
     /**
      * this is functoin to test get Comment by id
      */
     public function testGetCommentById() {
-        $comment = $this->buzzService->getCommentById(1);
+        $comment= new Comment();
+        $buzzDao = $this->getMock('buzzDao', array('getCommentById'));
 
-        $this->assertEquals(1, $comment->getId());
+        $buzzDao->expects($this->once())
+                ->method('getCommentById')
+                ->with(1)
+                ->will($this->returnValue($comment));
+
+         $this->buzzService->setBuzzDao($buzzDao); 
+        $result = $this->buzzService->getCommentById(1);
+
+        $this->assertTrue($result instanceof Comment);
     }
 
     /**
      * this is functoin to test get likeOnComment by id
      */
     public function testGetLikeOnCommentById() {
-        $likeOnComment = $this->buzzService->getLikeOnCommentById(21);
+        $like= New LikeOnComment();
+        $buzzDao = $this->getMock('buzzDao', array('getLikeOnCommentById'));
 
-        $this->assertEquals(21, $likeOnComment->getId());
+        $buzzDao->expects($this->once())
+                ->method('getLikeOnCommentById')
+                ->with(1)
+                ->will($this->returnValue($like));
+
+         $this->buzzService->setBuzzDao($buzzDao); 
+        $result = $this->buzzService->getLikeOnCommentById(1);
+       
+
+        $this->assertTrue($result instanceof LikeOnComment);
     }
 
     /**
      * this is functoin to test get likeOnShare by id
      */
     public function testGetLikeOnshareById() {
-        $likeOnShare = $this->buzzService->getLikeOnShareById(21);
+        $like= New LikeOnShare();
+        $buzzDao = $this->getMock('buzzDao', array('getLikeOnShareById'));
 
-        $this->assertEquals(21, $likeOnShare->getId());
+        $buzzDao->expects($this->once())
+                ->method('getLikeOnShareById')
+                ->with(1)
+                ->will($this->returnValue($like));
+
+         $this->buzzService->setBuzzDao($buzzDao); 
+        $result = $this->buzzService->getLikeOnShareById(1);
+       
+
+        $this->assertTrue($result instanceof LikeOnShare);
+       
     }
     
     
@@ -383,18 +472,7 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $result = $this->buzzService->savePhoto($photo);
         $this->assertEquals('jpg', $result->getFileType());
     }
-    
-     /**
-     * this is function to test updates in the database
-     */
-    public function testUpdate() {
-        $result = $this->buzzService->getShares(2);
-        $share = $result->getFirst();
-        $share->setText($share->getId() . ' this is updated one');
-        $r = $this->buzzService->saveShare($share);
-        $this->assertEquals($share->getId() . ' this is updated one', $r->getText());
-    }
-    
+      
     /**
      * this is functoin to test get Employee by id
      */
