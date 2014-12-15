@@ -631,6 +631,14 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testAnivesary(){
        
+        $buzzDao = $this->getMock('buzzDao', array('getEmployeesHavingAnniversaryOn'));
+
+        $buzzDao->expects($this->once())
+                ->method('getEmployeesHavingAnniversaryOn')
+                ->with(4)
+                ->will($this->returnValue(array()));
+
+         $this->buzzService->setBuzzDao($buzzDao);
         $result = $this->buzzService->getEmployeesHavingAnniversaryOn(4);
         $this->assertEquals('0', Count($result));
     }

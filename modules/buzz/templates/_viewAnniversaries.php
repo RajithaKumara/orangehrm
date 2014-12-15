@@ -54,16 +54,14 @@
     }
 
     #anniversaryText{
-        color: #9c9c9c;
-        background-color: #EBEBEB;
-        font-size: 11px;
-        //font-style: italic;
-        //float: left;
-        position: relative;
-        width: 100%;
-        margin-top: -25px;
-        //text-align: left;
-        //width: 90px;
+       background-color: #ebebeb;
+    color: #9c9c9c;
+    float: right;
+    font-size: 11px;
+    margin-left: 30px;
+    
+    position: relative;
+    width: 300px;
     }
 
     #annivDate{
@@ -108,23 +106,27 @@
         overflow-x: hidden;
     }
     #yearsBox{
-        background-color: #9c9c9c;
-        height: 15px;
-        color: white;
-        float: left;
-        width: 55px;
-        padding: 4px;
-        border-radius: 0 0 0 8px;
-        text-align: center;
-        font-size: 13px;
+         background-color: #9c9c9c;
+    border-radius: 0 0 0 8px;
+    color: white;
+    float: left;
+    font-size: 13px;
+    height: 15px;
+    margin-left: 16px;
+    padding: 4px;
+    text-align: center;
+    width: 55px;
     }
 
     #joinedDate{
-        float:left;
+        
         padding: 6px;
         background-color: #cfcfcf;
         width: 213px;
         border-radius: 0 0 8px;
+          float: right;
+    margin-right: -4px;
+    
     }
 
 </style>
@@ -169,9 +171,7 @@
                     <div id="annivDate">
                         <?php echo date('F d', strtotime($employee['joined_date'])); ?>
                     </div>
-
-                </li>
-                <div id="anniversaryText"><?php
+                    <div id="anniversaryText"><?php
                     $years = (date('Y') - (date('Y', strtotime($employee['joined_date']))));
                     ?><div id="yearsBox" ><?php
                     if ($years > 1) {
@@ -184,7 +184,10 @@
                     <div id="joinedDate">
                         <?php echo "Joined Date : " . date('Y-M-d', strtotime($employee['joined_date'])); ?>
                     </div>
-                </div>
+                    </div>
+
+                </li>
+                
 
                 <?php
             }
