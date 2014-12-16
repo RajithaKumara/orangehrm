@@ -139,6 +139,31 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
                     <?php } ?>
                 </div>
             </div>
+
+            <div id="commentBodyThirdRow">
+                <div id="noOfLikesLinknew" style="margin-top: 5px;">
+                    <a class="commentNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' style="
+                       color: #232323;
+                       font-family: 'SourceSansProLight';
+                       text-decoration: none;">
+                        <span id="<?php echo 'commentNoOfLikes_' . $commentId; ?>"><?php echo $commentNoOfLikes; ?></span><?php echo " " . __("people "); ?>
+                        <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
+                              height="16" width="16"/><?php echo __(" this"); ?>
+                    </a>
+                </div>
+
+                <div id="noOfUnLikesLinknew" style="margin-top: 5px;">
+                    <a class="postNoofUnLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' style="
+                       color: #232323;
+                       font-family: 'SourceSansProLight';
+                       text-decoration: none;">
+                        <span id="<?php echo 'commentNoOfUnLikes_' . $commentId; ?>"><?php echo $commentNoOfUnLikes; ?></span><?php echo " " . __("people "); ?>
+                        <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
+                              height="16" width="16"/><?php echo __(" this"); ?>
+                    </a>
+                </div>
+            </div>
+
             <div id="commentBodyThirdRowNew">
                 <div class="likeCommentnew"  id="<?php echo 'commentLikebody_' . $commentId ?>" style="background-color: ">
                     <?php if ($isLikeComment == 'Unlike') { ?>
