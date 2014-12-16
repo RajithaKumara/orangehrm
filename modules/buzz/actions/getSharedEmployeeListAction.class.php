@@ -29,10 +29,10 @@ class getSharedEmployeeListAction extends BaseBuzzAction {
     public function execute($request) {
         try {
             $this->loggedInUser = $this->getUserId();
-            $id = $request->getParameter('id');
+            $this->id = $request->getParameter('id');
             $this->buzzService = new BuzzService();
             $this->loggedInEmployeeId = $this->getUserId();
-            $this->post = $this->buzzService->getShareById($id)->getPostShared();
+            $this->post = $this->buzzService->getShareById($this->id)->getPostShared();
             $this->shareList = $this->post->getShare();
             $this->sharedEmpNameList = array();
             $this->sharedEmpList = array();

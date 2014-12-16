@@ -34,11 +34,13 @@ class viewPhotoAction extends basePimAction {
      */
     public function getEmployeeService() {
         if(is_null($this->employeeService)) {
-            $this->employeeService = new BuzzService();
-            
+            $this->employeeService = new EmployeeService();
+            $this->employeeService->setEmployeeDao(new EmployeeDao());
         }
         return $this->employeeService;
     }
+
+    
 
     
     

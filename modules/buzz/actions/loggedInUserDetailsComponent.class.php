@@ -27,13 +27,26 @@
 class loggedInUserDetailsComponent extends sfComponent {
 
     protected $buzzService;
+      private $employeeService;
+
+    /**
+     * Get EmployeeService
+     * @returns EmployeeService
+     */
+    public function getEmployeeService() {
+        if(is_null($this->employeeService)) {
+            $this->employeeService = new EmployeeService();
+            $this->employeeService->setEmployeeDao(new EmployeeDao());
+        }
+        return $this->employeeService;
+    }
 
     public function execute($request) {
         $this->buzzService = new BuzzService();
         $this->empNumber = $this->getUserId();
 
 
-        $this->employee = $this->buzzService->getEmployee($this->empNumber);
+        $this->employee = $this->getEmployeeService()->getEmployee($this->empNumber);
         if ($this->employee) {
             $this->name = $this->employee->getFirstAndMiddleName();
             $this->jobtitle = ' '.$this->employee->getJobTitleName();

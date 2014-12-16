@@ -22,7 +22,7 @@ class loadMoreProfileAction extends BaseBuzzAction {
             $this->profileUserId = $request->getParameter('profileUserId');
             $this->buzzService = $this->getBuzzService();
 
-            $this->nextSharesList = $this->buzzService->getMoreProfileShares(5, $this->lastPostId, $this->profileUserId);
+            $this->nextSharesList = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber(5, $this->lastPostId, $this->profileUserId);
             $this->editForm = new CommentForm();
             $this->commentForm = $this->getCommentForm();
         } catch (Exception $ex) {

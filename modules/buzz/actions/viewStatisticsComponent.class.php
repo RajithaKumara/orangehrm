@@ -48,23 +48,23 @@ class viewStatisticsComponent extends sfComponent {
     }
     
     private function getNoOfSharesBy($userId) {
-        return $this->buzzService->getNoOfSharesBy($userId);
+        return $this->buzzService->getNoOfSharesByEmployeeNumber($userId);
     }
     
     private function getNoOfCommentsBy($userId) {
-        return $this->buzzService->getNoOfCommentsBy($userId);
+        return $this->buzzService->getNoOfCommentsByEmployeeNumber($userId);
     }
     
     private function getNoOfShareLikesFor($userId) {
-        return $this->buzzService->getNoOfShareLikesFor($userId);
+        return $this->buzzService->getNoOfShareLikesForEmployeeByEmployeeNumber($userId);
     }
     
     private function getNoOfCommentLikesFor($userId) {
-        return $this->buzzService->getNoOfCommentLikesFor($userId);
+        return $this->buzzService->getNoOfCommentLikesForEmployeeByEmployeeNumber($userId);
     }
     
     private function getNoOfCommentsFor($userId) {
-        return $this->buzzService->getNoOfCommentsFor($userId);
+        return $this->buzzService->getNoOfCommentsForEmployeeByEmployeeNumber($userId);
     }
 
 }

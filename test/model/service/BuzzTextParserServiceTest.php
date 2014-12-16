@@ -13,7 +13,7 @@ class BuzzTextParserServiceTest extends PHPUnit_Framework_TestCase{
     protected function setUp() {
 
         $this->buzzTextParserService = new BuzzTextParserService();
-        TestDataService::populate(sfConfig::get('sf_plugins_dir') . '/orangehrmBuzzPlugin/test/fixtures/Post.yml');
+        
     }
     
     /**
@@ -55,7 +55,7 @@ class BuzzTextParserServiceTest extends PHPUnit_Framework_TestCase{
     public function testTextWithImageUrl(){
         $url='http://www.jpl.nasa.gov/spaceimages/images/mediumsize/PIA17011_ip.jpg';
         $result=BuzzTextParserService::parseText($url);
-        $trueResult= "<img src=\"".$url."\" height=\"50%\" width=\"50%\">";
+        $trueResult= "<img src=\"".$url."\" height=\"100px\" >";
         
         $this->assertEquals($result,$trueResult);
     }

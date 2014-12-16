@@ -35,7 +35,7 @@ class refreshProfileAction extends BaseBuzzAction {
             $this->profileUserId = $request->getParameter('profileUserId');
             $this->buzzService = $this->getBuzzService();
             $this->loggedInUser = $this->getUserId();
-            $this->fullSharesList = $this->buzzService->getProfileSharesUptoId($this->lastPostId, $this->profileUserId);
+            $this->fullSharesList = $this->buzzService->getEmployeeSharesUptoShareId($this->lastPostId, $this->profileUserId);
             $this->commentForm = $this->getCommentForm();
             $this->editForm = new CommentForm();
         } catch (Exception $ex) {

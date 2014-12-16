@@ -12,6 +12,19 @@
  * @author dewmal
  */
 class viewProfileAction extends BaseBuzzAction {
+      private $employeeService;
+
+    /**
+     * Get EmployeeService
+     * @returns EmployeeService
+     */
+    public function getEmployeeService() {
+        if(is_null($this->employeeService)) {
+            $this->employeeService = new EmployeeService();
+            $this->employeeService->setEmployeeDao(new EmployeeDao());
+        }
+        return $this->employeeService;
+    }
 
     public function execute($request) {
         $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
@@ -20,9 +33,9 @@ class viewProfileAction extends BaseBuzzAction {
         try {
             $this->loggedInUser = $this->getUserId();
             $this->profileUserId = $request->getParameter('empNumber');
-            $this->employee = $this->getBuzzService()->getEmployee($this->profileUserId);
+            $this->employee = $this->getEmployeeService()->getEmployee($this->profileUserId);
 
-            $this->employeeList = $this->getBuzzService()->getEmployeeList();
+            
             $this->intializeConstant();
 
 
@@ -34,8 +47,8 @@ class viewProfileAction extends BaseBuzzAction {
 
 
         $this->videoForm = new CreateVideoForm();  // video form added
-        $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetween(date("Y-m-d"), date('Y-m-t'));
-        $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOn(date("m"));
+        $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
+        $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("m"));
     }
 
     /**
@@ -45,7 +58,7 @@ class viewProfileAction extends BaseBuzzAction {
         $buzzService = $this->getBuzzService();
         $userId = $this->profileUserId;
 
-        $this->postList = $buzzService->getSharesByUserId($this->shareCount, $userId);
+        $this->postList = $buzzService->getSharesByEmployeeNumber($this->shareCount, $userId);
     }
 
     protected function intializeConstant() {

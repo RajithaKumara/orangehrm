@@ -19,7 +19,9 @@ class viewProfileDetailsComponent extends sfComponent {
             $this->empNum = $this->employee->getEmpNumber();
             $this->fullName = $this->employee->getFirstName() . " " . $this->employee->getLastName();
             $this->jobtitle = $this->employee->getJobTitleName();
-            $this->birthDay = date('M-d', $this->employee->getEmpBirthday());
+            if($this->employee->getEmpBirthday()!=null){
+            $this->birthDay = date('M-d', strtotime($this->employee->getEmpBirthday()));
+            }
             $this->gender = $this->employee->getGenderAsString();
             $this->workEmail = $this->employee->getEmpWorkEmail();
             $this->workTel = $this->employee->getEmpWorkTelephone();

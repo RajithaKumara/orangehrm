@@ -21,21 +21,19 @@
 
 class BuzzService extends BaseService {
 
-    static $lastLoadedPostId = 0;
-
     /**
      * this is function to get buzzDao 
-     * @return buzzDao
+     * @return BuzzDao
      */
     public function getBuzzDao() {
         if (!$this->buzzDao) {
-            $this->buzzDao = new buzzDao();
+            $this->buzzDao = new BuzzDao();
         }
         return $this->buzzDao;
     }
-    
-    public function setBuzzDao($buzzDao){
-        $this->buzzDao=$buzzDao;
+
+    public function setBuzzDao(BuzzDao $buzzDao) {
+        $this->buzzDao = $buzzDao;
     }
 
     /**
@@ -47,10 +45,7 @@ class BuzzService extends BaseService {
      */
     public function getShares($limit) {
         try {
-            $shares=$this->getBuzzDao()->getShares($limit);
-           if(count($shares)>0){
-                BuzzService::$lastLoadedPostId = $shares->getLast()->getId();
-            }
+            $shares = $this->getBuzzDao()->getShares($limit);
             return $shares;
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -59,73 +54,46 @@ class BuzzService extends BaseService {
 // @codeCoverageIgnoreEnd
     }
 
-    public function getEmployee($empNumber) {
-        return $this->getBuzzDao()->getEmployee($empNumber);
+    public function getEmployeesHavingBdaysBetweenTwoDates($fromDate, $toDate) {
+        return $this->getBuzzDao()->getEmployeesHavingBdaysBetweenTwoDates($fromDate, $toDate);
     }
 
-    public function getEmployeesHavingBdaysBetween($fromDate, $toDate) {
-        return $this->getBuzzDao()->getEmployeesHavingBdaysBetween($fromDate, $toDate);
+    public function getEmployeesHavingAnniversaryOnMonth($date) {
+        return $this->getBuzzDao()->getEmployeesHavingAnniversaryOnMonth($date);
     }
 
-    public function getEmployeesHavingAnniversaryOn($month) {
-        $empList = $this->getBuzzDao()->getEmployeesHavingAnniversaryOn($month);
-        $empArray = array();
-        $today = date("d");
-        foreach ($empList as $employee) {
-            $today = strtotime($today);
-            $joined_date = date('d', strtotime($employee['joined_date']));
-
-            if ($joined_date > $today) {
-                array_push($empArray, $employee);
-            }
-        }
-        return $empArray;
+    public function getNoOfSharesByEmployeeNumber($employeeNumber) {
+        return $this->getBuzzDao()->getNoOfSharesByEmployeeNumber($employeeNumber);
     }
 
-    public function getNoOfSharesBy($userId) {
-        return $this->getBuzzDao()->getNoOfSharesBy($userId);
+    public function getNoOfCommentsByEmployeeNumber($employeeNumber) {
+        return $this->getBuzzDao()->getNoOfCommentsByEmployeeNumber($employeeNumber);
     }
 
-    public function getNoOfCommentsBy($userId) {
-        return $this->getBuzzDao()->getNoOfCommentsBy($userId);
-    }
-
-    public function getNoOfShareLikesFor($userId) {
-        return $this->getBuzzDao()->getNoOfShareLikesFor($userId);
-    }
-
-    public function getEmployeeList() {
-        return $this->getBuzzDao()->getEmployeeList();
+    public function getNoOfShareLikesForEmployeeByEmployeeNumber($employeeNumber) {
+        return $this->getBuzzDao()->getNoOfShareLikesForEmployeeByEmployeeNumber($employeeNumber);
     }
 
     public function getMostLikedShares($shareCount) {
         return $this->getBuzzDao()->getMostLikedShares($shareCount);
     }
-    
+
     public function getMostCommentedShares($shareCount) {
         return $this->getBuzzDao()->getMostCommentedShares($shareCount);
     }
 
-    public function getNoOfCommentLikesFor($userId) {
-        return $this->getBuzzDao()->getNoOfCommentLikesFor($userId);
+    public function getNoOfCommentLikesForEmployeeByEmployeeNumber($employeeNumber) {
+        return $this->getBuzzDao()->getNoOfCommentLikesForEmployeeByEmployeeNumber($employeeNumber);
     }
 
-    public function getNoOfCommentsFor($userId) {
-        return $this->getBuzzDao()->getNoOfCommentsFor($userId);
-    }
-
-    public function getEmployeePicture($empNumber) {
-        return $this->getBuzzDao()->getEmployeePicture($empNumber);
+    public function getNoOfCommentsForEmployeeByEmployeeNumber($employeeNumber) {
+        return $this->getBuzzDao()->getNoOfCommentsForEmployeeByEmployeeNumber($employeeNumber);
     }
 
     public function getMoreShares($limit, $fromId) {
         try {
             $shares = $this->getBuzzDao()->getMoreShares($limit, $fromId);
-            // @codeCoverageIgnoreStart
-            if(count($shares)>0){
-            $this->lastLoadedPostId = $shares->getLast()->getId();
-            }
-            // @codeCoverageIgnoreEnd
+
             return $shares;
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -134,14 +102,10 @@ class BuzzService extends BaseService {
 // @codeCoverageIgnoreEnd
     }
 
-    public function getMoreProfileShares($limit, $fromId, $userId) {
+    public function getMoreEmployeeSharesByEmployeeNumber($limit, $fromId, $employeeNumber) {
         try {
-            $shares = $this->getBuzzDao()->getMoreProfileShares($limit, $fromId, $userId);
-            // @codeCoverageIgnoreStart
-            if(count($shares)>0){
-            $this->lastLoadedPostId = $shares->getLast()->getId();
-            }
-            // @codeCoverageIgnoreEnd
+            $shares = $this->getBuzzDao()->getMoreEmployeeSharesByEmployeeNumber($limit, $fromId, $employeeNumber);
+
             return $shares;
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -150,9 +114,9 @@ class BuzzService extends BaseService {
 // @codeCoverageIgnoreEnd
     }
 
-    public function getProfileSharesUptoId($lastId, $useId) {
+    public function getEmployeeSharesUptoShareId($lastId, $useId) {
         try {
-            $shares = $this->getBuzzDao()->getProfileSharesUptoId($lastId, $useId);
+            $shares = $this->getBuzzDao()->getEmployeeSharesUptoShareId($lastId, $useId);
             return $shares;
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -189,9 +153,9 @@ class BuzzService extends BaseService {
 // @codeCoverageIgnoreEnd
     }
 
-    public function getSharesByUserId($limit, $UserId) {
+    public function getSharesByEmployeeNumber($limit, $UserId) {
         try {
-            return $this->getBuzzDao()->getSharesByUserId($limit, $UserId);
+            return $this->getBuzzDao()->getSharesByEmployeeNumber($limit, $UserId);
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
             throw new DaoException($e->getMessage(), $e->getCode(), $e);
@@ -209,7 +173,6 @@ class BuzzService extends BaseService {
     public function getPostById($postId) {
         try {
             return $this->getBuzzDao()->getPostById($postId);
-//            $this->getBuzzDao()->getPostById($postId)->getText(); die;
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
             throw new Exception("Post Not Found");
@@ -276,12 +239,12 @@ class BuzzService extends BaseService {
      * @throws DaoException
      */
     public function saveLikeForShare($like) {
-       // try {
-            $share = $like->getShareLike();
-            $numberOfLikes = $share->getNumberOfLikes() + 1;
-            $share->setNumberOfLikes($numberOfLikes);
-            $this->getBuzzDao()->saveShare($share);
-            return $this->getBuzzDao()->saveLikeForShare($like);
+        // try {
+        $share = $like->getShareLike();
+        $numberOfLikes = $share->getNumberOfLikes() + 1;
+        $share->setNumberOfLikes($numberOfLikes);
+        $this->getBuzzDao()->saveShare($share);
+        return $this->getBuzzDao()->saveLikeForShare($like);
 // @codeCoverageIgnoreStart
 //        } catch (Exception $e) {
 //            throw new Exception("Share Not Found");
@@ -309,7 +272,7 @@ class BuzzService extends BaseService {
         }
 // @codeCoverageIgnoreEnd
     }
-    
+
     public function saveUnLikeForShare($like) {
         try {
             $share = $like->getShareUnLike();
@@ -319,11 +282,11 @@ class BuzzService extends BaseService {
             return $this->getBuzzDao()->saveUnLikeForShare($like);
 // @codeCoverageIgnoreStart
         } catch (Exception $e) {
-            throw new Exception("Shareggg Found");
+            throw new Exception($e->getMessage(), $e->getCode(), $e);
         }
 // @codeCoverageIgnoreEnd
     }
-    
+
     public function deleteUnLikeForShare($like) {
         try {
             $share = $like->getShareUnLike();
@@ -378,7 +341,7 @@ class BuzzService extends BaseService {
         }
 // @codeCoverageIgnoreEnd
     }
-    
+
     public function saveUnLikeForComment($like) {
         try {
             $comment = $like->getCommentUnLike();
@@ -392,7 +355,7 @@ class BuzzService extends BaseService {
         }
 // @codeCoverageIgnoreEnd
     }
-    
+
     public function deleteUnLikeForComment($like) {
         try {
             $comment = $like->getCommentUnLike();

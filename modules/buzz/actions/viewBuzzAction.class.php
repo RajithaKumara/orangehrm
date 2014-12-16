@@ -52,6 +52,17 @@ class viewBuzzAction extends BaseBuzzAction {
     private function setCommentForm($form) {
         $this->commentForm = $form;
     }
+    
+    /**
+     * 
+     * @return AddTaskForm
+     */
+    private function getEditForm() {
+        if (!$this->editForm) {
+            $this->editForm=new CommentForm();
+        }
+        return $this->editForm;
+    }
 
     /**
      * 
@@ -72,10 +83,10 @@ class viewBuzzAction extends BaseBuzzAction {
         $this->setConfigurationValues();
         $this->postForm = $this->getPostForm();
         $this->commentForm = $this->getCommentForm();
-        $this->editForm = new CommentForm();
+        $this->editForm = $this->getEditForm();
         $this->uploadImageForm = new UploadPhotoForm(); //image upload form
         $this->buzzService=  $this->getBuzzService();
-       // $this->setBuzzService(new BuzzService());
+       
         $this->initializePostList();
         try {
             $this->loggedInUser = $this->getUserId();
@@ -85,8 +96,8 @@ class viewBuzzAction extends BaseBuzzAction {
 
 
         $this->videoForm = new CreateVideoForm();  // video form added
-        $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetween(date("Y-m-d"), date('Y-m-t'));
-        $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOn(date("m"));
+        $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
+        $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("Y-m-d"));
     }
 
     /**

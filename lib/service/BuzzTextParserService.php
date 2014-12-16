@@ -58,14 +58,14 @@ class BuzzTextParserService {
      * @return $text emoticons inserted text
      */
     public static function parseText($text) {
-        if(BuzzTextParserService::isImage($text)=== true){
-            
-            return "<img src=\"".$text."\" height=\"50%\" width=\"50%\">";
+        if (BuzzTextParserService::isImage($text) === true) {
+
+            return "<img src=\"" . $text . "\" height=\"100px\" >";
         }
         $reg_exUrl = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
 
         if (preg_match($reg_exUrl, $text, $url)) {
-           $text = preg_replace($reg_exUrl, "<a href=\"{$url[0]}\" target=\"_blank\">{$url[0]}</a> ", $text);
+            $text = preg_replace($reg_exUrl, "<a href=\"{$url[0]}\" target=\"_blank\">{$url[0]}</a> ", $text);
         }
         foreach (self::$smiles as $key => $img) {
 
@@ -74,36 +74,35 @@ class BuzzTextParserService {
                     '" height="18" width="18" />';
             $text = str_replace($key, $emoticonPath, $text);
         }
-        return str_replace("\n", "<br />", $text);  
+        return str_replace("\n", "<br />", $text);
     }
-    
-    public static function isImage($url){
-     $params = array('http' => array(
-                  'method' => 'HEAD'));
-     $ctx = stream_context_create($params);
-     $fp = @fopen($url, 'rb', false, $ctx);
-     if (!$fp) {
-        return false;  // Problem with url
-     }
-    $meta = stream_get_meta_data($fp);
+
+    public static function isImage($url) {
+        $params = array('http' => array(
+                'method' => 'HEAD'));
+        $ctx = stream_context_create($params);
+        $fp = @fopen($url, 'rb', false, $ctx);
+        if (!$fp) {
+            return false;  // Problem with url
+        }
+        $meta = stream_get_meta_data($fp);
 // @codeCoverageIgnoreStart
-    if ($meta === false)
-    {
-        fclose($fp);
-        return false;  // Problem reading data from url
-    }
- // @codeCoverageIgnoreEnd
-    $wrapper_data = $meta["wrapper_data"];
-    if(is_array($wrapper_data)){
-      foreach(array_keys($wrapper_data) as $hh){
-          if (substr($wrapper_data[$hh], 0, 19) == "Content-Type: image") // strlen("Content-Type: image") == 19 
-          {
+        if ($meta === false) {
             fclose($fp);
-            return true;
-          }
-      }
+            return false;  // Problem reading data from url
+        }
+        // @codeCoverageIgnoreEnd
+        $wrapper_data = $meta["wrapper_data"];
+        if (is_array($wrapper_data)) {
+            foreach (array_keys($wrapper_data) as $hh) {
+                if (substr($wrapper_data[$hh], 0, 19) == "Content-Type: image") { // strlen("Content-Type: image") == 19 
+                    fclose($fp);
+                    return true;
+                }
+            }
+        }
+        fclose($fp);
+        return false;
     }
-    fclose($fp);
-    return false;
-  }
+
 }

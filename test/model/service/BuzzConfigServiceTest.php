@@ -19,7 +19,7 @@ class BuzzConfigServiceTest extends PHPUnit_Framework_TestCase {
     protected function setUp() {
 
         $this->buzzConfigService = new BuzzConfigService();
-        TestDataService::populate(sfConfig::get('sf_plugins_dir') . '/orangehrmBuzzPlugin/test/fixtures/Post.yml');
+        TestDataService::populate(sfConfig::get('sf_plugins_dir') . '/orangehrmBuzzPlugin/test/fixtures/OrangeBuzz.yml');
     }
     /**
      * test ititial share count onfiguration
@@ -107,6 +107,15 @@ class BuzzConfigServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testGetMostLikeShareCount(){
         $count =$this->buzzConfigService->getMostLikeShareCount();
+        
+        $this->assertEquals(5,$count);
+    }
+    
+     /**
+     * test ititial more comment Configuration
+     */
+    public function testGetPostShareCount(){
+        $count =$this->buzzConfigService->getPostShareCount();
         
         $this->assertEquals(5,$count);
     }

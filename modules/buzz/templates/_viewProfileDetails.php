@@ -59,20 +59,22 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
         float: left;
         width: 40%;
         text-align: left;
-        height: 20px;
+        /*height: 20px;*/
         font-size: 16px;
         font-family: SourceSansProExtraLight;
+        padding: 0px 5px 0px 0px;
     }
     #panelsecond
     {
 
 
-        width: 58%;
+        width: 55%;
         float: right;
         text-align: left;
-        height: 20px;
+        /*height: 20px;*/
         font-size: 16px;
         font-family: SourceSansProExtraLight;
+        padding: 0px 5px 0px 0px;
     }
     #panelsecondfirst
     {
