@@ -171,7 +171,6 @@ $(document).ready(function () {
     $(".commentLike").live("click", function (e) {
         isAccess();
         var idValue = e.target.id;
-
         var id = "commentLikebody_" + trim(idValue.split("_")[1]);
         var div = document.getElementById(id);
         var id2 = "commentUnLikebody_" + trim(idValue.split("_")[1]);

@@ -17,148 +17,34 @@
  * Please refer http://www.orangehrm.com/Files/OrangeHRM_Commercial_License.pdf for the license which includes terms and conditions on using this software.
  *
  */
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewAnniversaries'));
+use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
 ?>
-<style type="text/css">
-    #annivProfilePicContainer{
-        width: 53px;
-        height: 53px;
-        overflow: hidden;
-    }
-
-    #anniversaryPost{
-        background-color: #6B6B6B;
-        margin-bottom: 10px;
-    }
-
-    #annivProfilePicContainer img{
-        width: 100%;
-        position:relative;
-        top:0;
-        bottom:0;
-        margin:auto;
-    }
-
-    #annivProfilePicContainer{
-        float: left;
-        border: 2px solid white;
-        vertical-align: middle;
-        position:relative;
-        background-color: #EBEBEB;
-        margin-right: 8px;
-        border-radius: 5px;
-    }
-
-    #anniversaryUserName{
-        float: left;
-        font-size: 20px;
-    }
-
-    #anniversaryText{
-       background-color: #ebebeb;
-    color: #9c9c9c;
-    float: right;
-    font-size: 11px;
-    margin-left: 30px;
-    
-    position: relative;
-    width: 300px;
-    }
-
-    #annivDate{
-        font-size: 11px;
-        font-style: italic;
-    }
-
-    #annivPicAndNameContainer div{
-        /*float: left;*/
-    }
-
-    #anniversaryPost{
-        height: 70px;
-        //border: 2px solid white;
-        border-radius: 5px;
-        padding: 4px;
-        background-color: #e3e3e3;
-    }
-    #anniversaryPostNull{
-        height: 70px;
-        //border: 2px solid white;
-        
-        padding: 4px;
-        
-    }
-
-    #upcomingAnnivMonth{
-        //background-color: #EBEBEB;
-        color: #6B6B6B;
-        font-size: 16px;
-        padding: 10px;
-    }
-
-    #upcomingAnnivList{
-        padding: 5px;
-
-        // max-height: 100px;
-        overflow-y:auto;
-        margin-bottom: 20px;
-        height: 250px;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    #yearsBox{
-         background-color: #9c9c9c;
-    border-radius: 0 0 0 8px;
-    color: white;
-    float: left;
-    font-size: 13px;
-    height: 15px;
-    margin-left: 16px;
-    padding: 4px;
-    text-align: center;
-    width: 55px;
-    }
-
-    #joinedDate{
-        
-        padding: 6px;
-        background-color: #cfcfcf;
-        width: 213px;
-        border-radius: 0 0 8px;
-          float: right;
-    margin-right: -4px;
-    
-    }
-
-</style>
 <div class ="rightBarBodyAll">
     <div class="rightBarHeading" id="rightBarHeadingAnniv"><?php echo 'UPCOMING ANNIVERSARIES' ?> 
-        <img id="moreAniversary" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" style="float: right;margin-top: -3px;margin-right: -10px" height="30px" width="30px"/>
-        <img id="lessAniversary" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" style="float: right;margin-top: -3px;margin-right: -10px;display: none" height="30px" width="30px"/>
-
+        <img id="moreAniversary" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" 
+            height="30px" width="30px"/>
+        <img id="lessAniversary" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" 
+            height="30px" width="30px"/>
     </div>
     <div class ="rightBarBody">
         <div class="toggling" hidden="true" id="upcomingAnnivMonth"><?php echo date('M Y'); ?></div>
         <ul class="toggling" hidden="true" id="upcomingAnnivList">    
-            <?php if(count($anniversaryEmpList)==0){?>
-         <li id="anniversaryPostNull">
-            
-                
-                <div id="anniversaryUserName">
-                    <a href="#" class="name" id="name2">
-                        <?php echo _("No Anniversaries For This Month"); ?>
-                    </a>
-                     
-            </div>
-            
-            
-        </li>
-    <?php } ?>
+            <?php if (count($anniversaryEmpList) == 0) { ?>
+                <li id="anniversaryPostNull">
+                    <div id="anniversaryUserName">
+                        <a href="#" class="name" id="name2">
+                            <?php echo _("No Anniversaries For This Month"); ?>
+                        </a>
+                    </div>
+                </li>
+            <?php } ?>
             <?php foreach ($anniversaryEmpList as $employee) { ?>
                 <li id="anniversaryPost">
                     <div id="annivPicAndNameContainer">
                         <div id="annivProfilePicContainer">
                             <img alt="<?php echo __("Employee Photo"); ?>" 
-                                 src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee['emp_number']); ?>" border="0" id="empPic"/>
+                                 src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee['emp_number']); ?>" id="empPic"/>
                         </div>  
                         <div id="anniversaryUserName">
                             <a href="#" class="name">
@@ -172,44 +58,23 @@
                         <?php echo date('F d', strtotime($employee['joined_date'])); ?>
                     </div>
                     <div id="anniversaryText"><?php
-                    $years = (date('Y') - (date('Y', strtotime($employee['joined_date']))));
-                    ?><div id="yearsBox" ><?php
-                    if ($years > 1) {
-                        echo __($years . ' years');
-                    } else {
-                        echo __($years . ' year');
-                    }
-                    ?>
+                        $years = (date('Y') - (date('Y', strtotime($employee['joined_date']))));
+                        ?><div id="yearsBox" ><?php
+                        if ($years > 1) {
+                            echo __($years . ' years');
+                        } else {
+                            echo __($years . ' year');
+                        }
+                        ?>
+                        </div>
+                        <div id="joinedDate">
+                            <?php echo "Joined Date : " . date('Y-M-d', strtotime($employee['joined_date'])); ?>
+                        </div>
                     </div>
-                    <div id="joinedDate">
-                        <?php echo "Joined Date : " . date('Y-M-d', strtotime($employee['joined_date'])); ?>
-                    </div>
-                    </div>
-
                 </li>
-                
-
                 <?php
             }
             ?>
         </ul>
     </div>
 </div>
-<script type="text/javascript">
-    $("#rightBarHeadingAnniv").live('click', function () {
-        $("#upcomingAnnivMonth").toggle(300);
-        $("#upcomingAnnivList").toggle(300);
-        $("#upcomingBdaysMonth").hide(300);
-        $("#upcomingBdaysList").hide(300);
-        $("#mc_componentContainer").hide(300);
-        $("#ml_componentContainer").hide(300);
-        $("#moreAniversary").toggle();
-        $("#lessAniversary").toggle();
-        $("#moreBirthdays").show();
-        $("#lessBirthdays").hide();
-        $("#moreCommentLiked").show();
-        $("#lessCommentLiked").hide();
-        $("#morePostLiked").show();
-        $("#lessPostLiked").hide();
-    });
-</script>

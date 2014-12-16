@@ -66,21 +66,25 @@ class buzzDao extends BaseDao {
 
     public function getNoOfSharesBy($userId) {
         $q = Doctrine_Manager::getInstance()->getCurrentConnection();
+        $queryParameter = null;
         if ($userId == '') {
-            $result = $q->execute("SELECT * FROM ohrm_buzz_share WHERE employee_number is NULL");
-            return $result->rowCount();
+            $queryParameter = "is NULL";
+        } else {
+            $queryParameter = "= " . $userId;
         }
-        $result = $q->execute("SELECT * FROM ohrm_buzz_share WHERE employee_number=" . $userId);
+        $result = $q->execute("SELECT * FROM ohrm_buzz_share WHERE employee_number " . $queryParameter);
         return $result->rowCount();
     }
 
     public function getNoOfCommentsBy($userId) {
         $q = Doctrine_Manager::getInstance()->getCurrentConnection();
+        $queryParameter = null;
         if ($userId == '') {
-            $result = $q->execute("SELECT * FROM ohrm_buzz_comment WHERE employee_number is NULL");
-            return $result->rowCount();
+            $queryParameter = "is NULL";
+        } else {
+            $queryParameter = "= " . $userId;
         }
-        $result = $q->execute("SELECT * FROM ohrm_buzz_comment WHERE employee_number=" . $userId);
+        $result = $q->execute("SELECT * FROM ohrm_buzz_comment WHERE employee_number " . $queryParameter);
         return $result->rowCount();
     }
 
@@ -88,10 +92,10 @@ class buzzDao extends BaseDao {
         $q = Doctrine_Manager::getInstance()->getCurrentConnection();
         if ($userId == '') {
             $queryLastBlock = "is NULL";
-        }else{
+        } else {
             $queryLastBlock = "= " . $userId;
         }
-        
+
         $shareLikesPerEmployee = $q->execute(
                 "SELECT *
                 FROM ohrm_buzz_share
@@ -104,19 +108,15 @@ class buzzDao extends BaseDao {
     public function getNoOfCommentLikesFor($userId) {
         $q = Doctrine_Manager::getInstance()->getCurrentConnection();
         if ($userId == '') {
-            $result = $q->execute(
-                    "SELECT *
-                FROM ohrm_buzz_comment
-                INNER JOIN ohrm_buzz_like_on_comment ON ohrm_buzz_like_on_comment.comment_id=ohrm_buzz_comment.id
-                WHERE ohrm_buzz_comment.employee_number is NULL"
-            );
-            return $result->rowCount();
+            $queryLastBlock = "is NULL";
+        } else {
+            $queryLastBlock = "= " . $userId;
         }
         $result = $q->execute(
                 "SELECT *
                 FROM ohrm_buzz_comment
                 INNER JOIN ohrm_buzz_like_on_comment ON ohrm_buzz_like_on_comment.comment_id=ohrm_buzz_comment.id
-                WHERE ohrm_buzz_comment.employee_number = " . $userId
+                WHERE ohrm_buzz_comment.employee_number " . $queryLastBlock
         );
         return $result->rowCount();
     }
@@ -124,19 +124,15 @@ class buzzDao extends BaseDao {
     public function getNoOfCommentsFor($userId) {
         $q = Doctrine_Manager::getInstance()->getCurrentConnection();
         if ($userId == '') {
-            $result = $q->execute(
-                    "SELECT *
-                FROM ohrm_buzz_share
-                INNER JOIN ohrm_buzz_comment ON ohrm_buzz_comment.share_id=ohrm_buzz_share.id
-                WHERE ohrm_buzz_share.employee_number is NULL"
-            );
-            return $result->rowCount();
+            $queryLastBlock = "is NULL";
+        } else {
+            $queryLastBlock = "= " . $userId;
         }
         $result = $q->execute(
                 "SELECT *
                 FROM ohrm_buzz_share
                 INNER JOIN ohrm_buzz_comment ON ohrm_buzz_comment.share_id=ohrm_buzz_share.id
-                WHERE ohrm_buzz_share.employee_number = " . $userId
+                WHERE ohrm_buzz_share.employee_number " . $queryLastBlock
         );
         return $result->rowCount();
     }
