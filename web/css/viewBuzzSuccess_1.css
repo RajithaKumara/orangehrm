@@ -445,12 +445,12 @@ overflow: hidden;
 {
     background: #fff;
     position: absolute;
-    top: 11px;
+    //top: 11px;
     left: -34px;
     z-index: 100;
     width: 60px;
     display: none;
-    margin-left: 10px;
+    margin-left: 19px;
     padding: 20px 0 5px;
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
@@ -477,7 +477,7 @@ a.account
     font-size: 11px;
     color: #555;
     position: absolute;
-    z-index: 1;
+    z-index: 101;
     display: block;
     padding: 11px 0 0 20px;
     height: 40px;
@@ -494,7 +494,7 @@ a.commentAccount
     line-height: 16px;
     color: #555;
     position: absolute;
-    z-index: 1;
+    z-index: 101;
     display: block;
     padding: 20px 0 0 20px;
     height: 28px;
@@ -504,6 +504,21 @@ a.commentAccount
     background: url(../images/more35.png) 16px 17px no-repeat;
     cursor:pointer;
 }
+
+.commentDropDown .submenu{
+    background: #fff;
+    position: absolute;
+    top: 11px;
+    left: -34px;
+    z-index: 100;
+    width: 60px;
+    display: none;
+    margin-left: 19px;
+    padding: 20px 0 5px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
 .dashBuzz {
     position: fixed;
     top: 50%;

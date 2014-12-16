@@ -114,7 +114,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
 
         width: 30px;
         margin-left: 0px;
-        z-index: 999;
+        z-index: 99;
         position: absolute;
 
     } 
@@ -124,7 +124,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
 
         width: 30px;
         margin-left: 40px;
-        z-index: 999;
+        z-index: 99;
         position: absolute;
 
     }
@@ -918,7 +918,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
                             <div id="commentColumnThree">
                                 <?php if (($commentEmployeeId == $loggedInUser) || ($loggedInUser == '')) { ?>
                                     <div id="commentOptionWidget">
-                                        <div class="dropdown">
+                                        <div class="dropdown commentDropDown">
                                             <a class="commentAccount" id=<?php echo 'cnew' . $commentId ?>></a>
                                             <div class="submenu" id=<?php echo 'submenucnew' . $commentId ?>>
                                                 <ul class = "root">
