@@ -4,8 +4,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
-use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
+use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
 <style type="text/css">
     .imageNextBtn:hover{
@@ -255,7 +255,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
                     }
                     ?>
 
-<!--<div class="textTopOfImage" id='<?php echo 'postLiketext_' . $postId ?>'><?php echo $postNoOfLikes ?></div>-->
             </div>
             <div class="unlikeLinknew" id='<?php echo 'postUnLikebody_' . $postId ?>' >
                 <?php if ($isUnlike == 'yes') { ?>
@@ -277,8 +276,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
                     }
                     ?>
 
-
- <!--<div class="textTopOfImage" id='<?php echo 'postUnLiketext_' . $postId ?>'><?php echo $postUnlike ?></div>-->
             </div>
 
             <div class="shareLinknew" id='<?php echo 'postSharebody_' . $postId ?>' >
@@ -301,16 +298,11 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
                     }
                     ?>
 
-<!--<div class="textTopOfImage"><?php echo $shareCount ?></div>-->
             </div>
 
         </div>
 
-        <div hidden="true"id="postBodyThirdRowNew">
-            <a style="color: #F07C00; margin-right: 10px;" href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLike_' . $postId ?>'>Like</a>
-            <a style="color: #F07C00; margin-right: 10px;" href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlike_' . $postId ?>>Unlike</a>
-            <a style="color: #F07C00; margin-right: 10px;" href="javascript:void(0)" class="postShare" id=<?php echo 'postShare_' . $postId ?>>Share</a>
-        </div>
+       
 
         <div id="postBodySecondRow" >
             <div id='<?php echo 'postContent_' . $postId ?>'>

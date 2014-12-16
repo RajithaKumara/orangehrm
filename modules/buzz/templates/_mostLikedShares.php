@@ -19,9 +19,9 @@
  */
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/mostLikedShares'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/buzzNew'));
-use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess_1'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/mostLikedShares'));
-use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess_1'));
+use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
 <div class ="rightBarBodyAll">
     <div class="rightBarHeading" id="rightBarHeadingMl"><?php echo __("MOST LIKED POSTS"); ?>
