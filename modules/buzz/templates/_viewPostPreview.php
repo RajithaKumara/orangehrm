@@ -13,11 +13,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 <div class="modal hide modalPopUP"  id='<?php echo 'shareViewMoreMod3_' . $postId ?>'>
     <div class="modal-body modalPopUP-body" >
         <div class="hideModalPopUp" id='<?php echo 'shareViewMoreMod3_' . $postId ?>'
-             ><img 
-                class="hideModalPopUp" id='<?php echo 'shareViewMoreMod3_' . $postId ?>' 
-                src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
-                />
-        </div>
+             ><img class="hideModalPopUp" id='<?php echo 'shareViewMoreMod3_' . $postId ?>' 
+              src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+              /></div>
 
         <div class="shareView" id='<?php echo 'shareViewContent3_' . $postId ?>'>
         </div>
@@ -32,22 +30,17 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
             <div class="birthdayUserName" id="birthdayUserName_<?php echo $postId; ?>">
                 <?php
                 $photos = $sf_data->getRaw('originalPost')->getPhotos();
-
-//        var_dump(count($photos));die;
                 $imgCount = 1;
                 if (count($photos) == 1) {
                     ?>
-                <div class="photoPreviewOne">
+                    <div class="photoPreviewOne">
                         <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
                     </div>
                     <?php
                 } else if (count($photos) > 1) {
 
                     foreach ($photos as $photo) {
-                        //echo get_class($photo);die;
-//                var_dump($photo->getPhoto());die;
                         ?>
-                        <?php // echo base64_encode($photo->getPhoto()); ?>
                         <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
                         <?php
                         break;
@@ -115,29 +108,24 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
             <?php if (count($originalPost->getLinks()) > 0) { ?>
                 <?php foreach ($originalPost->getLinks() as $link) { ?>
                     <?php if ($link->getType() == 1) { ?>
-            <iframe src="<?php echo $link->getLink(); ?>" width="100%" height="250" class="iframePrev" frameborder="0" allowfullscreen></iframe >
+                        <iframe src="<?php echo $link->getLink(); ?>" width="100%" height="250" class="iframePrev" frameborder="0" allowfullscreen></iframe >
 
                     <?php } ?>  
                 <?php } ?>    
             <?php } ?>    
             <?php
             $photos = $sf_data->getRaw('originalPost')->getPhotos();
-
-//        var_dump(count($photos));die;
             $imgCount = 1;
             if (count($photos) == 1) {
                 ?>
-            <div class="photoPreviewOne">
+                <div class="photoPreviewOne">
                     <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
                 </div>
                 <?php
             } else if (count($photos) > 1) {
 
                 foreach ($photos as $photo) {
-                    //echo get_class($photo);die;
-//                var_dump($photo->getPhoto());die;
                     ?>
-                    <?php // echo base64_encode($photo->getPhoto()); ?>
                     <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
                     <?php
                     break;

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * OrangeHRM Enterprise is a closed sourced comprehensive Human Resource Management (HRM)
  * System that captures all the essential functionalities required for any enterprise.
@@ -17,17 +16,17 @@
  *
  * Please refer http://www.orangehrm.com/Files/OrangeHRM_Commercial_License.pdf for the license which includes terms and conditions on using this software.
  *
- */ 
+ */
 ?>
-<?php if($error=='no'){?>
-<div id='<?php echo 'commentContent_' . $commentId ?>'>
-    <?php echo BuzzTextParserService::parseText($comment->getCommentText());?>
-</div>
-<?php }else if($error=='yes'){?>
-<div id ='errorFirstRow'>
-    <?php 
-    include_partial('global/flash_messages');
-//    echo __("This comment has been deleted or you do not have permission to perform this action");?>
-        </div>
-<?php }else {?>
+<?php if ($error == 'no') { ?>
+    <div id='<?php echo 'commentContent_' . $commentId ?>'>
+        <?php echo BuzzTextParserService::parseText($comment->getCommentText()); ?>
+    </div>
+<?php } else if ($error == 'yes') { ?>
+    <div id ='errorFirstRow'>
+        <?php
+        include_partial('global/flash_messages');
+        ?>
+    </div>
+<?php } else { ?>
 <?php } ?>

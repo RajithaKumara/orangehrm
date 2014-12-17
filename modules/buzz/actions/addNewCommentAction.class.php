@@ -26,16 +26,7 @@
  */
 class addNewCommentAction extends BaseBuzzAction {
 
-    /**
-     * this is function to get buzzService
-     * @return BuzzService 
-     */
-    public function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->buzzService = new BuzzService();
-        }
-        return $this->buzzService;
-    }
+    
 
     public function execute($request) {
         try {

@@ -765,5 +765,23 @@ class BuzzDao extends BaseDao {
         }
         // @codeCoverageIgnoreEnd
     }
+    
+    /**
+     * save link to data base
+     * 
+     * @param Link $photo
+     * @return Link
+     * @throws DaoException
+     */
+    public function saveLink($link) {
+        try {
+            $link->save();
+            return $link;
+            // @codeCoverageIgnoreStart
+        } catch (Exception $e) {
+            throw new DaoException($e->getMessage(), $e->getCode(), $e);
+        }
+        // @codeCoverageIgnoreEnd
+    }
 
 }

@@ -22,12 +22,12 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
 <!--A single post-->
 <?php if ($isSuccess == 'yes') { ?>
-<div id="redirectState" hidden="true">no</div>
-   
+    <div id="redirectState" hidden="true">no</div>
 
-<?php include_component('buzz', 'viewPost', array('post' => $post));
 
-}else {?>
+    <?php include_component('buzz', 'viewPost', array('post' => $post));
+} else {
+    ?>
     <div id="redirectState" hidden="true">no</div>
 <?php }
 ?>

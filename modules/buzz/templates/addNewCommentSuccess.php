@@ -21,45 +21,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 ?>
-<style>
-    .likeCommentnew{
-        //background-color: black;
-        opacity: 0.8;
 
-        width: 30px;
-        margin-left: 0px;
-        z-index: 999;
-        //position: absolute;
-
-    } 
-    .unlikeCommentnew{
-        //background-color: black;
-        opacity: 0.8;
-
-        width: 30px;
-        margin-left: 40px;
-        z-index: 999;
-        /*position: absolute;*/
-
-    }
-
-    /*    #commentBodyThirdRowNew{
-            width: 100%;
-            height: 30px;
-            margin-left: 4%;
-            margin-top: 0px;
-            margin-bottom: -0px;
-        }*/
-    .textTopOfImageComment{
-        color: white;
-        font-size: 15px;
-        margin-left: 17px;
-        margin-top: -21px;
-        z-index: 9999;
-        position: absolute;
-
-    }
-</style>
 <?php if ($error == 'no') { ?>
 
 
@@ -224,3 +186,42 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 
 <?php }
 ?>
+<style>
+    .likeCommentnew{
+        //background-color: black;
+        opacity: 0.8;
+
+        width: 30px;
+        margin-left: 0px;
+        z-index: 999;
+        //position: absolute;
+
+    } 
+    .unlikeCommentnew{
+        //background-color: black;
+        opacity: 0.8;
+
+        width: 30px;
+        margin-left: 40px;
+        z-index: 999;
+        /*position: absolute;*/
+
+    }
+
+    /*    #commentBodyThirdRowNew{
+            width: 100%;
+            height: 30px;
+            margin-left: 4%;
+            margin-top: 0px;
+            margin-bottom: -0px;
+        }*/
+    .textTopOfImageComment{
+        color: white;
+        font-size: 15px;
+        margin-left: 17px;
+        margin-top: -21px;
+        z-index: 9999;
+        position: absolute;
+
+    }
+</style>

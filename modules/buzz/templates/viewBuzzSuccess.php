@@ -59,7 +59,6 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeList
             <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="70"   />
         </div>
         <div id="postTextBox">
-
             <ul id="tabLinks">
                 <li id="tabLink1" onclick="activateTab('page1');" class="tabButton tb_one tabSelected">
                     <div>
@@ -128,56 +127,47 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeList
                             <span class="img_del" id="img_del_5" hidden="true">X</span>
                             <img height="70px" hidden="true" class="imgThumbnailView" id="thumb5" src="#" alt="your image" />
                         </div>
-
                         <p id="imgUpBtnPara">
                             <button type="submit" id="imageUploadBtn" class="submitBtn">
                                 <?php echo __("Post"); ?>
                             </button>
                         </p>
                     </form>
-
-
                 </div>
                 <div id="page3">
                     <!--Image uploading tab-->
                     <div hidden="true" id="loadVideo">
                         <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/vload.gif"); ?>" 
                              height="20"  />
-
                     </div>
                     <form id="frmUploadVideo" method="POST" action="" 
                           enctype="multipart/form-data">
-
                         <fieldset>
                             <ol>
                                 <?php echo $videoForm->render(); ?>            
                             </ol>
                         </fieldset>
                         <p>
-
                         </p>
                     </form>
                     <div id="videoPostArea">
-
                     </div>
-
                 </div>
             </div>
-
 
             <div class="modal hide" id='imageCountError'>
                 <div class="modal-body">
                     <?php echo __("Only five images are allowed to upload."); ?>
                 </div>
             </div>
-
         </div>
+
         <div class="postLoadingBox">
             <div id="postBody">
-
                 <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="70" />
             </div>
         </div>
+
         <ul id="buzz">
             <div class="jason"></div>
 
@@ -187,38 +177,34 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeList
             }
             ?> 
         </ul>
-         <!--start loading window popup window-->
-         <div class="modal hide" id="loadingDataModal" style="top: 80%;left: 50%;">
 
-            <div class="modal-body" style="height: 30px;background-color: white;top: 50%;left: 50%;">
-                
-                <div id="loadingModalBody" style="width: 100%">
-                        <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/vload.gif"); ?>" 
-                             height="12" style="margin-top:9px ;margin-left: 40%;" />
-
-                    </div>
-
-
+        <!--start loading window popup window-->
+        <div class="modal hide" id="loadingDataModal" >
+            <div class="modal-body loadingDataModal-body" >            
+                <div id="loadingModalBody" >
+                    <img id="img-spinner-loading"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/vload.gif"); ?>" 
+                         height="12"  />
+                </div>
             </div>
         </div>
-         <!--end loading window pop up window-->
-         <!--start Success popup window-->
-         <div class="modal hide" id="successDataModal" style="top: 80%;left: 50%;">
+        <!--end loading window pop up window-->
+        <!--start Success popup window-->
+        <div class="modal hide" id="successDataModal" >
 
-            <div class="modal-body" style="height: 40px;background-color: white;top: 50%;left: 50%;">
-                
+            <div class="modal-body successDataModal-body" >
+
                 <!--<div id="successHeader" style="width: 100%;height: 20px;background-color: green;">Success</div>-->
-                <div id="successBody" style="width: 100%;height: 20px;color: green;font-size: 25px;">SuccessFully Saved</div>
+                <div id="successBody" >SuccessFully Saved</div>
 
             </div>
         </div>
-         <!--end loading window pop up window-->
+        <!--end loading window pop up window-->
         <div class="loadMoreBox">
             <div id="lodingGif">
                 <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="70" />
             </div>
         </div>
-        
+
         <div id="loggedInUserId" hidden="true"><?php echo $loggedInUser; ?></div>
 
         <script  type="text/javascript">

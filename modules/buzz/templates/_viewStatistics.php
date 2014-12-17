@@ -19,12 +19,9 @@
  */
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewStatisticsComponent'));
 ?>
-
-
-
 <div id="statTable">
     <table class="hovertable" style="width: 101%">
-        
+
         <tr>
             <td><?php echo __("Shares"); ?></td><td><?php echo $noOfShares; ?></td>
         </tr>

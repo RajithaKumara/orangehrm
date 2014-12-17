@@ -38,7 +38,7 @@
 
     #logo{
         width: 24%;
-        
+
         margin-left: -20px;
     }
 
@@ -51,7 +51,7 @@
         width: 960px;
         margin: 0 auto;
     }
- 
+
 </style>
 <?php require_once '_header.php'; ?>
 
@@ -60,15 +60,15 @@
     <?php $empNumber = $sf_user->getAttribute('auth.empNumber'); ?>
     <div id="buzzHeader">
         <div id="dashBoardHeaderBuzz">
-        <div id="logo">
-            <img height="60px" style="" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/logo.png'); ?>">
-        </div>
-        <div id="buzzHeaderRight">
-            <div id="buzzHeaderDetails">
-                <?php include_component('buzz', 'loggedInUserDetails', array('emp_number' => $empNumber)); ?>
+            <div id="logo">
+                <img height="60px" style="" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/logo.png'); ?>">
+            </div>
+            <div id="buzzHeaderRight">
+                <div id="buzzHeaderDetails">
+                    <?php include_component('buzz', 'loggedInUserDetails', array('emp_number' => $empNumber)); ?>
+                </div>
             </div>
         </div>
-            </div>
     </div>
 
     <div id="wrapper">

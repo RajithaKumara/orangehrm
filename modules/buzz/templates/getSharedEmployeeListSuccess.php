@@ -54,6 +54,6 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeList
             <?php } ?>
 
         </div>
-        
+
     </div>
 </div>

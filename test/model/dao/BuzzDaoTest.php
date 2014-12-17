@@ -47,6 +47,20 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($result instanceof Post);
         $this->assertEquals('2015-01-10 12:12:12', $result->getPostTime());
     }
+    
+    /**
+     * test save link to the database
+     */
+    public function testSaveLink() {
+        $link = New Link();
+
+        $link->setLink('fdfdfdd.com');
+        $link->setPostId(2);
+        $link->setDescription('description');
+        $result = $this->buzzDao->saveLink($link);
+        $this->assertTrue($result instanceof Link);
+        $this->assertTrue($result->getId()!=null);
+    }
 
     /**
      * this is function to test get shares from database

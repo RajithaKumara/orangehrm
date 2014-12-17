@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OrangeHRM Enterprise is a closed sourced comprehensive Human Resource Management (HRM)
  * System that captures all the essential functionalities required for any enterprise.
@@ -21,7 +22,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
 
 <?php
+
 foreach ($nextSharesList as $post) {
-    
-   include_component('buzz', 'viewPost', array('post' => $post));
+    include_component('buzz', 'viewPost', array('post' => $post));
 }

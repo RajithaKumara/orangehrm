@@ -92,7 +92,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         <?php
                     }
                     ?>
-
             </div>
             <div class="unlikeLinknew" id='<?php echo 'postUnLikebody_' . $postId ?>' >
                 <?php if ($isUnlike == 'yes') { ?>
@@ -113,7 +112,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         <?php
                     }
                     ?>
-
             </div>
 
             <div class="shareLinknew" id='<?php echo 'postSharebody_' . $postId ?>' >
@@ -135,12 +133,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         <?php
                     }
                     ?>
-
             </div>
-
         </div>
-
-
 
         <div id="postBodySecondRow" >
             <div id='<?php echo 'postContent_' . $postId ?>'>
@@ -201,8 +195,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                     <!--SUB POST END-->
                     <div class="modal hide originalPostModal" id='<?php echo 'postViewOriginal_' . $postId ?>'>
 
-
-
                         <div class="modal-body originalPostModal-body" >
                             <div class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>'
                                  ><img 
@@ -230,7 +222,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 }
                 ?>
             </div>
-
         </div>
 
         <?php if (count($originalPost->getLinks()) > 0) { ?>
@@ -258,11 +249,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
         <?php
         $photos = $sf_data->getRaw('originalPost')->getPhotos();
-        
         ?>
         <?php include_component('buzz', 'photoTilling', array('photos' => $photos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
-
-
 
         <div class="modal hide originalPostModal"  id='<?php echo "showPhotos" . $postId; ?>'>
             <div class="modal-body originalPostModal-body"  id="modalnewlook">
@@ -322,8 +310,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                     $imgCount = 1;
                     foreach ($photos as $photo) {
                         ?>
-
-
                         <img class="postPhotoPrev" hidden="true" id="<?php echo "img_" . $imgCount . "_" . $postId; ?>" 
                              style="<?php
                              if ($photo->getHeight() / $photo->getWidth() > (400 / 450)) {
@@ -451,8 +437,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
                         <?php
                         $photos = $sf_data->getRaw('originalPost')->getPhotos();
-
-//        var_dump(count($photos));die;
                         $imgCount = 1;
                         if (count($photos) > 0) {
                             ?>
@@ -526,9 +510,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                         /></div>
                 <div class=""  id='<?php echo 'postlikehidebody_' . $postId ?>'></div>
-
-
-
 
             </div>
         </div>
@@ -752,7 +733,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                     <a hidden="true" href="javascript:void(0)" class="commentUnlike2" id=<?php echo 'commentUnLikeyes_' . $commentId ?>>
                                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' height="22" width="22"/></a>
                                 <?php } ?>
-
 
                                 <div class="textTopOfImageComment" id='<?php echo 'commentNoOfUnLiketext_' . $commentId ?>'><?php echo $commentNoOfUnLikes ?></div>
                             </div>

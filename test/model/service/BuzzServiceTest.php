@@ -54,6 +54,23 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $result = $this->buzzService->savePost($post);
         $this->assertTrue($result instanceof Post);
     }
+    
+    /**
+     * this is function to test saving link in the database
+     */
+    public function testSaveLink() {
+        $link = New Link();
+        $buzzDao = $this->getMock('buzzDao', array('saveLink'));
+
+        $buzzDao->expects($this->once())
+                ->method('saveLink')
+                ->with($link)
+                ->will($this->returnValue($link));
+
+        $this->buzzService->setBuzzDao($buzzDao);
+        $result = $this->buzzService->saveLink($link);
+        $this->assertTrue($result instanceof Link);
+    }
 
     /**
      * this is function to test getting shares data from the database

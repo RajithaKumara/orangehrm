@@ -35,20 +35,17 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                           ?>
 
                 </form>
-                <div id="yuoutubeVideoId" hidden="true"><?php echo $code; ?></div>
-
+                <div id="yuoutubeVideoId" hidden="true"><?php echo $videoFeedUrl; ?></div>
 
                 <div style="text-align: center; margin-bottom: 10px;">
-                    <iframe src="<?php echo $code; ?>" width="80%" height="225px" frameborder="0" allowfullscreen></iframe >
+                    <iframe src="<?php echo $videoFeedUrl; ?>" width="80%" height="225px" frameborder="0" allowfullscreen></iframe >
                 </div>
 
                 <p>
-                    <button type="submit" id='<?php echo 'btnSaveVideo_', $code; ?>' class="submitBtn btnSaveVideo">
+                    <button type="submit" id='<?php echo 'btnSaveVideo_', $videoFeedUrl; ?>' class="submitBtn btnSaveVideo">
                         <?php echo __("Save Video"); ?>
                     </button>
                 </p>
-
-
             </div>
         </div>
 
@@ -59,26 +56,22 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
     <?php } else if ($error == 'redirect') { ?>
 
     <?php } else if ($isSuccess == 'notVideo') { ?>
-                <div id="tempVideoBlock">
-                <div id="postBody">
-                 <form id="frmUploadVideo" method="POST" action="" 
-                          enctype="multipart/form-data">
-                        <fieldset>
-                            <ol>
-                                <?php echo $videoForm->render(); ?>            
-                            </ol>
-                        </fieldset>
-                        <p>
+        <div id="tempVideoBlock">
+            <div id="postBody">
+                <form id="frmUploadVideo" method="POST" action="" 
+                      enctype="multipart/form-data">
+                    <fieldset>
+                        <ol>
+                            <?php echo $videoForm->render(); ?>            
+                        </ol>
+                    </fieldset>
+                    <p>
 
-                        </p>
-                    </form>
-                
-
+                    </p>
+                </form>
                 <p>
-                    <?php echo 'not a correct video'?>
+                    <?php echo 'not a correct video' ?>
                 </p>
-
-
             </div>
         </div>
     <?php } else if ($isSuccess == 'posted') { ?>

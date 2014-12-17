@@ -19,10 +19,8 @@
  */
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
-
 <?php
-foreach ($nextSharesList as $post) {
-    
+foreach ($nextSharesList as $post) { 
    include_component('buzz', 'viewPost', array('post' => $post));
 }
 

@@ -27,30 +27,30 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
 
         <div id="panelfirst">Gender</div>
         <div id="panelsecond"> <?php
-echo ": " . $gender;
-?></div>
+            echo ": " . $gender;
+            ?></div>
 
         <div id="panelfirst">Birth Day</div>
         <div id="panelsecond"> <?php
-echo ": " . $birthDay;
-?></div>
+            echo ": " . $birthDay;
+            ?></div>
         <div id="panelfirst">Locations</div>
         <div id="panelsecond"> <?php
             echo ": " . $locations;
-?></div>
+            ?></div>
 
         <div id="panelfirst">Work Email</div>
         <div id="panelsecond"> <?php
             echo ": " . $workEmail;
-?></div>
+            ?></div>
         <div id="panelfirst">Work Tel</div>
         <div id="panelsecond"> <?php
             echo ": " . $workTel;
-?></div>
+            ?></div>
         <div id="panelfirst">Job Title</div>
         <div id="panelsecond"> <?php
             echo ": " . $jobtitle;
-?></div>
+            ?></div>
     </div>
 </div>
 <div class="rightBarBodyAllProf">
@@ -63,7 +63,7 @@ echo ": " . $birthDay;
     <div id="panelStat">
 
         <div id="statisticsComponent">
-<?php include_component('buzz', 'viewStatistics', array('loggedInUserId' => $logedInUser)); ?>
+            <?php include_component('buzz', 'viewStatistics', array('loggedInUserId' => $logedInUser)); ?>
         </div>
 
     </div>

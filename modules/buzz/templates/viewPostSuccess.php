@@ -360,75 +360,12 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
         ?>
 
         <?php
-        if (count($photos) == 1) {
-            ?>
-            <div class="imageContainer">
-                <div style="top: -5px; left: -5px; width: 100%; height: 250px;overflow: hidden">
-                    <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="120%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
-                </div>
-            </div>
-        <?php } else if (count($photos) == 2) {
-            ?>
-            <div class="imageContainer">
-                <div style="top: -5px; left: -5px; width: 50%; height: 300px;overflow: hidden;">
-                    <img id="<?php echo "1_" . $postId; ?>"  class="postPhoto" height="120%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
-                </div>
-                <div style="top: -5px; left: 50%; width: 50%; height: 300px ;overflow: hidden;">
-                    <img id="<?php echo "2_" . $postId; ?>"  class="postPhoto" height="120%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[1]->getPhoto()); ?>"/>
-                </div>
-
-            </div>
-
-        <?php } else if (count($photos) == 3) {
-            ?>
-            <div class="imageContainer">
-                <div style="top: -5px; left: -5px; width: 60%; height: 300px;overflow: hidden">
-                    <img id="<?php echo "1_" . $postId; ?>"  class="postPhoto" height="120%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
-                </div>
-                <div style="top: -5px; left: 60%; width: 40%; height: 115px ;overflow: hidden">
-                    <img id="<?php echo "2_" . $postId; ?>"  class="postPhoto" width="120%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[1]->getPhoto()); ?>"/>
-                </div>
-                <div style="top: 115px; left: 60%; width: 40%; height: 148px ;overflow: hidden">
-                    <img id="<?php echo "3_" . $postId; ?>"  class="postPhoto" width="120%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[2]->getPhoto()); ?>"/>
-                </div>
-            </div>
-        <?php } else if (count($photos) == 4) {
-            ?>
-            <div class="imageContainer">
-                <div style="top: -5px; left: -5px; width: 40%; height: 230px;overflow: hidden">
-                    <img id="<?php echo "1_" . $postId; ?>"  class="postPhoto" height ="140%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
-                </div>
-                <div style="top: -5px; left: 40%; width: 60%; height: 115px ;overflow: hidden">
-                    <img id="<?php echo "2_" . $postId; ?>"  class="postPhoto" width="120%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[1]->getPhoto()); ?>"/>
-                </div>
-                <div style="top: 115px; left: 40%; width: 30%; height: 115px ;overflow: hidden">
-                    <img id="<?php echo "3_" . $postId; ?>"  class="postPhoto" width="120%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[2]->getPhoto()); ?>"/>
-                </div>
-                <div style="top: 115px; left: 70%; width: 30%; height: 115px ;overflow: hidden">
-                    <img id="<?php echo "4_" . $postId; ?>"  class="postPhoto" width="140%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[3]->getPhoto()); ?>"/>
-                </div>
-            </div>
-        <?php } else if (count($photos) == 5) {
-            ?>
-            <div class="imageContainer">
-                <div style="top: -5px; left: -5px; width: 35%; height: 230px;overflow: hidden">
-                    <img id="<?php echo "1_" . $postId; ?>"  class="postPhoto" height="140%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
-                </div>
-                <div style="top: -5px; left: 35%; width: 35%; height: 230px ;overflow: hidden">
-                    <img id="<?php echo "2_" . $postId; ?>"  class="postPhoto" height="160%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[1]->getPhoto()); ?>"/>
-                </div>
-                <div style="top: -5px; left: 70%; width: 30%; height: 78px ;overflow: hidden">
-                    <img id="<?php echo "3_" . $postId; ?>"  class="postPhoto" width="120%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[2]->getPhoto()); ?>"/>
-                </div>
-                <div style="top: 78px; left: 70%; width: 30%; height: 78px ;overflow: hidden">
-                    <img id="<?php echo "4_" . $postId; ?>"  class="postPhoto" width="140%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[3]->getPhoto()); ?>"/>
-                </div>
-                <div style="top: 156px; left: 70%; width: 30%; height: 75px ;overflow: hidden">
-                    <img id="<?php echo "5_" . $postId; ?>"  class="postPhoto" width="140%" src="data:image/jpeg;base64,<?php echo base64_encode($photos[4]->getPhoto()); ?>"/>
-                </div>
-            </div>
-            <?php
-        }
+        if (count($photos) > 0) {
+                            ?>
+                            
+                                <?php include_component('buzz', 'photoTilling', array('photos' => $photos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
+                            
+                        <?php }
         ?>
         <style type="text/css">
             #photoPage{
@@ -505,30 +442,21 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
         <div id="postBodyThirdRow">
             <div id="noOfLikesLinknew" style="margin-top: 5px;margin-left: 0px">
-                <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' style="
-                   color: #232323;
-                   font-family: 'SourceSansProLight';
-                   text-decoration: none;">
+                <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfLikes_' . $postId; ?>"><?php echo $postNoOfLikes; ?></span><?php echo " " . __("people "); ?>
                     <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
             <div id="noOfSharesLinknew" style="margin-top: 5px;margin-left: 40px;">
-                <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' style="
-                   color: #232323;
-                   font-family: 'SourceSansProLight';
-                   text-decoration: none;">
+                <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' >
                     <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $postShareCount; ?></span><?php echo " " . __("people "); ?>
                     <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
             <div id="noOfUnLikesLinknew" style="margin-top: 5px;margin-left: 70px;">
-                <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' style="
-                   color: #232323;
-                   font-family: 'SourceSansProLight';
-                   text-decoration: none;">
+                <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfUnLikes_' . $postId; ?>"><?php echo $postUnlike; ?></span><?php echo " " . __("people "); ?>
                     <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                           height="16" width="16"/><?php echo __(" this"); ?>

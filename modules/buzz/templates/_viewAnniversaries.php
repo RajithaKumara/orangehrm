@@ -23,9 +23,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
 <div class ="rightBarBodyAll">
     <div class="rightBarHeading" id="rightBarHeadingAnniv"><?php echo 'UPCOMING ANNIVERSARIES' ?> 
         <img id="moreAniversary" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" 
-            height="30px" width="30px"/>
+             height="30px" width="30px"/>
         <img id="lessAniversary" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" 
-            height="30px" width="30px"/>
+             height="30px" width="30px"/>
     </div>
     <div class ="rightBarBody">
         <div class="toggling" hidden="true" id="upcomingAnnivMonth"><?php echo date('M Y'); ?></div>
