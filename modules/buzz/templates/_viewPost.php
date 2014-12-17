@@ -55,13 +55,13 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
         <div class="viewMorveShare"  id="postBodyViewMore">
 
             <img  class="viewMoreShare" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/icons/readmore-icon.png"); ?>" border="0" id='<?php echo 'shareViewMore_' . $postId ?>'
-                       height="30" width="30"/>
+                  height="30" width="30"/>
         </div>
         <!-- pop up-->
-        <div class="modal hide viewMoreModal" style="width: 800px;height: 700px;left: 40%;top:50%;overflow-x: hidden" id='<?php echo 'shareViewMoreMod1_' . $postId ?>'>
-            <div class="modal-body" style="height: 530px;background-color: gray;overflow-x: hidden;overflow-y: auto">
+        <div class="modal hide viewMoreModal"  id='<?php echo 'shareViewMoreMod1_' . $postId ?>'>
+            <div class="modal-body viewMoreModal-body" >
                 <div class="hideModalPopUp" id='<?php echo 'shareViewMoreMod1_' . $postId ?>'
-                     style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                     ><img 
                         class="hideModalPopUp" id='<?php echo 'shareViewMoreMod1_' . $postId ?>' 
                         src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                         /></div>
@@ -140,7 +140,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
         </div>
 
-       
+
 
         <div id="postBodySecondRow" >
             <div id='<?php echo 'postContent_' . $postId ?>'>
@@ -149,7 +149,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                     $subContent = substr($postContent, 0, $postLenth);
                     echo BuzzTextParserService::parseText($subContent . '...');
                     ?><a  class="viewMoreShare"  id='<?php echo 'shareViewMore_' . $postId ?>'
-                        style="z-index: 9999"     ><?php echo _('Read More'); ?></a>
+                        ><?php echo _('Read More'); ?></a>
 
                     <?php
                 } else {
@@ -199,13 +199,13 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         </div>
                     </div>
                     <!--SUB POST END-->
-                    <div class="modal hide" style="width: 800px;height: 700px;left: 40%;top:50%;overflow-x: hidden" id='<?php echo 'postViewOriginal_' . $postId ?>'>
+                    <div class="modal hide originalPostModal" id='<?php echo 'postViewOriginal_' . $postId ?>'>
 
 
 
-                        <div class="modal-body" style="height: 530px;background-color: gray;overflow-x: hidden;overflow-y: auto">
+                        <div class="modal-body originalPostModal-body" >
                             <div class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>'
-                                 style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                                 ><img 
                                     class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>' 
                                     src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                                     /></div>
@@ -221,7 +221,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         $subContent = substr($originalPostContent, 0, $postLenth);
                         echo BuzzTextParserService::parseText($subContent . '...');
                         ?><a  class="viewMoreShare"  id='<?php echo 'shareViewMore_' . $postId ?>'
-                            style="z-index: 9999"     ><?php echo _('Read More'); ?></a>
+                            ><?php echo _('Read More'); ?></a>
 
                         <?php
                     } else {
@@ -258,68 +258,66 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
         <?php
         $photos = $sf_data->getRaw('originalPost')->getPhotos();
-
-//        var_dump(count($photos));die;
-        $imgCount = 1;
+        
         ?>
         <?php include_component('buzz', 'photoTilling', array('photos' => $photos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
 
-       
 
-        <div class="modal hide" style="width: 800px;height: 600px;left: 40%;top: 60%" id='<?php echo "showPhotos" . $postId; ?>'>
-            <div class="modal-body" style="height: 530px;background-color: gray" id="modalnewlook">
+
+        <div class="modal hide originalPostModal"  id='<?php echo "showPhotos" . $postId; ?>'>
+            <div class="modal-body originalPostModal-body"  id="modalnewlook">
 
                 <div class="hideModalPopUp" id='<?php echo "showPhotos" . $postId; ?>'
-                     style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                     ><img 
                         class="hideModalPopUp" id='<?php echo "showPhotos" . $postId; ?>' 
                         src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                         /></div>
-                <div id="photoPage" style="height: 400px;top: 15px;left: 12px;width: 450px;margin-bottom: -20px;position: absolute">
+                <div class="photopageCss" id="photoPage" >
                     <!--new Code of like, unlike and share buttons-->
-        <div id="postBodyThirdRowNewPopUP">
-            <div class="likeLinknew"  id="<?php echo 'postLikebody_' . $postId ?>" > 
-                <?php if ($isLike == 'Unlike') { ?>
-                    <a href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeyes_' . $postId ?>'> 
-                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                              class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
-                    <a hidden="true" href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeno_' . $postId ?>'> 
-                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                              class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
-                        <?php
-                    } else {
-                        ?>
-                    <a hidden="true" href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeyes_' . $postId ?>'> 
-                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                              class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
-                    <a href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeno_' . $postId ?>'> 
-                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                              class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
-                        <?php
-                    }
-                    ?>
-            </div>
-            <div class="unlikeLinknew" id='<?php echo 'postUnLikebody_' . $postId ?>' >
-                <?php if ($isUnlike == 'yes') { ?>
-                    <a hidden="true" href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeno_' . $postId ?>> 
-                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" 
-                              border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
-                    <a  href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeyes_' . $postId ?>> 
-                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" 
-                              border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
-                    <?php } else {
-                        ?>
-                    <a href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeno_' . $postId ?>> 
-                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" 
-                              border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
-                    <a  hidden="true" href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeyes_' . $postId ?>> 
-                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" 
-                              border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
-                        <?php
-                    }
-                    ?>
+                    <div id="postBodyThirdRowNewPopUP">
+                        <div class="likeLinknew"  id="<?php echo 'postLikebody_' . $postId ?>" > 
+                            <?php if ($isLike == 'Unlike') { ?>
+                                <a href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeyes_' . $postId ?>'> 
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
+                                          class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
+                                <a hidden="true" href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeno_' . $postId ?>'> 
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
+                                          class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
+                                    <?php
+                                } else {
+                                    ?>
+                                <a hidden="true" href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeyes_' . $postId ?>'> 
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
+                                          class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
+                                <a href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeno_' . $postId ?>'> 
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
+                                          class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
+                                    <?php
+                                }
+                                ?>
+                        </div>
+                        <div class="unlikeLinknew" id='<?php echo 'postUnLikebody_' . $postId ?>' >
+                            <?php if ($isUnlike == 'yes') { ?>
+                                <a hidden="true" href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeno_' . $postId ?>> 
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" 
+                                          border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
+                                <a  href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeyes_' . $postId ?>> 
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" 
+                                          border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
+                                <?php } else {
+                                    ?>
+                                <a href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeno_' . $postId ?>> 
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" 
+                                          border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
+                                <a  hidden="true" href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeyes_' . $postId ?>> 
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" 
+                                          border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
+                                    <?php
+                                }
+                                ?>
 
-            </div>
-        </div>
+                        </div>
+                    </div>
                     <?php
                     $imgCount = 1;
                     foreach ($photos as $photo) {
@@ -333,7 +331,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                              } else {
                                  echo 'width:99%';
                              }
-                             ?>;position:absolute;top:0;bottom:0;right: 0;left: 0;margin:auto;" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
+                             ?>;" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
 
                         <?php
                         $imgCount++;
@@ -344,12 +342,12 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                     <button class="imagePrevBtn" disabled="true" id="imagePrevBtn<?php echo $postId; ?>">
                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/prev.png"); ?>" border="0" height="100%" /></button>
                 </div>
-                <div id="photoPageComment" style=" ;top: 5px;left: 467px;width: 320px;margin-bottom: -20px;position: absolute;background-color: gray">
+                <div id="photoPageComment" >
                     <div id="postBodyFirstRow photo" class="photoViewEmp">
-                        <div id="postFirstRowColumnOne" style="width: 50px;height: 50px;overflow: hidden">
+                        <div id="postFirstRowColumnOne"  style="width: 50px;height: 50px;overflow: hidden">
                             <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
                         </div>
-                        <div id="postFirstRowColumnTwo" style="width: 60%;">
+                        <div id="postFirstRowColumnTwo">
                             <div id="postEmployeeName" >
                                 <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
                                     <?php echo $postEmployeeName; ?>
@@ -368,20 +366,21 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                     <?php include_component('buzz', 'commentPreview', array('commentList' => $commentList, 'editForm' => $editForm, 'loggedInUser' => $loggedInUser, 'postId' => $postId, 'commentForm' => $commentForm)); ?>
 
                 </div>
+
             </div>
 
         </div>
 
         <!-- start share post popup window-->
-        <div class="modal hide" style="width: 550px;height: 600px;left: 50%;top: 60%"  id='<?php echo 'posthide_' . $postId ?>'>
+        <div class="modal hide sharePosyPopUpModal"   id='<?php echo 'posthide_' . $postId ?>'>
 
-            <div class="modal-body" style="height: 530px;background-color: gray">
+            <div class="modal-body originalPostModal-body" >
                 <div class="hideModalPopUp" id='<?php echo 'posthide_' . $postId ?>'
-                     style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                     ><img 
                         class="hideModalPopUp" id='<?php echo 'posthide_' . $postId ?>' 
                         src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                         /></div>
-                <div style="height: 380px;top: 15px;left: 12px;width: 500px;margin-bottom: -20px;position: absolute;background-color: white;border-radius: 10px;overflow-y: auto;padding: 10px; ">
+                <div class="sharePageForm">
                     <form id="frmCreateComment" method="" action="" style="margin-top: 10px;"
                           enctype="multipart/form-data">
                               <?php
@@ -429,7 +428,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         <?php if (count($originalPost->getLinks()) > 0) { ?>
                             <?php foreach ($originalPost->getLinks() as $link) { ?>
                                 <?php if ($link->getType() == 1) { ?>
-                                    <div style="height: 150px;width: 60%;margin: 0 auto;overflow: hidden">
+                                    <div class="sharePageIframe">
                                         <iframe src="<?php echo $link->getLink(); ?>" width="100%" height="150" style="margin-top: 5px;margin: 0 auto; " frameborder="0" allowfullscreen></iframe >
                                     </div>
                                 <?php } ?>
@@ -457,11 +456,12 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         $imgCount = 1;
                         if (count($photos) > 0) {
                             ?>
-                            <div style="height: 160px;width: 60%;margin: 0 auto;overflow: hidden">
+                            <div class="sharePagePhotoComponent">
                                 <?php include_component('buzz', 'photoTilling', array('photos' => $photos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
                             </div>
                         <?php } ?>
-                        <input type="button" class="btnShare" name="btnSaveDependent" style="float: right;margin-top: 20px;" id='<?php echo 'btnShare_' . $postId . "_" . $originalPostId ?>' value="<?php echo __("Share"); ?>"/>
+
+                        <input type="button" class="btnShare" name="btnSaveDependent" id='<?php echo 'btnShare_' . $postId . "_" . $originalPostId ?>' value="<?php echo __("Share"); ?>"/>
 
                     </div>
                 </div>
@@ -469,44 +469,46 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
         </div>
         <!-- end share post pop up window-->
         <!-- start edit post popup window-->
-        <div class="modal hide" style="width: 800px;height: 700px;left: 40%;top:50%;overflow-x: hidden" id='<?php echo 'editposthide_' . $postId ?>'>
+        <div class="modal hide originalPostModal"  id='<?php echo 'editposthide_' . $postId ?>'>
 
-            <div class="modal-body" style="background-color: gray;overflow-x: hidden;overflow-y: auto">
+            <div class="modal-body editPostModal-body" >
                 <div class="hideModalPopUp" id='<?php echo 'editposthide_' . $postId ?>'
-                     style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                     ><img 
                         class="hideModalPopUp" id='<?php echo 'editposthide_' . $postId ?>'
                         src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                         /></div>
-                <div id="postBodySecondRow" style="border-radius: 5px;padding: 20px;">
+                <div class="popUpContainer">
+                    <div id="postBodySecondRow" >
 
-                    <h3><?php echo __('Edit your post'); ?></h3>
+                        <h3><?php echo __('Edit your post'); ?></h3>
 
-                    <?php
-                    if ($postType == '1') {
-                        ?>
-                        <form id="frmCreateComment" method="" action="" 
-                              enctype="multipart/form-data">
-                                  <?php
-                                  $editForm->setDefault('comment', $postContent);
-                                  echo $editForm['comment']->render(array('id' => "editshareBox_" . $postId,
-                                      'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2'));
-                                  ?>
+                        <?php
+                        if ($postType == '1') {
+                            ?>
+                            <form id="frmCreateComment" method="" action="" 
+                                  enctype="multipart/form-data">
+                                      <?php
+                                      $editForm->setDefault('comment', $postContent);
+                                      echo $editForm['comment']->render(array('id' => "editshareBox_" . $postId,
+                                          'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                      ?>
 
-                        </form>
-                    <?php } else { ?>
-                        <form id="frmCreateComment" method="" action="" 
-                              enctype="multipart/form-data">
-                                  <?php
-                                  $editForm->setDefault('comment', $originalPostContent);
-                                  echo $editForm['comment']->render(array('id' => "editshareBox_" . $postId,
-                                      'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2'));
-                                  ?>
+                            </form>
+                        <?php } else { ?>
+                            <form id="frmCreateComment" method="" action="" 
+                                  enctype="multipart/form-data">
+                                      <?php
+                                      $editForm->setDefault('comment', $originalPostContent);
+                                      echo $editForm['comment']->render(array('id' => "editshareBox_" . $postId,
+                                          'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                      ?>
 
-                        </form>
+                            </form>
 
-                    <?php } ?>
-                    <div style="padding: 20px;background-color: white;margin-bottom: 20px;">
-                        <input type="button" style="float: right;" class="btnEditShare" name="btnSaveDependent" id='<?php echo 'btnEditShare_' . $postId ?>' value="<?php echo __("Save"); ?>"/>
+                        <?php } ?>
+                        <div class="sharePopUpbutton">
+                            <input type="button"  class="btnEditShare" name="btnSaveDependent" id='<?php echo 'btnEditShare_' . $postId ?>' value="<?php echo __("Save"); ?>"/>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -514,12 +516,12 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
         <!-- end edit post pop up window-->
         <!-- start like window popup window-->
         <div class="modal hide" id='<?php echo 'postlikehide_' . $postId ?>'>
-            <div id="modalHeader" style="font-size: 16px; color: white; background-color: #aaa; padding: 5px; text-align: center; font-family: 'SourceSansProLight';">
+            <div id="modalHeader" >
                 People who likes this post
             </div>
-            <div class="modal-body" style="height: 530px;background-color: gray;overflow-x: hidden;overflow-y: auto">
+            <div class="modal-body originalPostModal-body" >
                 <div class="hideModalPopUp" id='<?php echo 'postlikehide_' . $postId ?>'
-                     style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                     ><img 
                         class="hideModalPopUp" id='<?php echo 'postlikehide_' . $postId ?>' 
                         src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                         /></div>
@@ -531,36 +533,26 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
             </div>
         </div>
         <!-- end like window pop up window-->
-
-
         <div id="postBodyThirdRow">
-            <div id="noOfLikesLinknew" style="margin-top: 5px;">
-                <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' style="
-                   color: #232323;
-                   font-family: 'SourceSansProLight';
-                   text-decoration: none;">
+            <div id="noOfLikesLinknew" >
+                <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' 
+                   >
                     <span id="<?php echo 'noOfLikes_' . $postId; ?>"><?php echo $postNoOfLikes; ?></span><?php echo " " . __("people "); ?>
-                    <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
+                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
-            <div id="noOfSharesLinknew" style="margin-top: 5px;">
-                <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' style="
-                   color: #232323;
-                   font-family: 'SourceSansProLight';
-                   text-decoration: none;">
+            <div id="noOfSharesLinknew" >
+                <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' >
                     <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $postShareCount; ?></span><?php echo " " . __("people "); ?>
-                    <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
+                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
-            <div id="noOfUnLikesLinknew" style="margin-top: 5px;">
-                <a class="postNoofUnLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' style="
-                   color: #232323;
-                   font-family: 'SourceSansProLight';
-                   text-decoration: none;">
+            <div id="noOfUnLikesLinknew" >
+                <a class="postNoofUnLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfUnLikes_' . $postId; ?>"><?php echo $postUnlike; ?></span><?php echo " " . __("people "); ?>
-                    <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
+                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
@@ -588,7 +580,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                           echo $commentForm['comment']->render(array('id' => "commentBoxNew_" . $postId,
                               'class' => 'commentBox', 'rows' => '1', 'style' => 'font-size: 16px; font-family: "SourceSansProLight"; border-radius: 5px 5px 5px 5px; min-width: 99.5%; padding: 10px 0 10px 10px;', 'placeholder' => $placeholderd));
                           ?>
-                 <input type="button" value="Comment"  id='<?php echo 'commentBoxNew_' . $postId; ?>' class="commentSubmitBtn submitBtn">
+                    <input type="button" value="Comment"  id='<?php echo 'commentBoxNew_' . $postId; ?>' class="commentSubmitBtn submitBtn">
                 </form>
             </div>
         </div>
@@ -626,37 +618,36 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 ?>
 
                 <!-- start edit comment popup window-->
-                <div class="modal hide" style="width: 800px;height: 700px;left: 40%;top:50%;overflow-x: hidden" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
+                <div class="modal hide originalPostModal"  id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
 
-                    <div class="modal-body" style="background-color: gray;overflow-x: hidden;overflow-y: auto">
-                        <div class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>' style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white">x</div>
+                    <div class="modal-body editPostModal-body" >
+                        <div class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
+                             ><img 
+                                class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
+                                src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                                /></div>
+                        <div class="popUpContainer">
+                            <div id="postBodySecondRow" >
+                                <h3><?php echo __('Edit your comment'); ?></h3>
+                                <form id="frmCreateComment" method="" action="" 
+                                      enctype="multipart/form-data">
+                                          <?php
+                                          $editForm->setDefault('comment', $commentContent);
+                                          echo $editForm['comment']->render(array('id' => "editcommentBoxNew2_" . $commentId,
+                                              'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                          ?>
 
+                                </form>
 
-                        <div id="postBodySecondRow" style="border-radius: 5px;padding: 20px;">
-                            <h3><?php echo __('Edit your comment'); ?></h3>
-                            <form id="frmCreateComment" method="" action="" 
-                                  enctype="multipart/form-data">
-                                      <?php
-                                      $editForm->setDefault('comment', $commentContent);
-                                      echo $editForm['comment']->render(array('id' => "editcommentBoxNew2_" . $commentId,
-                                          'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2'));
-                                      ?>
-
-                            </form>
-
-                            <div style="padding: 20px;background-color: white;margin-bottom: 20px;">
-                                <input type="button" style="float: right" class="btnEditCommentNew" name="btnSaveDependent" id='<?php echo 'btnEditComment_' . $commentId ?>' value="<?php echo __("Save"); ?>"/>
+                                <div class="editCommrntPageButton">
+                                    <input type="button"  class="btnEditCommentNew" name="btnSaveDependent" id='<?php echo 'btnEditComment_' . $commentId ?>' value="<?php echo __("Save"); ?>"/>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- end edit comment pop up window-->
-                <!-- start like window popup window-->
 
-
-
-
-                <!-- end like window pop up window-->
                 <li id="<?php echo "commentNew_" . $commentId; ?>" style="display: <?php echo $display; ?>" class="<?php echo $commentPostId; ?>" >
                     <div id="commentBody">
                         <div id="commentRowOne">
@@ -698,12 +689,11 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
                         <!-- start like window popup window-->
                         <div class="modal hide" id='<?php echo 'postlikehide_' . $commentId ?>'>
-                            <div id="modalHeader" style="font-size: 16px; color: white; background-color: #aaa; padding: 5px; text-align: center; font-family: 'SourceSansProLight';">
+                            <div id="modalHeader" >
                                 People who likes this comment
                             </div>
-                            <div class="modal-body" style="height: 530px;background-color: gray;overflow-x: hidden;overflow-y: auto">
-                                <div class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>'
-                                     style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+                            <div class="modal-body originalPostModal-body" >
+                                <div class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>'><img 
                                         class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>' 
                                         src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                                         /></div>
@@ -713,33 +703,25 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         <!-- end like window pop up window-->
 
                         <div id="commentBodyThirdRow">
-                            <div id="noOfLikesLinknew" style="margin-top: 5px;">
-                                <a class="commentNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' style="
-                                   color: #232323;
-                                   font-family: 'SourceSansProLight';
-                                   text-decoration: none;">
+                            <div id="noOfLikesLinknew" >
+                                <a class="commentNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
                                     <span id="<?php echo 'commentNoOfLikes_' . $commentId; ?>"><?php echo $commentNoOfLikes; ?></span><?php echo " " . __("people "); ?>
-                                    <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                                           height="16" width="16"/><?php echo __(" this"); ?>
                                 </a>
                             </div>
 
-                            <div id="noOfUnLikesLinknew" style="margin-top: 5px;">
-                                <a class="postNoofUnLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' style="
-                                   color: #232323;
-                                   font-family: 'SourceSansProLight';
-                                   text-decoration: none;">
+                            <div id="noOfUnLikesLinknew" >
+                                <a class="postNoofUnLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
                                     <span id="<?php echo 'commentNoOfUnLikes_' . $commentId; ?>"><?php echo $commentNoOfUnLikes; ?></span><?php echo " " . __("people "); ?>
-                                    <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                                           height="16" width="16"/><?php echo __(" this"); ?>
                                 </a>
                             </div>
                         </div>
 
-
-
                         <div  id="commentBodyThirdRowNew">
-                            <div class="likeCommentnew"  id="<?php echo 'commentLikebody_' . $commentId ?>" style="background-color: ">
+                            <div class="likeCommentnew"  id="<?php echo 'commentLikebody_' . $commentId ?>" >
                                 <?php if ($isLikeComment == 'Unlike') { ?>
                                     <a hidden="true" href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?>" id='<?php echo 'commentLikeno_' . $commentId ?>'> 
                                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
@@ -788,13 +770,12 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 </li>
             <?php } ?>
         </ul>
-        <div class="commentLoadingBox"  id='<?php echo 'commentLoadingBox' . $postId; ?>' style="display: none">
+        <div class="commentLoadingBox"  id='<?php echo 'commentLoadingBox' . $postId; ?>' >
             <div id="commentBody">
 
                 <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="20" style="margin-left: 40%; margin-top: 15px" />
             </div>
         </div>
-
     </div>
     <div class="lastLoadedPost" id=<?php echo $postId; ?>></div>
 </li>
