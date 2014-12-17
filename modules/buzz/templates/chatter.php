@@ -17,6 +17,7 @@
  * Please refer http://www.orangehrm.com/Files/OrangeHRM_Commercial_License.pdf for the license which includes terms and conditions on using this software.
  *
  */
+//use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
 ?>
 <style type="text/css">
 
@@ -31,7 +32,7 @@
         height: 58.5px;
     }
 
-    #logo, #buzzHeaderRight{
+    #logo{
         float: left;
     }
 
@@ -50,12 +51,7 @@
         width: 960px;
         margin: 0 auto;
     }
-    
-   
-
-   
-    
-
+ 
 </style>
 <?php require_once '_header.php'; ?>
 

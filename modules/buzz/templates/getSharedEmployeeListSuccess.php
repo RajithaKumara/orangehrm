@@ -17,76 +17,9 @@
  * Please refer http://www.orangehrm.com/Files/OrangeHRM_Commercial_License.pdf for the license which includes terms and conditions on using this software. 
  *  
  */
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeListSuccess'));
 ?>
-<style type="text/css">
-    .empListBlock{
-        width: 380px;
-        height: 350px;
-        border-radius: 5px;
-        overflow-x: hidden;
-        overflow-y: auto;
-        margin-top: 0px;
-        background-color: white;
-    }
-    .empListAllBlock{
-        width: 380px;
-        height: 400px;
-        border-radius: 5px;
-        overflow-x: hidden;
-        overflow-y: auto;
-        margin-top: 0px;
-        background-color: white;
-    }
 
-
-    #employeeView{
-        height: 65px;
-        padding: 4px;
-        border-radius: 10px;
-        border: 5px solid white;
-        background-color: #e3e3e3;
-        margin-bottom: 10px;
-    }
-
-    #empProfilePicContainer img{
-        width: 100%;
-        position:absolute;
-        top:0;
-        bottom:0;
-        margin:auto;
-        border-radius: 5px;
-    }
-
-    #empProfilePicContainer{
-        width: 60px;
-        height: 60px;
-        float: left;
-        border: 2px solid white;
-        vertical-align: middle;
-        position:relative;
-        background-color: #EBEBEB;
-        margin-right: 8px;
-        border-radius: 5px;
-        overflow: hidden;
-    }
-
-    #employeeUserName{
-        margin-top: 10px;
-        float: left;
-        font-size: 30px;
-        font-family: SourceSansProRegular;
-    }
-
-    #empname{
-        /*font-family: SourceSansProRegular;*/
-        font-size: 30px;
-        font-family: SourceSansProRegular;
-    }
-    #buttonDiv{
-        float: right;
-        margin-top: 10px;
-    }
-</style>
 <div class="" id='<?php echo 'postlikehidebody_' . $id ?>'>
     <div class="empListAllBlock">
         <div class="empListBlock" >

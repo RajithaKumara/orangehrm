@@ -72,147 +72,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 <?php } ?>
             </div>
         </div>
-        <style>
-            .likeLinknew{
-        background-color: transparent;
-        opacity: 0.8;
-
-        width: 35px;
-        margin-left: 0px;
-        z-index: 1;
-        position: absolute;
-
-    } 
-    .unlikeLinknew{
-        background-color: transparent;
-        opacity: 0.8;
-
-        width: 35px;
-        margin-left: 35px;
-        z-index: 1;
-        position: absolute;
-
-    }
-    .likeLinknew:hover{
-        background-color: white;
-        opacity: 0.8;
-    } 
-    .unlikeLinknew:hover{
-        background-color: white;
-        opacity: 0.8;
-
-    }
-    .shareLinknew{
-        background-color: transparent;
-        opacity: 0.8;
-
-        width: 35px;
-        margin-left: 70px;
-        z-index: 1;
-        position: absolute;
-
-    }
-           #postBodyThirdRowNew{
-                width: 110px;
-                height: 35px;
-                float: right;
-                margin-top: -35px;
-                margin-bottom: -0px;
-            }
-     #postBodyThirdRowNewPopUP{
-                width: 110px;
-                height: 35px;
-                float: right;
-                margin-top: -0px;
-                margin-bottom: -35px;
-               
-            }
-     
-     #postBodyViewMore{
-                float: right;
-    height: 35px;
-    margin: -36px 0 0 -460px;
-    width: 150px;
-     }
-     #postBodyReadMore{
-                width: 50px;
-                height: 35px;
-                float: right;
-                margin-top: -30px;
-                margin-bottom: 0px;
-                //margin-right: -60px;
-     }
-    
-    .textTopOfImage{
-        color: white;
-        font-size: 20px;
-        margin-left: 23px;
-        margin-top: -27px;
-        z-index: 9998;
-        position: absolute;
-
-    }
-            .imageContainer {
-                position: relative;
-                width: 100%;
-                height: 230px;
-                //border: 1px solid white;
-                margin: 0 auto;
-                margin-top: 10px;
-                border-radius: 10px;
-                overflow: hidden;
-                //max-width: 510px;
-            }
-            .imageContainer div {
-                position: absolute;
-                background: #ccc;
-                border: 5px solid white;
-            }
-            #postBodySecondRowPop{
-                padding: 5px;
-                margin-top: -3px;
-                text-align: justify;
-                background-color: white;
-                border-radius: 0 0 4px 4px;
-                line-height: 1.5;
-                font-family: 'SourceSansProLight';
-                font-size: 16px;
-
-            }
-        </style>
-
-        <!--Old Code of like, unlike and share buttons-->
-        <div hidden="true" id="postBodyThirdRowNew">
-            <div class="likeLinknew"  id="<?php echo 'postLikebody_' . $postId ?>" style="background-color: <?php
-            if ($isLike == 'Unlike') {
-                echo 'orange';
-            }
-            ?>">
-                <a href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLike_' . $postId ?>'> <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                                                                                                                                          class="<?php echo $isLike . ' postLike'; ?>" height="40" width="40"/></a>
-                <div class="textTopOfImage" id='<?php echo 'postLiketext_' . $postId ?>'><?php echo $postNoOfLikes ?></div>
-            </div>
-            <div class="unlikeLinknew" id='<?php echo 'postUnLikebody_' . $postId ?>' style="background-color: <?php
-            if ($isUnlike == 'yes') {
-                echo 'red';
-            }
-            ?>">
-                <a href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlike_' . $postId ?>> <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/un-like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>' 
-                                                                                                                 height="40" width="40"/></a>
-                <div class="textTopOfImage" id='<?php echo 'postUnLiketext_' . $postId ?>'><?php echo $postUnlike ?></div>
-            </div>
-
-            <div class="shareLinknew" id='<?php echo 'postSharebody_' . $postId ?>' style="background-color: <?php
-            if ($shareCount > 0) {
-                echo 'green';
-            }
-            ?>">
-                <a href="javascript:void(0)" class="postShare" id=<?php echo 'postShare_' . $postId ?>> <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/share.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                                                                                                              height="40" width="40"/></a>
-                <div class="textTopOfImage"><?php echo $shareCount ?></div>
-            </div>
-
-        </div>
+       
+       
         <!--new Code of like, unlike and share buttons-->
         <div id="postBodyThirdRowNew">
             <div class="likeLinknew"  id="<?php echo 'postLikebody_' . $postId ?>" > 
@@ -505,6 +366,20 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 });
             }
         </script>
+         <style>
+                
+            #postBodySecondRowPop{
+                padding: 5px;
+                margin-top: -3px;
+                text-align: justify;
+                background-color: white;
+                border-radius: 0 0 4px 4px;
+                line-height: 1.5;
+                font-family: 'SourceSansProLight';
+                font-size: 16px;
+
+            }
+        </style>
 
 
 

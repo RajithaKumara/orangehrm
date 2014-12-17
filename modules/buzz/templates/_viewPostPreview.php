@@ -5,32 +5,15 @@
  * and open the template in the editor.
  */
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostPreviewComponent'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
-<style type="text/css">
-    li{
-        list-style: none;
-    }
-    .previewSecondRow{
-        padding: 0;
-        margin: 0;
-    }
-    .previewFirstRowColTwo #postEmployeeName .name{
-        font-size: 95%;
-        padding: 0;
-        margin: 0;
-    }
-    .previewPost{
-        margin-bottom: 100px;
-        height: 100px;
-        /*width: 120px;*/
-    }
-</style>
+
 <!-- pop up-->
-<div class="modal hide" style="width: 800px;height: 700px;left: 40%;top:20%;overflow-x: hidden" id='<?php echo 'shareViewMoreMod3_' . $postId ?>'>
-    <div class="modal-body" style="height: 530px;background-color: gray;overflow-x: hidden">
+<div class="modal hide modalPopUP"  id='<?php echo 'shareViewMoreMod3_' . $postId ?>'>
+    <div class="modal-body modalPopUP-body" >
         <div class="hideModalPopUp" id='<?php echo 'shareViewMoreMod3_' . $postId ?>'
-             style="top: 2px;right: 2px;position: absolute;z-index: 99999;border: 2px solid;border-radius: 250px;background-color: white"><img 
+             ><img 
                 class="hideModalPopUp" id='<?php echo 'shareViewMoreMod3_' . $postId ?>' 
                 src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                 />
@@ -54,7 +37,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                 $imgCount = 1;
                 if (count($photos) == 1) {
                     ?>
-                    <div style="overflow: hidden; text-align: center">
+                <div class="photoPreviewOne">
                         <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
                     </div>
                     <?php
@@ -132,7 +115,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
             <?php if (count($originalPost->getLinks()) > 0) { ?>
                 <?php foreach ($originalPost->getLinks() as $link) { ?>
                     <?php if ($link->getType() == 1) { ?>
-                        <iframe src="<?php echo $link->getLink(); ?>" width="100%" height="250" style="margin-top: 5px " frameborder="0" allowfullscreen></iframe >
+            <iframe src="<?php echo $link->getLink(); ?>" width="100%" height="250" class="iframePrev" frameborder="0" allowfullscreen></iframe >
 
                     <?php } ?>  
                 <?php } ?>    
@@ -144,7 +127,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
             $imgCount = 1;
             if (count($photos) == 1) {
                 ?>
-                <div style="overflow: hidden; text-align: center">
+            <div class="photoPreviewOne">
                     <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
                 </div>
                 <?php

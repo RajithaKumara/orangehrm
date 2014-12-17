@@ -17,33 +17,10 @@
  * Please refer http://www.orangehrm.com/Files/OrangeHRM_Commercial_License.pdf for the license which includes terms and conditions on using this software.
  *
  */
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewStatisticsComponent'));
 ?>
 
-<style type="text/css">
-    table.hovertable {
-        border-width: 1px;
-        border-color: #999999;
-        border-collapse: collapse;
-    }
-    table.hovertable th {
-        color: #EBEBEB;
-        background-color: #6B6B6B;
-        border-width: 1px;
-        font-size: 17px;
-        padding: 8px;
-        border-style: solid;
-        border-color: #a9c6c9;
-    }
-    table.hovertable tr {
-        background-color:#EBEBEB;
-    }
-    table.hovertable td {
-        border-width: 1px;
-        padding: 8px;
-        border-style: solid;
-        border-color: #a9c6c9;
-    }
-</style>
+
 
 <div id="statTable">
     <table class="hovertable" style="width: 101%">

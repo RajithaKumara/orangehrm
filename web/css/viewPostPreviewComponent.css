@@ -1,0 +1,48 @@
+
+li{
+    list-style: none;
+}
+.previewSecondRow{
+    padding: 0;
+    margin: 0;
+}
+.previewFirstRowColTwo #postEmployeeName .name{
+    font-size: 95%;
+    padding: 0;
+    margin: 0;
+}
+.previewPost{
+    margin-bottom: 100px;
+    height: 100px;
+    /*width: 120px;*/
+}
+
+.modalPopUP{
+    width: 800px;
+    height: 700px;
+    left: 40%;
+    top:20%;
+    overflow-x: hidden;
+}
+
+.modalPopUP-body{
+    height: 530px;
+    background-color: gray;
+    overflow-x: hidden;
+}
+.hideModalPopUp{
+    top: 2px;
+    right: 2px;
+    position: absolute;
+    z-index: 99999;
+    border: 2px solid;
+    border-radius: 250px;
+    background-color: white;
+}
+.photoPreviewOne{
+    overflow: hidden;
+    text-align: center;
+}
+.iframePrev{
+    margin-top: 5px ;
+}

@@ -1,0 +1,30 @@
+#buzzHeaderNew{
+    font-size: 30px; 
+    position: fixed; 
+    width: 100%;  
+    background-color: #F07C00;
+    padding: 10px; 
+    z-index: 9999; 
+    color: white;
+    height: 58.5px;
+}
+
+#logo{
+    float: left;
+}
+
+#logo{
+    width: 24%;
+
+    margin-left: -20px;
+}
+
+#buzzHeaderRightNew{
+    //position: absolute;
+    float: right;
+    top: 10%;
+}
+#dashBoardHeaderBuzzNew{
+    width: 960px;
+    margin: 0 auto;
+}

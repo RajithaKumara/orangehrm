@@ -25,6 +25,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/jquerycollagePlus'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/jqueryremoveWhitespace'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeListSuccess'));
 ?>
 
 <div id="dashBoardBuzz">
