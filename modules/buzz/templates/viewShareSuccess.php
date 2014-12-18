@@ -283,13 +283,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 display: none;
             }
         </style>
-        <script type="text/javascript">{
-                $(".hidePhotoPopUp").click(function (e) {
-                    var id = e.target.id;
-                    $("#showPhotos" + id.split("_")[1]).modal('hide');
-                });
-            }
-        </script>
+        
         <style>
 
             #postBodySecondRowPop{
