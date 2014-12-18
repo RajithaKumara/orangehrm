@@ -52,10 +52,11 @@ class BuzzDao extends BaseDao {
         try {
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
             if ($employeeNumber == '') {
-                $result = $q->execute("SELECT * FROM ohrm_buzz_share WHERE employee_number is NULL");
-                return $result->rowCount();
+                $queryLastBlock = "is NULL";
+            } else {
+                $queryLastBlock = "=" . $employeeNumber;
             }
-            $result = $q->execute("SELECT * FROM ohrm_buzz_share WHERE employee_number=" . $employeeNumber);
+            $result = $q->execute("SELECT * FROM ohrm_buzz_share WHERE employee_number " . $queryLastBlock);
             return $result->rowCount();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -74,10 +75,11 @@ class BuzzDao extends BaseDao {
         try {
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
             if ($employeeNumber == '') {
-                $result = $q->execute("SELECT * FROM ohrm_buzz_comment WHERE employee_number is NULL");
-                return $result->rowCount();
+                $queryLastBlock = "is NULL";
+            } else {
+                $queryLastBlock = "=" . $employeeNumber;
             }
-            $result = $q->execute("SELECT * FROM ohrm_buzz_comment WHERE employee_number=" . $employeeNumber);
+            $result = $q->execute("SELECT * FROM ohrm_buzz_comment WHERE employee_number " . $queryLastBlock);
             return $result->rowCount();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -461,9 +463,8 @@ class BuzzDao extends BaseDao {
      */
     public function getLikeOnCommentById($id) {
         try {
-            $result = Doctrine::getTable('LikeOnComment')->find($id);
 
-            return $result;
+            return Doctrine::getTable('LikeOnComment')->find($id);
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
             throw new DaoException($e->getMessage(), $e->getCode(), $e);
@@ -538,7 +539,6 @@ class BuzzDao extends BaseDao {
     public function deleteUnLikeForShare($like) {
         try {
             if ($like->getEmployeeNumber() == '') {
-
                 $queryBlock = 'employee_number is NULL';
             } else {
                 $queryBlock = 'employee_number=' . $like->getEmployeeNumber();
@@ -765,7 +765,7 @@ class BuzzDao extends BaseDao {
         }
         // @codeCoverageIgnoreEnd
     }
-    
+
     /**
      * save link to data base
      * 
