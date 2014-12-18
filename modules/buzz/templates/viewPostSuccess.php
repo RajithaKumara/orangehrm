@@ -426,20 +426,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 -khtml-border-radius: 5px; /* for old Konqueror browsers */
             }
         </style>
-        <script type="text/javascript">{
-                $(".hidePhotoPopUp").click(function (e) {
-                    var id = e.target.id;
-                    $("#showPhotos" + id.split("_")[1]).modal('hide');
-                });
-            }
-        </script>
-
-
-
-
-
-
-
+        
         <div id="postBodyThirdRow">
             <div id="noOfLikesLinknew" style="margin-top: 5px;margin-left: 0px">
                 <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
