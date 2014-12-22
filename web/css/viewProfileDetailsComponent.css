@@ -1,9 +1,9 @@
 
 #panelfirst
 {
-
+    margin-bottom: 2px;
     float: left;
-    width: 40%;
+    width: 35%;
     text-align: left;
     /*height: 20px;*/
     font-size: 16px;
@@ -12,8 +12,8 @@
 }
 #panelsecond
 {
-
-
+    margin-bottom: 2px;
+    word-wrap: break-word;
     width: 55%;
     float: right;
     text-align: left;
@@ -169,9 +169,7 @@
     border: 2px solid #dedede;
 
 }
-#empPicPof{
-
-
-
+.inlineBlock{
+    display: inline-block; 
+    width: 100%;
 }
-

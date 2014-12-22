@@ -26,13 +26,14 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/jqueryremoveWhitespace
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeListSuccess'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
 ?>
 
 <div id="dashBoardBuzz">
     <div class="buzzRightBar">
         <!--Start Birthdays Component-->
         <div id="birthdayComponent">
-            <?php include_component('buzz', 'viewBirthdays', array('employeeList' => $employeeList)); ?>
+            <?php include_component('buzz', 'viewBirthdays', array()); ?>
         </div>
         <!--End Birthdays Component-->
 
@@ -62,7 +63,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeList
             <ul id="tabLinks">
                 <li id="tabLink1" onclick="activateTab('page1');" class="tabButton tb_one tabSelected">
                     <div>
-                        <img id="status_icon"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/status.png"); ?>" height="25"   />
+                        <img id="status_icon" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/status2.png"); ?>" height="25"   />
                         <span><a class="tabLabel" href="javascript:void(0)"/><?php echo __('Update Status'); ?></a></span>
                     </div>
                 </li>
@@ -131,6 +132,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeList
                             <button type="submit" id="imageUploadBtn" class="submitBtn">
                                 <?php echo __("Post"); ?>
                             </button>
+                            <a href="#" id="clearLink">CLEAR</a>
                         </p>
                     </form>
                 </div>
@@ -156,8 +158,23 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeList
             </div>
 
             <div class="modal hide" id='imageCountError'>
-                <div class="modal-body">
-                    <?php echo __("Only five images are allowed to upload."); ?>
+
+                <div class="modal-body originalPostModal-body" >
+                    <div class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>'
+                         ><img 
+                            class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>' 
+                            src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                            />
+                    </div>
+                    <div class="modal-body">
+                        <div id="maxImageErrorHeading">
+                            <?php echo __("Sorry!"); ?>
+                        </div>
+                        <br>
+                        <div id="maxImageErrorBody">
+                            <?php echo __("Only five images are allowed in a single post!"); ?>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -231,6 +248,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeList
             var uploadImageURL = '<?php echo url_for('buzz/uploadImage'); ?>';
             var refreshStatsURL = '<?php echo url_for('buzz/viewStatistics'); ?>';
             var getSharedEmployeeListURL = '<?php echo url_for('buzz/getSharedEmployeeList'); ?>';
+            var imageFolderPath = '<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/"); ?>';
         </script>
         <style type="text/css">
             .homeLink{

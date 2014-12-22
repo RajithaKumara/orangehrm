@@ -27,7 +27,7 @@ li{
 
 .modalPopUP-body{
     height: 530px;
-    background-color: gray;
+    background-color: #e2e2e2;
     overflow-x: hidden;
 }
 .hideModalPopUp{

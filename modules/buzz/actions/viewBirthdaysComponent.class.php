@@ -26,8 +26,23 @@
  */
 class viewBirthdaysComponent extends sfComponent {
 
+    //protected $employeeList;
+    protected $buzzService;
+
     public function execute($request) {
-        
+        $this->setBuzzService(new BuzzService());
+        $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
+        $this->employeeService = new EmployeeService();
+        $this->employeesHavingBirthday = array();
+        foreach ($this->employeeList as $employee) {
+            array_push($this->employeesHavingBirthday, $this->employeeService->getEmployee($employee['emp_number']));
+        }
+    }
+
+    protected function setBuzzService(BuzzService $buzzService) {
+        if (!($this->buzzService instanceof BuzzService)) {
+            $this->buzzService = $buzzService;
+        }
     }
 
 }

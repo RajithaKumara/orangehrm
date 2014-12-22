@@ -14,6 +14,14 @@ $("#rightBarHeadingMc").live('click', function () {
     $("#lessCommentLiked").toggle();
     $("#moreAniversary").show();
     $("#lessAniversary").hide();
+    if ($("#moreCommentLiked").is(":visible")) {
+        $(this).css("border-radius", "10px");
+        $("#mc_componentContainer").css("border","none");
+    }else{
+        $("#rightBarheadingBday, #rightBarHeadingMl, #rightBarHeadingAnniv").css("border-radius", "10px");
+        $(this).css("border-radius", "10px 10px 0px 0px");
+        $("#mc_componentContainer").css("border","1px solid #dedede");
+    }
 });
 
 $("#rightBarHeadingMl").live('click', function () {
@@ -31,4 +39,12 @@ $("#rightBarHeadingMl").live('click', function () {
     $("#lessCommentLiked").hide();
     $("#moreAniversary").show();
     $("#lessAniversary").hide();
+    if ($("#morePostLiked").is(":visible")) {
+        $(this).css("border-radius", "10px");
+        $("#ml_componentContainer").css("border","none");
+    }else{
+        $("#rightBarheadingBday, #rightBarHeadingAnniv, #rightBarHeadingMc").css("border-radius", "10px");
+        $(this).css("border-radius", "10px 10px 0px 0px");
+        $("#ml_componentContainer").css("border","1px solid #dedede");
+    }
 });

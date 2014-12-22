@@ -1,6 +1,6 @@
 #profilePicContainer{
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     /*overflow: hidden;*/
 }
 
@@ -42,6 +42,7 @@
 #date{
     //color: #EBEBEB;
     //font-style: italic;
+    margin-top: 4px;
     font-family: SourceSansProExtraLight;
 }
 
@@ -50,18 +51,18 @@
 }
 
 #birthdayPost{
-    height: 52px;
+    height: 60px;
     padding: 4px;
     border-radius: 5px;
     background-color: #e3e3e3;
 }
 #birthdayPostNull{
-    height: 52px;
+    height: 57px;
     padding: 4px;
 
 }
 #birthdayPostNull{
-    height: 52px;
+    height: 57px;
     padding: 4px;
     border-radius: 5px;
 
@@ -95,6 +96,7 @@
     margin-top: -7px;
     margin-right: -10px;
     border: 0px solid #f6f6f6;
+    border-radius: 5px;
 }
 
 #moreBirthdays{
@@ -102,4 +104,5 @@
     margin-top: -7px;
     margin-right: -10px;
     display: none;
+    border-radius: 5px;
 }

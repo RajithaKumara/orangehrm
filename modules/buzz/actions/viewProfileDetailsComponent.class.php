@@ -17,6 +17,7 @@ class viewProfileDetailsComponent extends sfComponent {
         $this->logedInUser = $this->logedInUserId;
         if ($this->employee) {
             $this->empNum = $this->employee->getEmpNumber();
+            $this->firstName = $this->employee->getFirstName();
             $this->fullName = $this->employee->getFirstName() . " " . $this->employee->getLastName();
             $this->jobtitle = $this->employee->getJobTitleName();
             if($this->employee->getEmpBirthday()!=null){
@@ -29,7 +30,7 @@ class viewProfileDetailsComponent extends sfComponent {
             $this->locations = $this->employee->getLocationAsString();
         } else {
             $this->fullName = 'Admin';
-            
+            $this->firstName = 'Admin';
         }
     }
 

@@ -66,20 +66,20 @@ class editShareAction extends BaseBuzzAction {
      */
     public function saveEditedContent() {
         $share = $this->getBuzzService()->getShareById($this->shareId);
-        if ($share->getEmployeeNumber() == $this->getUserId()) {
+        if ($share->getEmployeeNumber() == $this->getUserId() || $this->getUserId() == null) {
             if ($share->getTypeName() == 'share') {
                 $this->type='share';
                 return $this->saveShare($share);
                 
             } else {
-                if ($share->getPostShared()->getEmployeeNumber() == $this->getUserId()) {
+                if ($share->getPostShared()->getEmployeeNumber() == $this->getUserId() || $this->getUserId() == null) {
                     return $this->savePost($share->getPostShared());
                 } else {
                     
                 }
             }
         } else {
-            
+
         }
     }
 

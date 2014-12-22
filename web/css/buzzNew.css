@@ -26,7 +26,7 @@
         width: 107.5%;
         margin: 10px 10px 0px 10px;
         border: none;
-        border-radius: 8px;
+        border-radius: 5px;
         height: 10%;
         padding: 10px;
         resize: none;
@@ -148,7 +148,7 @@
         background-color: #f6f6f6;
         margin-top:  0;
         z-index: 200;
-        border: 1px solid #dedede;
+        //border: 1px solid #dedede;
         border-radius: 0 0 8px 8px;
     }
 
@@ -166,7 +166,7 @@
         border: 2px solid #dedede;
         z-index: 99999;
 
-        border-radius: 8px 8px 0px 0px;
+        border-radius: 10px;
         font-family: SourceSansProExtraLight;
         margin-top: 10px;
     }

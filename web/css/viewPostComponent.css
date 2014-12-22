@@ -107,7 +107,6 @@
 
     width: 30px;
     margin-left: 0px;
-    z-index: 99;
     position: absolute;
 
 } 
@@ -117,7 +116,6 @@
 
     width: 30px;
     margin-left: 40px;
-    z-index: 99;
     position: absolute;
 
 }
@@ -229,7 +227,7 @@
 }
 .viewMoreModal-body{
     height: 530px;
-    background-color: gray;
+    background-color: #e2e2e2;
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -253,12 +251,12 @@
 }
 .originalPostModal-body{
     height: 530px;
-    background-color: gray;
+    background-color: #e2e2e2;
     overflow-x: hidden;
     overflow-y: auto;
 }
 .editPostModal-body{
-    background-color: gray;
+    background-color: #e2e2e2;
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -284,7 +282,7 @@
     left: 467px;
     width: 320px;
     margin-bottom: -20px;
-    position: absolute;background-color: gray;
+    position: absolute;background-color: #e2e2e2;
 }
 #photoPagePhotoDiv{
     top:0;

@@ -25,36 +25,39 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
     </div>
     <div id="panelPersonal">
 
-        <div id="panelfirst">Gender</div>
-        <div id="panelsecond"> <?php
-            echo ": " . $gender;
-            ?></div>
+        <div class="inlineBlock">
+            <div id="panelfirst">Gender</div>
+            <div id="panelsecond"> <?php echo $gender; ?></div>
+        </div>
 
-        <div id="panelfirst">Birth Day</div>
-        <div id="panelsecond"> <?php
-            echo ": " . $birthDay;
-            ?></div>
-        <div id="panelfirst">Locations</div>
-        <div id="panelsecond"> <?php
-            echo ": " . $locations;
-            ?></div>
+        <div class="inlineBlock">
+            <div id="panelfirst">Birth Day</div>
+            <div id="panelsecond"> <?php echo $birthDay; ?></div>
+        </div>
 
-        <div id="panelfirst">Work Email</div>
-        <div id="panelsecond"> <?php
-            echo ": " . $workEmail;
-            ?></div>
-        <div id="panelfirst">Work Tel</div>
-        <div id="panelsecond"> <?php
-            echo ": " . $workTel;
-            ?></div>
-        <div id="panelfirst">Job Title</div>
-        <div id="panelsecond"> <?php
-            echo ": " . $jobtitle;
-            ?></div>
+        <div class="inlineBlock">
+            <div id="panelfirst">Locations</div>
+            <div id="panelsecond"> <?php echo $locations; ?></div>
+        </div>
+
+        <div class="inlineBlock">
+            <div id="panelfirst">Work Email</div>
+            <div id="panelsecond"> <?php echo $workEmail; ?></div>
+        </div>
+
+        <div class="inlineBlock">
+            <div id="panelfirst">Work Tel</div>
+            <div id="panelsecond"> <?php echo $workTel; ?></div>
+        </div>
+
+        <div class="inlineBlock">
+            <div id="panelfirst">Job Title</div>
+            <div id="panelsecond"> <?php echo $jobtitle; ?></div>
+        </div>
     </div>
 </div>
 <div class="rightBarBodyAllProf">
-    <div id="flipStat"><?php echo 'YOUR STATISTICS' ?>
+    <div id="flipStat"><?php echo strtoupper($firstName) . '\'S STATISTICS' ?>
         <img  id="lessStat" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;border: 0px solid #f6f6f6;display: none" height="30px" width="30px"/>
 
         <img id="moreStat" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;" height="30px" width="30px"/>

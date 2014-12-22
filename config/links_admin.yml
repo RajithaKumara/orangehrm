@@ -4,5 +4,4 @@ link1:
   plugin: orangehrmBuzzPlugin
   target: '_new'
   image: 'orange.png'
-  requiredPermissions: {'data_group': {'buzz_link_admin': {'canRead': true, 'canCreate': false, 'canUpdate': false, 'canDelete': false}}}
   ohrm_module: 'buzz'

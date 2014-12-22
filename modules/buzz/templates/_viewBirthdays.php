@@ -40,27 +40,30 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBirthdays'));
                     </div>        
                 </li>
             <?php } ?>
-            <?php foreach ($employeeList as $employee) { ?>
+            <?php foreach ($employeesHavingBirthday as $employee) { ?>
                 <li id="birthdayPost">
                     <div id="picAndNameContainer">
                         <div id="profilePicContainer">
                             <img alt="<?php echo __("Employee Photo"); ?>" 
-                                 src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee['emp_number']); ?>" border="0" id="empPic"/>
+                                 src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee->getEmpNumber()); ?>" border="0" id="empPic"/>
                         </div>  
                         <div id="birthdayUserName">
                             <a href="#" class="name" id="name2">
-                                <?php echo $employee['emp_firstname'] . " " . $employee['emp_lastname']; ?>
+                                <?php echo $employee->getFirstName() . " " . $employee->getLastName(); ?>
                             </a>
                         </div>        
                     </div>
                     <br>
                     <br>
+                    <div id="birthdayUserJobTitle">
+                        <?php echo $employee->getJobTitleName(); ?>
+                    </div>
                     <div id="date">
                         <?php
-                        if (date('Y-m-d') == $employee['emp_birthday']) {
+                        if (date('Y-m-d') == $employee->getEmpBirthday()) {
                             echo __("Today is his birthday");
                         } else {
-                            echo date('F d', strtotime($employee['emp_birthday']));
+                            echo date('F d', strtotime($employee->getEmpBirthday()));
                         }
                         ?>
                     </div>

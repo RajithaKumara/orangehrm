@@ -42,7 +42,7 @@ protected $buzzService;
         $this->postTime = $post->getTime();
         $this->postContent = $post->getText();
         $this->postNoOfLikes = $post->getLike()->count();
-        $this->postUnlike= $post->getNumberOfUnlikes();
+        $this->postUnlike= $post->getUnlike()->count();
         $this->postShareCount= $post->calShareCount();
         $this->postType = $post->getType();
         $this->employeeID = $post->getEmployeeNumber();

@@ -5,12 +5,20 @@ $("#rightBarHeadingAnniv").live('click', function () {
     $("#upcomingBdaysList").hide(300);
     $("#mc_componentContainer").hide(300);
     $("#ml_componentContainer").hide(300);
-    $("#moreAniversary").toggle(300);
-    $("#lessAniversary").toggle(300);
-    $("#moreBirthdays").show(300);
-    $("#lessBirthdays").hide(300);
-    $("#moreCommentLiked").show(300);
-    $("#lessCommentLiked").hide(300);
-    $("#morePostLiked").show(300);
-    $("#lessPostLiked").hide(300);
+    $("#moreAniversary").toggle();
+    $("#lessAniversary").toggle();
+    $("#moreBirthdays").show();
+    $("#lessBirthdays").hide();
+    $("#moreCommentLiked").show();
+    $("#lessCommentLiked").hide();
+    $("#morePostLiked").show();
+    $("#lessPostLiked").hide();
+    if ($("#moreAniversary").is(":visible")) {
+        $(this).css("border-radius", "10px");
+        $(".rightBarBody").css("border","none");
+    }else{
+        $("#rightBarheadingBday, #rightBarHeadingMl, #rightBarHeadingMc").css("border-radius", "10px");
+        $(this).css("border-radius", "10px 10px 0px 0px");
+        $(".rightBarBody").css("border","1px solid #dedede");
+    }
 });

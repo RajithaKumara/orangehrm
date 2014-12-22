@@ -8,7 +8,7 @@ if (count($photos) == 1) {
     ?>
     <div class="imageContainer">
         <div class="oneImageOne">
-            <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="120%" 
+            <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="100%" height="100%" 
                  src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
         </div>
     </div>

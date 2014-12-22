@@ -193,7 +193,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 
         width: 30px;
         margin-left: 0px;
-        z-index: 999;
         //position: absolute;
 
     } 
@@ -203,7 +202,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 
         width: 30px;
         margin-left: 40px;
-        z-index: 999;
         /*position: absolute;*/
 
     }
