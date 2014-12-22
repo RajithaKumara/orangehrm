@@ -25,7 +25,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
     <div id="redirectState" hidden="true">no</div>
 
 
-    <?php include_component('buzz', 'viewPost', array('post' => $post));
+    <?php include_component('buzz', 'viewPost', array('post' => $post,'loggedInUser' => $loggedInUser));
 } else {
     ?>
     <div id="redirectState" hidden="true">no</div>

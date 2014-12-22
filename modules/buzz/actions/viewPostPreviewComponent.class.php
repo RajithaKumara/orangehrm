@@ -28,8 +28,9 @@ class viewPostPreviewComponent extends sfComponent {
 
     protected $buzzService;
     protected $buzzConfigService;
+
     const COOKIE_NAME = 'buzzCookie';
-    
+
     /**
      * 
      * @param AddTaskForm $form
@@ -130,28 +131,19 @@ class viewPostPreviewComponent extends sfComponent {
         if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
 
             $cookie_valuve = $this->getUser()->getEmployeeNumber();
-            if ($cookie_valuve == "") {
-                //get it from the configuration
-                setcookie(self::COOKIE_NAME, 'Admin', time() + 3600 * 24 * 30, "/");
-                
-            } else {
-                setcookie(self::COOKIE_NAME, $cookie_valuve, time() + 3600 * 24 * 30, "/");
-            }
 
             $employeeNumber = $cookie_valuve;
         } elseif (isset($_COOKIE[self::COOKIE_NAME])) {
             if ($_COOKIE[self::COOKIE_NAME] == 'Admin') {
                 $employeeNumber = null;
-                 
-            }else{
+            } else {
                 $employeeNumber = $_COOKIE[self::COOKIE_NAME];
             }
         } else {
             throw new Exception('User Didnot Have');
         }
-        
+
         return $employeeNumber;
     }
-    
 
 }

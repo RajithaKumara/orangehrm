@@ -60,15 +60,7 @@ class loggedInUserDetailsComponent extends sfComponent {
 
         if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
 
-
             $cookie_valuve = $this->getUser()->getEmployeeNumber();
-            if ($cookie_valuve == "") {
-                setcookie($cookie_name, 'Admin', time() + 3600 * 24 * 30, "/");
-            } else {
-                setcookie($cookie_name, $cookie_valuve, time() + 3600 * 24 * 30, "/");
-            }
-
-
 
             return $cookie_valuve;
         } elseif (isset($_COOKIE[$cookie_name])) {

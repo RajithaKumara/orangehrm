@@ -100,7 +100,7 @@ class viewPostComponent extends sfComponent {
     public function execute($request) {
 
         $this->setBuzzService(new BuzzService());
-        $this->loggedInUser = $this->getLogedInEmployeeNumber();
+        //$this->loggedInUser = $this->getLogedInEmployeeNumber();
         $this->setShare($this->post);
         $this->postForm = $this->getPostForm();
         $this->commentForm = $this->getCommentForm();
@@ -162,12 +162,6 @@ class viewPostComponent extends sfComponent {
         if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
 
             $cookie_valuve = $this->getUser()->getEmployeeNumber();
-            if ($cookie_valuve == "") {
-                //get it from the configuration
-                setcookie(self::COOKIE_NAME, 'Admin', time() + 3600 * 24 * 30, "/");
-            } else {
-                setcookie(self::COOKIE_NAME, $cookie_valuve, time() + 3600 * 24 * 30, "/");
-            }
 
             $employeeNumber = $cookie_valuve;
         } elseif (isset($_COOKIE[self::COOKIE_NAME])) {

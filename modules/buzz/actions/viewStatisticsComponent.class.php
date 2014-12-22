@@ -79,9 +79,7 @@ class viewStatisticsComponent extends sfComponent {
     
     public function execute($request) {
         $this->setBuzzService(new BuzzService());
-        if ($this->loggedInUserId == "") {
-            $this->loggedInUserId = 'Null';
-        }
+       
         $this->noOfShares = $this->getNoOfSharesBy($this->loggedInUserId);
         $this->noOfComments = $this->getNoOfCommentsBy($this->loggedInUserId);
         $this->noOfShareLikesRecieved = $this->getNoOfShareLikesFor($this->loggedInUserId);

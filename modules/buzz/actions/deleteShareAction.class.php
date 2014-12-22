@@ -25,37 +25,36 @@
  * @author aruna
  */
 class deleteShareAction extends BaseBuzzAction {
-    
-     /**
+
+    /**
      * get share by Id and return it
      * @param type $shareId
      * @return Share
      */
     public function getShare($shareId) {
-        return $this->getBuzzervice()->getShareById($shareId);
+        return $this->getBuzzService()->getShareById($shareId);
     }
-    
+
     /**
      * delete Share if it bis post then delete post
      */
     public function deleteShare($share) {
         try {
-            if ($share->getEmployeeNumber() == $this->getLogedInEmployeeNumber() || $this->getUserId() == '') {
-                $this->getBuzzervice()->deleteShare($share->getId());
+            if ($share->getEmployeeNumber() == $this->getLogedInEmployeeNumber() || $this->getLogedInEmployeeNumber() == '') {
+                $this->getBuzzService()->deleteShare($share->getId());
             }
         } catch (Exception $ex) {
             
         }
     }
 
-   
     /**
      * delete post by Id 
      * @param type $share
      */
     private function deletePost($share) {
-        if ($share->getPostShared()->getEmployeeNumber() == $this->getLogedInEmployeeNumber() || $this->getUserId() == '') {
-            $this->getBuzzervice()->deletePost($share->getPostId());
+        if (($share->getPostShared()->getEmployeeNumber() == $this->getLogedInEmployeeNumber()) || ($this->getLogedInEmployeeNumber() == '')) {
+            $this->getBuzzService()->deletePost($share->getPostId());
         }
     }
 
@@ -64,7 +63,7 @@ class deleteShareAction extends BaseBuzzAction {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->shareId = $request->getParameter('shareId');
             $share = $this->getShare($this->shareId);
-            if ($share->getType() == '0') {
+            if ($share->getType() == 0) {
                 $this->deletePost($share);
             } else {
                 $this->deleteShare($share);
@@ -75,7 +74,5 @@ class deleteShareAction extends BaseBuzzAction {
 
         return sfView::NONE;
     }
-
-    
 
 }

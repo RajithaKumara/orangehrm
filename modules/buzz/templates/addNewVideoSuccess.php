@@ -50,7 +50,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
         </div>
 
     <?php } else if ($isSuccess == 'posted') { ?>
-        <?php include_component('buzz', 'viewPost', array('post' => $post)); ?>
+        <?php include_component('buzz', 'viewPost', array('post' => $post,'loggedInUser' => $loggedInUser)); ?>
 
 
     <?php } else if ($error == 'redirect') { ?>
