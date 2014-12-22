@@ -24,13 +24,9 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/tooltip_css/jquery.qtip.min'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip.min'));
-
-//include_component('buzz', 'viewPost', array('post' => $share));
 ?>
 
-
-
-<div id="photoPage" style="height: 400px;top: 15px;left: 12px;width: 450px;margin-bottom: -20px;position: absolute;overflow-y: auto">
+<div id="photoPage" >
     <div id="postBody" style="margin-top: 0px">
 
         <div id="postBodyFirstRow">
@@ -72,142 +68,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 <?php } ?>
             </div>
         </div>
-        <style>
-            .likeLinknew{
-        background-color: transparent;
-        opacity: 0.8;
 
-        width: 35px;
-        margin-left: 0px;
-        z-index: 1;
-        position: absolute;
-
-    } 
-    .unlikeLinknew{
-        background-color: transparent;
-        opacity: 0.8;
-
-        width: 35px;
-        margin-left: 35px;
-        z-index: 1;
-        position: absolute;
-
-    }
-    .likeLinknew:hover{
-        background-color: white;
-        opacity: 0.8;
-    } 
-    .unlikeLinknew:hover{
-        background-color: white;
-        opacity: 0.8;
-
-    }
-    .shareLinknew{
-        background-color: transparent;
-        opacity: 0.8;
-
-        width: 35px;
-        margin-left: 70px;
-        z-index: 1;
-        position: absolute;
-
-    }
-            #postBodyThirdRowNew{
-                width: 110px;
-                height: 35px;
-                float: right;
-                margin-top: -35px;
-                margin-bottom: -0px;
-            }
-     #postBodyThirdRowNewPopUP{
-                width: 110px;
-                height: 35px;
-                float: right;
-                margin-top: -0px;
-                margin-bottom: -35px;
-               
-            }
-     
-     
-     #postBodyReadMore{
-                width: 50px;
-                height: 35px;
-                float: right;
-                margin-top: -30px;
-                margin-bottom: 0px;
-                //margin-right: -60px;
-     }
-    
-    .textTopOfImage{
-        color: white;
-        font-size: 20px;
-        margin-left: 23px;
-        margin-top: -27px;
-        z-index: 9998;
-        position: absolute;
-
-    }
-            .imageContainer {
-                position: relative;
-                width: 100%;
-                height: 230px;
-                //border: 1px solid white;
-                margin: 0 auto;
-                margin-top: 10px;
-                border-radius: 10px;
-                overflow: hidden;
-                //max-width: 510px;
-            }
-            .imageContainer div {
-                position: absolute;
-                background: #ccc;
-                border: 5px solid white;
-            }
-             #postBodySecondRowPop{
-    padding: 5px;
-    margin-top: -3px;
-    text-align: justify;
-    background-color: white;
-    border-radius: 0 0 4px 4px;
-    line-height: 1.5;
-    font-family: 'SourceSansProLight';
-    font-size: 16px;
-    
-}
-        </style>
-
-        <!--Old Code of like, unlike and share buttons-->
-        <div hidden="true" id="postBodyThirdRowNew">
-            <div class="likeLinknew"  id="<?php echo 'postLikebody_' . $postId ?>" style="background-color: <?php
-                if ($isLike == 'Unlike') {
-                    echo 'orange';
-                }
-                ?>">
-                <a href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLike_' . $postId ?>'> <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                                                                                                                                          class="<?php echo $isLike . ' postLike'; ?>" height="40" width="40"/></a>
-                <div class="textTopOfImage" id='<?php echo 'postLiketext_' . $postId ?>'><?php echo $postNoOfLikes ?></div>
-            </div>
-            <div class="unlikeLinknew" id='<?php echo 'postUnLikebody_' . $postId ?>' style="background-color: <?php
-                 if ($isUnlike == 'yes') {
-                     echo 'red';
-                 }
-                ?>">
-                <a href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlike_' . $postId ?>> <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/un-like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>' 
-                                                                                                                 height="40" width="40"/></a>
-                <div class="textTopOfImage" id='<?php echo 'postUnLiketext_' . $postId ?>'><?php echo $postUnlike ?></div>
-            </div>
-
-            <div class="shareLinknew" id='<?php echo 'postSharebody_' . $postId ?>' style="background-color: <?php
-                 if ($shareCount > 0) {
-                     echo 'green';
-                 }
-                ?>">
-                <a href="javascript:void(0)" class="postShare" id=<?php echo 'postShare_' . $postId ?>> <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/share.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                                                                                                              height="40" width="40"/></a>
-                <div class="textTopOfImage"><?php echo $shareCount ?></div>
-            </div>
-
-        </div>
         <!--new Code of like, unlike and share buttons-->
         <div id="postBodyThirdRowNew">
             <div class="likeLinknew"  id="<?php echo 'postLikebody_' . $postId ?>" > 
@@ -230,9 +91,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                         <?php
                     }
                     ?>
-
-<!--<div class="textTopOfImage" id='<?php echo 'postLiketext_' . $postId ?>'><?php echo $postNoOfLikes ?></div>-->
             </div>
+
             <div class="unlikeLinknew" id='<?php echo 'postUnLikebody_' . $postId ?>' >
                 <?php if ($isUnlike == 'yes') { ?>
                     <a hidden="true" href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeno_' . $postId ?>> 
@@ -252,9 +112,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                         <?php
                     }
                     ?>
-
-
- <!--<div class="textTopOfImage" id='<?php echo 'postUnLiketext_' . $postId ?>'><?php echo $postUnlike ?></div>-->
             </div>
 
             <div class="shareLinknew" id='<?php echo 'postSharebody_' . $postId ?>' >
@@ -276,12 +133,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                         <?php
                     }
                     ?>
-
-<!--<div class="textTopOfImage"><?php echo $shareCount ?></div>-->
             </div>
-
         </div>
-
 
         <div id="postBodySecondRowPop" >
             <div id='<?php echo 'postContent_' . $postId ?>'>
@@ -354,114 +207,47 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
         <?php
         $photos = $sf_data->getRaw('originalPost')->getPhotos();
-
-//        var_dump(count($photos));die;
         $imgCount = 1;
-        ?>
 
-        <?php
         if (count($photos) > 0) {
-                            ?>
-                            
-                                <?php include_component('buzz', 'photoTilling', array('photos' => $photos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
-                            
-                        <?php }
+            ?>
+
+            <?php include_component('buzz', 'photoTilling', array('photos' => $photos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
+
+        <?php }
         ?>
-        <style type="text/css">
-            #photoPage{
-
-                background-color: white;
-                -moz-border-radius: 10px;
-                -webkit-border-radius: 10px;
-                border-radius: 10px; /* future proofing */
-                -khtml-border-radius: 5px; /* for old Konqueror browsers */
-            }
-            .imageNextBtn{
-
-                background-color: transparent; /* make the button transparent */
-                background-repeat: no-repeat;  /* make the background image appear only once */
-                background-position: 0px 0px;  /* equivalent to 'top left' */
-                border: none;           /* assuming we don't want any borders */
-                cursor: pointer;        /* make the cursor like hovering over an <a> element */
-                height: 50px;
-                position: absolute;/* make this the size of your image */
-                top: 0;
-                bottom: 0;
-                right: 0;
-                margin: auto;
-                z-index: 99999;
-                vertical-align: middle; 
-            }
-            .imagePrevBtn{
-
-                background-color: transparent; /* make the button transparent */
-                background-repeat: no-repeat;  /* make the background image appear only once */
-                background-position: 0px 0px;  /* equivalent to 'top left' */
-                border: none;           /* assuming we don't want any borders */
-                cursor: pointer;        /* make the cursor like hovering over an <a> element */
-                height: 50px;
-                position: absolute;/* make this the size of your image */
-                top: 0;
-                bottom: 0;
-                left: 0;
-                z-index: 99999;
-                margin: auto;
-                vertical-align: middle; 
-            }
-            .photoViewEmp{
-                height: 60px;
-                padding: 10px;
-                margin-top: 10px;
-                margin-bottom: 10px;
-                background-color: white;
-                -moz-border-radius: 10px;
-                -webkit-border-radius: 10px;
-                border-radius: 10px; /* future proofing */
-                -khtml-border-radius: 5px; /* for old Konqueror browsers */
-            }
-            #modalnewlook{
-                -moz-border-radius: 10px;
-                -webkit-border-radius: 10px;
-                border-radius: 10px; /* future proofing */
-                -khtml-border-radius: 5px; /* for old Konqueror browsers */
-            }
-        </style>
-        
         <div id="postBodyThirdRow">
-            <div id="noOfLikesLinknew" style="margin-top: 5px;margin-left: 0px">
+            <div id="noOfLikesLinknewPopUp" style="margin-top: 5px;margin-left: 0px">
                 <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfLikes_' . $postId; ?>"><?php echo $postNoOfLikes; ?></span><?php echo " " . __("people "); ?>
-                    <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
+                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
-            <div id="noOfSharesLinknew" style="margin-top: 5px;margin-left: 40px;">
+            <div id="noOfSharesLinknewPopUp" style="margin-top: 5px;margin-left: 40px;">
                 <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' >
                     <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $postShareCount; ?></span><?php echo " " . __("people "); ?>
-                    <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
+                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
-            <div id="noOfUnLikesLinknew" style="margin-top: 5px;margin-left: 70px;">
+            <div id="noOfUnLikesLinknewPopUp" style="margin-top: 5px;margin-left: 70px;">
                 <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfUnLikes_' . $postId; ?>"><?php echo $postUnlike; ?></span><?php echo " " . __("people "); ?>
-                    <img  style="vertical-align: middle; padding-left: 5px; padding-right: 5px;"src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
+                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
         </div>
-
-
-
 
     </div>
 </div>
-<div id="photoPageComment" style=" ;top: 5px;left: 467px;width: 320px;margin-bottom: -20px;position: absolute;background-color: gray">
+<div id="photoPageComment" >
     <div id="postBodyFirstRow photo" class="photoViewEmp">
-        <div id="postFirstRowColumnOne" style="width: 50px;height: 50px;overflow: hidden">
-            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
+        <div id="postFirstRowColumnOne" >
+            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic-popUp" />
         </div>
-        <div id="postFirstRowColumnTwo" style="width: 60%;">
+        <div id="postFirstRowColumnTwo" >
             <div id="postEmployeeName" >
                 <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
                     <?php echo $postEmployeeName; ?>

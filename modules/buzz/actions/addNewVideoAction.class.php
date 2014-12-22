@@ -13,9 +13,50 @@
  */
 class addNewVideoAction extends BaseBuzzAction {
 
+    /**
+     * 
+     * @param CommentForm $form
+     */
+    private function setCommentForm($form) {
+        $this->commentForm = $form;
+    }
+
+    /**
+     * 
+     * @return CommentForm
+     */
+    private function getCommentForm() {
+        if (!$this->commentForm) {
+            $this->setCommentForm(new CommentForm());
+        }
+        return $this->commentForm;
+    }
+
+    /**
+     * 
+     * @return CreateVideoForm
+     */
+    private function getVideoForm() {
+        if (!($this->videoForm instanceof CreateVideoForm)) {
+            $this->videoForm = new CreateVideoForm();
+        }
+        return $this->videoForm;
+    }
+    
+     /**
+     * 
+     * @return CommentForm
+     */
+    private function getEditForm() {
+        if (!($this->editForm instanceof CommentForm)) {
+            $this->editForm = new CommentForm();
+        }
+        return $this->editForm;
+    }
+
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getUserId();
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->url = $request->getParameter('url');
             $this->action = $request->getParameter('actions');
 
@@ -25,24 +66,21 @@ class addNewVideoAction extends BaseBuzzAction {
                 if ($this->videoFeedUrl === 'not') {
                     $this->isSuccess = 'notVideo';
                 }
-                $this->videoForm = new CreateVideoForm();
+                $this->videoForm = $this->getVideoForm();
             } else {
                 $this->isSuccess = 'notPosted';
                 $this->videoFeedUrl = $this->url;
                 $this->text = $request->getParameter('text');
-                try {
-                    $post = $this->savePost($this->getUserId(), $this->text);
-                    $this->post = $this->saveShare($post);
-                    $this->saveVideo($post);
-                    $this->setShare($this->post);
-                    $this->isSuccess = 'posted';
-                    $this->loggedInUser = $this->getUserId();
-                } catch (Exception $ex) {
-                    
-                }
+
+                $post = $this->savePost($this->getLogedInEmployeeNumber(), $this->text);
+                $this->post = $this->saveShare($post);
+                $this->saveVideo($post);
+                $this->setShare($this->post);
+                $this->isSuccess = 'posted';
+                $this->loggedInUser = $this->getLogedInEmployeeNumber();
             }
             $this->commentForm = $this->getCommentForm();
-            $this->editForm = new CommentForm();
+            $this->editForm = $this->getEditForm();
         } catch (Exception $ex) {
             $this->error = 'redirect';
         }
@@ -62,35 +100,20 @@ class addNewVideoAction extends BaseBuzzAction {
         $this->postDate = $share->getDate();
         $this->postTime = $share->getTime();
         $this->noOfLikes = $share->getNumberOfLikes();
-        $this->isLike = $share->isLike($this->getUserId());
+        $this->isLike = $share->isLike($this->getLogedInEmployeeNumber());
         $this->postContent = $share->getPostShared()->getText();
     }
 
+    /**
+     * this is function to save Video to database
+     * @param type $post
+     */
     private function saveVideo($post) {
         $link = new Link();
         $link->setType(1);
         $link->setLink($this->videoFeedUrl);
         $link->setPostId($post->getId());
-        $link->save();
-    }
-
-    /**
-     * 
-     * @param CommentForm $form
-     */
-    private function setCommentForm($form) {
-        $this->commentForm = $form;
-    }
-
-    /**
-     * 
-     * @return CommentForm
-     */
-    private function getCommentForm() {
-        if (!$this->commentForm) {
-            $this->setCommentForm(new CommentForm());
-        }
-        return $this->commentForm;
+        $this->getBuzzService()->saveLink($link);
     }
 
     private function getVideoFeedLinkFromUrl($url) {

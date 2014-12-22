@@ -25,45 +25,34 @@
  * @author aruna
  */
 class deleteCommentAction extends BaseBuzzAction {
-
+    
     /**
-     * this is function to get buzzService
-     * @return BuzzService 
+     * get Comment By It Id
+     * @param type $commentId
+     * @return type
      */
-    public function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->buzzService = new BuzzService();
-        }
-        return $this->buzzService;
+    private function getComment($commentId){
+        return $this->getBuzzService()->getCommentById($commentId);
     }
 
-    
-
     public function execute($request) {
-        try{
-            $this->loggedInUser=  $this->getUserId();
-             
+        try {
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->commentId = $request->getParameter('commentId');
+            $comment= $this->getComment($this->commentId );
+            $this->deleteComment($comment);
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
-        $this->commentId = $request->getParameter('commentId');
-        $this->deleteComment();
+
         return sfView::NONE;
     }
 
     /**
      * delete comment 
      */
-    public function deleteComment() {
-        try {
-            $comment = $this->getBuzzService()->getCommentById($this->commentId);
-
+    public function deleteComment($comment) {      
             $this->getBuzzService()->deleteCommentForShare($comment);
-            
-        } catch (Exception $ex) {
-            
-        }
-        
     }
 
 }

@@ -26,77 +26,67 @@
  */
 class refreshPageAction extends BaseBuzzAction {
 
-   
-
-    public function execute($request) {
-        try{
-            $this->loggedInUser=  $this->getUserId();
-             
-        } catch (Exception $ex) {
-            $this->redirect('auth/login');
-        }
-        $this->lastPostId = $request->getParameter('lastPostId');
-        $this->buzzService = $this->getBuzzService();
-        $this->loggedInUser = $this->getLoggedInUser()->getEmployeeNumber();
-        $this->fullSharesList = $this->buzzService->getSharesUptoId($this->lastPostId);
-        $this->commentForm = $this->getCommentForm();
-        $this->editForm =  new CommentForm();
-    }
-
     /**
-     * 
-     * @param type $buzzService
+     * this is reurn form to edit comment
+     * @return CommentEditForm
      */
-    protected function setBuzzService($buzzService) {
-        $this->buzzService = $buzzService;
+    private function getEditForm() {
+        if (!($this->editForm instanceof CommentForm)) {
+            $this->editForm = new CommentForm();
+        }
+        return $this->editForm;
     }
 
-   
-
     /**
-     * 
-     * @param AddTaskForm $form
+     * this is set post form
+     * @param set Post form $form
      */
     private function setPostForm($form) {
         $this->postForm = $form;
     }
 
     /**
-     * 
-     * @return AddTaskForm
+     * function to get post form
+     * @return PostForm
      */
     private function getPostForm() {
-        if (!$this->postForm) {
+        if (!($this->postForm instanceof CreatePostForm)) {
             $this->setPostForm(new CreatePostForm());
         }
         return $this->postForm;
     }
 
     /**
-     * 
-     * @param AddTaskForm $form
+     * function to set comment form
+     * @param CommentForm
      */
     private function setCommentForm($form) {
         $this->commentForm = $form;
     }
 
     /**
-     * 
-     * @return AddTaskForm
+     * this is to get comment form
+     * @return CommentForm
      */
     private function getCommentForm() {
-        if (!$this->commentForm) {
+        if (!($this->commentForm instanceof CommentForm)) {
             $this->setCommentForm(new CommentForm());
         }
         return $this->commentForm;
     }
 
-    /**
-     * Returns the user who is currently logged in.
-     * @return User 
-     */
-    private function getLoggedInUser() {
-        return $this->getUser();
+    public function execute($request) {
+        try {
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->lastPostId = $request->getParameter('lastPostId');
+            $this->buzzService = $this->getBuzzService();
+            
+            $this->fullSharesList = $this->buzzService->getSharesUptoId($this->lastPostId);
+            $this->commentForm = $this->getCommentForm();
+            $this->editForm = $this->getEditForm();
+        } catch (Exception $ex) {
+            $this->redirect('auth/login');
+        }
     }
 
 }

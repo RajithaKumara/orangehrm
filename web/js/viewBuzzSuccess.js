@@ -610,7 +610,9 @@ $(document).ready(function () {
             type: "POST",
             data: data,
             success: function (data) {
+                
                 $('#shareViewContent1_' + shareId).replaceWith(data);
+                
                 $("#loadingDataModal").modal('hide');
                 $('#shareViewMoreMod1_' + shareId).modal();
             }

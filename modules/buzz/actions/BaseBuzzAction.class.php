@@ -39,17 +39,18 @@ abstract class BaseBuzzAction extends sfAction {
         return $this->buzzConfigService;
     }
 
-    public function getUserId() {
+    public function getLogedInEmployeeNumber() {
         $employeeNumber = null;
+        $cookieValidTime= $this->getBuzzConfigService()->getCookieValidTime();
         if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
 
             $cookie_valuve = $this->getUser()->getEmployeeNumber();
             if ($cookie_valuve == "") {
                 //get it from the configuration
-                setcookie(self::COOKIE_NAME, 'Admin', time() + 3600 * 24 * 30, "/");
+                setcookie(self::COOKIE_NAME, 'Admin', time() + $cookieValidTime, "/");
                 
             } else {
-                setcookie(self::COOKIE_NAME, $cookie_valuve, time() + 3600 * 24 * 30, "/");
+                setcookie(self::COOKIE_NAME, $cookie_valuve, time() + $cookieValidTime, "/");
             }
 
             $employeeNumber = $cookie_valuve;

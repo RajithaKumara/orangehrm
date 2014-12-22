@@ -28,25 +28,18 @@ class getSharedEmployeeListAction extends BaseBuzzAction {
 
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getUserId();
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->id = $request->getParameter('id');
-            $this->buzzService = new BuzzService();
-            $this->loggedInEmployeeId = $this->getUserId();
+            $this->buzzService = $this->getBuzzService();
+            $this->loggedInEmployeeId = $this->getLogedInEmployeeNumber();
             $this->post = $this->buzzService->getShareById($this->id)->getPostShared();
-            $this->shareList = $this->post->getShare();
-            $this->sharedEmpNameList = array();
-            $this->sharedEmpList = array();
-            foreach ($this->shareList as $share) {
-                $employee = $share->getEmployeePostShared();
-                $empName = $employee->getFirstAndLastNames();
-                array_push($this->sharedEmpNameList, $empName);
-                array_push($this->sharedEmpList, $employee);
-            }            
-            $uniqueArray = array_unique($this->sharedEmpNameList);
+            $this->sharedEmpNameList = $this->getPostSharedEmployeeNameList($this->post);
+            $this->sharedEmpList = $this->getPostSharedEmployeeList($this->post);
+
             if ($request->getParameter('event') === "click") {
                 
             } else {
-                foreach ($uniqueArray as $value) {
+                foreach ($this->sharedEmpNameList as $value) {
                     echo $value;
                     echo "\n";
                 }
@@ -56,6 +49,51 @@ class getSharedEmployeeListAction extends BaseBuzzAction {
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
+    }
+
+    /**
+     * get post shared employee list
+     * @param type $post
+     * @return array EployeeList
+     */
+    private function getPostSharedEmployeeList($post) {
+        $sharedEmployeeList = array();
+        $isAdminShare= false;
+        foreach ($post->getShare() as $share) {
+            if ($share->getEmployeeNumber() == null) {
+                $isAdminShare=true;
+               
+            } else {
+            $employee = $share->getEmployeePostShared();
+            array_push($sharedEmployeeList, $employee);
+            }
+        }
+        $sharedUniqueEmployeeList=array_unique($sharedEmployeeList);
+        if($isAdminShare){
+             array_push($sharedUniqueEmployeeList, new Employee());
+        }
+        return $sharedUniqueEmployeeList;
+    }
+
+    /**
+     * get post shared employee name list;
+     * @param type $post
+     * @return array employee name list
+     */
+    private function getPostSharedEmployeeNameList($post) {
+        $sharedEmployeeNameList = array();
+        foreach ($post->getShare() as $share) {
+            
+            if ($share->getEmployeeNumber() == null) {
+                $empName = 'Admin';
+            } else {
+                $employee = $share->getEmployeePostShared();
+                $empName = $employee->getFirstAndLastNames();
+            }
+
+            array_push($sharedEmployeeNameList, $empName);
+        }
+        return array_unique($sharedEmployeeNameList);
     }
 
 }

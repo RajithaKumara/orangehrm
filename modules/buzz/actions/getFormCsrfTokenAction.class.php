@@ -15,7 +15,7 @@ class getFormCsrfTokenAction extends BaseBuzzAction{
     
     public function execute($request) {
         try{
-            $this->getUserId();
+            $this->getLogedInEmployeeNumber();
             $postForm= new CreatePostForm();
         $token= $postForm->getCSRFToken();
         
@@ -24,10 +24,10 @@ class getFormCsrfTokenAction extends BaseBuzzAction{
         
         $arr = array ('post'=>$token,'image'=>$token2,'c'=>3,'d'=>4,'e'=>5);
 
-    echo json_encode($arr);
-    die();
+        echo json_encode($arr);
+        die();
         } catch (Exception $ex) {
-            return sfView::NONE;
+            
         }
         
     return sfView::NONE;

@@ -37,7 +37,7 @@ if (count($photos) == 1) {
             <img id="<?php echo "2_" . $postId; ?>"  class="postPhoto" width="120%" 
                  src="data:image/jpeg;base64,<?php echo base64_encode($photos[1]->getPhoto()); ?>"/>
         </div>
-        <div class="threeImageTwo">
+        <div class="threeImageThree">
             <img id="<?php echo "3_" . $postId; ?>"  class="postPhoto" width="120%" 
                  src="data:image/jpeg;base64,<?php echo base64_encode($photos[2]->getPhoto()); ?>"/>
         </div>

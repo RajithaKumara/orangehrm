@@ -27,48 +27,38 @@
 class editCommentAction extends BaseBuzzAction {
 
     /**
-     * this is function to get buzzService
-     * @return BuzzService 
+     * main function  
+     * @param type $request
      */
-    public function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->buzzService = new BuzzService();
-        }
-        return $this->buzzService;
-    }
-
     public function execute($request) {
-        try{
-            $this->loggedInUser=  $this->getUserId();
-             
+        try {
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->commentId = $request->getParameter('commentId');
+            $this->editedContend = $request->getParameter('textComment');
+            $this->error = 'no';
+
+            $comment = $this->getBuzzService()->getCommentById($this->commentId);
+            If ($comment != null) {
+                $this->comment = $this->editComment($comment);
+            } else {
+                $this->error = 'yes';
+                $this->getUser()->setFlash('error', __("This comment has been deleted or you do not have permission to perform this action"));
+            }
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
-        $this->commentId = $request->getParameter('commentId');
-        $this->editedContend = $request->getParameter('textComment');
-        $this->error='no';
-        
-        try{
-            $comment = $this->getBuzzService()->getCommentById($this->commentId);
-            $this->comment=$this->editComment();
-        } catch (Exception $ex) {
-            $this->error='yes';
-            $this->getUser()->setFlash('error', __("This comment has been deleted or you do not have permission to perform this action"));
-        }
-        
     }
 
     /**
      * edit the comment conntent
      * @return Comment
      */
-    public function editComment() {
-        $comment = $this->getBuzzService()->getCommentById($this->commentId);
-        if ($comment->getEmployeeNumber() == $this->getUserId()) {
-            return $this->saveComment($comment);
-        } else {
-            
+    public function editComment($comment) {
+
+        if ($comment->getEmployeeNumber() == $this->getLogedInEmployeeNumber()) {
+            $comment = $this->saveComment($comment);
         }
+        return $comment;
     }
 
     /**
@@ -81,5 +71,4 @@ class editCommentAction extends BaseBuzzAction {
         return $this->getBuzzService()->saveCommentShare($comment);
     }
 
-//put your code here
 }

@@ -26,15 +26,14 @@
  */
 class loggedInUserDetailsComponent extends sfComponent {
 
-    protected $buzzService;
-      private $employeeService;
+    private $employeeService;
 
     /**
      * Get EmployeeService
      * @returns EmployeeService
      */
     public function getEmployeeService() {
-        if(is_null($this->employeeService)) {
+        if (is_null($this->employeeService)) {
             $this->employeeService = new EmployeeService();
             $this->employeeService->setEmployeeDao(new EmployeeDao());
         }
@@ -42,44 +41,43 @@ class loggedInUserDetailsComponent extends sfComponent {
     }
 
     public function execute($request) {
-        $this->buzzService = new BuzzService();
-        $this->empNumber = $this->getUserId();
+        $this->empNumber = $this->getLogedInEmployeeNumber();
 
 
         $this->employee = $this->getEmployeeService()->getEmployee($this->empNumber);
         if ($this->employee) {
             $this->name = $this->employee->getFirstAndMiddleName();
-            $this->jobtitle = ' '.$this->employee->getJobTitleName();
+            $this->jobtitle = ' ' . $this->employee->getJobTitleName();
         } else {
             $this->name = 'Admin';
-            $this->jobtitle='  ';
+            $this->jobtitle = '  ';
         }
     }
 
-    public function getUserId(){
-        
-        $cookie_name='buzzCookie';
-        
-        if(UserRoleManagerFactory::getUserRoleManager()->getUser()!=null){
-           
-            
+    public function getLogedInEmployeeNumber() {
+
+        $cookie_name = 'buzzCookie';
+
+        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
+
+
             $cookie_valuve = $this->getUser()->getEmployeeNumber();
-            if($cookie_valuve==""){
-                 setcookie($cookie_name, 'Admin', time() + 3600 * 24 * 30, "/");
-            }else{
-                setcookie($cookie_name,$cookie_valuve , time() + 3600 * 24 * 30, "/"); 
+            if ($cookie_valuve == "") {
+                setcookie($cookie_name, 'Admin', time() + 3600 * 24 * 30, "/");
+            } else {
+                setcookie($cookie_name, $cookie_valuve, time() + 3600 * 24 * 30, "/");
             }
-            
-           
-              
-            return  $cookie_valuve;
-        }elseif (isset($_COOKIE[$cookie_name]) ){
-            if($_COOKIE[$cookie_name]=='Admin'){
+
+
+
+            return $cookie_valuve;
+        } elseif (isset($_COOKIE[$cookie_name])) {
+            if ($_COOKIE[$cookie_name] == 'Admin') {
                 return '';
             }
-               
+
             return $_COOKIE[$cookie_name];
-        }else{
+        } else {
             throw new Exception('User Didnot Have');
         }
     }

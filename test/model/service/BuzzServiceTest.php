@@ -397,46 +397,46 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * this is function to test save likes on share to database
      */
     public function testUnLikeOnShare() {
-        $like = new UnLikeOnShare();
-        $like->setShareId(1);
-        $like->setEmployeeNumber(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $unlikeOnShare = new UnLikeOnShare();
+        $unlikeOnShare->setShareId(1);
+        $unlikeOnShare->setEmployeeNumber(1);
+        $unlikeOnShare->setLikeTime('2015-01-10 12:12:12');
         $share = new Share();
         $share->setNumberOfLikes(1);
-        $like->setShareUnLike($share);
+        $unlikeOnShare->setShareUnLike($share);
         $buzzDao = $this->getMock('buzzDao', array('saveUnLikeForShare', 'saveShare'));
 
         $buzzDao->expects($this->once())
                 ->method('saveUnLikeForShare')
-                ->with($like)
-                ->will($this->returnValue($like));
+                ->with($unlikeOnShare)
+                ->will($this->returnValue($unlikeOnShare));
         $buzzDao->expects($this->once())
                 ->method('saveShare')
                 ->with($share)
                 ->will($this->returnValue(null));
         $this->buzzService->setBuzzDao($buzzDao);
 
-        $result = $this->buzzService->saveUnLikeForShare($like);
-        $this->assertEquals('2015-01-10 12:12:12', $result->getLikeTime());
+        $resultUnlikeOnShare = $this->buzzService->saveUnLikeForShare($unlikeOnShare);
+        $this->assertEquals('2015-01-10 12:12:12', $resultUnlikeOnShare->getLikeTime());
     }
 
     /**
      * this is function to test delete likes on share
      */
     public function testDeleteUnLikeOnshare() {
-        $like = new UnLikeOnShare();
-        $like->setId(20);
-        $like->setShareId(1);
-        $like->setEmployeeNumber(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $unlikeOnShare = new UnLikeOnShare();
+        $unlikeOnShare->setId(20);
+        $unlikeOnShare->setShareId(1);
+        $unlikeOnShare->setEmployeeNumber(1);
+        $unlikeOnShare->setLikeTime('2015-01-10 12:12:12');
         $share = new Share();
         $share->setNumberOfLikes(1);
-        $like->setShareUnLike($share);
+        $unlikeOnShare->setShareUnLike($share);
         $buzzDao = $this->getMock('buzzDao', array('deleteUnLikeForShare', 'saveShare'));
 
         $buzzDao->expects($this->once())
                 ->method('deleteUnLikeForShare')
-                ->with($like)
+                ->with($unlikeOnShare)
                 ->will($this->returnValue(1));
         $buzzDao->expects($this->once())
                 ->method('saveShare')
@@ -444,8 +444,8 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue(null));
         $this->buzzService->setBuzzDao($buzzDao);
 
-        $result = $this->buzzService->deleteUnLikeForShare($like);
-        $this->assertEquals(1, $result);
+        $resultDeleteCount = $this->buzzService->deleteUnLikeForShare($unlikeOnShare);
+        $this->assertEquals(1, $resultDeleteCount);
     }
 
     /**
@@ -472,8 +472,8 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue(null));
         $this->buzzService->setBuzzDao($buzzDao);
 
-        $result = $this->buzzService->saveUnLikeForComment($like);
-        $this->assertEquals('2015-01-10 12:12:12', $result->getLikeTime());
+        $resultUnlikeOnComment = $this->buzzService->saveUnLikeForComment($like);
+        $this->assertEquals('2015-01-10 12:12:12', $resultUnlikeOnComment->getLikeTime());
     }
 
     /**
@@ -496,8 +496,8 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue(null));
         $this->buzzService->setBuzzDao($buzzDao);
 
-        $result = $this->buzzService->deleteUnLikeForComment($like);
-        $this->assertEquals(1, $result);
+        $resultDeleteCount = $this->buzzService->deleteUnLikeForComment($like);
+        $this->assertEquals(1, $resultDeleteCount);
     }
 
     /**
@@ -538,8 +538,8 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($shareArray));
 
         $this->buzzService->setBuzzDao($buzzDao);
-        $result = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber(1, 0, 1);
-        $this->assertEquals(3, Count($result));
+        $resultShares = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber(1, 0, 1);
+        $this->assertEquals(3, Count($resultShares));
     }
 
     /**
@@ -621,8 +621,8 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
 
         $this->buzzService->setBuzzDao($buzzDao);
 
-        $result = $this->buzzService->savePhoto($photo);
-        $this->assertTrue($result instanceof Photo);
+        $resultPhoto = $this->buzzService->savePhoto($photo);
+        $this->assertTrue($resultPhoto instanceof Photo);
     }
 
     /**
@@ -637,9 +637,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue(1));
 
         $this->buzzService->setBuzzDao($buzzDao);
-        $result = $this->buzzService->getNoOfSharesByEmployeeNumber(1);
+        $resultNoOfShares = $this->buzzService->getNoOfSharesByEmployeeNumber(1);
 
-        $this->assertEquals(1, $result);
+        $this->assertEquals(1, $resultNoOfShares);
     }
 
     /**
@@ -654,9 +654,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue(2));
 
         $this->buzzService->setBuzzDao($buzzDao);
-        $result = $this->buzzService->getNoOfCommentsByEmployeeNumber(1);
+        $resultNoOfComments = $this->buzzService->getNoOfCommentsByEmployeeNumber(1);
 
-        $this->assertEquals(2, $result);
+        $this->assertEquals(2, $resultNoOfComments);
     }
 
     /**
@@ -671,9 +671,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue(2));
 
         $this->buzzService->setBuzzDao($buzzDao);
-        $resultCount = $this->buzzService->getNoOfCommentsForEmployeeByEmployeeNumber(1);
+        $resultNoOfComments = $this->buzzService->getNoOfCommentsForEmployeeByEmployeeNumber(1);
 
-        $this->assertEquals(2, $resultCount);
+        $this->assertEquals(2, $resultNoOfComments);
     }
 
     /**
@@ -764,8 +764,8 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($employeeArray));
 
         $this->buzzService->setBuzzDao($buzzDao);
-        $result = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates($fromDate, $todate);
-        $this->assertTrue(is_array($result));
+        $resultEmployees = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates($fromDate, $todate);
+        $this->assertTrue(is_array($resultEmployees));
     }
 
     /**
@@ -786,8 +786,8 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($employeeArray));
 
         $this->buzzService->setBuzzDao($buzzDao);
-        $result = $this->buzzService->getEmployeesHavingAnniversaryOnMonth($date);
-        $this->assertTrue(is_array($result));
+        $resultEmployees = $this->buzzService->getEmployeesHavingAnniversaryOnMonth($date);
+        $this->assertTrue(is_array($resultEmployees));
     }
 
     /**
@@ -803,8 +803,8 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($share));
 
         $this->buzzService->setBuzzDao($buzzDao);
-        $result = $this->buzzService->saveShare($share);
-        $this->assertTrue($result instanceof Share);
+        $resultShares = $this->buzzService->saveShare($share);
+        $this->assertTrue($resultShares instanceof Share);
     }
 
 }

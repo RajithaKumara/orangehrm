@@ -35,6 +35,48 @@ class viewStatisticsComponent extends sfComponent {
         $this->buzzService = $buzzService;
     }
     
+    /**
+     * return number of shares that user share
+     * @param int $userId
+     * @return Int
+     */
+    private function getNoOfSharesBy($userId) {
+        return $this->buzzService->getNoOfSharesByEmployeeNumber($userId);
+    }
+    /**
+     * return number of comments that user commented
+     * @param int $userId
+     * @return Int
+     */
+    private function getNoOfCommentsBy($userId) {
+        return $this->buzzService->getNoOfCommentsByEmployeeNumber($userId);
+    }
+    /**
+     * return number of likes that user like on shares
+     * @param int $userId
+     * @return Int
+     */
+    private function getNoOfShareLikesFor($userId) {
+        return $this->buzzService->getNoOfShareLikesForEmployeeByEmployeeNumber($userId);
+    }
+    /**
+     * return number of likes that user like on comments
+     * @param int $userId
+     * @return Int
+     */
+    private function getNoOfCommentLikesFor($userId) {
+        return $this->buzzService->getNoOfCommentLikesForEmployeeByEmployeeNumber($userId);
+    }
+    /**
+     * return number of shares that user share
+     * @param int $userId
+     * @return Int
+     */
+    private function getNoOfCommentsFor($userId) {
+        return $this->buzzService->getNoOfCommentsForEmployeeByEmployeeNumber($userId);
+    }
+
+    
     public function execute($request) {
         $this->setBuzzService(new BuzzService());
         if ($this->loggedInUserId == "") {
@@ -47,24 +89,5 @@ class viewStatisticsComponent extends sfComponent {
         $this->noOfCommentsRecieved = $this->getNoOfCommentsFor($this->loggedInUserId);
     }
     
-    private function getNoOfSharesBy($userId) {
-        return $this->buzzService->getNoOfSharesByEmployeeNumber($userId);
-    }
     
-    private function getNoOfCommentsBy($userId) {
-        return $this->buzzService->getNoOfCommentsByEmployeeNumber($userId);
-    }
-    
-    private function getNoOfShareLikesFor($userId) {
-        return $this->buzzService->getNoOfShareLikesForEmployeeByEmployeeNumber($userId);
-    }
-    
-    private function getNoOfCommentLikesFor($userId) {
-        return $this->buzzService->getNoOfCommentLikesForEmployeeByEmployeeNumber($userId);
-    }
-    
-    private function getNoOfCommentsFor($userId) {
-        return $this->buzzService->getNoOfCommentsForEmployeeByEmployeeNumber($userId);
-    }
-
 }

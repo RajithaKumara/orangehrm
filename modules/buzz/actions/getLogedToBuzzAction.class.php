@@ -18,23 +18,13 @@ class getLogedToBuzzAction extends BaseBuzzAction {
     public function execute($request) {
         try {
             $this->loggedInEmployeeNum = $this->getUser()->getEmployeeNumber();
-            $this->getUserId();
-            $postForm = new CreatePostForm();
-            $token = $postForm->getCSRFToken();
-
-            $imageForm = new UploadPhotoForm();
-            $token2 = $imageForm->getCSRFToken();
-
+            $this->getLogedInEmployeeNumber();
             $arr = array('state' => 'loged', 'empNum' => $this->loggedInEmployeeNum);
-
-            echo json_encode($arr);
-            die();
         } catch (Exception $ex) {
             $arr = array('state' => 'refresh');
-
-            echo json_encode($arr);
-            die();
         }
+        echo json_encode($arr);
+        die();
 
         return sfView::NONE;
     }

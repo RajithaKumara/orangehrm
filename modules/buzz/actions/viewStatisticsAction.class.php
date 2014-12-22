@@ -1,5 +1,4 @@
 <?php
-
 /**
  * OrangeHRM Enterprise is a closed sourced comprehensive Human Resource Management (HRM)
  * System that captures all the essential functionalities required for any enterprise.
@@ -28,17 +27,51 @@ class viewStatisticsAction extends BaseBuzzAction {
 
     protected $buzzService;
 
+    
     /**
-     * 
-     * @param BuzzService $buzzService
+     * return number of shares that user share
+     * @param int $userId
+     * @return Int
      */
-    protected function setBuzzService($buzzService) {
-        $this->buzzService = $buzzService;
+    private function getNoOfSharesBy($userId) {
+        return $this->buzzService->getNoOfSharesByEmployeeNumber($userId);
+    }
+    /**
+     * return number of comments that user commented
+     * @param int $userId
+     * @return Int
+     */
+    private function getNoOfCommentsBy($userId) {
+        return $this->buzzService->getNoOfCommentsByEmployeeNumber($userId);
+    }
+    /**
+     * return number of likes that user like on shares
+     * @param int $userId
+     * @return Int
+     */
+    private function getNoOfShareLikesFor($userId) {
+        return $this->buzzService->getNoOfShareLikesForEmployeeByEmployeeNumber($userId);
+    }
+    /**
+     * return number of likes that user like on comments
+     * @param int $userId
+     * @return Int
+     */
+    private function getNoOfCommentLikesFor($userId) {
+        return $this->buzzService->getNoOfCommentLikesForEmployeeByEmployeeNumber($userId);
+    }
+    /**
+     * return number of shares that user share
+     * @param int $userId
+     * @return Int
+     */
+    private function getNoOfCommentsFor($userId) {
+        return $this->buzzService->getNoOfCommentsForEmployeeByEmployeeNumber($userId);
     }
 
     public function execute($request) {
-        $this->setBuzzService(new BuzzService());
-        $this->loggedInUserId = $this->getUserId();
+        $this->buzzService= $this->getBuzzService();
+        $this->loggedInUserId = $this->getLogedInEmployeeNumber();
         $this->noOfShares = $this->getNoOfSharesBy($this->loggedInUserId);
         $this->noOfComments = $this->getNoOfCommentsBy($this->loggedInUserId);
         $this->noOfShareLikesRecieved = $this->getNoOfShareLikesFor($this->loggedInUserId);
@@ -46,24 +79,5 @@ class viewStatisticsAction extends BaseBuzzAction {
         $this->noOfCommentsRecieved = $this->getNoOfCommentsFor($this->loggedInUserId);
     }
 
-    private function getNoOfSharesBy($userId) {
-        return $this->buzzService->getNoOfSharesByEmployeeNumber($userId);
-    }
-
-    private function getNoOfCommentsBy($userId) {
-        return $this->buzzService->getNoOfCommentsByEmployeeNumber($userId);
-    }
-
-    private function getNoOfShareLikesFor($userId) {
-        return $this->buzzService->getNoOfShareLikesForEmployeeByEmployeeNumber($userId);
-    }
-
-    private function getNoOfCommentLikesFor($userId) {
-        return $this->buzzService->getNoOfCommentLikesForEmployeeByEmployeeNumber($userId);
-    }
-
-    private function getNoOfCommentsFor($userId) {
-        return $this->buzzService->getNoOfCommentsForEmployeeByEmployeeNumber($userId);
-    }
 
 }

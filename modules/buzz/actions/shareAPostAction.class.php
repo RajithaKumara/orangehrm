@@ -27,35 +27,51 @@
 class shareAPostAction extends BaseBuzzAction {
 
     /**
-     * this is function to get buzzService
-     * @return BuzzService 
+     * this is reurn form to edit comment
+     * @return CommentEditForm
      */
-    public function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->buzzService = new BuzzService();
+    private function getEditForm() {
+        if (!($this->editForm instanceof CommentForm)) {
+            $this->editForm = new CommentForm();
         }
-        return $this->buzzService;
+        return $this->editForm;
     }
 
-    
+    /**
+     * function to set comment form
+     * @param CommentForm
+     */
+    private function setCommentForm($form) {
+        $this->commentForm = $form;
+    }
+
+    /**
+     * this is to get comment form
+     * @return CommentForm
+     */
+    private function getCommentForm() {
+        if (!($this->commentForm instanceof CommentForm)) {
+            $this->setCommentForm(new CommentForm());
+        }
+        return $this->commentForm;
+    }
 
     public function execute($request) {
-       try{
-            $this->loggedInUser=  $this->getUserId();
-             
+        try {
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
         $this->postId = $request->getParameter('postId');
         $this->error = 'no';
-        
+
         try {
             $this->post = $this->getBuzzService()->getPostById($this->postId);
             $this->shareText = $request->getParameter('textShare');
             $this->share = $this->sharePost();
-            $this->logeInUser = $this->getUserId();
+            $this->logeInUser = $this->getLogedInEmployeeNumber();
             $this->commentForm = $this->getCommentForm();
-            $this->editForm = new CommentForm();
+            $this->editForm = $this->getEditForm();
         } catch (Exception $ex) {
             $this->error = 'yes';
             $this->getUser()->setFlash('error', __("This post has been deleted or you do not have permission to perform this action"));
@@ -79,7 +95,7 @@ class shareAPostAction extends BaseBuzzAction {
     public function setShare($postId) {
         $share = new Share();
         $share->setPostId($postId);
-        $share->setEmployeeNumber($this->getUserId());
+        $share->setEmployeeNumber($this->getLogedInEmployeeNumber());
         $share->setNumberOfComments(0);
         $share->setNumberOfLikes(0);
         $share->setNumberOfUnlikes(0);
@@ -87,25 +103,6 @@ class shareAPostAction extends BaseBuzzAction {
         $share->setShareTime(date("Y-m-d H:i:s"));
         $share->setType('1');
         return $share;
-    }
-
-    /**
-     * 
-     * @param CommentForm $form
-     */
-    private function setCommentForm($form) {
-        $this->commentForm = $form;
-    }
-
-    /**
-     * 
-     * @return CommentForm
-     */
-    private function getCommentForm() {
-        if (!$this->commentForm) {
-            $this->setCommentForm(new CommentForm());
-        }
-        return $this->commentForm;
     }
 
 }

@@ -214,107 +214,24 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
             include_component('buzz', 'photoTilling', array('photos' => $photos, 'originalPost' => $originalPost, 'postId' => $postId));
         }
         ?>
-        <style type="text/css">
-            #photoPage{
-                height: 400px;
-                top: 15px;
-                left: 12px;
-                width: 450px;
-                margin-bottom: -20px;
-                position: absolute;
-                overflow-y: auto;
-                background-color: white;
-                -moz-border-radius: 10px;
-                -webkit-border-radius: 10px;
-                border-radius: 10px; /* future proofing */
-                -khtml-border-radius: 5px; /* for old Konqueror browsers */
-            }
-            .imageNextBtn{
 
-                background-color: transparent; /* make the button transparent */
-                background-repeat: no-repeat;  /* make the background image appear only once */
-                background-position: 0px 0px;  /* equivalent to 'top left' */
-                border: none;           /* assuming we don't want any borders */
-                cursor: pointer;        /* make the cursor like hovering over an <a> element */
-                height: 50px;
-                position: absolute;/* make this the size of your image */
-                top: 0;
-                bottom: 0;
-                right: 0;
-                margin: auto;
-                z-index: 99999;
-                vertical-align: middle; 
-            }
-            .imagePrevBtn{
-
-                background-color: transparent; /* make the button transparent */
-                background-repeat: no-repeat;  /* make the background image appear only once */
-                background-position: 0px 0px;  /* equivalent to 'top left' */
-                border: none;           /* assuming we don't want any borders */
-                cursor: pointer;        /* make the cursor like hovering over an <a> element */
-                height: 50px;
-                position: absolute;/* make this the size of your image */
-                top: 0;
-                bottom: 0;
-                left: 0;
-                z-index: 99999;
-                margin: auto;
-                vertical-align: middle; 
-            }
-            .photoViewEmp{
-                height: 60px;
-                padding: 10px;
-                margin-top: 10px;
-                margin-bottom: 10px;
-                background-color: white;
-                -moz-border-radius: 10px;
-                -webkit-border-radius: 10px;
-                border-radius: 10px; /* future proofing */
-                -khtml-border-radius: 5px; /* for old Konqueror browsers */
-            }
-            #modalnewlook{
-                -moz-border-radius: 10px;
-                -webkit-border-radius: 10px;
-                border-radius: 10px; /* future proofing */
-                -khtml-border-radius: 5px; /* for old Konqueror browsers */
-            }
-
-            #commentBodyThirdRowNew{
-                display: none;
-            }
-        </style>
-        
-        <style>
-
-            #postBodySecondRowPop{
-                padding: 5px;
-                margin-top: -3px;
-                text-align: justify;
-                background-color: white;
-                border-radius: 0 0 4px 4px;
-                line-height: 1.5;
-                font-family: 'SourceSansProLight';
-                font-size: 16px;
-
-            }
-        </style>
 
         <div id="postBodyThirdRow">
-            <div id="noOfLikesLinknew" style="margin-top: 5px;margin-left: 0px">
+            <div id="noOfLikesLinknewPopUp" >
                 <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfLikes_' . $postId; ?>"><?php echo $postNoOfLikes; ?></span><?php echo " " . __("people "); ?>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
-            <div id="noOfSharesLinknew" style="margin-top: 5px;margin-left: 40px;">
+            <div id="noOfSharesLinknewPopUp" >
                 <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' >
                     <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $postShareCount; ?></span><?php echo " " . __("people "); ?>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
-            <div id="noOfUnLikesLinknew" style="margin-top: 5px;margin-left: 70px;">
+            <div id="noOfUnLikesLinknewPopUp" >
                 <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfUnLikes_' . $postId; ?>"><?php echo $postUnlike; ?></span><?php echo " " . __("people "); ?>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
@@ -328,12 +245,12 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
     </div>
 </div>
-<div id="photoPageComment" style=" ;top: 5px;left: 467px;width: 320px;margin-bottom: -20px;position: absolute;background-color: #e2e2e2">
+<div id="photoPageComment" >
     <div id="postBodyFirstRow photo" class="photoViewEmp">
-        <div id="postFirstRowColumnOne" style="width: 50px;height: 50px;overflow: hidden">
-            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
+        <div id="postFirstRowColumnOne" >
+            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic-popUp" />
         </div>
-        <div id="postFirstRowColumnTwo" style="width: 60%;">
+        <div id="postFirstRowColumnTwo" >
             <div id="postEmployeeName" >
                 <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
                     <?php echo $postEmployeeName; ?>

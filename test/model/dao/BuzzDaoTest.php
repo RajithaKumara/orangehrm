@@ -39,11 +39,11 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      */
     public function testSavePost() {
         $post = New Post();
-
-        $post->setEmployeeNumber('1');
+        $post->setEmployeeNumber(1);
         $post->setText('this is test Post');
         $post->setPostTime('2015-01-10 12:12:12');
         $resultPost = $this->buzzDao->savePost($post);
+
         $this->assertTrue($resultPost instanceof Post);
         $this->assertTrue($resultPost->getId() != null);
         $this->assertEquals('2015-01-10 12:12:12', $resultPost->getPostTime());
@@ -54,11 +54,11 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      */
     public function testSaveLink() {
         $link = New Link();
-
         $link->setLink('fdfdfdd.com');
         $link->setPostId(2);
         $link->setDescription('description');
         $resultLink = $this->buzzDao->saveLink($link);
+        
         $this->assertTrue($resultLink instanceof Link);
         $this->assertTrue($resultLink->getId() != null);
     }
@@ -68,6 +68,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      */
     public function testGetShares() {
         $resultShares = $this->buzzDao->getShares(2);
+
         $this->assertEquals(2, count($resultShares));
         $this->assertTrue($resultShares->getFirst() instanceof Share);
     }
@@ -78,6 +79,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
     public function testGetSharesOverLimit() {
         $limit = 50;
         $resultShares = $this->buzzDao->getShares($limit);
+
         $this->assertEquals(4, count($resultShares));
         $this->assertTrue($resultShares->getFirst() instanceof Share);
     }
@@ -87,6 +89,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      */
     public function testGetPostFromShare() {
         $resultShares = $this->buzzDao->getShares(2);
+
         $this->assertTrue($resultShares->getFirst()->getPostShared() instanceof Post);
     }
 
@@ -94,48 +97,48 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      * this is function to test delete post from database
      */
     public function testDeletePost() {
-        $result = $this->buzzDao->deletePost('1');
+        $resultDeleteCount = $this->buzzDao->deletePost(1);
 
-        $this->assertEquals(1, $result);
+        $this->assertEquals(1, $resultDeleteCount);
     }
 
     /**
      * this is function to test delete post from database
      */
     public function testDeletePostWithIncorrectId() {
-        $result = $this->buzzDao->deletePost(100);
+        $resultDeleteCount = $this->buzzDao->deletePost(100);
 
-        $this->assertEquals(0, $result);
+        $this->assertEquals(0, $resultDeleteCount);
     }
 
     /** \
      * this is function to test delete share from database
      */
     public function testDeleteShare() {
-        $result = $this->buzzDao->deleteShare(1);
+        $resultDeleteCount = $this->buzzDao->deleteShare(1);
 
-        $this->assertEquals(1, $result);
+        $this->assertEquals(1, $resultDeleteCount);
     }
 
     /** \
      * this is function to test delete share from database
      */
     public function testDeleteShareWithIncorrectId() {
-        $result = $this->buzzDao->deleteShare(100);
+        $resultDeleteCount = $this->buzzDao->deleteShare(100);
 
-        $this->assertEquals(0, $result);
+        $this->assertEquals(0, $resultDeleteCount);
     }
 
     /**
      * this is function to test save like on share to database
      */
     public function testLikeOnShare() {
-        $like = new LikeOnShare();
-        $like->setShareId(1);
-        $like->setEmployeeNumber(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $likeOnShare = new LikeOnShare();
+        $likeOnShare->setShareId(1);
+        $likeOnShare->setEmployeeNumber(1);
+        $likeOnShare->setLikeTime('2015-01-10 12:12:12');
 
-        $resultLike = $this->buzzDao->saveLikeForShare($like);
+        $resultLike = $this->buzzDao->saveLikeForShare($likeOnShare);
         $this->assertTrue($resultLike->getId() != null);
     }
 
@@ -143,11 +146,11 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      * this is function to test save like on share to database
      */
     public function testLikeOnShareByAdmin() {
-        $like = new LikeOnShare();
-        $like->setShareId(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $likeOnShare = new LikeOnShare();
+        $likeOnShare->setShareId(1);
+        $likeOnShare->setLikeTime('2015-01-10 12:12:12');
 
-        $resultLike = $this->buzzDao->saveLikeForShare($like);
+        $resultLike = $this->buzzDao->saveLikeForShare($likeOnShare);
         $this->assertTrue($resultLike->getId() != null);
     }
 
@@ -155,27 +158,27 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      * this is function to test delete like on share saving to database 
      */
     public function testDeleteLikeOnshare() {
-        $like = new LikeOnShare();
-        $like->setId(20);
-        $like->setShareId(1);
-        $like->setEmployeeNumber(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $likeOnShare = new LikeOnShare();
+        $likeOnShare->setId(20);
+        $likeOnShare->setShareId(1);
+        $likeOnShare->setEmployeeNumber(1);
+        $likeOnShare->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->deleteLikeForShare($like);
-        $this->assertEquals(1, $result);
+        $resultDeletCount = $this->buzzDao->deleteLikeForShare($likeOnShare);
+        $this->assertEquals(1, $resultDeletCount);
     }
 
     /**
      * test deleting admin like on share
      */
     public function testDeleteLikeOnshareByAdmin() {
-        $like = new LikeOnShare();
-        $like->setId(20);
-        $like->setShareId(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $likeOnShare = new LikeOnShare();
+        $likeOnShare->setId(20);
+        $likeOnShare->setShareId(1);
+        $likeOnShare->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->deleteLikeForShare($like);
-        $this->assertEquals(1, $result);
+        $resultDeletCount = $this->buzzDao->deleteLikeForShare($likeOnShare);
+        $this->assertEquals(1, $resultDeletCount);
     }
 
     /**
@@ -188,9 +191,9 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $comment->setCommentTime('2015-01-10 12:12:12');
         $comment->setCommentText('this is the first comment');
 
-        $result = $this->buzzDao->saveCommentShare($comment);
-        $this->assertTrue($result->getId() != null);
-        $this->assertEquals('2015-01-10 12:12:12', $result->getCommentTime());
+        $resultComment = $this->buzzDao->saveCommentShare($comment);
+        $this->assertTrue($resultComment->getId() != null);
+        $this->assertEquals('2015-01-10 12:12:12', $resultComment->getCommentTime());
     }
 
     /**
@@ -204,49 +207,49 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $comment->setCommentTime('2015-01-10 12:12:12');
         $comment->setCommentText('this is the first comment');
 
-        $result = $this->buzzDao->deleteCommentForShare($comment);
-        $this->assertEquals(1, $result);
+        $resultDeletCount = $this->buzzDao->deleteCommentForShare($comment);
+        $this->assertEquals(1, $resultDeletCount);
     }
 
     /**
      * this is function to test save likes on comment
      */
     public function testLikeOnComment() {
-        $like = new LikeOnComment();
-        $like->setCommentId(1);
-        $like->setEmployeeNumber(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $likeOnComment = new LikeOnComment();
+        $likeOnComment->setCommentId(1);
+        $likeOnComment->setEmployeeNumber(1);
+        $likeOnComment->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->saveLikeForComment($like);
-        $this->assertTrue($result->getId() != null);
-        $this->assertEquals('2015-01-10 12:12:12', $result->getLikeTime());
+        $resultLikeOnComment = $this->buzzDao->saveLikeForComment($likeOnComment);
+        $this->assertTrue($resultLikeOnComment->getId() != null);
+        $this->assertEquals('2015-01-10 12:12:12', $resultLikeOnComment->getLikeTime());
     }
 
     /**
      * this is function to test save deletion of like on comment to database
      */
     public function testDeletLikeOnComment() {
-        $like = new LikeOnComment();
-        $like->setId(20);
-        $like->setCommentId(1);
-        $like->setEmployeeNumber(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $likeOnComment = new LikeOnComment();
+        $likeOnComment->setId(20);
+        $likeOnComment->setCommentId(1);
+        $likeOnComment->setEmployeeNumber(1);
+        $likeOnComment->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->deleteLikeForComment($like);
-        $this->assertEquals(1, $result);
+        $resultDeletCount = $this->buzzDao->deleteLikeForComment($likeOnComment);
+        $this->assertEquals(1, $resultDeletCount);
     }
 
     /**
      * this is function to test save deletion of like on comment to database
      */
     public function testDeletLikeOnCommentByAdmin() {
-        $like = new LikeOnComment();
-        $like->setId(20);
-        $like->setCommentId(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $likeOnComment = new LikeOnComment();
+        $likeOnComment->setId(20);
+        $likeOnComment->setCommentId(1);
+        $likeOnComment->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->deleteLikeForComment($like);
-        $this->assertEquals(1, $result);
+        $resultDeletCount = $this->buzzDao->deleteLikeForComment($likeOnComment);
+        $this->assertEquals(1, $resultDeletCount);
     }
 
     /**
@@ -444,82 +447,82 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      * test number of comment by Admin
      */
     public function testGetNoOfCommentForAdmin() {
-        $result = $this->buzzDao->getNoOfCommentsForEmployeeByEmployeeNumber('');
+        $resultCommentCount = $this->buzzDao->getNoOfCommentsForEmployeeByEmployeeNumber('');
 
-        $this->assertEquals(0, $result);
+        $this->assertEquals(0, $resultCommentCount);
     }
 
     /**
      * test number of likes on shares by employee number
      */
     public function testGetNoOfSharesLikeByEmployee() {
-        $result = $this->buzzDao->getNoOfShareLikesForEmployeeByEmployeeNumber(1);
+        $resultLikeCount = $this->buzzDao->getNoOfShareLikesForEmployeeByEmployeeNumber(1);
 
-        $this->assertEquals(2, $result);
+        $this->assertEquals(2, $resultLikeCount);
     }
 
     /**
      * test number of likes on shares by employee number
      */
     public function testGetNoOfSharesLikeByEmployeeWithIncorrectId() {
-        $result = $this->buzzDao->getNoOfShareLikesForEmployeeByEmployeeNumber(100);
+        $resultLikeCount = $this->buzzDao->getNoOfShareLikesForEmployeeByEmployeeNumber(100);
 
-        $this->assertEquals(0, $result);
+        $this->assertEquals(0, $resultLikeCount);
     }
 
     /**
      * test number of comment by id
      */
     public function testGetNoOfSharesLikeByAdmin() {
-        $result = $this->buzzDao->getNoOfShareLikesForEmployeeByEmployeeNumber('');
+        $resultLikeCount = $this->buzzDao->getNoOfShareLikesForEmployeeByEmployeeNumber('');
 
-        $this->assertEquals(0, $result);
+        $this->assertEquals(0, $resultLikeCount);
     }
 
     /**
      * test comment by employee number
      */
     public function testGetNoOfCommentLikeBy() {
-        $result = $this->buzzDao->getNoOfCommentLikesForEmployeeByEmployeeNumber(1);
+        $resultLikeCount = $this->buzzDao->getNoOfCommentLikesForEmployeeByEmployeeNumber(1);
 
-        $this->assertEquals(3, $result);
+        $this->assertEquals(3, $resultLikeCount);
     }
 
     /**
      * test number of comment by Admin
      */
     public function testGetNoOfCommentLikeByAdmin() {
-        $result = $this->buzzDao->getNoOfCommentLikesForEmployeeByEmployeeNumber('');
+        $resultCommentCount = $this->buzzDao->getNoOfCommentLikesForEmployeeByEmployeeNumber('');
 
-        $this->assertEquals(0, $result);
+        $this->assertEquals(0, $resultCommentCount);
     }
 
     /**
      * this is function to test save likes on share to database
      */
     public function testUnLikeOnShare() {
-        $like = new UnLikeOnShare();
-        $like->setShareId(1);
-        $like->setEmployeeNumber(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $unlikeOnShare = new UnLikeOnShare();
+        $unlikeOnShare->setShareId(1);
+        $unlikeOnShare->setEmployeeNumber(1);
+        $unlikeOnShare->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->saveUnLikeForShare($like);
-        $this->assertTrue($result->getId() != null);
-        $this->assertEquals('2015-01-10 12:12:12', $result->getLikeTime());
+        $resultUnlikeOnShare = $this->buzzDao->saveUnLikeForShare($unlikeOnShare);
+        $this->assertTrue($resultUnlikeOnShare->getId() != null);
+        $this->assertEquals('2015-01-10 12:12:12', $resultUnlikeOnShare->getLikeTime());
     }
 
     /**
      * this is function to test delete Unlikes on share
      */
     public function testDeleteUnLikeOnshare() {
-        $like = new UnLikeOnShare();
-        $like->setId(20);
-        $like->setShareId(1);
-        $like->setEmployeeNumber(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $unlikeOnShare = new UnLikeOnShare();
+        $unlikeOnShare->setId(20);
+        $unlikeOnShare->setShareId(1);
+        $unlikeOnShare->setEmployeeNumber(1);
+        $unlikeOnShare->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->deleteUnLikeForShare($like);
-        $this->assertEquals(1, $result);
+        $resultDeleteCount = $this->buzzDao->deleteUnLikeForShare($unlikeOnShare);
+        $this->assertEquals(1, $resultDeleteCount);
     }
 
     /**
@@ -532,91 +535,88 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $unlikeOnShare->setEmployeeNumber(10);
         $unlikeOnShare->setLikeTime('2015-01-10 12:12:12');
 
-        $resultUnlikeOnShare = $this->buzzDao->deleteUnLikeForShare($unlikeOnShare);
-        $this->assertEquals(0, $resultUnlikeOnShare);
+        $resultDeleteCount = $this->buzzDao->deleteUnLikeForShare($unlikeOnShare);
+        $this->assertEquals(0, $resultDeleteCount);
     }
 
     /**
      * this is function to test delete likes on share
      */
     public function testDeleteUnLikeOnshareByAdmin() {
-        $like = new UnLikeOnShare();
-        $like->setId(20);
-        $like->setShareId(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $unlikeOnShare = new UnLikeOnShare();
+        $unlikeOnShare->setId(20);
+        $unlikeOnShare->setShareId(1);
+        $unlikeOnShare->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->deleteUnLikeForShare($like);
-        $this->assertEquals(0, $result);
+        $resultDeleteCount = $this->buzzDao->deleteUnLikeForShare($unlikeOnShare);
+        $this->assertEquals(0, $resultDeleteCount);
     }
 
     /**
      * this is function to test save likes on comment
      */
     public function testUnLikeOnComment() {
-        $like = new UnLikeOnComment();
-        $like->setCommentId(1);
-        $like->setEmployeeNumber(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $unlikeOnComment = new UnLikeOnComment();
+        $unlikeOnComment->setCommentId(1);
+        $unlikeOnComment->setEmployeeNumber(1);
+        $unlikeOnComment->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->saveUnLikeForComment($like);
-        $this->assertTrue($result->getId() != null);
-        $this->assertEquals('2015-01-10 12:12:12', $result->getLikeTime());
+        $resultUnlikeOnComment = $this->buzzDao->saveUnLikeForComment($unlikeOnComment);
+        $this->assertTrue($resultUnlikeOnComment->getId() != null);
+        $this->assertEquals('2015-01-10 12:12:12', $resultUnlikeOnComment->getLikeTime());
     }
 
     /**
      * this is function to test delete likes on the comment
      */
     public function testDeletUnLikeOnComment() {
-        $like = new UnLikeOnComment();
-        $like->setId(20);
-        $like->setCommentId(1);
-        $like->setEmployeeNumber(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $unlikeOnComment = new UnLikeOnComment();
+        $unlikeOnComment->setId(20);
+        $unlikeOnComment->setCommentId(1);
+        $unlikeOnComment->setEmployeeNumber(1);
+        $unlikeOnComment->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->deleteUnLikeForComment($like);
-        $this->assertEquals(1, $result);
+        $resultDeleteCount = $this->buzzDao->deleteUnLikeForComment($unlikeOnComment);
+        $this->assertEquals(1, $resultDeleteCount);
     }
 
     /**
      * this is function to test delete likes on the comment
      */
     public function testDeletUnLikeOnCommentWithIcorrectValues() {
-        $like = new UnLikeOnComment();
-        $like->setId(20);
-        $like->setCommentId(1);
-        $like->setEmployeeNumber(1);
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $unlikeOnComment = new UnLikeOnComment();
+        $unlikeOnComment->setId(20);
+        $unlikeOnComment->setCommentId(1);
+        $unlikeOnComment->setEmployeeNumber(1);
+        $unlikeOnComment->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->deleteUnLikeForComment($like);
-        $this->assertEquals(1, $result);
+        $resultDeleteCount = $this->buzzDao->deleteUnLikeForComment($unlikeOnComment);
+        $this->assertEquals(1, $resultDeleteCount);
     }
 
     /**
      * this is function to test save likes on comment
      */
     public function testAdminUnLikeOnComment() {
-        $like = new UnLikeOnComment();
-        $like->setCommentId(1);
-        //$like->setEmployeeNumber('');
-        $like->setLikeTime('2015-01-10 12:12:12');
+        $unlikeOnComment = new UnLikeOnComment();
+        $unlikeOnComment->setCommentId(1);
+        $unlikeOnComment->setLikeTime('2015-01-10 12:12:12');
 
-        $result = $this->buzzDao->saveUnLikeForComment($like);
-        $this->assertTrue($result->getId() != null);
-        $this->assertEquals('2015-01-10 12:12:12', $result->getLikeTime());
+        $resultUnlikeOnComment = $this->buzzDao->saveUnLikeForComment($unlikeOnComment);
+        $this->assertTrue($resultUnlikeOnComment->getId() != null);
+        $this->assertEquals('2015-01-10 12:12:12', $resultUnlikeOnComment->getLikeTime());
     }
 
     /**
      * this is function to test delete likes on the comment
      */
     public function testDeletAdminUnLikeOnComment() {
-        $like = new UnLikeOnComment();
+        $unlikeOnComment = new UnLikeOnComment();
+        $unlikeOnComment->setCommentId(1);
+        $unlikeOnComment->setEmployeeNumber('');
 
-        $like->setCommentId(1);
-        $like->setEmployeeNumber('');
-
-
-        $result = $this->buzzDao->deleteUnLikeForComment($like);
-        $this->assertEquals(0, $result);
+        $resultDeleteCount = $this->buzzDao->deleteUnLikeForComment($unlikeOnComment);
+        $this->assertEquals(0, $resultDeleteCount);
     }
 
     /**
@@ -700,9 +700,9 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      */
     public function testMostCommentedShares() {
 
-        $result = $this->buzzDao->getMostCommentedShares(2);
+        $resultShares = $this->buzzDao->getMostCommentedShares(2);
 
-        $this->assertEquals(2, Count($result));
+        $this->assertEquals(2, Count($resultShares));
     }
 
     /**
@@ -710,9 +710,9 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      */
     public function testMostCommentedSharesWhithLargeLimit() {
 
-        $result = $this->buzzDao->getMostCommentedShares(200);
+        $resultShares = $this->buzzDao->getMostCommentedShares(200);
 
-        $this->assertEquals(2, Count($result));
+        $this->assertEquals(2, Count($resultShares));
     }
 
     /**
@@ -720,9 +720,9 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      */
     public function testMostCommentedSharesGivingCorrectResult() {
         $expectedShareId = 1;
-        $result = $this->buzzDao->getMostCommentedShares(2);
+        $resultShares = $this->buzzDao->getMostCommentedShares(2);
 
-        $this->assertEquals($expectedShareId, $result[0]['share_id']);
+        $this->assertEquals($expectedShareId, $resultShares[0]['share_id']);
     }
 
     /**

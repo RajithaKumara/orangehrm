@@ -28,22 +28,52 @@ class viewPostPreviewComponent extends sfComponent {
 
     protected $buzzService;
     protected $buzzConfigService;
+    const COOKIE_NAME = 'buzzCookie';
+    
+    /**
+     * 
+     * @param AddTaskForm $form
+     */
+    private function setCommentForm($form) {
+        $this->commentForm = $form;
+    }
+
+    /**
+     * function to get comment form
+     * @return Comment form
+     */
+    private function getEditForm() {
+        if (!$this->editForm) {
+            $this->editForm = new CommentForm();
+        }
+        return $this->editForm;
+    }
+
+    /**
+     * get comment form 
+     * @return CommentForm
+     */
+    private function getCommentForm() {
+        if (!$this->commentForm) {
+            $this->setCommentForm(new CommentForm());
+        }
+        return $this->commentForm;
+    }
 
     public function execute($request) {
 
         $this->setShare($this->post);
-        $this->postForm = $this->getPostForm();
         $this->commentForm = $this->getCommentForm();
-        $this->editForm = new CommentForm();
-        //$this->uploadImageForm = new UploadPhotoForm(); //image upload form
+        $this->editForm = $this->getEditForm();
         $this->setBuzzService(new BuzzService());
-        //$this->initializePostList();
 
-        $this->loggedInUser = $this->getLoggedInUser()->getEmployeeNumber();
-
-        //$this->videoForm= new CreateVideoForm();  // video form added
+        $this->loggedInUser = $this->getLogedInEmployeeNumber();
     }
 
+    /**
+     * set post valuves to show
+     * @param type $post
+     */
     private function setShare($post) {
         $this->postId = $post->getId();
         $this->postDate = $post->getDate();
@@ -95,50 +125,33 @@ class viewPostPreviewComponent extends sfComponent {
         return $this->buzzConfigService;
     }
 
-    /**
-     * 
-     * @param AddTaskForm $form
-     */
-    private function setPostForm($form) {
-        $this->postForm = $form;
-    }
+    public function getLogedInEmployeeNumber() {
+        $employeeNumber = null;
+        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
 
-    /**
-     * 
-     * @return AddTaskForm
-     */
-    private function getPostForm() {
-        if (!$this->postForm) {
-            $this->setPostForm(new CreatePostForm());
+            $cookie_valuve = $this->getUser()->getEmployeeNumber();
+            if ($cookie_valuve == "") {
+                //get it from the configuration
+                setcookie(self::COOKIE_NAME, 'Admin', time() + 3600 * 24 * 30, "/");
+                
+            } else {
+                setcookie(self::COOKIE_NAME, $cookie_valuve, time() + 3600 * 24 * 30, "/");
+            }
+
+            $employeeNumber = $cookie_valuve;
+        } elseif (isset($_COOKIE[self::COOKIE_NAME])) {
+            if ($_COOKIE[self::COOKIE_NAME] == 'Admin') {
+                $employeeNumber = null;
+                 
+            }else{
+                $employeeNumber = $_COOKIE[self::COOKIE_NAME];
+            }
+        } else {
+            throw new Exception('User Didnot Have');
         }
-        return $this->postForm;
+        
+        return $employeeNumber;
     }
-
-    /**
-     * 
-     * @param AddTaskForm $form
-     */
-    private function setCommentForm($form) {
-        $this->commentForm = $form;
-    }
-
-    /**
-     * 
-     * @return AddTaskForm
-     */
-    private function getCommentForm() {
-        if (!$this->commentForm) {
-            $this->setCommentForm(new CommentForm());
-        }
-        return $this->commentForm;
-    }
-
-    /**
-     * Returns the user who is currently logged in.
-     * @return User 
-     */
-    private function getLoggedInUser() {
-        return $this->getUser();
-    }
+    
 
 }

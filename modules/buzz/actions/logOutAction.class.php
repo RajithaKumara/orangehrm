@@ -11,12 +11,12 @@
  *
  * @author dewmal
  */
-class logOutAction extends BaseBuzzAction{
-    
+class logOutAction extends BaseBuzzAction {
+
     public function execute($request) {
         $this->logOut();
 
-    $this->redirect('auth/logout');
+        $this->redirect('auth/logout');
     }
 
 //put your code here

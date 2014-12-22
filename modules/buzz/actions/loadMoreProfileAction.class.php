@@ -15,40 +15,6 @@ class loadMoreProfileAction extends BaseBuzzAction {
 
     protected $buzzService;
 
-    public function execute($request) {
-        try {
-            $this->loggedInUser = $this->getUserId();
-            $this->lastPostId = $request->getParameter('lastPostId');
-            $this->profileUserId = $request->getParameter('profileUserId');
-            $this->buzzService = $this->getBuzzService();
-
-            $this->nextSharesList = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber(5, $this->lastPostId, $this->profileUserId);
-            $this->editForm = new CommentForm();
-            $this->commentForm = $this->getCommentForm();
-        } catch (Exception $ex) {
-            $this->redirect('auth/login');
-        }
-    }
-
-    /**
-     * 
-     * @param type $buzzService
-     */
-    protected function setBuzzService($buzzService) {
-        $this->buzzService = $buzzService;
-    }
-
-    /**
-     * 
-     * @return BuzzService
-     */
-    private function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->setBuzzService(new BuzzService());
-        }
-        return $this->buzzService;
-    }
-
     /**
      * 
      * @param AddTaskForm $form
@@ -85,6 +51,21 @@ class loadMoreProfileAction extends BaseBuzzAction {
             $this->setCommentForm(new CommentForm());
         }
         return $this->commentForm;
+    }
+
+    public function execute($request) {
+        try {
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->lastPostId = $request->getParameter('lastPostId');
+            $this->profileUserId = $request->getParameter('profileUserId');
+            $this->buzzService = $this->getBuzzService();
+
+            $this->nextSharesList = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber(5, $this->lastPostId, $this->profileUserId);
+            $this->editForm = new CommentForm();
+            $this->commentForm = $this->getCommentForm();
+        } catch (Exception $ex) {
+            $this->redirect('auth/login');
+        }
     }
 
 }

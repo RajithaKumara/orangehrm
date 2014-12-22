@@ -24,37 +24,24 @@
  *
  * @author aruna
  */
-class uploadImageAction extends BaseBuzzAction{
+class uploadImageAction extends BaseBuzzAction {
 
     protected $photos = array();
 
-    /**
-     * this is function to get buzzService
-     * @return BuzzService 
-     */
-    public function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->buzzService = new BuzzService();
-        }
-        return $this->buzzService;
-    }
-
-
     public function execute($request) {
-        try{
-            $this->loggedInUser=  $this->getUserId();
-             
+        try {
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->files = $request->getFiles();
+            $postContent = $request->getParameter('postContent');
+            $this->savePost($postContent);
+            foreach ($this->files as $file) {
+                $photo = $this->getPhoto($file);
+                $this->savePhoto($photo);
+            }
+            $this->saveShare();
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
-        $this->files = $request->getFiles();
-        $postContent = $request->getParameter('postContent');
-        $this->savePost($postContent);
-        foreach ($this->files as $file) {
-            $photo = $this->getPhoto($file);
-            $this->savePhoto($photo);
-        }
-        $this->saveShare();
     }
 
     private function savePhoto($photo) {
@@ -64,7 +51,7 @@ class uploadImageAction extends BaseBuzzAction{
 
     private function getPhoto($file) {
         $photo = new Photo();
-        
+
         $photo->photo = file_get_contents($file['tmp_name']);
         $photo->filename = $file['name'];
         $photo->file_type = $file['type'];
@@ -78,7 +65,7 @@ class uploadImageAction extends BaseBuzzAction{
 
     private function savePost($postContent) {
         $post = new Post();
-        $post->setEmployeeNumber($this->getUserId());
+        $post->setEmployeeNumber($this->getLogedInEmployeeNumber());
         $post->setText($postContent);
         $post->setPostTime(date("Y-m-d H:i:s"));
         $service = $this->getBuzzService();
@@ -91,7 +78,7 @@ class uploadImageAction extends BaseBuzzAction{
      */
     private function saveShare() {
         $share = new Share();
-        $share->setEmployeeNumber($this->getUserId());
+        $share->setEmployeeNumber($this->getLogedInEmployeeNumber());
         $share->setShareTime(date("Y-m-d H:i:s"));
         $share->setType(0);
         $share->setNumberOfComments(0);

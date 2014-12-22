@@ -26,18 +26,27 @@
  */
 class addNewCommentAction extends BaseBuzzAction {
 
-    
+    /**
+     * 
+     * @return CommentForm
+     */
+    private function getEditForm() {
+        if (!($this->editForm instanceof CommentForm)) {
+            $this->editForm = new CommentForm();
+        }
+        return $this->editForm;
+    }
 
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getUserId();
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->commentText = $request->getParameter('commentText');
             $this->shareId = $request->getParameter('shareId');
             $this->error = 'no';
 
             try {
-                $share = $this->getBuzzService()->getShareById($this->shareId);
-                $this->editForm = new CommentForm();
+
+                $this->editForm = $this->getEditForm();
                 $this->saveComment();
             } catch (Exception $ex) {
                 $this->error = 'yes';
@@ -62,17 +71,15 @@ class addNewCommentAction extends BaseBuzzAction {
         $this->commentTime = $this->comment->getTime();
         $this->commentId = $this->comment->getId();
         $this->commentNoOfLikes = $this->comment->getNumberOfLikes();
-        $this->isLikeComment = $this->comment->isLike($this->getUserId());
-        $this->commentEmployeeId = $this->getUserId();                
-                
-                
+        $this->isLikeComment = $this->comment->isLike($this->getLogedInEmployeeNumber());
+        $this->commentEmployeeId = $this->getLogedInEmployeeNumber();
+
+
         $this->commentNoOfLikes = $this->comment->getNumberOfLikes();
         $this->commentNoOfUnLikes = $this->comment->getNumberOfUnlikes();
-                if ($this->comment->isUnLike($this->getUserId())) {
-                    $this->isUnlike = 'yes';
-                }
-                
-               
+        if ($this->comment->isUnLike($this->getLogedInEmployeeNumber())) {
+            $this->isUnlike = 'yes';
+        }
     }
 
     /**
@@ -82,11 +89,11 @@ class addNewCommentAction extends BaseBuzzAction {
     public function setComment() {
         $comment = new Comment();
         $comment->setShareId($this->shareId);
-        $comment->setEmployeeNumber($this->getUserId());
+        $comment->setEmployeeNumber($this->getLogedInEmployeeNumber());
         $comment->setCommentText($this->commentText);
         $comment->setCommentTime(date("Y-m-d H:i:s"));
         $comment->setNumberOfLikes(0);
-         $comment->setNumberOfUnlikes(0);
+        $comment->setNumberOfUnlikes(0);
         return $comment;
     }
 

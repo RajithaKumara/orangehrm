@@ -26,37 +26,19 @@
  */
 class likeOnCommentAction extends BaseBuzzAction {
 
-    /**
-     * this is function to get buzzService
-     * @return buzzService 
-     */
-    public function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->buzzService = new BuzzService();
-        }
-        return $this->buzzService;
-    }
-
     public function execute($request) {
-        try{
-            $this->loggedInUser=  $this->getUserId();
-             
-        } catch (Exception $ex) {
-            $this->redirect('auth/login');
-        }
-        $this->commentId = $request->getParameter('commentId');
-        $this->likeAction = $request->getParameter('likeAction');
         try {
-
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->commentId = $request->getParameter('commentId');
+            $this->likeAction = $request->getParameter('likeAction');
             $this->comment = $this->getBuzzService()->getCommentById($this->commentId);
             if ($this->likeAction == 'unlike') {
-            $this->unlikeOnComment();
-        } else {
-            $this->likeOnComment();
-        }
-            
+                $this->unlikeOnComment();
+            } else {
+                $this->likeOnComment();
+            }
         } catch (Exception $ex) {
-            
+            $this->redirect('auth/login');
         }
     }
 
@@ -85,7 +67,7 @@ class likeOnCommentAction extends BaseBuzzAction {
         die();
     }
 
-    private function unlikeOnComment(){
+    private function unlikeOnComment() {
         $like = $this->setLike();
         $unlike = $this->setUnLike();
         $delete = 'no';
@@ -98,9 +80,8 @@ class likeOnCommentAction extends BaseBuzzAction {
             $this->getBuzzService()->saveUnLikeForComment($unlike);
             $this->likeLabel = 'Like';
             $state = 'savedUnLike';
-            
         }
-        
+
         $commentSaved = $this->getBuzzService()->getCommentById($this->commentId);
 
         $arr = array('states' => $state, 'deleted' => $delete, 'likeCount' => $commentSaved->getNumberOfLikes(), 'unlikeCount' => $commentSaved->getNumberOfUnlikes());
@@ -116,15 +97,15 @@ class likeOnCommentAction extends BaseBuzzAction {
     public function setLike() {
         $like = New LikeOnComment();
         $like->setLikeTime(date("Y-m-d H:i:s"));
-        $like->setEmployeeNumber($this->getUserId());
+        $like->setEmployeeNumber($this->getLogedInEmployeeNumber());
         $like->setCommentId($this->commentId);
         return $like;
     }
-    
+
     public function setUnLike() {
         $like = New UnLikeOnComment();
         $like->setLikeTime(date("Y-m-d H:i:s"));
-        $like->setEmployeeNumber($this->getUserId());
+        $like->setEmployeeNumber($this->getLogedInEmployeeNumber());
         $like->setCommentId($this->commentId);
         return $like;
     }

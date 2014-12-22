@@ -27,42 +27,17 @@
 class mostLikedSharesComponent extends sfComponent {
 
     protected $buzzService;
-
-    const SHARE_COUNT = 5;
-
-    public function execute($request) {
-        $this->setBuzzService(new BuzzService());
-        $mostLikeShareCount= $this->getBuzzConfigService()->getMostLikeShareCount();
-        $mostLikePostCount= $this->getBuzzConfigService()->getMostLikePostCount();
-        $mostLikedShares = $this->buzzService->getMostLikedShares($mostLikeShareCount);
-        $mostCommentedShares = $this->buzzService->getMostCommentedShares($mostLikePostCount);
-
-        $this->result_ml_shares = array();
-        $this->result_ml_shares_like_count = array();
-        $this->result_mc_shares = array();
-        $this->result_mc_shares_comment_count = array();
-
-        foreach ($mostLikedShares as $share) {
-            $s = $this->buzzService->getShareById($share['share_id']);
-            $n = $share['no_of_likes'];
-            array_push($this->result_ml_shares, $s);
-            array_push($this->result_ml_shares_like_count, $n);
+    /**
+     * return buzz service
+     * @return buzzService
+     */
+    protected function getBuzzService() {
+        if (!($this->buzzService instanceof BuzzService)) {
+            $this->buzzService = new BuzzService();
         }
-        foreach ($mostCommentedShares as $share) {
-            $s = $this->buzzService->getShareById($share['share_id']);
-            $n = $share['no_of_comments'];
-            array_push($this->result_mc_shares, $s);
-            array_push($this->result_mc_shares_comment_count, $n);
-        }
+        return $this->buzzService;
     }
-
-    protected function setBuzzService($nfService) {
-        if (!$this->buzzService) {
-            $this->buzzService = $nfService;
-        }
-    }
-    
-    
+     
     /**
      * 
      * @return BuzzConfigService
@@ -73,5 +48,48 @@ class mostLikedSharesComponent extends sfComponent {
         }
         return $this->buzzConfigService;
     }
+    
+    public function execute($request) {
+        $this->buzzService= $this->getBuzzService();
+        $mostLikeShareCount= $this->getBuzzConfigService()->getMostLikeShareCount();
+        $mostLikePostCount= $this->getBuzzConfigService()->getMostLikePostCount();
+        $mostLikedShares = $this->buzzService->getMostLikedShares($mostLikeShareCount);
+        $mostCommentedShares = $this->buzzService->getMostCommentedShares($mostLikePostCount);
+
+        $this->result_ml_shares = array();
+        $this->result_ml_shares_like_count = array();
+        $this->result_mc_shares = array();
+        $this->result_mc_shares_comment_count = array();
+
+        $this->setMostLikeShares($mostLikedShares);
+        $this->setMostCommentedShares($mostCommentedShares);
+    }
+    
+    /**
+     * set most like shares for view
+     * @param type $mostLikedShares
+     */
+    private function setMostLikeShares($mostLikedShares) {
+        foreach ($mostLikedShares as $share) {
+            $s = $this->buzzService->getShareById($share['share_id']);
+            $n = $share['no_of_likes'];
+            array_push($this->result_ml_shares, $s);
+            array_push($this->result_ml_shares_like_count, $n);
+        }
+    }
+    
+    /**
+     * set most commented post for view
+     * @param type $mostCommentedShares
+     */
+    private function setMostCommentedShares($mostCommentedShares) {
+        foreach ($mostCommentedShares as $share) {
+            $s = $this->buzzService->getShareById($share['share_id']);
+            $n = $share['no_of_comments'];
+            array_push($this->result_mc_shares, $s);
+            array_push($this->result_mc_shares_comment_count, $n);
+        }
+    }
+   
 
 }

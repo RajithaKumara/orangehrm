@@ -26,61 +26,49 @@
  */
 class refreshProfileAction extends BaseBuzzAction {
 
-  
-
-    public function execute($request) {
-        try {
-            $this->loggedInUser = $this->getUserId();
-            $this->lastPostId = $request->getParameter('lastPostId');
-            $this->profileUserId = $request->getParameter('profileUserId');
-            $this->buzzService = $this->getBuzzService();
-            $this->loggedInUser = $this->getUserId();
-            $this->fullSharesList = $this->buzzService->getEmployeeSharesUptoShareId($this->lastPostId, $this->profileUserId);
-            $this->commentForm = $this->getCommentForm();
+    /**
+     * this is reurn form to edit comment
+     * @return CommentEditForm
+     */
+    private function getEditForm() {
+        if (!($this->editForm instanceof CommentForm)) {
             $this->editForm = new CommentForm();
-        } catch (Exception $ex) {
-            $this->redirect('auth/login');
         }
-    }
-
-   
-
-    /**
-     * 
-     * @param AddTaskForm $form
-     */
-    private function setPostForm($form) {
-        $this->postForm = $form;
+        return $this->editForm;
     }
 
     /**
-     * 
-     * @return AddTaskForm
-     */
-    private function getPostForm() {
-        if (!$this->postForm) {
-            $this->setPostForm(new CreatePostForm());
-        }
-        return $this->postForm;
-    }
-
-    /**
-     * 
-     * @param AddTaskForm $form
+     * function to set comment form
+     * @param CommentForm
      */
     private function setCommentForm($form) {
         $this->commentForm = $form;
     }
 
     /**
-     * 
-     * @return AddTaskForm
+     * this is to get comment form
+     * @return CommentForm
      */
     private function getCommentForm() {
-        if (!$this->commentForm) {
+        if (!($this->commentForm instanceof CommentForm)) {
             $this->setCommentForm(new CommentForm());
         }
         return $this->commentForm;
+    }
+
+    public function execute($request) {
+        try {
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->lastPostId = $request->getParameter('lastPostId');
+            $this->profileUserId = $request->getParameter('profileUserId');
+            $this->buzzService = $this->getBuzzService();
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->fullSharesList = $this->buzzService->getEmployeeSharesUptoShareId($this->lastPostId, $this->profileUserId);
+            $this->commentForm = $this->getCommentForm();
+            $this->editForm = $this->getEditForm();
+        } catch (Exception $ex) {
+            $this->redirect('auth/login');
+        }
     }
 
 }

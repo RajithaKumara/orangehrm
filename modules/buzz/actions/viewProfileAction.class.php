@@ -25,30 +25,32 @@ class viewProfileAction extends BaseBuzzAction {
         }
         return $this->employeeService;
     }
+    
+    /**
+     * get employee search form
+     * @return searchForm
+     */
+    private function getSearchForm(){
+        if(!($this->searchForm instanceof BuzzEmployeeSearchForm)){
+            $this->searchForm = new BuzzEmployeeSearchForm();
+        }
+        return $this->searchForm;
+    }
 
     public function execute($request) {
         $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
         $this->setLayout($template . '/chatter');
-        $this->searchForm = new BuzzEmployeeSearchForm();
+        $this->searchForm = $this->getSearchForm();
         try {
-            $this->loggedInUser = $this->getUserId();
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->profileUserId = $request->getParameter('empNumber');
             $this->employee = $this->getEmployeeService()->getEmployee($this->profileUserId);
-
-            
-            $this->intializeConstant();
-
-
-            $this->setBuzzService(new BuzzService());
+            $this->intializeConfigValuves();
             $this->initializePostList();
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
 
-
-        $this->videoForm = new CreateVideoForm();  // video form added
-        $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
-        $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("m"));
     }
 
     /**
@@ -61,7 +63,10 @@ class viewProfileAction extends BaseBuzzAction {
         $this->postList = $buzzService->getSharesByEmployeeNumber($this->shareCount, $userId);
     }
 
-    protected function intializeConstant() {
+    /**
+     * initialize config valuves from database
+     */
+    protected function intializeConfigValuves() {
         $buzzConfigService = $this->getBuzzConfigService();
         $this->shareCount = $buzzConfigService->getBuzzShareCount();
         $this->commentCount = $buzzConfigService->getBuzzInitialCommentCount();
@@ -69,51 +74,5 @@ class viewProfileAction extends BaseBuzzAction {
         $this->likeCount = $buzzConfigService->getBuzzLikeCount();
         $this->refeshTime = $buzzConfigService->getRefreshTime();
     }
-
-    /**
-     * 
-     * @param type $buzzService
-     */
-    protected function setBuzzService($buzzService) {
-        $this->buzzService = $buzzService;
-    }
-
-    /**
-     * 
-     * @param AddTaskForm $form
-     */
-    private function setPostForm($form) {
-        $this->postForm = $form;
-    }
-
-    /**
-     * 
-     * @return AddTaskForm
-     */
-    private function getPostForm() {
-        if (!$this->postForm) {
-            $this->setPostForm(new CreatePostForm());
-        }
-        return $this->postForm;
-    }
-
-    /**
-     * 
-     * @param AddTaskForm $form
-     */
-    private function setCommentForm($form) {
-        $this->commentForm = $form;
-    }
-
-    /**
-     * 
-     * @return AddTaskForm
-     */
-    private function getCommentForm() {
-        if (!$this->commentForm) {
-            $this->setCommentForm(new CommentForm());
-        }
-        return $this->commentForm;
-    }
-
+    
 }

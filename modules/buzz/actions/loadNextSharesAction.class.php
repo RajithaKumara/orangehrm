@@ -26,32 +26,6 @@
  */
 class loadNextSharesAction extends BaseBuzzAction {
 
-    
-
-    public function execute($request) {
-        try {
-            $this->loggedInUser = $this->getUserId();
-            $this->lastPostId = $request->getParameter('lastPostId');
-            $this->buzzService = $this->getBuzzService();
-
-            $this->nextSharesList = $this->buzzService->getMoreShares(5, $this->lastPostId);
-            $this->editForm = new CommentForm();
-            $this->commentForm = $this->getCommentForm();
-        } catch (Exception $ex) {
-            $this->redirect('auth/login');
-        }
-    }
-
-    /**
-     * 
-     * @param type $buzzService
-     */
-    protected function setBuzzService($buzzService) {
-        $this->buzzService = $buzzService;
-    }
-
-    
-
     /**
      * 
      * @param AddTaskForm $form
@@ -65,7 +39,7 @@ class loadNextSharesAction extends BaseBuzzAction {
      * @return AddTaskForm
      */
     private function getPostForm() {
-        if (!$this->postForm) {
+        if (!($this->postForm instanceof CreatePostForm)) {
             $this->setPostForm(new CreatePostForm());
         }
         return $this->postForm;
@@ -84,10 +58,35 @@ class loadNextSharesAction extends BaseBuzzAction {
      * @return AddTaskForm
      */
     private function getCommentForm() {
-        if (!$this->commentForm) {
+        if (!($this->commentForm instanceof CommentForm)) {
             $this->setCommentForm(new CommentForm());
         }
         return $this->commentForm;
+    }
+    
+    /**
+     * 
+     * @return AddTaskForm
+     */
+    private function getEditForm() {
+        if (!($this->editForm instanceof CommentForm)) {
+            $this->editForm=new CommentForm();
+        }
+        return $this->editForm;
+    }
+
+    public function execute($request) {
+        try {
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->lastPostId = $request->getParameter('lastPostId');
+            $this->buzzService = $this->getBuzzService();
+
+            $this->nextSharesList = $this->buzzService->getMoreShares(5, $this->lastPostId);
+            $this->editForm = $this->getEditForm();
+            $this->commentForm = $this->getCommentForm();
+        } catch (Exception $ex) {
+            $this->redirect('auth/login');
+        }
     }
 
 }

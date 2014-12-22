@@ -83,13 +83,13 @@ class addNewPostAction extends BaseBuzzAction {
         if ($request->isMethod('post')) {
             $this->form->bind($parameters);
             if ($this->form->isValid() && $content != '') {
-                $share = $this->form->save($this->getUserId(), $content);
-                $this->post = $share;
-                $this->setShare($share);
-                $this->loggedInUser = $this->getUserId();
+                 $this->post  = $this->form->save($this->getLogedInEmployeeNumber(), $content);
+               
+                $this->setShare($this->post);
+                $this->loggedInUser = $this->getLogedInEmployeeNumber();
                 $this->isSuccess = 'yes';
                 if ($postLinkState == 'yes') {
-                    $link = $this->setLink($share, $postLinkAddress, $linkTitle, $linkText);
+                    $link = $this->setLink($this->post, $postLinkAddress, $linkTitle, $linkText);
                     $this->saveLink($link);
                 }
             } else {        
@@ -113,7 +113,7 @@ class addNewPostAction extends BaseBuzzAction {
         $this->postDate = $share->getDate();
         $this->postTime = $share->getTime();
         $this->noOfLikes = $share->getNumberOfLikes();
-        $this->isLike = $share->isLike($this->getUserId());
+        $this->isLike = $share->isLike($this->getLogedInEmployeeNumber());
         $this->postContent = $share->getPostShared()->getText();
     }
     

@@ -32,22 +32,45 @@ class BuzzConfigService extends ConfigService{
     const KEY_POST_LENTH='buzz_post_text_lenth';
     const KEY_POST_TEXT_HEIGHT='buzz_post_text_lines';
     const KEY_BUZZ_POST_SHARE_COUNT = 'buzz_post_share_count';
+    const KEY_BUZZ_COOKIE_VALID_TIME = 'buzz_cookie_valid_time';
 
+    /**
+     * get config valuve for buzz keey
+     * @param type $key
+     * @return key
+     */
     public function getBuzzKeeyValuve($key){
         return $this->_getConfigValue($key);
     }
     
+    /**
+     * get Initial share count 
+     * @return Int
+     */
     public function getBuzzShareCount(){
         return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_NEWSFEED_SHARE_COUNT);
     }
     
+    /**
+     * get post lenth to show
+     * @return int
+     */
     public function getBuzzPostTextLenth(){
         return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_POST_LENTH);
     }
+    
+    /**
+     * get post line count
+     * @return int
+     */
      public function getBuzzPostTextLines(){
         return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_POST_TEXT_HEIGHT);
     }
     
+    /**
+     * get buzz initial comment shown count
+     * @return type
+     */
     public function getBuzzInitialCommentCount(){
         return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_NEWSFEED_INITIAL_COMMENT_COUNT);
     }
@@ -56,28 +79,60 @@ class BuzzConfigService extends ConfigService{
         return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_NEWSFEED_VIEWMORE_COMMENT);
     }
     
+    /**
+     * get buzz initial shown like count
+     * @return int
+     */
     public function getBuzzLikeCount(){
         return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_NEWSFEED_LIKE_COUNT);
     }
     
+    /**
+     * get buzz initial shown share count
+     * @return int
+     */
     public function getPostShareCount(){
         return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_BUZZ_POST_SHARE_COUNT);
     }
     
+    /**
+     * get buzz refresh time
+     * @return int
+     */
     public function getRefreshTime(){
         return $this->getBuzzKeeyValuve(BuzzConfigService::KEY_REFRESH_TIME);
     }
     
+    /**
+     * get buzz time format
+     * @return string
+     */
     public function getTimeFormat(){
         return $this->getBuzzKeeyValuve(BuzzConfigService:: KEY_TIME_FORMAT);
     }
     
+    /**
+     * get buzz most like post shown count
+     * @return int
+     */
     public function getMostLikePostCount(){
         return $this->getBuzzKeeyValuve(BuzzConfigService:: KEY_MOST_LIKE_POSTS);
     }
     
+    /**
+     * get buzz most like share shown count
+     * @return int 
+     */
      public function getMostLikeShareCount(){
         return $this->getBuzzKeeyValuve(BuzzConfigService:: KEY_MOST_LIKE_SHARES);
+    }
+    
+    /**
+     * get buzz cookie valid time
+     * @return int 
+     */
+     public function getCookieValidTime(){
+        return $this->getBuzzKeeyValuve(BuzzConfigService:: KEY_BUZZ_COOKIE_VALID_TIME);
     }
     
 }

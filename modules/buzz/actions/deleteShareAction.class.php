@@ -25,58 +25,57 @@
  * @author aruna
  */
 class deleteShareAction extends BaseBuzzAction {
-
-    /**
-     * this is function to get buzzService
-     * @return BuzzService 
+    
+     /**
+     * get share by Id and return it
+     * @param type $shareId
+     * @return Share
      */
-    public function getBuzzervice() {
-        if (!$this->buzzService) {
-            $this->buzzService = new BuzzService();
+    public function getShare($shareId) {
+        return $this->getBuzzervice()->getShareById($shareId);
+    }
+    
+    /**
+     * delete Share if it bis post then delete post
+     */
+    public function deleteShare($share) {
+        try {
+            if ($share->getEmployeeNumber() == $this->getLogedInEmployeeNumber() || $this->getUserId() == '') {
+                $this->getBuzzervice()->deleteShare($share->getId());
+            }
+        } catch (Exception $ex) {
+            
         }
-        return $this->buzzService;
+    }
+
+   
+    /**
+     * delete post by Id 
+     * @param type $share
+     */
+    private function deletePost($share) {
+        if ($share->getPostShared()->getEmployeeNumber() == $this->getLogedInEmployeeNumber() || $this->getUserId() == '') {
+            $this->getBuzzervice()->deletePost($share->getPostId());
+        }
+    }
+
+    public function execute($request) {
+        try {
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->shareId = $request->getParameter('shareId');
+            $share = $this->getShare($this->shareId);
+            if ($share->getType() == '0') {
+                $this->deletePost($share);
+            } else {
+                $this->deleteShare($share);
+            }
+        } catch (Exception $ex) {
+            $this->redirect('auth/login');
+        }
+
+        return sfView::NONE;
     }
 
     
 
-    public function execute($request) {
-        try{
-            $this->loggedInUser=  $this->getUserId();
-             
-        } catch (Exception $ex) {
-            $this->redirect('auth/login');
-        }
-        $this->shareId = $request->getParameter('shareId');
-        $this->deleteShare();
-        return sfView::NONE;
-    }
-
-    /**
-     * delete Share if it bis post then delete post
-     */
-    public function deleteShare() {
-        try {
-            $share = $this->getBuzzervice()->getShareById($this->shareId);
-        if ($share->getType() == '0') {
-            if ($share->getPostShared()->getEmployeeNumber() == $this->getUserId()) {
-                $this->getBuzzervice()->deletePost($share->getPostId());
-            } elseif($this->getUserId ()==''){
-                $this->getBuzzervice()->deletePost($share->getPostId());
-            }
-        } else {
-            if ($share->getEmployeeNumber() == $this->getUserId()) {
-                $this->getBuzzervice()->deleteShare($share->getId());
-            } 
-            elseif($this->getUserId ()==''){
-                $this->getBuzzervice()->deleteShare($share->getId());
-            }
-        }
-            
-        } catch (Exception $ex) {
-            
-        }
-        
-    }
-
-//put your code here
 }

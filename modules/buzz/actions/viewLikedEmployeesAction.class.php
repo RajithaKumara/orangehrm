@@ -20,37 +20,20 @@
  */
 
 class viewLikedEmployeesAction extends BaseBuzzAction {
-    
-     /**
-     * this is function to get buzzService
-     * @return BuzzService 
-     */
-    public function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->buzzService = new BuzzService();
-        }
-        return $this->buzzService;
-    }
+
     public function execute($request) {
-        try{
-            $this->loggedInUser=  $this->getUserId();
-             
+        try {
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->id = $request->getParameter('id');
+            $this->actions = $request->getParameter('actions');
+            $this->error = 'no';
+            if ($this->actions == 'post') {
+                $this->employeeList = $this->getBuzzService()->getShareById($this->id)->getLikedEmployeeList();
+            } else {
+                $this->employeeList = $this->getBuzzService()->getCommentById($this->id)->getLikedEmployeeList();
+            }
         } catch (Exception $ex) {
-            $this->redirect('auth/login');
-        }
-        $this->id= $request->getParameter('id');
-        $this->actions= $request->getParameter('actions');
-        $this->error='no';
-        try{
-            
-        
-        if($this->actions=='post'){
-            $this->employeeList=  $this->getBuzzService()->getShareById($this->id)->getLikedEmployeeList();
-        }else{
-            $this->employeeList=  $this->getBuzzService()->getCommentById($this->id)->getLikedEmployeeList();
-        }
-        } catch (Exception $ex) {
-            $this->error='yes';
+            $this->error = 'yes';
         }
     }
 

@@ -28,11 +28,11 @@ class getLikedEmployeeListAction extends BaseBuzzAction {
 
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getUserId();
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $id = $request->getParameter('id');
             $type = $request->getParameter('type');
             $this->buzzService = new BuzzService();
-            $this->loggedInEmployeeId = $this->getUserId();
+            $this->loggedInEmployeeId = $this->getLogedInEmployeeNumber();
             if ($type == 'post') {
                 $this->share = $this->buzzService->getShareById($id);
                 $this->likedEmployeeList = $this->share->getLikedEmployees($this->loggedInEmployeeId);

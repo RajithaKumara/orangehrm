@@ -119,4 +119,13 @@ class BuzzConfigServiceTest extends PHPUnit_Framework_TestCase {
         
         $this->assertEquals(5,$count);
     }
+    
+    /**
+     * test cookie valid time Configuration
+     */
+    public function testGetCookieValidTime(){
+        $cookieTime =$this->buzzConfigService->getCookieValidTime();
+        
+        $this->assertEquals(5000,$cookieTime);
+    }
 }

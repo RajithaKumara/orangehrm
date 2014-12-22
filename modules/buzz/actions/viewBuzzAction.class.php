@@ -27,16 +27,16 @@
 class viewBuzzAction extends BaseBuzzAction {
 
     /**
-     * 
-     * @param AddTaskForm $form
+     * function to set post form
+     * @param PostForm $form
      */
     private function setPostForm($form) {
         $this->postForm = $form;
     }
 
     /**
-     * 
-     * @return AddTaskForm
+     * get Post form
+     * @return PostForm
      */
     private function getPostForm() {
         if (!$this->postForm) {
@@ -52,21 +52,43 @@ class viewBuzzAction extends BaseBuzzAction {
     private function setCommentForm($form) {
         $this->commentForm = $form;
     }
-    
+
     /**
-     * 
-     * @return AddTaskForm
+     * function to get comment form
+     * @return Comment form
      */
     private function getEditForm() {
         if (!$this->editForm) {
-            $this->editForm=new CommentForm();
+            $this->editForm = new CommentForm();
         }
         return $this->editForm;
     }
 
     /**
-     * 
+     * function to get upload photo form
      * @return AddTaskForm
+     */
+    private function getUploadImageForm() {
+        if (!$this->uploadImageForm) {
+            $this->uploadImageForm = new UploadPhotoForm();
+        }
+        return $this->uploadImageForm;
+    }
+
+    /**
+     * function to get upload photo form
+     * @return AddTaskForm
+     */
+    private function getVideoForm() {
+        if (!$this->videoForm) {
+            $this->videoForm = new CreateVideoForm();
+        }
+        return $this->videoForm;
+    }
+
+    /**
+     * get comment form 
+     * @return CommentForm
      */
     private function getCommentForm() {
         if (!$this->commentForm) {
@@ -75,29 +97,26 @@ class viewBuzzAction extends BaseBuzzAction {
         return $this->commentForm;
     }
 
-
     public function execute($request) {
 
         $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
         $this->setLayout($template . '/chatter');
-        $this->setConfigurationValues();
-        $this->postForm = $this->getPostForm();
-        $this->commentForm = $this->getCommentForm();
-        $this->editForm = $this->getEditForm();
-        $this->uploadImageForm = new UploadPhotoForm(); //image upload form
-        $this->buzzService=  $this->getBuzzService();
-       
-        $this->initializePostList();
+
         try {
-            $this->loggedInUser = $this->getUserId();
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->setConfigurationValues();
+            $this->postForm = $this->getPostForm();
+            $this->commentForm = $this->getCommentForm();
+            $this->editForm = $this->getEditForm();
+            $this->uploadImageForm = $this->getUploadImageForm(); //image upload form
+            $this->buzzService = $this->getBuzzService();
+            $this->initializePostList();
+            $this->videoForm = $this->getVideoForm();  // video form added
+            $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
+            $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("Y-m-d"));
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
-
-
-        $this->videoForm = new CreateVideoForm();  // video form added
-        $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
-        $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("Y-m-d"));
     }
 
     /**

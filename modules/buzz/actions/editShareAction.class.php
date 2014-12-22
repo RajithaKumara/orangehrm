@@ -26,61 +26,44 @@
  */
 class editShareAction extends BaseBuzzAction {
 
-    /**
-     * this is function to get buzzService
-     * @return BuzzService 
-     */
-    public function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->buzzService = new BuzzService();
-        }
-        return $this->buzzService;
-    }
-
     public function execute($request) {
-        try{
-            $this->loggedInUser=  $this->getUserId();
-             
+        try {
+            $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            $this->shareId = $request->getParameter('shareId');
+            $this->editedContent = $request->getParameter('textShare');
+            $this->type = 'post';
+            $this->error = 'no';
+
+
+            $share = $this->getBuzzService()->getShareById($this->shareId);
+            if ($share != null) {      
+                $this->post = $this->saveEditedContent($share);
+            } else {
+                $this->error = 'yes';
+                $this->getUser()->setFlash('error', __("This share has been deleted or you do not have permission to perform this action"));
+            }
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
-        $this->shareId = $request->getParameter('shareId');
-        $this->editedContent = $request->getParameter('textShare');
-        $this->type='post';
-        $this->error='no';
-        
-        try{
-            $share = $this->getBuzzService()->getShareById($this->shareId);
-            $this->post=  $this->saveEditedContent();
-        } catch (Exception $ex) {
-            $this->error='yes';
-            $this->getUser()->setFlash('error', __("This share has been deleted or you do not have permission to perform this action"));
-        }
-        
-       
     }
 
     /**
      * save edited content of post and share
      * @return Post
      */
-    public function saveEditedContent() {
-        $share = $this->getBuzzService()->getShareById($this->shareId);
-        if ($share->getEmployeeNumber() == $this->getUserId() || $this->getUserId() == null) {
-            if ($share->getTypeName() == 'share') {
-                $this->type='share';
-                return $this->saveShare($share);
-                
+    public function saveEditedContent($share) {
+        
+        if ($share->getEmployeeNumber() == $this->getLogedInEmployeeNumber()) {
+            if ($share->getType() == 1) {
+                $this->type = 'share';
+                $share= $this->saveShare($share);
             } else {
-                if ($share->getPostShared()->getEmployeeNumber() == $this->getUserId() || $this->getUserId() == null) {
-                    return $this->savePost($share->getPostShared());
-                } else {
-                    
-                }
+                
+                $share= $this->savePost($share->getPostShared());    
             }
-        } else {
-
         }
+        return $share;
+        
     }
 
     /**

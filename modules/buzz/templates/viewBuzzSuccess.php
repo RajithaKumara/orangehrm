@@ -18,6 +18,7 @@
  *  conditions on using this software.
  *
  */
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewShareSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/transitions'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/buzzNew'));
@@ -249,6 +250,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
             var refreshStatsURL = '<?php echo url_for('buzz/viewStatistics'); ?>';
             var getSharedEmployeeListURL = '<?php echo url_for('buzz/getSharedEmployeeList'); ?>';
             var imageFolderPath = '<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/"); ?>';
+            var viewShareCss = '<?php echo plugin_web_path('orangehrmBuzzPlugin', 'css/viewShareSuccess'); ?>';
         </script>
         <style type="text/css">
             .homeLink{
