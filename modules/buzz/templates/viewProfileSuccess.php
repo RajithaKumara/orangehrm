@@ -40,7 +40,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
                 <div class="jason"></div>
                 <?php
                 foreach ($postList as $post) {
-                    include_component('buzz', 'viewPost', array('post' => $post));
+                    include_component('buzz', 'viewPost', array('post' => $post,'loggedInUser' => $loggedInUser));
                 }
                 ?> 
             </ul>

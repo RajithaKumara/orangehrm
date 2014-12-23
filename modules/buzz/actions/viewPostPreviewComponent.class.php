@@ -28,8 +28,18 @@ class viewPostPreviewComponent extends sfComponent {
 
     protected $buzzService;
     protected $buzzConfigService;
+    protected $buzzCookieService;
 
-    const COOKIE_NAME = 'buzzCookie';
+    /**
+     * 
+     * @return BuzzCookieService
+     */
+    protected function getBuzzCookieService() {
+        if (!$this->buzzCookieService instanceof BuzzCookieService) {
+            $this->buzzCookieService = new BuzzCookieService();
+        }
+        return $this->buzzCookieService;
+    }
 
     /**
      * 
@@ -126,24 +136,12 @@ class viewPostPreviewComponent extends sfComponent {
         return $this->buzzConfigService;
     }
 
+    /**
+     * get loged in employee number from cookie service 
+     * @return Int
+     */
     public function getLogedInEmployeeNumber() {
-        $employeeNumber = null;
-        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
-
-            $cookie_valuve = $this->getUser()->getEmployeeNumber();
-
-            $employeeNumber = $cookie_valuve;
-        } elseif (isset($_COOKIE[self::COOKIE_NAME])) {
-            if ($_COOKIE[self::COOKIE_NAME] == 'Admin') {
-                $employeeNumber = null;
-            } else {
-                $employeeNumber = $_COOKIE[self::COOKIE_NAME];
-            }
-        } else {
-            throw new Exception('User Didnot Have');
-        }
-
-        return $employeeNumber;
+        return $this->getBuzzCookieService()->getEmployeeNumber();
     }
 
 }

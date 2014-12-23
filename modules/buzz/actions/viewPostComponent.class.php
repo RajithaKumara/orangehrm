@@ -15,8 +15,20 @@ class viewPostComponent extends sfComponent {
 
     protected $buzzService;
     protected $buzzConfigService;
+    protected $buzzCookieService;
+       
+    /**
+     * 
+     * @return BuzzCookieService
+     */
+    protected function getBuzzCookieService() {
+        if (!$this->buzzCookieService instanceof BuzzCookieService) {
+            $this->buzzCookieService = new BuzzCookieService();
+        }
+        return $this->buzzCookieService;
+    }
 
-    const COOKIE_NAME = 'buzzCookie';
+   
 
     /**
      * 
@@ -100,7 +112,6 @@ class viewPostComponent extends sfComponent {
     public function execute($request) {
 
         $this->setBuzzService(new BuzzService());
-        //$this->loggedInUser = $this->getLogedInEmployeeNumber();
         $this->setShare($this->post);
         $this->postForm = $this->getPostForm();
         $this->commentForm = $this->getCommentForm();
@@ -150,31 +161,6 @@ class viewPostComponent extends sfComponent {
         $this->refeshTime = $buzzConfigService->getRefreshTime();
         $this->postLenth = $buzzConfigService->getBuzzPostTextLenth();
         $this->postLines = $buzzConfigService->getBuzzPostTextLines();
-    }
-
-    /**
-     * function to get Employee Number
-     * @return EmplpoyeeNumber
-     * @throws Exception
-     */
-    public function getLogedInEmployeeNumber() {
-        $employeeNumber = null;
-        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
-
-            $cookie_valuve = $this->getUser()->getEmployeeNumber();
-
-            $employeeNumber = $cookie_valuve;
-        } elseif (isset($_COOKIE[self::COOKIE_NAME])) {
-            if ($_COOKIE[self::COOKIE_NAME] == 'Admin') {
-                $employeeNumber = null;
-            } else {
-                $employeeNumber = $_COOKIE[self::COOKIE_NAME];
-            }
-        } else {
-            throw new Exception('User Didnot Have');
-        }
-
-        return $employeeNumber;
     }
 
 }

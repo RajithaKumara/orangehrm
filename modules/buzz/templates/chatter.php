@@ -57,7 +57,6 @@
 
 </head>
 <body>
-    <?php $empNumber = $sf_user->getAttribute('auth.empNumber'); ?>
     <div id="buzzHeader">
         <div id="dashBoardHeaderBuzz">
             <div id="logo">
@@ -65,7 +64,7 @@
             </div>
             <div id="buzzHeaderRight">
                 <div id="buzzHeaderDetails">
-                    <?php include_component('buzz', 'loggedInUserDetails', array('emp_number' => $empNumber)); ?>
+                    <?php include_component('buzz', 'loggedInUserDetails', array()); ?>
                 </div>
             </div>
         </div>

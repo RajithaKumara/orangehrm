@@ -13,10 +13,10 @@
  */
 abstract class BaseBuzzAction extends sfAction {
 
-    const COOKIE_NAME = 'buzzCookie';
 
     protected $buzzService;
     protected $buzzConfigService;
+    protected $buzzCookieService;
 
     /**
      * 
@@ -40,30 +40,29 @@ abstract class BaseBuzzAction extends sfAction {
         return $this->buzzConfigService;
     }
 
+    /**
+     * 
+     * @return BuzzCookieService
+     */
+    protected function getBuzzCookieService() {
+        if (!$this->buzzCookieService instanceof BuzzCookieService) {
+            $this->buzzCookieService = new BuzzCookieService();
+        }
+        return $this->buzzCookieService;
+    }
+
     public function getLogedInEmployeeNumber() {
         $employeeNumber = null;
-        $cookieValidTime = $this->getBuzzConfigService()->getCookieValidTime();
         if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
-
-            $cookie_valuve = $this->getUser()->getEmployeeNumber();
-
-            if ($cookie_valuve == "") {
-                if ($_COOKIE[self::COOKIE_NAME] != 'Admin') {
-                    setcookie(self::COOKIE_NAME, 'Admin', time() + $cookieValidTime, "/");
-                }
+            if ($this->getUser()->getAttribute('auth.isAdmin', 'No') == 'Yes') {
+                $userRole = 'Admin';
             } else {
-                if ($_COOKIE[self::COOKIE_NAME] != $cookie_valuve) {
-                    setcookie(self::COOKIE_NAME, $cookie_valuve, time() + $cookieValidTime, "/");
-                }
+                $userRole = 'Ess';
             }
-
-            $employeeNumber = $cookie_valuve;
-        } elseif (isset($_COOKIE[self::COOKIE_NAME])) {
-            if ($_COOKIE[self::COOKIE_NAME] == 'Admin') {
-                $employeeNumber = null;
-            } else {
-                $employeeNumber = $_COOKIE[self::COOKIE_NAME];
-            }
+            $employeeNumber = $this->getUser()->getAttribute('auth.empNumber');
+            $this->getBuzzCookieService()->saveCookieValuves($employeeNumber, $userRole);
+        } elseif ($this->getBuzzCookieService()->isSavedCookies()) {
+            $employeeNumber = $this->getBuzzCookieService()->getEmployeeNumber();
         } else {
             throw new Exception('User Didnot Have');
         }
@@ -72,8 +71,9 @@ abstract class BaseBuzzAction extends sfAction {
     }
 
     public function logOut() {
-        unset($_COOKIE[self::COOKIE_NAME]);
-        setcookie(self::COOKIE_NAME, '', time() - 3600, "/");
+        $this->getBuzzCookieService()->destroyCokkies();
     }
+    
+    
 
 }

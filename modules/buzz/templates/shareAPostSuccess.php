@@ -22,7 +22,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
 <?php if ($error == 'no') { ?>
     <?php
-    include_component('buzz', 'viewPost', array('post' => $share));
+    include_component('buzz', 'viewPost', array('post' => $share,'loggedInUser' => $loggedInUser));
     
     ?>
     

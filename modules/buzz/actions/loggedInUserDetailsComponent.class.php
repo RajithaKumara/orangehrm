@@ -27,7 +27,18 @@
 class loggedInUserDetailsComponent extends sfComponent {
 
     private $employeeService;
-
+     protected $buzzCookieService;
+       
+    /**
+     * 
+     * @return BuzzCookieService
+     */
+    protected function getBuzzCookieService() {
+        if (!$this->buzzCookieService instanceof BuzzCookieService) {
+            $this->buzzCookieService = new BuzzCookieService();
+        }
+        return $this->buzzCookieService;
+    }
     /**
      * Get EmployeeService
      * @returns EmployeeService
@@ -41,6 +52,7 @@ class loggedInUserDetailsComponent extends sfComponent {
     }
 
     public function execute($request) {
+        
         $this->empNumber = $this->getLogedInEmployeeNumber();
 
 
@@ -54,24 +66,13 @@ class loggedInUserDetailsComponent extends sfComponent {
         }
     }
 
+    /**
+     * get logged In emplyee number from cookie service
+     * @return Int
+     */
     public function getLogedInEmployeeNumber() {
 
-        $cookie_name = 'buzzCookie';
-
-        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
-
-            $cookie_valuve = $this->getUser()->getEmployeeNumber();
-
-            return $cookie_valuve;
-        } elseif (isset($_COOKIE[$cookie_name])) {
-            if ($_COOKIE[$cookie_name] == 'Admin') {
-                return '';
-            }
-
-            return $_COOKIE[$cookie_name];
-        } else {
-            throw new Exception('User Didnot Have');
-        }
+        return $this->getBuzzCookieService()->getEmployeeNumber();
     }
 
 }

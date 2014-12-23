@@ -18,4 +18,4 @@
  * Please refer http://www.orangehrm.com/Files/OrangeHRM_Commercial_License.pdf for the license which includes terms and conditions on using this software.
  *
  */ 
-include_component('buzz', 'viewPost', array('post' => $share));
+include_component('buzz', 'viewPost', array('post' => $share,'loggedInUser' => $loggedInUser));
