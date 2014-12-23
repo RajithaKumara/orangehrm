@@ -80,11 +80,11 @@ class viewStatisticsComponent extends sfComponent {
     public function execute($request) {
         $this->setBuzzService(new BuzzService());
        
-        $this->noOfShares = $this->getNoOfSharesBy($this->loggedInUserId);
-        $this->noOfComments = $this->getNoOfCommentsBy($this->loggedInUserId);
-        $this->noOfShareLikesRecieved = $this->getNoOfShareLikesFor($this->loggedInUserId);
-        $this->noOfCommentLikesRecieved = $this->getNoOfCommentLikesFor($this->loggedInUserId);
-        $this->noOfCommentsRecieved = $this->getNoOfCommentsFor($this->loggedInUserId);
+        $this->noOfShares = $this->getNoOfSharesBy($this->profileUserId);
+        $this->noOfComments = $this->getNoOfCommentsBy($this->profileUserId);
+        $this->noOfShareLikesRecieved = $this->getNoOfShareLikesFor($this->profileUserId);
+        $this->noOfCommentLikesRecieved = $this->getNoOfCommentLikesFor($this->profileUserId);
+        $this->noOfCommentsRecieved = $this->getNoOfCommentsFor($this->profileUserId);
     }
     
     

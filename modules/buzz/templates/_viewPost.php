@@ -565,203 +565,207 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                           echo $commentForm['comment']->render(array('id' => "commentBoxNew_" . $postId,
                               'class' => 'commentBox', 'rows' => '1', 'style' => 'font-size: 16px; font-family: "SourceSansProLight"; border-radius: 5px 5px 5px 5px; min-width: 99.5%; padding: 10px 0 10px 10px;', 'placeholder' => $placeholderd));
                           ?>
-                    <input type="button" value="Comment"  id='<?php echo 'commentBoxNew_' . $postId; ?>' class="commentSubmitBtn submitBtn">
+                    <input type="button" value="<?php echo __("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $postId; ?>' class="commentSubmitBtn submitBtn">
                 </form>
             </div>
         </div>
 
     </div>
-    <?php if (count($commentList) > 0) { ?>
+    <?php if (count($commentList) > 0) {
+        $displayCommentList = 'block';
+    } else{
+        $displayCommentList = 'none';
+    }
+?>
 
-        <div id="commentListContainer">
-            <ul class="commentList" id='<?php echo 'commentListNew_' . $postId ?>'>
-                <?php
-                $count = 0;
-                $display = 'block';
-                foreach ($commentList as $comment) {
-                    $commentId = $comment->getId();
-                    $commentEmployeeJobTitle = $comment->getEmployeeComment()->getJobTitleName();
-                    $commentPostId = $comment->getShareId();
-                    $commentContent = $comment->getCommentText();
-                    $commentEmployeeName = $comment->getEmployeeFirstLastName();
-                    $commentEmployeeId = $comment->getEmployeeNumber();
-                    $commentNoOfLikes = $comment->getNumberOfLikes();
-                    $commentNoOfUnLikes = $comment->getNumberOfUnlikes();
-                    $isUnlikeComment = 'no';
-                    if ($comment->isUnLike($loggedInUser) == 'yes') {
-                        $isUnlikeComment = 'yes';
-                    }
-                    $commentDate = $comment->getDate();
-                    $commentTime = $comment->getTime();
-                    $isLikeComment = $comment->isLike($loggedInUser);
-                    $commentLikeEmployes = $comment->getLikedEmployeeList();
-                    $peopleLikeArray = $comment->getLikedEmployees();
+    <div id="commentListContainer" style="display: <?php echo $displayCommentList; ?>">
+        <ul class="commentList" id='<?php echo 'commentListNew_' . $postId ?>'>
+            <?php
+            $count = 0;
+            $display = 'block';
+            foreach ($commentList as $comment) {
+                $commentId = $comment->getId();
+                $commentEmployeeJobTitle = $comment->getEmployeeComment()->getJobTitleName();
+                $commentPostId = $comment->getShareId();
+                $commentContent = $comment->getCommentText();
+                $commentEmployeeName = $comment->getEmployeeFirstLastName();
+                $commentEmployeeId = $comment->getEmployeeNumber();
+                $commentNoOfLikes = $comment->getNumberOfLikes();
+                $commentNoOfUnLikes = $comment->getNumberOfUnlikes();
+                $isUnlikeComment = 'no';
+                if ($comment->isUnLike($loggedInUser) == 'yes') {
+                    $isUnlikeComment = 'yes';
+                }
+                $commentDate = $comment->getDate();
+                $commentTime = $comment->getTime();
+                $isLikeComment = $comment->isLike($loggedInUser);
+                $commentLikeEmployes = $comment->getLikedEmployeeList();
+                $peopleLikeArray = $comment->getLikedEmployees();
 //                            $peopleLikeArray = array("Aruna Tebel", "Dewmal Anicitus");
-                    if ($count >= $initialcommentCount) {
-                        $display = 'none';
-                    }
-                    $count++;
-                    ?>
+                if ($count >= $initialcommentCount) {
+                    $display = 'none';
+                }
+                $count++;
+                ?>
 
-                    <!-- start edit comment popup window-->
-                    <div class="modal hide originalPostModal"  id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
+                <!-- start edit comment popup window-->
+                <div class="modal hide originalPostModal"  id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
 
-                        <div class="modal-body editPostModal-body" >
-                            <div class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
-                                 ><img 
-                                    class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
-                                    src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
-                                    /></div>
-                            <div class="popUpContainer">
-                                <div id="postBodySecondRow" >
-                                    <h3><?php echo __('Edit your comment'); ?></h3>
-                                    <form id="frmCreateComment" method="" action="" 
-                                          enctype="multipart/form-data">
-                                              <?php
-                                              $editForm->setDefault('comment', $commentContent);
-                                              echo $editForm['comment']->render(array('id' => "editcommentBoxNew2_" . $commentId,
-                                                  'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2'));
-                                              ?>
+                    <div class="modal-body editPostModal-body" >
+                        <div class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
+                             ><img 
+                                class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
+                                src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                                /></div>
+                        <div class="popUpContainer">
+                            <div id="postBodySecondRow" >
+                                <h3><?php echo __('Edit your comment'); ?></h3>
+                                <form id="frmCreateComment" method="" action="" 
+                                      enctype="multipart/form-data">
+                                          <?php
+                                          $editForm->setDefault('comment', $commentContent);
+                                          echo $editForm['comment']->render(array('id' => "editcommentBoxNew2_" . $commentId,
+                                              'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                          ?>
 
-                                    </form>
+                                </form>
 
-                                    <div class="editCommrntPageButton">
-                                        <input type="button"  class="btnEditCommentNew" name="btnSaveDependent" id='<?php echo 'btnEditComment_' . $commentId ?>' value="<?php echo __("Save"); ?>"/>
-                                    </div>
+                                <div class="editCommrntPageButton">
+                                    <input type="button"  class="btnEditCommentNew" name="btnSaveDependent" id='<?php echo 'btnEditComment_' . $commentId ?>' value="<?php echo __("Save"); ?>"/>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- end edit comment pop up window-->
+                </div>
+                <!-- end edit comment pop up window-->
 
-                    <li id="<?php echo "commentNew_" . $commentId; ?>" style="display: <?php echo $display; ?>" class="<?php echo $commentPostId; ?>" >
-                        <div id="commentBody">
-                            <div id="commentRowOne">
-                                <div id="commentColumnOne">
-                                    <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/></a>
+                <li id="<?php echo "commentNew_" . $commentId; ?>" style="display: <?php echo $display; ?>" class="<?php echo $commentPostId; ?>" >
+                    <div id="commentBody">
+                        <div id="commentRowOne">
+                            <div id="commentColumnOne">
+                                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/></a>
+                            </div>
+                            <div id="commentColumnTwo">
+                                <div id="commentEmployeeName">
+                                    <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' ><?php echo $commentEmployeeName; ?></a>
                                 </div>
-                                <div id="commentColumnTwo">
-                                    <div id="commentEmployeeName">
-                                        <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' ><?php echo $commentEmployeeName; ?></a>
+                                <div id="commentEmployeeJobTitle">
+                                    <?php echo $commentEmployeeJobTitle; ?>
+                                </div>
+                                <div id="commentColumnTwoRowThree">
+                                    <div id="commentDate">
+                                        <?php echo $commentDate; ?>
                                     </div>
-                                    <div id="commentEmployeeJobTitle">
-                                        <?php echo $commentEmployeeJobTitle; ?>
-                                    </div>
-                                    <div id="commentColumnTwoRowThree">
-                                        <div id="commentDate">
-                                            <?php echo $commentDate; ?>
-                                        </div>
-                                        <div id="commentTime">
-                                            <?php echo $commentTime; ?>
-                                        </div>
+                                    <div id="commentTime">
+                                        <?php echo $commentTime; ?>
                                     </div>
                                 </div>
-                                <div id="commentColumnThree">
-                                    <?php if (($commentEmployeeId == $loggedInUser) || ($loggedInUser == '')) { ?>
-                                        <div id="commentOptionWidget">
-                                            <div class="dropdown commentDropDown">
-                                                <a class="commentAccount" id=<?php echo 'cnew' . $commentId ?>></a>
-                                                <div class="submenu" id=<?php echo 'submenucnew' . $commentId ?>>
-                                                    <ul class = "root">
-                                                        <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
-                                                        <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
-                                                    </ul>
-                                                </div>
+                            </div>
+                            <div id="commentColumnThree">
+                                <?php if (($commentEmployeeId == $loggedInUser) || ($loggedInUser == '')) { ?>
+                                    <div id="commentOptionWidget">
+                                        <div class="dropdown commentDropDown">
+                                            <a class="commentAccount" id=<?php echo 'cnew' . $commentId ?>></a>
+                                            <div class="submenu" id=<?php echo 'submenucnew' . $commentId ?>>
+                                                <ul class = "root">
+                                                    <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
+                                                    <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
+                                                </ul>
                                             </div>
                                         </div>
-                                    <?php } ?>
-                                </div>
-                            </div>
-
-                            <!-- start like window popup window-->
-                            <div class="modal hide" id='<?php echo 'postlikehide_' . $commentId ?>'>
-                                <div id="modalHeader" >
-                                    People who likes this comment
-                                </div>
-                                <div class="modal-body originalPostModal-body" >
-                                    <div class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>'><img 
-                                            class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>' 
-                                            src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
-                                            /></div>
-                                    <div class=""  id='<?php echo 'postlikehidebody_' . $commentId ?>'></div>
-                                </div>
-                            </div>
-                            <!-- end like window pop up window-->
-
-                            <div id="commentBodyThirdRow">
-                                <div id="noOfLikesLinknew" >
-                                    <a class="commentNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
-                                        <span id="<?php echo 'commentNoOfLikes_' . $commentId; ?>"><?php echo $commentNoOfLikes; ?></span><?php echo " " . __("people "); ?>
-                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
-                                              height="16" width="16"/><?php echo __(" this"); ?>
-                                    </a>
-                                </div>
-
-                                <div id="noOfUnLikesLinknew" >
-                                    <a class="postNoofUnLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
-                                        <span id="<?php echo 'commentNoOfUnLikes_' . $commentId; ?>"><?php echo $commentNoOfUnLikes; ?></span><?php echo " " . __("people "); ?>
-                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
-                                              height="16" width="16"/><?php echo __(" this"); ?>
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div  id="commentBodyThirdRowNew">
-                                <div class="likeCommentnew"  id="<?php echo 'commentLikebody_' . $commentId ?>" >
-                                    <?php if ($isLikeComment == 'Unlike') { ?>
-                                        <a hidden="true" href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?>" id='<?php echo 'commentLikeno_' . $commentId ?>'> 
-                                            <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
-                                                  class="<?php echo $isLikeComment . ' commentLike'; ?>" height="20" width="20"/></a>
-                                        <a href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?>" id='<?php echo 'commentLikeyes_' . $commentId ?>'> 
-                                            <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
-                                                  class="<?php echo $isLikeComment . ' commentLike'; ?>" height="20" width="20"/></a>
-                                        <?php } else { ?>
-                                        <a href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?>" id='<?php echo 'commentLikeno_' . $commentId ?>'> 
-                                            <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
-                                                  class="<?php echo $isLikeComment . ' commentLike'; ?>" height="22" width="22"/></a>
-                                        <a hidden="true" href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?>" id='<?php echo 'commentLikeyes_' . $commentId ?>'> 
-                                            <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
-                                                  class="<?php echo $isLikeComment . ' commentLike'; ?>" height="22" width="22"/></a>
-                                        <?php } ?>
-
-                                    <div class="textTopOfImageComment" id='<?php echo 'commentNoOfLiketext_' . $commentId ?>'><?php echo $commentNoOfLikes ?></div>
-                                </div>
-                                <div class="unlikeCommentnew" id='<?php echo 'commentUnLikebody_' . $commentId ?>' >
-                                    <?php if ($isUnlikeComment == 'yes') { ?>
-                                        <a hidden="true" href="javascript:void(0)" class="commentUnlike2" id=<?php echo 'commentUnLikeno_' . $commentId ?>>
-                                            <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' height="20" width="20"/></a>
-                                        <a  href="javascript:void(0)" class="commentUnlike2" id=<?php echo 'commentUnLikeyes_' . $commentId ?>>
-                                            <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' height="20" width="20"/></a>
-                                    <?php } else { ?>
-                                        <a  href="javascript:void(0)" class="commentUnlike2" id=<?php echo 'commentUnLikeno_' . $commentId ?>>
-                                            <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' height="22" width="22"/></a>
-                                        <a hidden="true" href="javascript:void(0)" class="commentUnlike2" id=<?php echo 'commentUnLikeyes_' . $commentId ?>>
-                                            <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' height="22" width="22"/></a>
-                                    <?php } ?>
-
-                                    <div class="textTopOfImageComment" id='<?php echo 'commentNoOfUnLiketext_' . $commentId ?>'><?php echo $commentNoOfUnLikes ?></div>
-                                </div>
-                            </div>
-                            <div id="commentRowTwo">
-                                <div class="commentContent"id='<?php echo 'commentContentNew_' . $commentId ?>'>
-                                    <?php echo BuzzTextParserService::parseText($commentContent); ?>
-                                </div>
-                            </div>
-
-                            <div  id="commentColumnTwo">
-
+                                    </div>
+                                <?php } ?>
                             </div>
                         </div>
-                    </li>
-                <?php } ?>
-            </ul>
-            <div class="commentLoadingBox"  id='<?php echo 'commentLoadingBox' . $postId; ?>' >
-                <div id="commentBody">
 
-                    <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="20" style="margin-left: 40%; margin-top: 15px" />
-                </div>
+                        <!-- start like window popup window-->
+                        <div class="modal hide" id='<?php echo 'postlikehide_' . $commentId ?>'>
+                            <div id="modalHeader" >
+                                People who likes this comment
+                            </div>
+                            <div class="modal-body originalPostModal-body" >
+                                <div class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>'><img 
+                                        class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>' 
+                                        src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                                        /></div>
+                                <div class=""  id='<?php echo 'postlikehidebody_' . $commentId ?>'></div>
+                            </div>
+                        </div>
+                        <!-- end like window pop up window-->
+
+                        <div id="commentBodyThirdRow">
+                            <div id="noOfLikesLinknew" >
+                                <a class="commentNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
+                                    <span id="<?php echo 'commentNoOfLikes_' . $commentId; ?>"><?php echo $commentNoOfLikes; ?></span><?php echo " " . __("people "); ?>
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
+                                          height="16" width="16"/><?php echo __(" this"); ?>
+                                </a>
+                            </div>
+
+                            <div id="noOfUnLikesLinknew" >
+                                <a class="postNoofUnLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
+                                    <span id="<?php echo 'commentNoOfUnLikes_' . $commentId; ?>"><?php echo $commentNoOfUnLikes; ?></span><?php echo " " . __("people "); ?>
+                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
+                                          height="16" width="16"/><?php echo __(" this"); ?>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div  id="commentBodyThirdRowNew">
+                            <div class="likeCommentnew"  id="<?php echo 'commentLikebody_' . $commentId ?>" >
+                                <?php if ($isLikeComment == 'Unlike') { ?>
+                                    <a hidden="true" href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?>" id='<?php echo 'commentLikeno_' . $commentId ?>'> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
+                                              class="<?php echo $isLikeComment . ' commentLike'; ?>" height="20" width="20"/></a>
+                                    <a href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?>" id='<?php echo 'commentLikeyes_' . $commentId ?>'> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
+                                              class="<?php echo $isLikeComment . ' commentLike'; ?>" height="20" width="20"/></a>
+                                    <?php } else { ?>
+                                    <a href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?>" id='<?php echo 'commentLikeno_' . $commentId ?>'> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
+                                              class="<?php echo $isLikeComment . ' commentLike'; ?>" height="22" width="22"/></a>
+                                    <a hidden="true" href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?>" id='<?php echo 'commentLikeyes_' . $commentId ?>'> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
+                                              class="<?php echo $isLikeComment . ' commentLike'; ?>" height="22" width="22"/></a>
+                                    <?php } ?>
+
+                                <div class="textTopOfImageComment" id='<?php echo 'commentNoOfLiketext_' . $commentId ?>'><?php echo $commentNoOfLikes ?></div>
+                            </div>
+                            <div class="unlikeCommentnew" id='<?php echo 'commentUnLikebody_' . $commentId ?>' >
+                                <?php if ($isUnlikeComment == 'yes') { ?>
+                                    <a hidden="true" href="javascript:void(0)" class="commentUnlike2" id=<?php echo 'commentUnLikeno_' . $commentId ?>>
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' height="20" width="20"/></a>
+                                    <a  href="javascript:void(0)" class="commentUnlike2" id=<?php echo 'commentUnLikeyes_' . $commentId ?>>
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' height="20" width="20"/></a>
+                                <?php } else { ?>
+                                    <a  href="javascript:void(0)" class="commentUnlike2" id=<?php echo 'commentUnLikeno_' . $commentId ?>>
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' height="22" width="22"/></a>
+                                    <a hidden="true" href="javascript:void(0)" class="commentUnlike2" id=<?php echo 'commentUnLikeyes_' . $commentId ?>>
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' height="22" width="22"/></a>
+                                <?php } ?>
+
+                                <div class="textTopOfImageComment" id='<?php echo 'commentNoOfUnLiketext_' . $commentId ?>'><?php echo $commentNoOfUnLikes ?></div>
+                            </div>
+                        </div>
+                        <div id="commentRowTwo">
+                            <div class="commentContent"id='<?php echo 'commentContentNew_' . $commentId ?>'>
+                                <?php echo BuzzTextParserService::parseText($commentContent); ?>
+                            </div>
+                        </div>
+
+                        <div  id="commentColumnTwo">
+
+                        </div>
+                    </div>
+                </li>
+            <?php } ?>
+        </ul>
+        <div class="commentLoadingBox"  id='<?php echo 'commentLoadingBox' . $postId; ?>' >
+            <div id="commentBody">
+
+                <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="20" style="margin-left: 40%; margin-top: 15px" />
             </div>
         </div>
-    <?php } ?>
+    </div>
     <div class="lastLoadedPost" id=<?php echo $postId; ?>></div>
 </li>

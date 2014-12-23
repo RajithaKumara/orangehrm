@@ -26,9 +26,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 <div class ="rightBarBodyAll">
     <div class="rightBarHeading" id="rightBarHeadingMl"><?php echo __("MOST LIKED POSTS"); ?>
         <img id="morePostLiked" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" 
-            height="30px" width="30px"/>
+             height="30px" width="30px"/>
         <img id="lessPostLiked" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" 
-            height="30px" width="30px"/>
+             height="30px" width="30px"/>
     </div>
     <div id="ml_componentContainer" hidden="true">
         <?php foreach ($result_ml_shares as $result) { ?>
@@ -41,15 +41,15 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 <div class ="rightBarBodyAll">
     <div class="rightBarHeading" id="rightBarHeadingMc"><?php echo __("MOST SHARED POSTS"); ?>
         <img id="moreCommentLiked" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" 
-            height="30px" width="30px"/>
+             height="30px" width="30px"/>
         <img id="lessCommentLiked" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" 
-            height="30px" width="30px"/>
+             height="30px" width="30px"/>
     </div>
     <div id="mc_componentContainer" hidden="true">
         <?php foreach ($result_mc_shares as $resultMc) { ?>
-        
+
             <?php include_component('buzz', 'viewPostPreview', array('post' => $resultMc)); ?>
-        
+
         <?php } ?>
     </div>
 </div>

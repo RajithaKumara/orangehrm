@@ -1,1 +1,1 @@
-<?php include_component('buzz', 'viewStatistics', array('loggedInUserId' => $logedInUser)); ?>
+<?php include_component('buzz', 'viewStatistics', array('profileUserId' => $profileUserId)); ?>

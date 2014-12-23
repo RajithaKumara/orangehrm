@@ -178,6 +178,25 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
                     </div>
                 </div>
             </div>
+            
+            <div class="modal hide" id='deleteConfirmationModal'>
+
+                <div class="modal-body originalPostModal-body" >
+                    <div class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>'
+                         ><img 
+                            class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>' 
+                            src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                            />
+                    </div>
+                    <div class="modal-body">
+                        <div id="maxImageErrorHeading">
+                            <?php echo __("Do you really want to delete this?"); ?>
+                        </div>
+                        <button id="delete_confirm" type="button">Yes</button>
+                        <button id="delete_discard" type="button">No</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="postLoadingBox">
@@ -220,6 +239,19 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
         <div class="loadMoreBox">
             <div id="lodingGif">
                 <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="70" />
+            </div>
+        </div>
+
+        <!-- pop up-->
+        <div class="modal hide modalPopUP"  id='<?php echo 'shareViewMoreMod3_' ?>'>
+            <div class="modal-body modalPopUP-body" >
+                <div class="hideModalPopUp" id='<?php echo 'shareViewMoreMod3_' ?>'
+                     ><img class="hideModalPopUp" id='<?php echo 'shareViewMoreMod3_' ?>' 
+                      src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                      /></div>
+
+                <div class="shareView" id='<?php echo 'shareViewContent3_' ?>'>
+                </div>
             </div>
         </div>
 

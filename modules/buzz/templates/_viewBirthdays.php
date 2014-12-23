@@ -21,7 +21,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBirthdays'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBirthdays'));
 ?>
 <div class ="rightBarBodyAll">
-    <div class="rightBarHeading" id="rightBarheadingBday"><?php echo 'UPCOMING BIRTHDAYS' ?>
+    <div class="rightBarHeading" id="rightBarheadingBday"><?php echo __('UPCOMING BIRTHDAYS'); ?>
         <img  id="lessBirthdays" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" 
               height="30px" width="30px"/>
         <img id="moreBirthdays" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" 
@@ -35,7 +35,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBirthdays'));
                 <li id="birthdayPostNull">
                     <div id="birthdayUserName">
                         <a href="#" class="name" id="name2">
-                            <?php echo _("No Birthdays For This Month"); ?>
+                            <?php echo __("No Birthdays For This Month"); ?>
                         </a>
                     </div>        
                 </li>

@@ -46,7 +46,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
         </div>
 
         <div class="inlineBlock">
-            <div id="panelfirst">Work Tel</div>
+            <div id="panelfirst">Work Tel.</div>
             <div id="panelsecond"> <?php echo $workTel; ?></div>
         </div>
 
@@ -66,7 +66,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
     <div id="panelStat">
 
         <div id="statisticsComponent">
-            <?php include_component('buzz', 'viewStatistics', array('loggedInUserId' => $logedInUser)); ?>
+            <?php include_component('buzz', 'viewStatistics', array('profileUserId' => $empNum)); ?>
         </div>
 
     </div>

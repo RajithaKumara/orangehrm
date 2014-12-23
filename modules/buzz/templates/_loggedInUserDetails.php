@@ -47,7 +47,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/loggedInUserDetails')
                 <?php echo __("PROFILE"); ?>
             </a>
             <a class="logoutLink name headerLink" href="<?php echo url_for('buzz/logOut'); ?>">
-                LOGOUT
+                <?php echo __("LOGOUT"); ?>
             </a>
         </div>
     </div>

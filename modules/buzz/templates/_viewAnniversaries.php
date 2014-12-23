@@ -21,7 +21,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewAnniversaries'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
 ?>
 <div class ="rightBarBodyAll">
-    <div class="rightBarHeading" id="rightBarHeadingAnniv"><?php echo 'UPCOMING ANNIVERSARIES' ?> 
+    <div class="rightBarHeading" id="rightBarHeadingAnniv"><?php echo __('UPCOMING ANNIVERSARIES'); ?> 
         <img id="moreAniversary" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" 
              height="30px" width="30px"/>
         <img id="lessAniversary" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" 
@@ -34,7 +34,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
                 <li id="anniversaryPostNull">
                     <div id="anniversaryUserName">
                         <a href="#" class="name" id="name2">
-                            <?php echo _("No Anniversaries For This Month"); ?>
+                            <?php echo __("No Anniversaries For This Month"); ?>
                         </a>
                     </div>
                 </li>
@@ -68,7 +68,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
                         ?>
                         </div>
                         <div id="joinedDate">
-                            <?php echo "Joined Date : " . date('Y-M-d', strtotime($employee['joined_date'])); ?>
+                            <?php echo __("Joined Date") . " : " . date('Y-M-d', strtotime($employee['joined_date'])); ?>
                         </div>
                     </div>
                 </li>

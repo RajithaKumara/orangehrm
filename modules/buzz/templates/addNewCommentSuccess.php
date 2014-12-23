@@ -18,7 +18,7 @@
  *
  */
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
-use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
+//use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 ?>
 
@@ -87,7 +87,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
                     </div>
                 </div>
                 <div id="commentColumnThree">
-                    <?php if ($commentEmployeeId == $loggedInUser) { ?>
+                    <?php if ($commentEmployeeId == $loggedInUser || ($loggedInUser == '')) { ?>
                         <div id="commentOptionWidget">
                             <div class="dropdown">
                                 <a class="commentAccount" id=<?php echo 'cnew' . $commentId ?>></a>
@@ -171,6 +171,12 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             </div>
         </div>
     </li>
+    <div class="commentLoadingBox"  id='<?php echo 'commentLoadingBox' . $postId; ?>' >
+        <div id="commentBody">
+
+            <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="20" style="margin-left: 40%; margin-top: 15px" />
+        </div>
+    </div>
 <?php } else if ($error == 'yes') { ?>
 
     <div id ='errorFirstRow'>

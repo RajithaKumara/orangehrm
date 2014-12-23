@@ -173,13 +173,13 @@ $(document).ready(function () {
 
     function refreshStatComponent() {
         isAccess();
-        var loggedInUserId = {
-            'loggedInUserId': $('#loggedInUserId').val()
+        var profileUserId = {
+            'profileUserId': $('#profileUserId').html()
         };
         $.ajax({
             url: refreshStatsURL,
             type: "POST",
-            data: loggedInUserId,
+            data: profileUserId,
             success: function (data) {
                 $('#statTable').replaceWith(data);
             }
@@ -356,8 +356,10 @@ $(document).ready(function () {
     $(".commentBox").live("keydown", function (e) {
         isAccess();
         if ((e.keyCode === 13) && !e.shiftKey) {
+            $("#commentListContainer").css("display", "block");
             var elementId = "#" + e.target.id;
             var value = $(elementId).val();
+//            alert(elementId + " " + value);
             if (trim(value).length > 1) {
                 $('#commentLoadingBox' + elementId.split("_")[1]).show();
                 //value = $.trim(value.replace(/[\t\n]+/g, ' '));
@@ -415,7 +417,7 @@ $(document).ready(function () {
     });
     $(".commentAccount").mouseup(function ()
     {
-        return false;
+        //return false;
     });
 
 
@@ -427,18 +429,27 @@ $(document).ready(function () {
     });
 
 
-
+    var idOfThePostToDelete = -1;
     $(".deleteShare").live("click", function (e) {
-        var shareId = e.target.id.split("_")[1];
+        $("#deleteConfirmationModal").modal();
+        idOfThePostToDelete = e.target.id.split("_")[1];
+    });
+
+    $("#delete_confirm").live("click", function () {
+        $("#deleteConfirmationModal").modal('hide');
         $("#loadingDataModal").modal();
         $.ajax({
-            url: shareDeleteURL + "?shareId=" + shareId,
+            url: shareDeleteURL + "?shareId=" + idOfThePostToDelete,
             success: function (data) {
-                $("#post" + shareId).hide();
+                $("#post" + idOfThePostToDelete).hide();
                 $("#loadingDataModal").modal('hide');
-
+                idOfThePostToDelete = -1;
             }
         });
+    });
+
+    $("#delete_discard").live("click", function () {
+        $("#deleteConfirmationModal").modal('hide');
     });
 
     /**
@@ -610,9 +621,9 @@ $(document).ready(function () {
             type: "POST",
             data: data,
             success: function (data) {
-                
+
                 $('#shareViewContent1_' + shareId).replaceWith(data);
-                
+
                 $("#loadingDataModal").modal('hide');
                 $('#shareViewMoreMod1_' + shareId).modal();
             }
@@ -765,6 +776,7 @@ $(document).ready(function () {
 
     function refresh() {
         var refreshTime = trim($("#refreshTime").html());
+//        var refreshTime = 3000;
 
         if (new Date().getTime() - time >= refreshTime) {
 
@@ -824,8 +836,9 @@ $(document).ready(function () {
             type: "POST",
             data: data,
             success: function (data) {
-                $('#shareViewContent3_' + postId).replaceWith(data);
-                $('#shareViewMoreMod3_' + postId).modal();
+//        alert(postId);
+                $('#shareViewContent3_').html(data);
+                $('#shareViewMoreMod3_').modal();
             }
         });
     });
