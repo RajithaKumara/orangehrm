@@ -571,12 +571,13 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
         </div>
 
     </div>
-    <?php if (count($commentList) > 0) {
+    <?php
+    if (count($commentList) > 0) {
         $displayCommentList = 'block';
-    } else{
+    } else {
         $displayCommentList = 'none';
     }
-?>
+    ?>
 
     <div id="commentListContainer" style="display: <?php echo $displayCommentList; ?>">
         <ul class="commentList" id='<?php echo 'commentListNew_' . $postId ?>'>
@@ -673,8 +674,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                <?php } ?>
+                                    <?php } ?>
+                                </div>
                             </div>
                         </div>
 
@@ -748,13 +749,13 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                             </div>
                         </div>
                         <div id="commentRowTwo">
-                            <div class="commentContent"id='<?php echo 'commentContentNew_' . $commentId ?>'>
-                                <?php echo BuzzTextParserService::parseText($commentContent); ?>
-                            </div>
+
                         </div>
 
                         <div  id="commentColumnTwo">
-
+                            <div class="commentContent"id='<?php echo 'commentContentNew_' . $commentId ?>'>
+                                <?php echo BuzzTextParserService::parseText($commentContent); ?>
+                            </div>
                         </div>
                     </div>
                 </li>

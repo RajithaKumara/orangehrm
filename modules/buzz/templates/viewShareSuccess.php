@@ -53,7 +53,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
             </div>
 
             <div id="postFirstRowColumnThree">
-                <?php if (true) { ?>
+                <?php if (($employeeID == $loggedInUser) || ($loggedInUser == '')) { ?>
                     <div id="postOptionWidget">
                         <div class="dropdown" style="margin: -70px -22px 0 0;">
                             <a class="account"  id=<?php echo $postId ?> ></a>

@@ -146,6 +146,7 @@ class viewPostComponent extends sfComponent {
         $this->originalPostContent = $this->originalPost->getText();
         $this->likeEmployeList = $post->getLikedEmployeeList();
         $this->loggedInEmployeeUserRole=  $this->getLoggedInEmployeeUserRole();
+//        echo $this->loggedInEmployeeUserRole;die;
     }
 
     /**

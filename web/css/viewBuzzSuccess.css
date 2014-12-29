@@ -365,8 +365,8 @@ textarea{
 #commentColumnThree{
     height: 45px;
     float: right;
-    margin-right: 50px;
-    margin-top: -8px;
+    margin-right: -145px;
+    margin-top: -50px;
 }
 
 #commentColumnTwo{
