@@ -71,8 +71,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                 <div id="commentBody">
                     <div id="commentRowOne">
                         <div id="commentColumnOne">
-                            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php 
-                            echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/>
+                            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/>
                         </div>
                         <div class="cmnt_prev_commentColTwo" id="commentColumnTwo">
                             <div id="commentEmployeeName">
@@ -97,10 +96,8 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                                         <a class="account" id=<?php echo 'c' . $commentId ?>></a>
                                         <div class="submenu" id=<?php echo 'submenuc' . $commentId ?>>
                                             <ul class = "root">
-                                                <li ><a href = "javascript:void(0)" class="editComment" id=<?php 
-                                                echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
-                                                <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php 
-                                                echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
+                                                <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
+                                                <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -118,24 +115,23 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                         <div hidden="true" id="commentBodyThirdRowNew">
                             <div class="likeCommentnew"  id="<?php echo 'commentLikebody_' . $commentId ?>" 
                                  style="background-color: <?php
-                            if ($isLikeComment == 'Unlike') {
-                                echo 'orange';
-                            }
-                            ?>">
+                                 if ($isLikeComment == 'Unlike') {
+                                     echo 'orange';
+                                 }
+                                 ?>">
                                 <a href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?>" 
-                                   id='<?php echo 'commentLike_' . $commentId ?>'> <img  src="<?php 
-                                   echo plugin_web_path("orangehrmBuzzPlugin", "images/like.png"); ?>" border="0" 
-                                   id='<?php echo 'commentLike_' . $commentId ?>'
-                                                                                                                                                                          class="<?php echo $isLikeComment . ' commentLike'; ?>" height="30" width="30"/></a>
+                                   id='<?php echo 'commentLike_' . $commentId ?>'> <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like.png"); ?>" border="0" 
+                                                                                      id='<?php echo 'commentLike_' . $commentId ?>'
+                                                                                      class="<?php echo $isLikeComment . ' commentLike'; ?>" height="30" width="30"/></a>
                                 <div class="textTopOfImageComment" id='<?php echo 'commentLiketext_' . $commentId ?>'>
                                     <?php echo $commentNoOfLikes ?></div>
                             </div>
                             <div class="unlikeCommentnew" id='<?php echo 'commentUnLikebody_' . $commentId ?>' 
                                  style="background-color: <?php
-                            if ($isUnlike == 'yes') {
-                                echo 'red';
-                            }
-                            ?>">
+                                 if ($isUnlike == 'yes') {
+                                     echo 'red';
+                                 }
+                                 ?>">
                                 <a href="javascript:void(0)" class="commentUnlike2" 
                                    id=<?php echo 'commentUnlike_' . $commentId ?>> 
                                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/un-like.png"); ?>" 

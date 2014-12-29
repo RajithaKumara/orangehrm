@@ -681,7 +681,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         <!-- start like window popup window-->
                         <div class="modal hide" id='<?php echo 'postlikehide_' . $commentId ?>'>
                             <div id="modalHeader" >
-                                People who likes this comment
+                                <?php echo __("People who likes this comment"); ?>
                             </div>
                             <div class="modal-body originalPostModal-body" >
                                 <div class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>'><img 
@@ -696,7 +696,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         <div id="commentBodyThirdRow">
                             <div id="noOfLikesLinknew" >
                                 <a class="commentNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
-                                    <span id="<?php echo 'commentNoOfLikes_' . $commentId; ?>"><?php echo $commentNoOfLikes; ?></span><?php echo " " . __("people "); ?>
+                                    <span id="<?php echo 'commentNoOfLikes_' . $commentId; ?>"><?php echo $commentNoOfLikes; ?></span>
                                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                                           height="16" width="16"/><?php echo __(" this"); ?>
                                 </a>
@@ -704,7 +704,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
                             <div id="noOfUnLikesLinknew" >
                                 <a class="postNoofUnLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
-                                    <span id="<?php echo 'commentNoOfUnLikes_' . $commentId; ?>"><?php echo $commentNoOfUnLikes; ?></span><?php echo " " . __("people "); ?>
+                                    <span id="<?php echo 'commentNoOfUnLikes_' . $commentId; ?>"><?php echo $commentNoOfUnLikes; ?></span>
                                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                                           height="16" width="16"/><?php echo __(" this"); ?>
                                 </a>

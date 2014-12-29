@@ -94,6 +94,10 @@
     border-radius: 0 0 8px 8px;
 }
 
+#employeeStatus{
+    font-size: 13px;
+}
+
 #panelJob,#flipJob
 {
     width: 100%;

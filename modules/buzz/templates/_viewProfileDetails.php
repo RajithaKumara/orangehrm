@@ -22,6 +22,13 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
 
         <img id="moreDetails" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" height="30px" width="30px"/>
 
+        <div id="employeeStatus">
+            <?php
+            if ($isTerminated == "TERMINATED") {
+                echo "(" . __("Past Employee") . ")";
+            }
+            ?>
+        </div>
     </div>
     <div id="panelPersonal">
 
@@ -57,7 +64,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
     </div>
 </div>
 <div class="rightBarBodyAllProf">
-    <div id="flipStat"><?php echo strtoupper($firstName) . '\'S STATISTICS' ?>
+    <div id="flipStat"><?php echo strtoupper($firstName) . '\'S ' . __('STATISTICS'); ?>
         <img  id="lessStat" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>"  height="30px" width="30px"/>
 
         <img id="moreStat" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>"  height="30px" width="30px"/>

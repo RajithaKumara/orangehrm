@@ -26,7 +26,7 @@ class viewProfileDetailsComponent extends sfComponent {
             $this->gender = $this->employee->getGenderAsString();
             $this->workEmail = $this->employee->getEmpWorkEmail();
             $this->workTel = $this->employee->getEmpWorkTelephone();
-
+            $this->isTerminated = $this->employee->getState();
             $this->locations = $this->employee->getLocationAsString();
         } else {
             $this->fullName = 'Admin';

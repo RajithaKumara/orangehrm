@@ -370,7 +370,7 @@ textarea{
 }
 
 #commentColumnTwo{
-    width: 70%;
+    width: 60%;
     margin-left: -2px;
     vertical-align: top;
 }
@@ -720,3 +720,15 @@ input[type="button"]{
     height: 120px;
     overflow-y: hidden;
 }
+
+.popupCommentList li #commentBody #commentBodyThirdRow{
+    display: none;
+}
+
+.popupCommentList li #commentBody #commentBodyThirdRowNew{
+    //display: none;
+}
+
+/*#photoPage #postBody #postBodyFirstRow #postFirstRowColumnThree {
+    margin-left: 375px;
+}*/
