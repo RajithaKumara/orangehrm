@@ -36,7 +36,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/loggedInUserDetails')
         <div id="userName">
             <a class="name headerEmpName" href="<?php echo url_for("buzz/viewProfile?empNumber=" . $empNumber); ?>"><?php echo $name; ?></a>
         </div>
-        <div id="companyPosition" style="height: 15px;">
+        <div id="companyPosition" >
             <?php echo $jobtitle; ?>
         </div>
         <div id="links">

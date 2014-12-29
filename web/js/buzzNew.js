@@ -86,7 +86,7 @@ $(document).ready(function () {
         $.ajax({
             url: addNewVideo,
             type: "POST",
-            data: data,
+            data: $('#frmSaveVideo').serialize(),
             success: function (data) {
                 $('#tempVideoBlock').remove();
                 $('#buzz').prepend(data);
@@ -147,7 +147,10 @@ $(document).ready(function () {
                                         $.each(data.responseData.feed.entries, function (i, e) {
                                             if (char === 1) {
                                                 $("#linkTitle").html(e.title);
+                                                $("#createPost_linkTitle").val(e.title);
                                                 $("#linkText").html(e.contentSnippet);
+                                                $("#createPost_linkText").val(e.contentSnippet);
+                                                $("#createPost_linkAddress").val(url);
                                                 $("#postLinkData").show();
                                                 $("#postLinkState").html('yes');
                                                 char = 2;
@@ -176,7 +179,6 @@ $(document).ready(function () {
         var id2 = "commentUnLikebody_" + trim(idValue.split("_")[1]);
         var div2 = document.getElementById(id2);
         var likeLabelId = "#commentNoOfLikes_" + idValue.split("_")[1];
-        //var existingLikes = parseInt($(likeLabelId).html().split(" ")[0]);
         var action = "like";
         $.getJSON(commentLikeURL + "?commentId=" + idValue.split("_")[1] + "&likeAction=" + action,
                 {get_param: 'value'}, function (data) {
@@ -186,8 +188,6 @@ $(document).ready(function () {
 
                 $('#commentNoOfLiketext_' + idValue.split("_")[1]).html(likes);
                 $("#commentNoOfLikes_" + idValue.split("_")[1]).html(likes);
-                //alert($('#commentLiketext_' + idValue.split("_")[1]).html());
-                //div.style.backgroundColor = 'orange';
                 $("#commentLikeyes_" + idValue.split("_")[1]).show();
                 $("#commentLikeno_" + idValue.split("_")[1]).hide();
             }
@@ -199,7 +199,6 @@ $(document).ready(function () {
                 $("#commentUnLikeno_" + idValue.split("_")[1]).show();
                 $("#commentUnLikeyes_" + idValue.split("_")[1]).hide();
             }
-            // div2.style.backgroundColor = 'black';
         });
     });
     $(".commentUnlike2").live("click", function (e) {
@@ -211,7 +210,6 @@ $(document).ready(function () {
         var id2 = "commentUnLikebody_" + trim(idValue.split("_")[1]);
         var div2 = document.getElementById(id2);
         var likeLabelId = "#commentNoOfLikes_" + idValue.split("_")[1];
-        //var existingLikes = parseInt($(likeLabelId).html().split(" ")[0]);
         var action = "unlike";
         $.getJSON(commentLikeURL + "?commentId=" + idValue.split("_")[1] + "&likeAction=" + action,
                 {get_param: 'value'}, function (data) {
@@ -231,8 +229,6 @@ $(document).ready(function () {
                 $("#commentUnLikeyes_" + idValue.split("_")[1]).show();
                 $("#commentUnLikeno_" + idValue.split("_")[1]).hide();
             }
-            //div2.style.backgroundColor = 'red';
-            //div.style.backgroundColor = 'black';
         });
     });
     var modalVisible = false;
@@ -240,25 +236,6 @@ $(document).ready(function () {
         $("#postLinkData").hide();
         $("#postLinkState").html('no');
     });
-//            $(".originalPostView").live("click", function (e) {
-//                var idValue = e.target.id;
-//                var shareId = idValue.split("_")[1];
-//                //var postId = idValue.split("_")[2];
-//                modalVisible = true;
-//                var data = {
-//                    'postId': postId,
-//                };
-//                $.ajax({
-//                    url: viewOriginalPost,
-//                    type: "POST",
-//                    data: data,
-//                    success: function (data) {
-//
-//                        $('#postViewContent_' + shareId).replaceWith(data);
-//                        $('#postViewOriginal_' + shareId).modal();
-//                    }
-//                });
-//            });
     function isAccess() {
         $.getJSON(getAccessUrl, {get_param: 'value'}, function (data) {
 

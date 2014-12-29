@@ -29,5 +29,4 @@ class viewAnniversariesComponent extends sfComponent{
         
     }
 
-//put your code here
 }

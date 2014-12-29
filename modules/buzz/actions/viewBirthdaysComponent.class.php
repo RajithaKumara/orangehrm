@@ -26,7 +26,6 @@
  */
 class viewBirthdaysComponent extends sfComponent {
 
-    //protected $employeeList;
     protected $buzzService;
 
     public function execute($request) {

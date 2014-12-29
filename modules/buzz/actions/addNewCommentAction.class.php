@@ -27,7 +27,7 @@
 class addNewCommentAction extends BaseBuzzAction {
 
     /**
-     * 
+     * function to get edit form
      * @return CommentForm
      */
     private function getEditForm() {
@@ -43,11 +43,12 @@ class addNewCommentAction extends BaseBuzzAction {
             $this->commentText = $request->getParameter('commentText');
             $this->shareId = $request->getParameter('shareId');
             $this->error = 'no';
-
+            $this->loggedInEmployeeUserRole = $this->getLoggedInEmployeeUserRole();
             try {
 
                 $this->editForm = $this->getEditForm();
-                $this->saveComment();
+                $comment = $this->setComment();
+                $this->saveComment($comment);
             } catch (Exception $ex) {
                 $this->error = 'yes';
                 $this->getUser()->setFlash('error', __("This share has been deleted or you do not have permission to perform this action"));
@@ -61,8 +62,7 @@ class addNewCommentAction extends BaseBuzzAction {
      * save comment to the database
      * @return Comment
      */
-    public function saveComment() {
-        $comment = $this->setComment();
+    public function saveComment($comment) {
         $this->comment = $this->getBuzzService()->saveCommentShare($comment);
         $this->commentPostId = $this->comment->getShareId();
         $this->commentEmployeeName = $this->comment->getEmployeeFirstLastName();
@@ -73,8 +73,6 @@ class addNewCommentAction extends BaseBuzzAction {
         $this->commentNoOfLikes = $this->comment->getNumberOfLikes();
         $this->isLikeComment = $this->comment->isLike($this->getLogedInEmployeeNumber());
         $this->commentEmployeeId = $this->getLogedInEmployeeNumber();
-
-
         $this->commentNoOfLikes = $this->comment->getNumberOfLikes();
         $this->commentNoOfUnLikes = $this->comment->getNumberOfUnlikes();
         if ($this->comment->isUnLike($this->getLogedInEmployeeNumber())) {

@@ -28,8 +28,6 @@ class viewPostComponent extends sfComponent {
         return $this->buzzCookieService;
     }
 
-   
-
     /**
      * 
      * @param type $buzzService
@@ -147,6 +145,7 @@ class viewPostComponent extends sfComponent {
         $this->originalPostTime = $this->originalPost->getTime();
         $this->originalPostContent = $this->originalPost->getText();
         $this->likeEmployeList = $post->getLikedEmployeeList();
+        $this->loggedInEmployeeUserRole=  $this->getLoggedInEmployeeUserRole();
     }
 
     /**
@@ -161,6 +160,14 @@ class viewPostComponent extends sfComponent {
         $this->refeshTime = $buzzConfigService->getRefreshTime();
         $this->postLenth = $buzzConfigService->getBuzzPostTextLenth();
         $this->postLines = $buzzConfigService->getBuzzPostTextLines();
+    }
+    
+     /**
+     * get loged in employee user role
+     * @return type
+     */
+    public function getLoggedInEmployeeUserRole(){
+        return $this->getBuzzCookieService()->getEmployeeUserRole();
     }
 
 }

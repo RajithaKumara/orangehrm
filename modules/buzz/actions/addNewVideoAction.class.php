@@ -42,8 +42,8 @@ class addNewVideoAction extends BaseBuzzAction {
         }
         return $this->videoForm;
     }
-    
-     /**
+
+    /**
      * 
      * @return CommentForm
      */
@@ -59,63 +59,31 @@ class addNewVideoAction extends BaseBuzzAction {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->url = $request->getParameter('url');
             $this->action = $request->getParameter('actions');
-
+            $this->videoForm = $this->getVideoForm();
             if ($this->action == 'paste') {
-                $this->isSuccess = 'yes';
+                $this->isSuccessfullyPastedUrl = true;
                 $this->videoFeedUrl = $this->getVideoFeedLinkFromUrl($this->url);
                 if ($this->videoFeedUrl === 'not') {
-                    $this->isSuccess = 'notVideo';
+                    $this->isSuccessfullyPastedUrl = false;
                 }
-                $this->videoForm = $this->getVideoForm();
             } else {
-                $this->isSuccess = 'notPosted';
-                $this->videoFeedUrl = $this->url;
-                $this->text = $request->getParameter('text');
-
-                $post = $this->savePost($this->getLogedInEmployeeNumber(), $this->text);
-                $this->post = $this->saveShare($post);
-                $this->saveVideo($post);
-                $this->setShare($this->post);
-                $this->isSuccess = 'posted';
-                $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                $this->isSuccessFullyPosted = false;
+                $this->videoForm->bind($request->getParameter($this->videoForm->getName()));
+                if ($this->videoForm->isValid()) {
+                    $this->postSaved = $this->videoForm->save($this->loggedInUser);
+                    $this->isSuccessFullyPosted = true;
+                }
             }
-            $this->commentForm = $this->getCommentForm();
-            $this->editForm = $this->getEditForm();
         } catch (Exception $ex) {
-            $this->error = 'redirect';
+            
         }
     }
 
     /**
-     * set parameters share to view
-     * @param Post $post
-     * @return share
+     * function to check url is video url and get feed url from it
+     * @param type $url
+     * @return string
      */
-    public function setShare($share) {
-
-        $this->postId = $share->getId();
-        $this->originalPostId = $share->getPostId();
-        $this->postEmployeeName = $share->getEmployeeFirstLastName();
-        $this->employeeId = $share->getEmployeeNumber();
-        $this->postDate = $share->getDate();
-        $this->postTime = $share->getTime();
-        $this->noOfLikes = $share->getNumberOfLikes();
-        $this->isLike = $share->isLike($this->getLogedInEmployeeNumber());
-        $this->postContent = $share->getPostShared()->getText();
-    }
-
-    /**
-     * this is function to save Video to database
-     * @param type $post
-     */
-    private function saveVideo($post) {
-        $link = new Link();
-        $link->setType(1);
-        $link->setLink($this->videoFeedUrl);
-        $link->setPostId($post->getId());
-        $this->getBuzzService()->saveLink($link);
-    }
-
     private function getVideoFeedLinkFromUrl($url) {
         $temp = split("youtu.be/", $url);
 
@@ -191,54 +159,4 @@ class addNewVideoAction extends BaseBuzzAction {
         return 'not';
     }
 
-    /**
-     * save post to the database
-     * @return Post
-     */
-    public function savePost($userId, $text) {
-        $post = new Post();
-        $post->setEmployeeNumber($userId);
-        $post->setText($text);
-        $post->setPostTime(date("Y-m-d H:i:s"));
-
-        return $this->getBuzzService()->savePost($post);
-    }
-
-    /**
-     * 
-     * @param type $link
-     * @return type
-     */
-    private function saveLink($link) {
-        return $this->getBuzzService()->saveLink($link);
-    }
-
-    /**
-     * save share to the database
-     * @param Post $post
-     * @return share
-     */
-    public function saveShare($post) {
-        $share = $this->setShares($post);
-        return $this->getBuzzService()->saveShare($share);
-    }
-
-    /**
-     * set share details
-     * @param post $post
-     * @return Share
-     */
-    public function setShares($post) {
-        $share = new Share();
-        $share->setPostId($post->getId());
-        $share->setEmployeeNumber($post->getEmployeeNumber());
-        $share->setNumberOfComments(0);
-        $share->setNumberOfLikes(0);
-        $share->setNumberOfUnlikes(0);
-        $share->setShareTime(date("Y-m-d H:i:s"));
-        $share->setType(0);
-        return $share;
-    }
-
-//put your code here
 }

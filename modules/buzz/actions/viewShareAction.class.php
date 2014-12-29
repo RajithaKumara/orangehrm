@@ -94,9 +94,7 @@ class viewShareAction extends BaseBuzzAction {
         $this->commentList = $post->getComment();
         $this->postEmployeeName = $post->getEmployeeFirstLastName();
         $this->isLike = $post->isLike($this->loggedInUser);
-        if ($post->isUnLike($this->loggedInUser) == 'yes') {
-            $this->isUnlike = 'yes';
-        }
+        $this->isUnlike = $post->isUnLike($this->loggedInUser);
         $this->originalPost = $post->getPostShared();
         $this->originalPostId = $this->originalPost->getId();
         $this->originalPostEmpNumber = $this->originalPost->getEmployeeNumber();

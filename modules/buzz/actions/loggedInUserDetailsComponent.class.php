@@ -27,8 +27,8 @@
 class loggedInUserDetailsComponent extends sfComponent {
 
     private $employeeService;
-     protected $buzzCookieService;
-       
+    protected $buzzCookieService;
+
     /**
      * 
      * @return BuzzCookieService
@@ -39,6 +39,7 @@ class loggedInUserDetailsComponent extends sfComponent {
         }
         return $this->buzzCookieService;
     }
+
     /**
      * Get EmployeeService
      * @returns EmployeeService
@@ -51,10 +52,21 @@ class loggedInUserDetailsComponent extends sfComponent {
         return $this->employeeService;
     }
 
-    public function execute($request) {
-        
-        $this->empNumber = $this->getLogedInEmployeeNumber();
+    /**
+     * get logged In emplyee number from cookie service
+     * @return Int
+     */
+    public function getLogedInEmployeeNumber() {
+        $employeeNumber=$this->getBuzzCookieService()->getEmployeeNumber();
+        if(UserRoleManagerFactory::getUserRoleManager()->getUser() != null){
+            $employeeNumber = $this->getUser()->getAttribute('auth.empNumber');
+        }
+        return $employeeNumber;
+    }
 
+    public function execute($request) {
+
+        $this->empNumber = $this->getLogedInEmployeeNumber();
 
         $this->employee = $this->getEmployeeService()->getEmployee($this->empNumber);
         if ($this->employee) {
@@ -64,15 +76,6 @@ class loggedInUserDetailsComponent extends sfComponent {
             $this->name = 'Admin';
             $this->jobtitle = '  ';
         }
-    }
-
-    /**
-     * get logged In emplyee number from cookie service
-     * @return Int
-     */
-    public function getLogedInEmployeeNumber() {
-
-        return $this->getBuzzCookieService()->getEmployeeNumber();
     }
 
 }

@@ -33,11 +33,22 @@ class CreatePostForm extends sfForm {
      */
     public function configure() {
         $textArea = new sfWidgetFormTextarea();
-        $textArea->setAttribute('placeholder', 'What\'s on your mind?');
-        $textArea->setAttribute('rows', '2');
-        $textArea->setAttribute('cols', '40');
+        $textArea->setAttributes(array('placeholder' => 'What\'s on your mind?', 'rows' => '2', 'cols' => '40'));
+
+        $linkAddress = new sfWidgetFormTextarea();
+        $linkAddress->setAttribute('hidden', 'hidden');
+
+        $linkTitle = new sfWidgetFormTextarea();
+        $linkTitle->setAttribute('hidden', 'hidden');
+
+        $linkText = new sfWidgetFormTextarea();
+        $linkText->setAttribute('hidden', 'hidden');
+
         $this->widgets = array(
-            'content' => $textArea
+            'content' => $textArea,
+            'linkAddress' => $linkAddress,
+            'linkTitle' => $linkTitle,
+            'linkText' => $linkText
         );
         $this->setWidgets($this->widgets);
         $this->widgetSchema->setNameFormat('createPost[%s]');
@@ -50,7 +61,10 @@ class CreatePostForm extends sfForm {
      */
     public function assignValidators() {
         $this->setValidators(array(
-            'content' => new sfValidatorString(array('required' => true))
+            'content' => new sfValidatorString(array('required' => true)),
+            'linkAddress' => new sfValidatorString(array('required' => false)),
+            'linkTitle' => new sfValidatorString(array('required' => false)),
+            'linkText' => new sfValidatorString(array('required' => false))
         ));
     }
 
@@ -72,7 +86,10 @@ class CreatePostForm extends sfForm {
     protected function getFormLabels() {
 
         $labels = array(
-            'content' => __(' ')
+            'content' => __(' '),
+            'linkAddress' => __(' '),
+            'linkTitle' => __(' '),
+            'linkText' => __(' ')
         );
         return $labels;
     }
@@ -82,20 +99,24 @@ class CreatePostForm extends sfForm {
      * @param int $logeInUserId
      * @return Share
      */
-    public function save($logeInUserId, $text) {
-        $post = $this->savePost($logeInUserId, $text);
-
-        return $this->saveShare($post);
+    public function save($logeInUserId) {
+        $post = $this->savePost($logeInUserId);
+        $share = $this->saveShare($post);
+        if (strlen($this->getValue('linkAddress')) > 0) {
+            $link = $this->setLink($share);
+            $this->saveLink($link);
+        }
+        return $share;
     }
 
     /**
      * save post to the database
      * @return Post
      */
-    public function savePost($userId, $text) {
+    public function savePost($userId) {
         $post = new Post();
         $post->setEmployeeNumber($userId);
-        $post->setText($text);
+        $post->setText($this->getValue('content'));
         $post->setPostTime(date("Y-m-d H:i:s"));
 
         return $this->getBuzzService()->savePost($post);
@@ -127,7 +148,32 @@ class CreatePostForm extends sfForm {
         $share->setType(0);
         return $share;
     }
-    
-    
+
+    /**
+     * create link 
+     * @param type $share
+     * @param type $postLinkAddress
+     * @param type $linkTitle
+     * @param type $linkText
+     * @return \Link
+     */
+    private function setLink($share) {
+        $link = new Link();
+        $link->setPostId($share->getPostId());
+        $link->setLink($this->getValue('linkAddress'));
+        $link->setType(0);
+        $link->setTitle($this->getValue('linkTitle'));
+        $link->setDescription($this->getValue('linkText'));
+        return $link;
+    }
+
+    /**
+     * save links to database
+     * @param type $link
+     * @return type
+     */
+    private function saveLink($link) {
+        return $this->getBuzzService()->saveLink($link);
+    }
 
 }

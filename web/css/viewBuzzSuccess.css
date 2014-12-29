@@ -202,6 +202,13 @@ textarea{
     margin-bottom: 10px;
     font-size: 16px;
 }
+#postEmloyeeJobTitlePopUp{
+    font-family: 'SourceSansProLight';
+    margin-bottom: 0px;
+    margin-top: -10px;
+    font-size: 16px;
+    
+}
 
 /*Name hide row*/
 #postFirstRowColumnTwohide{

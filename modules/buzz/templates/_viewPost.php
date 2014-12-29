@@ -37,7 +37,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
             </div>
 
             <div id="postFirstRowColumnThree">
-                <?php if (($employeeID == $loggedInUser) || ($loggedInUser == '')) { ?>
+                <?php if (($employeeID == $loggedInUser) || ($loggedInEmployeeUserRole == 'Admin')) { ?>
                     <div id="postOptionWidget">
                         <div class="dropdown">
                             <a class="account" id=<?php echo $postId ?>></a>
@@ -660,17 +660,17 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                         <?php echo $commentTime; ?>
                                     </div>
                                 </div>
-                            </div>
-                            <div id="commentColumnThree">
-                                <?php if (($commentEmployeeId == $loggedInUser) || ($loggedInUser == '')) { ?>
-                                    <div id="commentOptionWidget">
-                                        <div class="dropdown commentDropDown">
-                                            <a class="commentAccount" id=<?php echo 'cnew' . $commentId ?>></a>
-                                            <div class="submenu" id=<?php echo 'submenucnew' . $commentId ?>>
-                                                <ul class = "root">
-                                                    <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
-                                                    <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
-                                                </ul>
+                                <div id="commentColumnThree">
+                                    <?php if (($commentEmployeeId == $loggedInUser) || ($loggedInEmployeeUserRole == 'Admin')) { ?>
+                                        <div id="commentOptionWidget">
+                                            <div class="dropdown commentDropDown">
+                                                <a class="commentAccount" id=<?php echo 'cnew' . $commentId ?>></a>
+                                                <div class="submenu" id=<?php echo 'submenucnew' . $commentId ?>>
+                                                    <ul class = "root">
+                                                        <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
+                                                        <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

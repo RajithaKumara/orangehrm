@@ -17,8 +17,8 @@ class getLogedToBuzzAction extends BaseBuzzAction {
 
     public function execute($request) {
         try {
-            $this->loggedInEmployeeNum = $this->getUser()->getEmployeeNumber();
-            $this->getLogedInEmployeeNumber();
+            $this->loggedInEmployeeNum = $this->getLogedInEmployeeNumber();
+
             $arr = array('state' => 'loged', 'empNum' => $this->loggedInEmployeeNum);
         } catch (Exception $ex) {
             $arr = array('state' => 'refresh');

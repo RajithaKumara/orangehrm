@@ -95,10 +95,10 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
                             <div id="postLinkState" hidden="true">not</div>
                             <div id="postLinkAddress" hidden="true"></div>
                             <p>
-                                <a id="linkTitle" >titles</a> 
+                                <a id="linkTitle" ></a> 
                             </p>
                             <p>
-                            <div id="linkText">details</div>
+                            <div id="linkText"></div>
                             </p>
                         </div>
                     </div>
@@ -210,7 +210,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
 
             <?php
             foreach ($postList as $post) {
-                include_component('buzz', 'viewPost', array('post' => $post,'loggedInUser' => $loggedInUser));
+                include_component('buzz', 'viewPost', array('post' => $post, 'loggedInUser' => $loggedInUser));
             }
             ?> 
         </ul>

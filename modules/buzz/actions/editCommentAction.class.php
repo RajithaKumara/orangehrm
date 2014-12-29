@@ -53,7 +53,7 @@ class editCommentAction extends BaseBuzzAction {
      * edit the comment conntent
      * @return Comment
      */
-    public function editComment($comment) {
+    private function editComment($comment) {
 
         if ($comment->getEmployeeNumber() == $this->getLogedInEmployeeNumber()) {
             $comment = $this->saveComment($comment);
@@ -66,7 +66,7 @@ class editCommentAction extends BaseBuzzAction {
      * @param comment $comment
      * @return Comment
      */
-    public function saveComment($comment) {
+    private function saveComment($comment) {
         $comment->setCommentText($this->editedContend);
         return $this->getBuzzService()->saveCommentShare($comment);
     }

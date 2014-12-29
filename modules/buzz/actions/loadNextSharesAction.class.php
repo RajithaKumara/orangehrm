@@ -28,7 +28,7 @@ class loadNextSharesAction extends BaseBuzzAction {
 
     /**
      * 
-     * @param AddTaskForm $form
+     * @param PostForm $form
      */
     private function setPostForm($form) {
         $this->postForm = $form;
@@ -36,7 +36,7 @@ class loadNextSharesAction extends BaseBuzzAction {
 
     /**
      * 
-     * @return AddTaskForm
+     * @return CreatePostForm
      */
     private function getPostForm() {
         if (!($this->postForm instanceof CreatePostForm)) {
@@ -47,7 +47,7 @@ class loadNextSharesAction extends BaseBuzzAction {
 
     /**
      * 
-     * @param AddTaskForm $form
+     * @param commentForm $form
      */
     private function setCommentForm($form) {
         $this->commentForm = $form;
@@ -55,7 +55,7 @@ class loadNextSharesAction extends BaseBuzzAction {
 
     /**
      * 
-     * @return AddTaskForm
+     * @return commentForm
      */
     private function getCommentForm() {
         if (!($this->commentForm instanceof CommentForm)) {
@@ -66,7 +66,7 @@ class loadNextSharesAction extends BaseBuzzAction {
     
     /**
      * 
-     * @return AddTaskForm
+     * @return commentForm
      */
     private function getEditForm() {
         if (!($this->editForm instanceof CommentForm)) {

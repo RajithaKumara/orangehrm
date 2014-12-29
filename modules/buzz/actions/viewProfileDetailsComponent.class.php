@@ -20,8 +20,8 @@ class viewProfileDetailsComponent extends sfComponent {
             $this->firstName = $this->employee->getFirstName();
             $this->fullName = $this->employee->getFirstName() . " " . $this->employee->getLastName();
             $this->jobtitle = $this->employee->getJobTitleName();
-            if($this->employee->getEmpBirthday()!=null){
-            $this->birthDay = date('M-d', strtotime($this->employee->getEmpBirthday()));
+            if ($this->employee->getEmpBirthday() != null) {
+                $this->birthDay = date('M-d', strtotime($this->employee->getEmpBirthday()));
             }
             $this->gender = $this->employee->getGenderAsString();
             $this->workEmail = $this->employee->getEmpWorkEmail();
@@ -34,5 +34,4 @@ class viewProfileDetailsComponent extends sfComponent {
         }
     }
 
-//put your code here
 }

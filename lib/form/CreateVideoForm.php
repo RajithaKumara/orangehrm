@@ -18,8 +18,6 @@
  * Please refer http://www.orangehrm.com/Files/OrangeHRM_Commercial_License.pdf for the license which includes terms and conditions on using this software.
  *
  */
-
-
 class CreateVideoForm extends sfForm {
 
     private $widgets;
@@ -31,8 +29,13 @@ class CreateVideoForm extends sfForm {
         $textArea = new sfWidgetFormTextarea();
         $textArea->setAttribute('placeholder', 'Past Video Url');
         $textArea->setAttribute('rows', '1');
+
+        $linkAddress = new sfWidgetFormTextarea();
+        $linkAddress->setAttribute('hidden', 'hidden');
+
         $this->widgets = array(
-            'content' => $textArea
+            'content' => $textArea,
+            'linkAddress' => $linkAddress
         );
         $this->setWidgets($this->widgets);
         $this->widgetSchema->setNameFormat('createVideo[%s]');
@@ -45,7 +48,8 @@ class CreateVideoForm extends sfForm {
      */
     public function assignValidators() {
         $this->setValidators(array(
-            'content' => new sfValidatorString(array('required' => true))
+            'content' => new sfValidatorString(array('required' => true)),
+            'linkAddress' => new sfValidatorString(array('required' => true))
         ));
     }
 
@@ -67,7 +71,8 @@ class CreateVideoForm extends sfForm {
     protected function getFormLabels() {
 
         $labels = array(
-            'content' => __(' ')
+            'content' => __(' '),
+            'linkAddress' => __(' ')
         );
         return $labels;
     }
@@ -77,20 +82,24 @@ class CreateVideoForm extends sfForm {
      * @param int $logeInUserId
      * @return Share
      */
-    public function save($logeInUserId, $text) {
-        $post = $this->savePost($logeInUserId, $text);
-
-        return $this->saveShare($post);
+    public function save($logeInUserId) {
+        $post = $this->savePost($logeInUserId);
+        $share = $this->saveShare($post);
+        if (strlen($this->getValue('linkAddress')) > 0) {
+            $link = $this->setLink($share);
+            $this->saveLink($link);
+        }
+        return $share;
     }
 
     /**
      * save post to the database
      * @return Post
      */
-    public function savePost($userId, $text) {
+    public function savePost($userId) {
         $post = new Post();
         $post->setEmployeeNumber($userId);
-        $post->setText($text);
+        $post->setText($this->getValue('content'));
         $post->setPostTime(date("Y-m-d H:i:s"));
 
         return $this->getBuzzService()->savePost($post);
@@ -117,11 +126,35 @@ class CreateVideoForm extends sfForm {
         $share->setEmployeeNumber($post->getEmployeeNumber());
         $share->setNumberOfComments(0);
         $share->setNumberOfLikes(0);
+        $share->setNumberOfUnlikes(0);
         $share->setShareTime(date("Y-m-d H:i:s"));
         $share->setType(0);
         return $share;
     }
-    
-   
+
+    /**
+     * create link 
+     * @param type $share
+     * @param type $postLinkAddress
+     * @param type $linkTitle
+     * @param type $linkText
+     * @return \Link
+     */
+    private function setLink($share) {
+        $link = new Link();
+        $link->setPostId($share->getPostId());
+        $link->setLink($this->getValue('linkAddress'));
+        $link->setType(1);
+        return $link;
+    }
+
+    /**
+     * save links to database
+     * @param type $link
+     * @return type
+     */
+    private function saveLink($link) {
+        return $this->getBuzzService()->saveLink($link);
+    }
 
 }

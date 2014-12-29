@@ -25,13 +25,13 @@
  * @author aruna
  */
 class deleteCommentAction extends BaseBuzzAction {
-    
+
     /**
      * get Comment By It Id
      * @param type $commentId
      * @return type
      */
-    private function getComment($commentId){
+    private function getComment($commentId) {
         return $this->getBuzzService()->getCommentById($commentId);
     }
 
@@ -39,8 +39,11 @@ class deleteCommentAction extends BaseBuzzAction {
         try {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->commentId = $request->getParameter('commentId');
-            $comment= $this->getComment($this->commentId );
-            $this->deleteComment($comment);
+            $comment = $this->getComment($this->commentId);
+            $commentedEmployeeNumber = $comment->getEmployeeNumber();
+            if ($commentedEmployeeNumber == $this->loggedInUser || $this->getLoggedInEmployeeUserRole() == 'Admin') {
+                $this->deleteComment($comment);
+            }
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
@@ -51,8 +54,8 @@ class deleteCommentAction extends BaseBuzzAction {
     /**
      * delete comment 
      */
-    public function deleteComment($comment) {      
-            $this->getBuzzService()->deleteCommentForShare($comment);
+    private function deleteComment($comment) {
+        $this->getBuzzService()->deleteCommentForShare($comment);
     }
 
 }

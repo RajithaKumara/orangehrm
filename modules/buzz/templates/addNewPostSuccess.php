@@ -21,14 +21,12 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
 <!--A single post-->
-<?php if ($isSuccess == 'yes') { ?>
-    <div id="redirectState" hidden="true">no</div>
-
-
-    <?php include_component('buzz', 'viewPost', array('post' => $post,'loggedInUser' => $loggedInUser));
+<?php if ($isSuccessfullyAddedPost) { ?>
+    <?php
+    include_component('buzz', 'viewPost', array('post' => $postSaved, 'loggedInUser' => $loggedInUser));
 } else {
     ?>
-    <div id="redirectState" hidden="true">no</div>
+
 <?php }
 ?>
 <!--Single post end-->

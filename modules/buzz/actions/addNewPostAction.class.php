@@ -44,104 +44,46 @@ class addNewPostAction extends BaseBuzzAction {
         }
         return $this->commentForm;
     }
-    
+
     /**
      * 
      * @return PostForm
      */
     private function getPostForm() {
         if (!$this->postForm) {
-            $this->postForm=new CreatePostForm();
+            $this->postForm = new CreatePostForm();
         }
         return $this->postForm;
     }
-    
+
     /**
      * 
      * @return CommentForm
      */
     private function getEditForm() {
         if (!$this->editForm) {
-            $this->editForm=new CommentForm();
+            $this->editForm = new CommentForm();
         }
         return $this->editForm;
     }
-    
+
     public function execute($request) {
 
-        $token = $request->getPostParameter('_csrf_token');
-        $content = $request->getPostParameter('content');
-        $postLinkState = $request->getPostParameter('postLinkState');
-        $postLinkAddress = $request->getPostParameter('postLinkAddress');
-        $linkTitle = $request->getPostParameter('linkTitle');
-        $linkText = $request->getPostParameter('linkText');
-
-        $parameters = array('content' => $content, '_csrf_token' => $token);
         $this->form = $this->getPostForm();
+        $this->loggedInUser = $this->getLogedInEmployeeNumber();
 
-        $this->isSuccess = 'not';
+        $this->isSuccessfullyAddedPost = false;
         if ($request->isMethod('post')) {
-            $this->form->bind($parameters);
-            if ($this->form->isValid() && $content != '') {
-                 $this->post  = $this->form->save($this->getLogedInEmployeeNumber(), $content);
-               
-                $this->setShare($this->post);
-                $this->loggedInUser = $this->getLogedInEmployeeNumber();
-                $this->isSuccess = 'yes';
-                if ($postLinkState == 'yes') {
-                    $link = $this->setLink($this->post, $postLinkAddress, $linkTitle, $linkText);
-                    $this->saveLink($link);
-                }
-            } else {        
+            $this->form->bind($request->getParameter($this->form->getName()));
+            if ($this->form->isValid()) {
+                $this->postSaved = $this->form->save($this->loggedInUser);
+                $this->isSuccessfullyAddedPost = true;
+            } else {
+                
             }
         }
         $this->commentForm = $this->getCommentForm();
         $this->editForm = $this->getEditForm();
-    }
-
-    /**
-     * set parameters share to view
-     * @param Post $post
-     * @return share
-     */
-    public function setShare($share) {
-
-        $this->postId = $share->getId();
-        $this->originalPostId = $share->getPostId();
-        $this->postEmployeeName = $share->getEmployeeFirstLastName();
-        $this->employeeId = $share->getEmployeeNumber();
-        $this->postDate = $share->getDate();
-        $this->postTime = $share->getTime();
-        $this->noOfLikes = $share->getNumberOfLikes();
-        $this->isLike = $share->isLike($this->getLogedInEmployeeNumber());
-        $this->postContent = $share->getPostShared()->getText();
-    }
-    
-    /**
-     * 
-     * @param type $share
-     * @param type $postLinkAddress
-     * @param type $linkTitle
-     * @param type $linkText
-     * @return \Link
-     */
-    private function setLink($share, $postLinkAddress, $linkTitle, $linkText) {
-        $link = new Link();
-        $link->setPostId($share->getPostId());
-        $link->setLink($postLinkAddress);
-        $link->setType(0);
-        $link->setTitle($linkTitle);
-        $link->setDescription($linkText);
-        return $link;
-    }
-
-    /**
-     * 
-     * @param type $link
-     * @return type
-     */
-    private function saveLink($link) {
-        return $this->getBuzzService()->saveLink($link);
     }
 
 }

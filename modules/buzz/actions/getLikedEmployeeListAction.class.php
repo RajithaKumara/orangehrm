@@ -26,6 +26,10 @@
  */
 class getLikedEmployeeListAction extends BaseBuzzAction {
 
+    /**
+     * return employee list
+     * @param type $request
+     */
     public function execute($request) {
         try {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();

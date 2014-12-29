@@ -20,10 +20,11 @@
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
 <ul id="profileBuzz">
-        <?php
-        foreach ($fullSharesList as $post) {
-            
-        include_component('buzz', 'viewPost', array('post' => $post,'loggedInUser' => $loggedInUser));
-        }?> 
+    <?php
+    foreach ($fullSharesList as $post) {
+
+        include_component('buzz', 'viewPost', array('post' => $post, 'loggedInUser' => $loggedInUser));
+    }
+    ?> 
 
 </ul>

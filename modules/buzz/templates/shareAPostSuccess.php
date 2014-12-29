@@ -22,17 +22,15 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
 <?php if ($error == 'no') { ?>
     <?php
-    include_component('buzz', 'viewPost', array('post' => $share,'loggedInUser' => $loggedInUser));
-    
+    include_component('buzz', 'viewPost', array('post' => $share, 'loggedInUser' => $loggedInUser));
     ?>
-    
+
 
 <?php } else { ?>
     <div id ='errorFirstRow'>
 
         <?php
         include_partial('global/flash_messages');
-//    echo __("This share has been deleted or you do not have permission to perform this action");
         ?>
     </div>
 

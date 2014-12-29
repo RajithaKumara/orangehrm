@@ -7,42 +7,24 @@ $(document).ready(function () {
     $("#postSubmitBtn").live("click", function () {
         isAccess();
         var x = $("#createPost_content").val();
-        if (x == null || trim(x).length < 1) {
-
+        if (x === null || trim(x).length < 1) {
 
         } else {
             $('.postLoadingBox').show();
-            var token;
-            $.getJSON(getCsrfUrl, {get_param: 'value'}, function (data) {
-                token = data.post;
 
-                var postData = {
-                    'content': $("#createPost_content").val(),
-                    '_csrf_token': token,
-                    'postLinkState': trim($('#postLinkState').html()),
-                    'postLinkAddress': trim($('#postLinkAddress').html()),
-                    'linkTitle': trim($('#linkTitle').html()),
-                    'linkText': trim($('#linkText').html()),
-                };
+            $.ajax({
+                url: addBuzzPostURL,
+                type: "POST",
+                data: $('#frmPublishPost').serialize(),
+                success: function (data) {
 
-                $("textarea").val('');
-                $.ajax({
-                    url: addBuzzPostURL,
-                    type: "POST",
-                    data: postData,
-                    success: function (data) {
-
-                        $('#buzz').prepend(data);
-                        $('.postLoadingBox').hide();
-                        $("#postLinkData").hide();
-                        $("#postLinkState").html('no');
-
-                    }
-                });
-
-
+                    $('#buzz').prepend(data);
+                    $('.postLoadingBox').hide();
+                    $("#postLinkData").hide();
+                    $("#postLinkState").html('no');
+                    $("textarea").val('');
+                }
             });
-
 
         }
     });
@@ -56,7 +38,6 @@ $(document).ready(function () {
             var reader = new FileReader();
             reader.readAsDataURL(file);
             imageList[thumbnailDivId] = file;
-//            formData.append(thumbnailDivId, file);
             reader.onload = function (e) {
                 $('#thumb' + thumbnailDivId).attr('hidden', false);
                 $('#img_del_' + thumbnailDivId).attr('hidden', false);
@@ -188,7 +169,6 @@ $(document).ready(function () {
 
     $(".loadMorePostsLink").live("click", function (e) {
         isAccess();
-//        alert($('#buzz .lastLoadedPost').last().attr('id'));
         var lastPostId = {
             'lastPostId': $('#buzz .lastLoadedPost').last().attr('id')
         };
@@ -211,7 +191,6 @@ $(document).ready(function () {
         isAccess();
         var postId = e.target.id.split("_")[1];
         $("#" + e.target.id).hide(100);
-//        $("#" + postId).css("display", "block");
         $("." + postId).filter(function () {
             return ($(this).css("display") == "none")
         }).show(80);
@@ -328,7 +307,6 @@ $(document).ready(function () {
         if (trim(value).length > 1) {
 
             $('#commentLoadingBox' + elementId.split("_")[1]).show();
-            //value = $.trim(value.replace(/[\t\n]+/g, ' '));
 
             $(elementId).attr('placeholder', 'Write your comment...');
             var commentListId = "#commentListNew_" + elementId.split("_")[1];
@@ -362,7 +340,6 @@ $(document).ready(function () {
 //            alert(elementId + " " + value);
             if (trim(value).length > 1) {
                 $('#commentLoadingBox' + elementId.split("_")[1]).show();
-                //value = $.trim(value.replace(/[\t\n]+/g, ' '));
 
                 $(elementId).attr('placeholder', 'Write your comment...');
                 var commentListId = "#commentListNew_" + elementId.split("_")[1];
@@ -611,8 +588,6 @@ $(document).ready(function () {
         var idValue = e.target.id;
         var shareId = idValue.split("_")[1];
         $("#loadingDataModal").modal();
-        //var postId = idValue.split("_")[2];
-//        modalVisible = true;
         var data = {
             'shareId': shareId,
         };

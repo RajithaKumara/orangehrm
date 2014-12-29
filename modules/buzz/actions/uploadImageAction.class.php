@@ -44,11 +44,20 @@ class uploadImageAction extends BaseBuzzAction {
         }
     }
 
+    /**
+     * saving photo to the database
+     * @param type $photo
+     */
     private function savePhoto($photo) {
         $service = $this->getBuzzService();
         $service->savePhoto($photo);
     }
 
+    /**
+     * get photo from the request content
+     * @param type $file
+     * @return \Photo
+     */
     private function getPhoto($file) {
         $photo = new Photo();
 
@@ -63,6 +72,10 @@ class uploadImageAction extends BaseBuzzAction {
         return $photo;
     }
 
+    /**
+     * save post to datebase
+     * @param type $postContent
+     */
     private function savePost($postContent) {
         $post = new Post();
         $post->setEmployeeNumber($this->getLogedInEmployeeNumber());

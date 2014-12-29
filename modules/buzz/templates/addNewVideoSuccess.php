@@ -22,16 +22,19 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
 <!--A single post-->
 <div id="videoPostArea">
-    <?php if ($isSuccess == 'yes') { ?>
+    <?php if ($isSuccessfullyPastedUrl) { ?>
         <div id="tempVideoBlock">
             <div id="postBody">
-                <form id="frmCreateComment" method="" action="" 
+                <form id="frmSaveVideo" method="" action="" 
                       enctype="multipart/form-data">
                           <?php
                           $videoForm->setDefault('content', $url);
+                          $videoForm->setDefault('linkAddress', $videoFeedUrl);
                           $placeholder = 'Write something about this video';
-                          echo $videoForm['content']->render(array('id' => "shareVideo",
+                          echo $videoForm['content']->render(array(
                               'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2', 'placeholder' => $placeholder));
+                          echo $videoForm['linkAddress']->render();
+                          echo $videoForm['_csrf_token']->render();
                           ?>
 
                 </form>
@@ -49,13 +52,13 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
             </div>
         </div>
 
-    <?php } else if ($isSuccess == 'posted') { ?>
-        <?php include_component('buzz', 'viewPost', array('post' => $post,'loggedInUser' => $loggedInUser)); ?>
+    <?php } else if ($isSuccessFullyPosted) { ?>
+        <?php include_component('buzz', 'viewPost', array('post' => $postSaved,'loggedInUser' => $loggedInUser)); ?>
 
 
     <?php } else if ($error == 'redirect') { ?>
 
-    <?php } else if ($isSuccess == 'notVideo') { ?>
+    <?php } else if (!$isSuccessfullyPastedUrl) { ?>
         <div id="tempVideoBlock">
             <div id="postBody">
                 <form id="frmUploadVideo" method="POST" action="" 
@@ -74,7 +77,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                 </p>
             </div>
         </div>
-    <?php } else if ($isSuccess == 'posted') { ?>
+    <?php } else if (!$isSuccessFullyPosted) { ?>
 
     <?php } ?>
 

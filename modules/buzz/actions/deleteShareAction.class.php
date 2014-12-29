@@ -40,7 +40,7 @@ class deleteShareAction extends BaseBuzzAction {
      */
     public function deleteShare($share) {
         try {
-            if ($share->getEmployeeNumber() == $this->getLogedInEmployeeNumber() || $this->getLogedInEmployeeNumber() == '') {
+            if ($share->getEmployeeNumber() == $this->getLogedInEmployeeNumber() || $this->getLoggedInEmployeeUserRole() == 'Admin') {
                 $this->getBuzzService()->deleteShare($share->getId());
             }
         } catch (Exception $ex) {
@@ -53,7 +53,7 @@ class deleteShareAction extends BaseBuzzAction {
      * @param type $share
      */
     private function deletePost($share) {
-        if (($share->getPostShared()->getEmployeeNumber() == $this->getLogedInEmployeeNumber()) || ($this->getLogedInEmployeeNumber() == '')) {
+        if (($share->getPostShared()->getEmployeeNumber() == $this->getLogedInEmployeeNumber()) || $this->getLoggedInEmployeeUserRole() == 'Admin') {
             $this->getBuzzService()->deletePost($share->getPostId());
         }
     }

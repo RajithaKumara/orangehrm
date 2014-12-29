@@ -39,10 +39,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                         <?php echo $postEmployeeName; ?>
                     </a>
                 </div>
-                <div id="postEmloyeeJobTitle" style="margin-bottom: 0px;margin-top: -10px">
+                <div id="postEmloyeeJobTitlePopUp" >
                     <?php echo $postEmployeeJobTitle; ?>
                 </div>
-                <div id="postDateTime" style="margin-top: 0px">
+                <div id="postDateTime" >
                     <div id="postDate">
                         <?php echo $postDate; ?>
                     </div>
@@ -55,7 +55,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
             <div id="postFirstRowColumnThree">
                 <?php if (($employeeID == $loggedInUser) || ($loggedInUser == '')) { ?>
                     <div id="postOptionWidget">
-                        <div class="dropdown" style="margin: -70px -22px 0 0;">
+                        <div class="dropdown" >
                             <a class="account"  id=<?php echo $postId ?> ></a>
                             <div class="submenu" id=<?php echo 'submenu' . $postId ?>>
                                 <ul class = "root">
@@ -217,21 +217,21 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
         <?php }
         ?>
         <div id="postBodyThirdRow">
-            <div id="noOfLikesLinknewPopUp" style="margin-top: 5px;margin-left: 0px">
+            <div id="noOfLikesLinknewPopUp" >
                 <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfLikes_' . $postId; ?>"><?php echo $postNoOfLikes; ?></span><?php echo " " . __("people "); ?>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
-            <div id="noOfSharesLinknewPopUp" style="margin-top: 5px;margin-left: 40px;">
+            <div id="noOfSharesLinknewPopUp" >
                 <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' >
                     <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $postShareCount; ?></span><?php echo " " . __("people "); ?>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
-            <div id="noOfUnLikesLinknewPopUp" style="margin-top: 5px;margin-left: 70px;">
+            <div id="noOfUnLikesLinknewPopUp" >
                 <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfUnLikes_' . $postId; ?>"><?php echo $postUnlike; ?></span><?php echo " " . __("people "); ?>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 

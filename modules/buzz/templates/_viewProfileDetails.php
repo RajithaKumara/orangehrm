@@ -18,9 +18,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
 </div>
 <div class="rightBarBodyAllProf">
     <div id="flipPersonal"><?php echo $fullName; ?>
-        <img  id="lessDetails" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;border: 0px solid #f6f6f6;" height="30px" width="30px"/>
+        <img  id="lessDetails" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>"  height="30px" width="30px"/>
 
-        <img id="moreDetails" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;display: none" height="30px" width="30px"/>
+        <img id="moreDetails" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" height="30px" width="30px"/>
 
     </div>
     <div id="panelPersonal">
@@ -58,9 +58,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
 </div>
 <div class="rightBarBodyAllProf">
     <div id="flipStat"><?php echo strtoupper($firstName) . '\'S STATISTICS' ?>
-        <img  id="lessStat" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;border: 0px solid #f6f6f6;display: none" height="30px" width="30px"/>
+        <img  id="lessStat" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>"  height="30px" width="30px"/>
 
-        <img id="moreStat" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" style="float: right;margin-top: -7px;margin-right: -10px;" height="30px" width="30px"/>
+        <img id="moreStat" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>"  height="30px" width="30px"/>
 
     </div>
     <div id="panelStat">

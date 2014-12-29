@@ -173,3 +173,31 @@
     display: inline-block; 
     width: 100%;
 }
+
+#lessDetails{
+    float: right;
+    margin-top: -7px;
+    margin-right: -10px;
+    border: 0px solid #f6f6f6;
+}
+
+#moreDetails{
+    float: right;
+    margin-top: -7px;
+    margin-right: -10px;
+    display: none;
+}
+
+#lessStat{
+   float: right;
+   margin-top: -7px;
+   margin-right: -10px;
+   border: 0px solid #f6f6f6;
+   display: none;
+}
+
+#moreStat{
+    float: right;
+    margin-top: -7px;
+    margin-right: -10px;
+}
