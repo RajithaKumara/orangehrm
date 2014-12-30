@@ -288,7 +288,7 @@ textarea{
     border-top: 1px solid #e1e2e3;
 }
 
-#frmCreateComment{
+.frmCreateComment{
     /*display: inline-block;*/
     width: 100%;
     border: none;

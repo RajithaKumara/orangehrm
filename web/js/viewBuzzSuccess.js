@@ -301,22 +301,21 @@ $(document).ready(function () {
         isAccess();
 
         var elementId = "#" + e.target.id;
-
         var value = $(elementId).val();
 
+        $("#commentListContainer_" + elementId.split("_")[1]).css("display", "block");
         if (trim(value).length > 1) {
-
             $('#commentLoadingBox' + elementId.split("_")[1]).show();
 
             $(elementId).attr('placeholder', 'Write your comment...');
             var commentListId = "#commentListNew_" + elementId.split("_")[1];
-          
             $.ajax({
                 url: addBuzzCommentURL,
                 type: 'POST',
-                data: $('#frmCreateCommentNew_'+ elementId.split("_")[1]).serialize(),
+                data: $('#formCreateComment_' + elementId.split("_")[1]).serialize(),
                 success: function (data) {
                     $(commentListId).append(data);
+                    $(".popupCommentList").append(data);
                     $('.commentLoadingBox').hide();
                     $(elementId).val('');
                 }
@@ -331,21 +330,21 @@ $(document).ready(function () {
     $(".commentBox").live("keydown", function (e) {
         isAccess();
         if ((e.keyCode === 13) && !e.shiftKey) {
-            
+
             var elementId = "#" + e.target.id;
             var value = $(elementId).val();
-            
-            $("#commentListContainer_"+ elementId.split("_")[1]).css("display", "block");
+
+            $("#commentListContainer_" + elementId.split("_")[1]).css("display", "block");
             if (trim(value).length > 1) {
                 $('#commentLoadingBox' + elementId.split("_")[1]).show();
 
                 $(elementId).attr('placeholder', 'Write your comment...');
                 var commentListId = "#commentListNew_" + elementId.split("_")[1];
-                
+                alert($('#formCreateComment_' + elementId.split("_")[1]).serialize());
                 $.ajax({
                     url: addBuzzCommentURL,
                     type: 'POST',
-                    data: $('#frmCreateCommentNew_'+ elementId.split("_")[1]).serialize(),
+                    data: $('#formCreateComment_' + elementId.split("_")[1]).serialize(),
                     success: function (data) {
                         $(commentListId).append(data);
                         $(".popupCommentList").append(data);

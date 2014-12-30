@@ -155,12 +155,15 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
     </div>
     <div id="postFifthRow" class="postRow">
         <div id=<?php echo "postCommentTextBox" . $postId; ?>>
-            <form id="frmCreateComment" method="" action="" 
+            <form class="frmCreateComment" id='<?php echo 'formCreateComment_' . $commentBoxId.$postId; ?>' method="" action="" 
                   enctype="multipart/form-data">
                       <?php
                       $placeholder = __("Add your comment");
-                      echo $commentForm['comment']->render(array('id' => "commentBoxnew_" . $postId,
+                      echo $commentForm['comment']->render(array('id' => "commentBoxnew_" . $commentBoxId.$postId,
                           'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '1', 'placeholder' => $placeholder));
+                      $commentForm->setDefault('shareId', $postId);
+                      echo $commentForm['shareId']->render();
+                      echo $commentForm['_csrf_token']->render();
                       ?>
             </form>
         </div>

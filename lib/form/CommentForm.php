@@ -47,7 +47,7 @@ class CommentForm extends sfForm {
             'comment' => new sfWidgetFormTextarea(
                     array(), array('rows' => '4', 'columns' => '80', 'id' => 'commentBox')
             ),
-            'shareId' => new sfWidgetFormTextarea(
+            'shareId' => new sfWidgetFormInput(
                     array(), array('hidden' => 'hidden')
             ),
         );

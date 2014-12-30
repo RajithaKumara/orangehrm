@@ -449,7 +449,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                             </div>
                         <?php } ?>
 
-                        <input type="button" class="btnShare" name="btnSaveDependent" id='<?php echo 'btnShare_' . $postId . "_" . $originalPostId ?>' value="<?php echo __("Share"); ?>"/>
+                        <button type="button" class="btnShare" name="btnSaveDependent" id='<?php echo 'btnShare_' . $postId . "_" . $originalPostId ?>'><?php echo __("Share"); ?></button>
 
                     </div>
                 </div>
@@ -558,17 +558,17 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
         <div id="postFifthRow" class="postRow">
             <div class="postCommentBox" id=<?php echo "postCommentTextBox_" . $postId; ?>>
-                <form class="<?php echo $postId; ?>" id='<?php echo 'frmCreateCommentNew_' . $postId; ?>' method="" action="" 
+                <form class="<?php echo $postId; ?>" id='<?php echo 'formCreateComment_list' . $postId; ?>' method="" action="" 
                       enctype="multipart/form-data">
                           <?php
                           $placeholderd = __("Add your comment");
-                          echo $commentForm['comment']->render(array('id' => "commentBoxNew_" . $postId,
+                          echo $commentForm['comment']->render(array('id' => "commentBoxNew_list" . $postId,
                               'class' => 'commentBox', 'rows' => '1', 'style' => 'font-size: 16px; font-family: "SourceSansProLight"; border-radius: 5px 5px 5px 5px; min-width: 99.5%; padding: 10px 0 10px 10px;', 'placeholder' => $placeholderd));
                           $commentForm->setDefault('shareId', $postId);
                           echo $commentForm['shareId']->render();
                           echo $commentForm['_csrf_token']->render();
                           ?>
-                    <input type="button" value="<?php echo __("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $postId; ?>' class="commentSubmitBtn submitBtn">
+                    <input type="button" value="<?php echo __("Comment"); ?>"  id='<?php echo 'commentBoxNew_list' . $postId; ?>' class="commentSubmitBtn submitBtn">
                 </form>
             </div>
         </div>
@@ -582,8 +582,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
     }
     ?>
 
-    <div class="commentListContainer"  id='<?php echo 'commentListContainer_' . $postId ?>' style="display: <?php echo $displayCommentList; ?>">
-        <ul class="commentList" id='<?php echo 'commentListNew_' . $postId ?>'>
+    <div class="commentListContainer"  id='<?php echo 'commentListContainer_list' . $postId ?>' style="display: <?php echo $displayCommentList; ?>">
+        <ul class="commentList" id='<?php echo 'commentListNew_list' . $postId ?>'>
             <?php
             $count = 0;
             $display = 'block';
@@ -764,7 +764,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 </li>
             <?php } ?>
         </ul>
-        <div class="commentLoadingBox"  id='<?php echo 'commentLoadingBox' . $postId; ?>' >
+        <div class="commentLoadingBox"  id='<?php echo 'commentLoadingBoxlist' . $postId; ?>' >
             <div id="commentBody">
 
                 <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="20" style="margin-left: 40%; margin-top: 15px" />
