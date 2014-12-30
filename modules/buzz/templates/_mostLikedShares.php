@@ -39,7 +39,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
     </div>
 </div>
 <div class ="rightBarBodyAll">
-    <div class="rightBarHeading" id="rightBarHeadingMc"><?php echo __("MOST SHARED POSTS"); ?>
+    <div class="rightBarHeading" id="rightBarHeadingMc"><?php echo __("MOST COMMENTED POSTS"); ?>
         <img id="moreCommentLiked" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/more2.png"); ?>" 
              height="30px" width="30px"/>
         <img id="lessCommentLiked" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" 

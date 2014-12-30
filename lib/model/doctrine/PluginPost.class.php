@@ -10,37 +10,55 @@
  * @author     ##NAME## <##EMAIL##>
  * @version    SVN: $Id: Builder.php 7490 2010-03-29 19:53:27Z jwage $
  */
-abstract class PluginPost extends BasePost
-{
+abstract class PluginPost extends BasePost {
+
     protected $buzzConfigService;
-    public function getEmployeeFirstLastName(){
-        if($this->getEmployeeNumber()!=''){
+    protected $systemUserService;
+
+    public function getEmployeeFirstLastName() {
+        if ($this->getEmployeeNumber() != '') {
             return $this->getEmployeePostAdded()->getFirstAndLastNames();
-        }else{
-            return 'Admin';
+        } else {
+            $employeeBoundToAdmin = $this->getSystemUserService()->getSystemUser(1)->getEmployee();
+            if ($employeeBoundToAdmin) {
+                return $employeeBoundToAdmin->getFirstAndLastNames();
+            } else {
+                return 'Admin';
+            }
         }
     }
-    
-      /**
+
+    /**
      * 
      * @return BuzzConfigService
      */
     private function getBuzzConfigService() {
-       if (!$this->buzzConfigService) {
-            $this->buzzConfigService= new BuzzConfigService();
+        if (!$this->buzzConfigService) {
+            $this->buzzConfigService = new BuzzConfigService();
         }
-        
+
         return $this->buzzConfigService;
     }
-    
-    public function getDate(){
+
+    /**
+     * 
+     * @return SystemUserService
+     */
+    private function getSystemUserService() {
+        if (!$this->systemUserService) {
+            $this->systemUserService = new SystemUserService();
+        }
+
+        return $this->systemUserService;
+    }
+
+    public function getDate() {
         return set_datepicker_date_format($this->getPostTime());
     }
-    
-    public function getTime(){
-        $timeFormat=  $this->getBuzzConfigService()->getTimeFormat();
+
+    public function getTime() {
+        $timeFormat = $this->getBuzzConfigService()->getTimeFormat();
         return date($timeFormat, strtotime($this->getPostTime()));
     }
-    
 
 }

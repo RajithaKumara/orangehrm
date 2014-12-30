@@ -719,6 +719,7 @@ input[type="button"]{
 #deleteConfirmationModal{
     height: 120px;
     overflow-y: hidden;
+    margin-top: 0px;
 }
 
 .popupCommentList li #commentBody #commentBodyThirdRow{

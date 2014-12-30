@@ -415,6 +415,10 @@ $(document).ready(function () {
                 $("#post" + idOfThePostToDelete).hide();
                 $("#loadingDataModal").modal('hide');
                 idOfThePostToDelete = -1;
+                $("#successBody").replaceWith("<div id='successBody' >Successfully Deleted!</div>");
+                $("#successDataModal").modal();
+                setTimeout(hideSuccessModal, 3000);
+                setTimeout(refresh, 10000);
             }
         });
     });
@@ -522,6 +526,7 @@ $(document).ready(function () {
                 $("#postContent_" + shareId).replaceWith(data);
                 reload();
                 $("#loadingDataModal").modal('hide');
+                $("#successBody").replaceWith("<div id='successBody' >Successfully Saved!</div>");
                 $("#successDataModal").modal();
                 setTimeout(hideSuccessModal, 3000);
                 setTimeout(refresh, 10000);
