@@ -340,7 +340,6 @@ $(document).ready(function () {
 
                 $(elementId).attr('placeholder', 'Write your comment...');
                 var commentListId = "#commentListNew_" + elementId.split("_")[1];
-                alert($('#formCreateComment_' + elementId.split("_")[1]).serialize());
                 $.ajax({
                     url: addBuzzCommentURL,
                     type: 'POST',
@@ -547,7 +546,7 @@ $(document).ready(function () {
         $.ajax({
             url: commentDeleteURL + "?commentId=" + commentId,
             success: function (data) {
-                $("#commentNew_" + commentId).remove();
+                $("#commentInPost_" + commentId).remove();
                 $("#loadingDataModal").modal('hide');
             }
         });

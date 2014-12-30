@@ -1,78 +1,91 @@
 $(document).ready(function () {
+    var processing = false;
     $(".postLike").live("click", function (e) {
-        isAccess();
+        if (!processing) {
+            processing= true;
+            isAccess();
+            var idValue = e.target.id;
+            var id = "postLikebody_" + trim(idValue.split("_")[1]);
+            var div = document.getElementById(id);
+            var id2 = "postUnLikebody_" + trim(idValue.split("_")[1]);
+            var div2 = document.getElementById(id2);
+            var likeLabelId = "#noOfLikes_" + idValue.split("_")[1];
+            var existingLikes = parseInt($(likeLabelId).html());
+            var UnlikeLabelId = "#noOfUnLikes_" + idValue.split("_")[1];
+            var existingUnLikes = parseInt($(UnlikeLabelId).html());
+            var action = "like";
+            $("[id=postLikeyes_" + idValue.split("_")[1] + ']').hide();
+            $("[id=postLikeno_" + idValue.split("_")[1] + ']').hide();
+            $("[id=postLikeLoading_" + idValue.split("_")[1] + ']').show();
 
-        var idValue = e.target.id;
-        var id = "postLikebody_" + trim(idValue.split("_")[1]);
-        var div = document.getElementById(id);
-        var id2 = "postUnLikebody_" + trim(idValue.split("_")[1]);
-        var div2 = document.getElementById(id2);
-        var likeLabelId = "#noOfLikes_" + idValue.split("_")[1];
-        var existingLikes = parseInt($(likeLabelId).html());
-        var UnlikeLabelId = "#noOfUnLikes_" + idValue.split("_")[1];
-        var existingUnLikes = parseInt($(UnlikeLabelId).html());
-        var action = "like";
-        $("[id=postUnlikeno_" + idValue.split("_")[1] + ']').show();
-        $("[id=postUnlikeyes_" + idValue.split("_")[1] + ']').hide();
-        $("[id=postLikeyes_" + idValue.split("_")[1] + ']').show();
-        $("[id=postLikeno_" + idValue.split("_")[1] + ']').hide();
-        var CSRFToken= $('#actionValidatingForm__csrf_token').val();
-        var shareId=idValue.split("_")[1] ;
-        $.post(shareLikeURL, {shareId: shareId ,likeAction: action,CSRFToken:CSRFToken}, function (data) {
-            if (data.states === 'savedLike') {
-                var likes = trim($('#postLiketext_' + idValue.split("_")[1]).html());
-                likes++;
-                $("[id=noOfLikes_" + idValue.split("_")[1] + ']').html(data.likeCount);
-                $('[id=postLiketext_' + idValue.split("_")[1] + ']').html(likes);
+            var CSRFToken = $('#actionValidatingForm__csrf_token').val();
+            var shareId = idValue.split("_")[1];
+            $.post(shareLikeURL, {shareId: shareId, likeAction: action, CSRFToken: CSRFToken}, function (data) {
+                if (data.states === 'savedLike') {
+                    var likes = trim($('#postLiketext_' + idValue.split("_")[1]).html());
+                    likes++;
+                    $("[id=noOfLikes_" + idValue.split("_")[1] + ']').html(data.likeCount);
+                    $('[id=postLiketext_' + idValue.split("_")[1] + ']').html(likes);
 
-                //div.style.backgroundColor = 'orange';
-            }
-            if (data.deleted === 'yes') {
-                $("[id=noOfUnLikes_" + idValue.split("_")[1] + ']').html(data.unlikeCount);
-                var likes = trim($('#postUnLiketext_' + idValue.split("_")[1]).html());
-                likes--;
-                //$('#postUnLiketext_' + idValue.split("_")[1]).html(likes);
-            }
+                    //div.style.backgroundColor = 'orange';
+                }
+                if (data.deleted === 'yes') {
+                    $("[id=noOfUnLikes_" + idValue.split("_")[1] + ']').html(data.unlikeCount);
+                    var likes = trim($('#postUnLiketext_' + idValue.split("_")[1]).html());
+                    likes--;
+                    //$('#postUnLiketext_' + idValue.split("_")[1]).html(likes);
+                }
+                $("[id=postLikeLoading_" + idValue.split("_")[1] + ']').hide();
+                $("[id=postUnlikeno_" + idValue.split("_")[1] + ']').show();
+                $("[id=postUnlikeyes_" + idValue.split("_")[1] + ']').hide();
+                $("[id=postLikeyes_" + idValue.split("_")[1] + ']').show();
+                $("[id=postLikeno_" + idValue.split("_")[1] + ']').hide();
+                processing= false;
 
-
-        }, "json");
+            }, "json");
+        }
     });
     $(".postUnlike2").live("click", function (e) {
+        if (!processing) {
+            processing= true;
+            isAccess();
+            var idValue = e.target.id;
+            var id = "postLikebody_" + trim(idValue.split("_")[1]);
+            var div = document.getElementById(id);
+            var id2 = "postUnLikebody_" + trim(idValue.split("_")[1]);
+            var div2 = document.getElementById(id2);
+            var likeLabelId = "#noOfLikes_" + idValue.split("_")[1];
+            var existingLikes = parseInt($(likeLabelId).html());
+            var UnlikeLabelId = "#noOfUnLikes_" + idValue.split("_")[1];
+            var existingUnLikes = parseInt($(UnlikeLabelId).html());
+            $("[id=postUnLikeLoading_" + idValue.split("_")[1] + ']').show();
+            $("[id=postUnlikeyes_" + idValue.split("_")[1] + ']').hide();
+            $("[id=postUnlikeno_" + idValue.split("_")[1] + ']').hide()
+            var action = "unlike";
+            var CSRFToken = $('#actionValidatingForm__csrf_token').val();
+            var shareId = idValue.split("_")[1];
+            $.post(shareLikeURL, {shareId: shareId, likeAction: action, CSRFToken: CSRFToken}, function (data) {
+                if (data.deleted === 'yes') {
+                    var likes = trim($("#postLiketext_" + idValue.split("_")[1]).html());
+                    likes--;
 
-        isAccess();
-        isAccess();
-        var idValue = e.target.id;
-        var id = "postLikebody_" + trim(idValue.split("_")[1]);
-        var div = document.getElementById(id);
-        var id2 = "postUnLikebody_" + trim(idValue.split("_")[1]);
-        var div2 = document.getElementById(id2);
-        var likeLabelId = "#noOfLikes_" + idValue.split("_")[1];
-        var existingLikes = parseInt($(likeLabelId).html());
-        var UnlikeLabelId = "#noOfUnLikes_" + idValue.split("_")[1];
-        var existingUnLikes = parseInt($(UnlikeLabelId).html());
-        $("[id=postLikeno_" + idValue.split("_")[1] + ']').show();
-        $("[id=postLikeyes_" + idValue.split("_")[1] + ']').hide();
-        $("[id=postUnlikeyes_" + idValue.split("_")[1] + ']').show();
-        $("[id=postUnlikeno_" + idValue.split("_")[1] + ']').hide()
-        var action = "unlike";
-        var CSRFToken= $('#actionValidatingForm__csrf_token').val();
-        var shareId=idValue.split("_")[1] ;
-        $.post(shareLikeURL, {shareId: shareId ,likeAction: action,CSRFToken:CSRFToken}, function (data) {
-            if (data.deleted === 'yes') {
-                var likes = trim($("#postLiketext_" + idValue.split("_")[1]).html());
-                likes--;
+                    $("[id=noOfLikes_" + idValue.split("_")[1] + ']').html(data.likeCount);
+                }
+                if (data.states === 'savedUnLike') {
+                    var likes = trim($('#postUnLiketext_' + idValue.split("_")[1]).html());
+                    likes++;
+                    $("[id=postUnLiketext_" + idValue.split("_")[1] + ']').html(data.unlikeCount);
+                    $("[id=noOfUnLikes_" + idValue.split("_")[1] + ']').html(data.unlikeCount);
+                }
+                $("[id=postUnLikeLoading_" + idValue.split("_")[1] + ']').hide();
+                $("[id=postLikeno_" + idValue.split("_")[1] + ']').show();
+                $("[id=postLikeyes_" + idValue.split("_")[1] + ']').hide();
+                $("[id=postUnlikeyes_" + idValue.split("_")[1] + ']').show();
+                $("[id=postUnlikeno_" + idValue.split("_")[1] + ']').hide();
+                processing= false;
 
-                $("[id=noOfLikes_" + idValue.split("_")[1] + ']').html(data.likeCount);
-            }
-            if (data.states === 'savedUnLike') {
-                var likes = trim($('#postUnLiketext_' + idValue.split("_")[1]).html());
-                likes++;
-                $("[id=postUnLiketext_" + idValue.split("_")[1] + ']').html(data.unlikeCount);
-                $("[id=noOfUnLikes_" + idValue.split("_")[1] + ']').html(data.unlikeCount);
-            }
-
-
-        }, "json");
+            }, "json");
+        }
     });
 //    });
     $(".btnSaveVideo").live('click', function (e) {
@@ -182,8 +195,8 @@ $(document).ready(function () {
         var likeLabelId = "#commentNoOfLikes_" + idValue.split("_")[1];
         var action = "like";
         var commentId = idValue.split("_")[1];
-        var CSRFToken= $('#actionValidatingForm__csrf_token').val();
-        $.post(commentLikeURL , {commentId :commentId ,likeAction: action,CSRFToken:CSRFToken}, function (data) {
+        var CSRFToken = $('#actionValidatingForm__csrf_token').val();
+        $.post(commentLikeURL, {commentId: commentId, likeAction: action, CSRFToken: CSRFToken}, function (data) {
             if (data.states === 'savedLike') {
                 var likes = trim($('#commentNoOfLiketext_' + idValue.split("_")[1]).html());
                 likes++;
@@ -214,8 +227,9 @@ $(document).ready(function () {
         var likeLabelId = "#commentNoOfLikes_" + idValue.split("_")[1];
         var action = "unlike";
         var commentId = idValue.split("_")[1];
-        var CSRFToken= $('#actionValidatingForm__csrf_token').val();
-        $.post(commentLikeURL , {commentId :commentId ,likeAction: action,CSRFToken:CSRFToken}, function (data) {;
+        var CSRFToken = $('#actionValidatingForm__csrf_token').val();
+        $.post(commentLikeURL, {commentId: commentId, likeAction: action, CSRFToken: CSRFToken}, function (data) {
+            ;
             if (data.deleted === 'yes') {
                 var likes = trim($('#commentNoOfLiketext_' + idValue.split("_")[1]).html());
                 likes--;

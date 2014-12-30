@@ -81,6 +81,15 @@ textarea{
 
 .btnEditShare{
     margin-top: 10px;
+    float: right;
+    
+    background-color: #33ac3f;
+    border: medium none;
+    border-radius: 3px;
+    color: #fff;
+    font-family: "SourceSansProRegular";
+    font-size: 20px;
+    padding: 0 15px 0 15px;
 }
 
 #loadingDataModal{
@@ -366,7 +375,7 @@ textarea{
     height: 45px;
     float: right;
     margin-right: -145px;
-    margin-top: -50px;
+    margin-top: -62.5px;
 }
 
 #commentColumnTwo{
@@ -397,6 +406,7 @@ textarea{
 #commentEmployeeJobTitle{
     font-size: 14px;
     font-family: 'SourceSansProLight';
+    height: 10px;
 }
 
 #commentColumnTwoRowThree{

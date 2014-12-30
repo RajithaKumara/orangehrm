@@ -298,6 +298,13 @@
 .btnShare{
     float: right;
     margin-top: 20px;
+    background-color: #33ac3f;
+    border: medium none;
+    border-radius: 3px;
+    color: #fff;
+    font-family: "SourceSansProRegular";
+    font-size: 20px;
+    padding: 0 15px 0 15px;
 }
 .popUpContainer{
     border-radius: 5px;
@@ -382,7 +389,15 @@
     font-family: 'SourceSansProLight';
 }
 .btnEditCommentNew{
+    margin-top: 10px;
     float: right;
+    
+    background-color: #33ac3f;
+    border: medium none;
+    border-radius: 3px;
+    color: #fff;
+    font-family: "SourceSansProRegular";
+    font-size: 20px;
 }
 .sharePopUpbutton{
     padding: 20px;
@@ -395,7 +410,7 @@
     height: 50px;
     overflow: hidden;
 }
-.sharePosyPopUpModal{
+.sharePostPopUpModal{
     width: 550px;
     height: 600px;
     left: 50%;
