@@ -97,6 +97,17 @@ class viewBuzzAction extends BaseBuzzAction {
         return $this->commentForm;
     }
 
+    /**
+     * return action validate form for validate actions
+     * @return ActionValidateForm
+     */
+    private function getActionValidateForm() {
+        if (!$this->actionValidateForm instanceof ActionValidatingForm) {
+            $this->actionValidateForm = new ActionValidatingForm();
+        }
+        return $this->actionValidateForm;
+    }
+
     public function execute($request) {
 
         $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
@@ -109,6 +120,7 @@ class viewBuzzAction extends BaseBuzzAction {
             $this->commentForm = $this->getCommentForm();
             $this->editForm = $this->getEditForm();
             $this->uploadImageForm = $this->getUploadImageForm(); //image upload form
+            $this->actionValidateForm = $this->getActionValidateForm();
             $this->buzzService = $this->getBuzzService();
             $this->initializePostList();
             $this->videoForm = $this->getVideoForm();  // video form added

@@ -37,21 +37,37 @@ class addNewCommentAction extends BaseBuzzAction {
         return $this->editForm;
     }
 
+    /**
+     * function to get edit form
+     * @return CommentForm
+     */
+    private function getCommentForm() {
+        if (!($this->commentForm instanceof CommentForm)) {
+            $this->commentForm = new CommentForm();
+        }
+        return $this->commentForm;
+    }
+
     public function execute($request) {
         try {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->commentText = $request->getParameter('commentText');
-            $this->shareId = $request->getParameter('shareId');
-            $this->error = 'no';
             $this->loggedInEmployeeUserRole = $this->getLoggedInEmployeeUserRole();
-            try {
-
-                $this->editForm = $this->getEditForm();
-                $comment = $this->setComment();
-                $this->saveComment($comment);
-            } catch (Exception $ex) {
-                $this->error = 'yes';
-                $this->getUser()->setFlash('error', __("This share has been deleted or you do not have permission to perform this action"));
+            $this->commentForm = $this->getCommentForm();
+            $this->editForm = $this->getEditForm();
+            $this->isSuccessfullyAddedComment = false;
+            if ($request->isMethod('post')) {
+                $this->commentForm->bind($request->getParameter($this->commentForm->getName()));
+                if ($this->commentForm->isValid()) {
+                    if ($this->getBuzzService()->getShareById($this->commentForm->getValue('shareId')) != null) {
+                        $commentSaved = $this->commentForm->saveComment($this->loggedInUser);
+                        $this->setCommentVariablesForView($commentSaved);
+                        $this->isSuccessfullyAddedComment = true;
+                    } else {
+                        $this->getUser()->setFlash('error', __("This share has been deleted or you do not have permission to perform this action"));
+                    }
+                } else {
+                    $this->getUser()->setFlash('error', __("This share has been deleted or you do not have permission to perform this action"));
+                }
             }
         } catch (Exception $ex) {
             $this->error = 'redirect';
@@ -62,8 +78,8 @@ class addNewCommentAction extends BaseBuzzAction {
      * save comment to the database
      * @return Comment
      */
-    public function saveComment($comment) {
-        $this->comment = $this->getBuzzService()->saveCommentShare($comment);
+    public function setCommentVariablesForView($comment) {
+        $this->comment = $comment;
         $this->commentPostId = $this->comment->getShareId();
         $this->commentEmployeeName = $this->comment->getEmployeeFirstLastName();
         $this->commentContent = $this->comment->getCommentText();
@@ -78,21 +94,6 @@ class addNewCommentAction extends BaseBuzzAction {
         if ($this->comment->isUnLike($this->getLogedInEmployeeNumber())) {
             $this->isUnlike = 'yes';
         }
-    }
-
-    /**
-     * set valuves to the comment
-     * @return Comment
-     */
-    public function setComment() {
-        $comment = new Comment();
-        $comment->setShareId($this->shareId);
-        $comment->setEmployeeNumber($this->getLogedInEmployeeNumber());
-        $comment->setCommentText($this->commentText);
-        $comment->setCommentTime(date("Y-m-d H:i:s"));
-        $comment->setNumberOfLikes(0);
-        $comment->setNumberOfUnlikes(0);
-        return $comment;
     }
 
 }

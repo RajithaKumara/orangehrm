@@ -558,12 +558,15 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
         <div id="postFifthRow" class="postRow">
             <div class="postCommentBox" id=<?php echo "postCommentTextBox_" . $postId; ?>>
-                <form class="<?php echo $postId; ?>" id="frmCreateComment" method="" action="" 
+                <form class="<?php echo $postId; ?>" id='<?php echo 'frmCreateCommentNew_' . $postId; ?>' method="" action="" 
                       enctype="multipart/form-data">
                           <?php
                           $placeholderd = __("Add your comment");
                           echo $commentForm['comment']->render(array('id' => "commentBoxNew_" . $postId,
                               'class' => 'commentBox', 'rows' => '1', 'style' => 'font-size: 16px; font-family: "SourceSansProLight"; border-radius: 5px 5px 5px 5px; min-width: 99.5%; padding: 10px 0 10px 10px;', 'placeholder' => $placeholderd));
+                          $commentForm->setDefault('shareId', $postId);
+                          echo $commentForm['shareId']->render();
+                          echo $commentForm['_csrf_token']->render();
                           ?>
                     <input type="button" value="<?php echo __("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $postId; ?>' class="commentSubmitBtn submitBtn">
                 </form>
@@ -579,7 +582,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
     }
     ?>
 
-    <div id="commentListContainer" style="display: <?php echo $displayCommentList; ?>">
+    <div class="commentListContainer"  id='<?php echo 'commentListContainer_' . $postId ?>' style="display: <?php echo $displayCommentList; ?>">
         <ul class="commentList" id='<?php echo 'commentListNew_' . $postId ?>'>
             <?php
             $count = 0;

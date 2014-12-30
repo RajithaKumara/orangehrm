@@ -12,35 +12,48 @@
  * @author dewmal
  */
 class viewProfileAction extends BaseBuzzAction {
-      private $employeeService;
+
+    private $employeeService;
 
     /**
      * Get EmployeeService
      * @returns EmployeeService
      */
     public function getEmployeeService() {
-        if(is_null($this->employeeService)) {
+        if (is_null($this->employeeService)) {
             $this->employeeService = new EmployeeService();
             $this->employeeService->setEmployeeDao(new EmployeeDao());
         }
         return $this->employeeService;
     }
-    
+
     /**
      * get employee search form
      * @return searchForm
      */
-    private function getSearchForm(){
-        if(!($this->searchForm instanceof BuzzEmployeeSearchForm)){
+    private function getSearchForm() {
+        if (!($this->searchForm instanceof BuzzEmployeeSearchForm)) {
             $this->searchForm = new BuzzEmployeeSearchForm();
         }
         return $this->searchForm;
+    }
+
+    /**
+     * return action validate form for validate actions
+     * @return ActionValidateForm
+     */
+    private function getActionValidateForm() {
+        if (!$this->actionValidateForm instanceof ActionValidatingForm) {
+            $this->actionValidateForm = new ActionValidatingForm();
+        }
+        return $this->actionValidateForm;
     }
 
     public function execute($request) {
         $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
         $this->setLayout($template . '/chatter');
         $this->searchForm = $this->getSearchForm();
+        $this->actionValidateForm = $this->getActionValidateForm();
         try {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->profileUserId = $request->getParameter('empNumber');
@@ -50,7 +63,6 @@ class viewProfileAction extends BaseBuzzAction {
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
-
     }
 
     /**
@@ -74,5 +86,5 @@ class viewProfileAction extends BaseBuzzAction {
         $this->likeCount = $buzzConfigService->getBuzzLikeCount();
         $this->refeshTime = $buzzConfigService->getRefreshTime();
     }
-    
+
 }

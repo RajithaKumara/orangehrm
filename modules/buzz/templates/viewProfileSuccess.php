@@ -41,7 +41,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
                 <div class="jason"></div>
                 <?php
                 foreach ($postList as $post) {
-                    include_component('buzz', 'viewPost', array('post' => $post,'loggedInUser' => $loggedInUser));
+                    include_component('buzz', 'viewPost', array('post' => $post, 'loggedInUser' => $loggedInUser));
                 }
                 ?> 
             </ul>
@@ -74,6 +74,15 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
                 <a href="javascript:void(0)" class="loadMorePostsLink" id=<?php echo $postId ?>><?php echo __("Load more posts"); ?></a>
             </div> 
             <div id="profileUserId" hidden="true"><?php echo $profileUserId; ?></div>
+            <form id="actionValidateForm" method="POST" action="" 
+                  enctype="multipart/form-data">
+                <fieldset>
+                    <ol>
+                        <?php echo $actionValidateForm->render(); ?>            
+                    </ol>
+                </fieldset>
+
+            </form>
 
             <script  type="text/javascript">
 
@@ -103,7 +112,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
                 var viewMoreShare = '<?php echo url_for('buzz/viewShare'); ?>';
                 var getSharedEmployeeListURL = '<?php echo url_for('buzz/getSharedEmployeeList'); ?>';
             </script>
-            
+
         </div>
     </div>
 </div>

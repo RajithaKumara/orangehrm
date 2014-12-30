@@ -88,7 +88,24 @@ abstract class BaseBuzzAction extends sfAction {
      * @return type
      */
     public function getLoggedInEmployeeUserRole() {
-        return $this->getBuzzCookieService()->getEmployeeUserRole();
+        $employeeUserRole = null;
+        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
+            if ($this->getUser()->getAttribute('auth.isAdmin') == 'Yes') {
+                $employeeUserRole = 'Admin';
+            } else {
+                $employeeUserRole = 'Ess';
+            }
+            $employeeNumber = $this->getUser()->getAttribute('auth.empNumber');
+            if ($this->getBuzzCookieService()->getEmployeeNumber() != $employeeNumber) {
+                $this->getBuzzCookieService()->saveCookieValuves($employeeNumber, $employeeUserRole);
+            }
+        } elseif ($this->getBuzzCookieService()->isSavedCookies()) {
+            $employeeUserRole = $this->getBuzzCookieService()->getEmployeeUserRole();
+        } else {
+            throw new Exception('User Didnot Have');
+        }
+
+        return $employeeUserRole;
     }
 
 }

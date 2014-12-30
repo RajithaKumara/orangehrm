@@ -26,16 +26,32 @@
  */
 class likeOnCommentAction extends BaseBuzzAction {
 
+    /**
+     * return action validate form for validate actions
+     * @return ActionValidateForm
+     */
+    private function getActionValidateForm() {
+        if (!$this->actionValidateForm instanceof ActionValidatingForm) {
+            $this->actionValidateForm = new ActionValidatingForm();
+        }
+        return $this->actionValidateForm;
+    }
+
     public function execute($request) {
         try {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->commentId = $request->getParameter('commentId');
             $this->likeAction = $request->getParameter('likeAction');
             $this->comment = $this->getBuzzService()->getCommentById($this->commentId);
-            if ($this->likeAction == 'unlike') {
-                $this->unlikeOnComment();
-            } else {
-                $this->likeOnComment();
+            $csrfToken = $request->getParameter('CSRFToken');
+            $validateForm = $this->getActionValidateForm();
+
+            if ($csrfToken == $validateForm->getCSRFToken()) {
+                if ($this->likeAction == 'unlike') {
+                    $this->unlikeOnComment();
+                } else {
+                    $this->likeOnComment();
+                }
             }
         } catch (Exception $ex) {
             $this->redirect('auth/login');

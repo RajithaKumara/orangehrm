@@ -49,14 +49,14 @@ class likeOnShareAction extends BaseBuzzAction {
     }
 
     /**
-     * this is function to get buzzService
-     * @return buzzService 
+     * return action validate form for validate actions
+     * @return ActionValidateForm
      */
-    public function getBuzzService() {
-        if (!$this->buzzService) {
-            $this->buzzService = new BuzzService();
+    private function getActionValidateForm() {
+        if (!$this->actionValidateForm instanceof ActionValidatingForm) {
+            $this->actionValidateForm = new ActionValidatingForm();
         }
-        return $this->buzzService;
+        return $this->actionValidateForm;
     }
 
     public function execute($request) {
@@ -64,16 +64,22 @@ class likeOnShareAction extends BaseBuzzAction {
         $this->loggedInUser = $this->getLogedInEmployeeNumber();
         $this->shareId = $request->getParameter('shareId');
         $this->likeAction = $request->getParameter('likeAction');
+        $csrfToken = $request->getParameter('CSRFToken');
+        $validateForm = $this->getActionValidateForm();
         $this->error = 'no';
-        $this->commentForm = $this->getCommentForm();
-        $this->editForm = $this->getEditForm();
-        $this->share = $this->getBuzzService()->getShareById($this->shareId);
 
-        if ($this->likeAction == 'unlike') {
-            $this->unlikeOnShare();
-        } else {
-            $this->likeOnShare();
+        if ($csrfToken == $validateForm->getCSRFToken()) {
+            $this->commentForm = $this->getCommentForm();
+            $this->editForm = $this->getEditForm();
+            $this->share = $this->getBuzzService()->getShareById($this->shareId);
+
+            if ($this->likeAction == 'unlike') {
+                $this->unlikeOnShare();
+            } else {
+                $this->likeOnShare();
+            }
         }
+        throw new Exception($csrfToken . 'ddddd');
     }
 
     /**

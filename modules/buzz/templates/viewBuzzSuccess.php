@@ -178,7 +178,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
                     </div>
                 </div>
             </div>
-            
+
             <div class="modal hide" id='deleteConfirmationModal'>
 
                 <div class="modal-body originalPostModal-body" >
@@ -254,6 +254,16 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
                 </div>
             </div>
         </div>
+
+        <form id="actionValidateForm" method="POST" action="" 
+              enctype="multipart/form-data">
+            <fieldset>
+                <ol>
+                    <?php echo $actionValidateForm->render(); ?>            
+                </ol>
+            </fieldset>
+
+        </form>
 
         <div id="loggedInUserId" hidden="true"><?php echo $loggedInUser; ?></div>
 

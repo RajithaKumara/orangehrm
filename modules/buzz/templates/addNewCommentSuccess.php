@@ -22,7 +22,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 ?>
 
-<?php if ($error == 'no') { ?>
+<?php if ($isSuccessfullyAddedComment) { ?>
 
     <!-- start edit comment popup window-->
     <div class="modal hide originalPostModal"  id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
@@ -180,7 +180,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="20" style="margin-left: 40%; margin-top: 15px" />
         </div>
     </div>
-<?php } else if ($error == 'yes') { ?>
+<?php } else if (!$isSuccessfullyAddedComment) { ?>
 
     <div id ='errorFirstRow'>
         <?php

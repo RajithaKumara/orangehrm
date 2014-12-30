@@ -16,9 +16,9 @@ $(document).ready(function () {
         $("[id=postUnlikeyes_" + idValue.split("_")[1] + ']').hide();
         $("[id=postLikeyes_" + idValue.split("_")[1] + ']').show();
         $("[id=postLikeno_" + idValue.split("_")[1] + ']').hide();
-
-        $.getJSON(shareLikeURL + "?shareId=" + idValue.split("_")[1] + "&likeAction=" + action,
-                {get_param: 'value'}, function (data) {
+        var CSRFToken= $('#actionValidatingForm__csrf_token').val();
+        var shareId=idValue.split("_")[1] ;
+        $.post(shareLikeURL, {shareId: shareId ,likeAction: action,CSRFToken:CSRFToken}, function (data) {
             if (data.states === 'savedLike') {
                 var likes = trim($('#postLiketext_' + idValue.split("_")[1]).html());
                 likes++;
@@ -35,7 +35,7 @@ $(document).ready(function () {
             }
 
 
-        });
+        }, "json");
     });
     $(".postUnlike2").live("click", function (e) {
 
@@ -55,8 +55,9 @@ $(document).ready(function () {
         $("[id=postUnlikeyes_" + idValue.split("_")[1] + ']').show();
         $("[id=postUnlikeno_" + idValue.split("_")[1] + ']').hide()
         var action = "unlike";
-        $.getJSON(shareLikeURL + "?shareId=" + idValue.split("_")[1] + "&likeAction=" + action,
-                {get_param: 'value'}, function (data) {
+        var CSRFToken= $('#actionValidatingForm__csrf_token').val();
+        var shareId=idValue.split("_")[1] ;
+        $.post(shareLikeURL, {shareId: shareId ,likeAction: action,CSRFToken:CSRFToken}, function (data) {
             if (data.deleted === 'yes') {
                 var likes = trim($("#postLiketext_" + idValue.split("_")[1]).html());
                 likes--;
@@ -71,7 +72,7 @@ $(document).ready(function () {
             }
 
 
-        });
+        }, "json");
     });
 //    });
     $(".btnSaveVideo").live('click', function (e) {
@@ -180,8 +181,9 @@ $(document).ready(function () {
         var div2 = document.getElementById(id2);
         var likeLabelId = "#commentNoOfLikes_" + idValue.split("_")[1];
         var action = "like";
-        $.getJSON(commentLikeURL + "?commentId=" + idValue.split("_")[1] + "&likeAction=" + action,
-                {get_param: 'value'}, function (data) {
+        var commentId = idValue.split("_")[1];
+        var CSRFToken= $('#actionValidatingForm__csrf_token').val();
+        $.post(commentLikeURL , {commentId :commentId ,likeAction: action,CSRFToken:CSRFToken}, function (data) {
             if (data.states === 'savedLike') {
                 var likes = trim($('#commentNoOfLiketext_' + idValue.split("_")[1]).html());
                 likes++;
@@ -199,7 +201,7 @@ $(document).ready(function () {
                 $("#commentUnLikeno_" + idValue.split("_")[1]).show();
                 $("#commentUnLikeyes_" + idValue.split("_")[1]).hide();
             }
-        });
+        }, "json");
     });
     $(".commentUnlike2").live("click", function (e) {
 
@@ -211,8 +213,9 @@ $(document).ready(function () {
         var div2 = document.getElementById(id2);
         var likeLabelId = "#commentNoOfLikes_" + idValue.split("_")[1];
         var action = "unlike";
-        $.getJSON(commentLikeURL + "?commentId=" + idValue.split("_")[1] + "&likeAction=" + action,
-                {get_param: 'value'}, function (data) {
+        var commentId = idValue.split("_")[1];
+        var CSRFToken= $('#actionValidatingForm__csrf_token').val();
+        $.post(commentLikeURL , {commentId :commentId ,likeAction: action,CSRFToken:CSRFToken}, function (data) {;
             if (data.deleted === 'yes') {
                 var likes = trim($('#commentNoOfLiketext_' + idValue.split("_")[1]).html());
                 likes--;
@@ -229,7 +232,7 @@ $(document).ready(function () {
                 $("#commentUnLikeyes_" + idValue.split("_")[1]).show();
                 $("#commentUnLikeno_" + idValue.split("_")[1]).hide();
             }
-        });
+        }, "json");
     });
     var modalVisible = false;
     $(".closeFeed").live("click", function (e) {

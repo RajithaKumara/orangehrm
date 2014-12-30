@@ -310,14 +310,11 @@ $(document).ready(function () {
 
             $(elementId).attr('placeholder', 'Write your comment...');
             var commentListId = "#commentListNew_" + elementId.split("_")[1];
-            var data = {
-                'commentText': value,
-                'shareId': elementId.split("_")[1]
-            };
+          
             $.ajax({
                 url: addBuzzCommentURL,
                 type: 'POST',
-                data: data,
+                data: $('#frmCreateCommentNew_'+ elementId.split("_")[1]).serialize(),
                 success: function (data) {
                     $(commentListId).append(data);
                     $('.commentLoadingBox').hide();
@@ -334,23 +331,21 @@ $(document).ready(function () {
     $(".commentBox").live("keydown", function (e) {
         isAccess();
         if ((e.keyCode === 13) && !e.shiftKey) {
-            $("#commentListContainer").css("display", "block");
+            
             var elementId = "#" + e.target.id;
             var value = $(elementId).val();
-//            alert(elementId + " " + value);
+            
+            $("#commentListContainer_"+ elementId.split("_")[1]).css("display", "block");
             if (trim(value).length > 1) {
                 $('#commentLoadingBox' + elementId.split("_")[1]).show();
 
                 $(elementId).attr('placeholder', 'Write your comment...');
                 var commentListId = "#commentListNew_" + elementId.split("_")[1];
-                var data = {
-                    'commentText': value,
-                    'shareId': elementId.split("_")[1],
-                };
+                
                 $.ajax({
                     url: addBuzzCommentURL,
                     type: 'POST',
-                    data: data,
+                    data: $('#frmCreateCommentNew_'+ elementId.split("_")[1]).serialize(),
                     success: function (data) {
                         $(commentListId).append(data);
                         $(".popupCommentList").append(data);
