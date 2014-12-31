@@ -13,7 +13,7 @@ INSERT INTO `ohrm_config`(`property`, `value`) VALUES ('buzz_refresh_time','6000
 --
 -- Inserting News feed Module to The Database
 --
-INSERT INTO `ohrm_module`( `name`, `status`) VALUES ('buzz','1');
+INSERT INTO `ohrm_module`( `name`, `status`) VALUES ('buzz','0');
 INSERT INTO `ohrm_data_group` (`name`, `description`, `can_read`, `can_create`, `can_update`, `can_delete`) VALUES
 ('buzz_link', 'buzz link permition ', 1, 1, 1, 0);
 
