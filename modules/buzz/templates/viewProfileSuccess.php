@@ -40,7 +40,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             <ul id="profileBuzz">
                 <div class="jason"></div>
                 <?php
-                foreach ($postList as $post) {
+                foreach ($postListAsEmployee as $post) {
+                    include_component('buzz', 'viewPost', array('post' => $post, 'loggedInUser' => $loggedInUser));
+                }
+                foreach ($postListAsAdmin as $post) {
                     include_component('buzz', 'viewPost', array('post' => $post, 'loggedInUser' => $loggedInUser));
                 }
                 ?> 

@@ -587,7 +587,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
     }
     ?>
 
-    <div class="commentListContainer"  id='<?php echo 'commentListContainer_listId' . $postId ?>' style="display: <?php echo $displayCommentList; ?>">
+    <div class="commentListContainer"  id='<?php echo 'commentListContainer_' . $postId ?>' style="display: <?php echo $displayCommentList; ?>">
         <ul class="commentList" id='<?php echo 'commentListNew_listId' . $postId ?>'>
             <?php
             $count = 0;

@@ -14,6 +14,7 @@ abstract class PluginShare extends BaseShare {
 
     protected $buzzConfigService;
     protected $systemUserService;
+
     /**
      * 
      * @return SystemUserService
@@ -25,6 +26,7 @@ abstract class PluginShare extends BaseShare {
 
         return $this->systemUserService;
     }
+
     /**
      * check loged In User Like this post
      * @param int $id
@@ -57,11 +59,20 @@ abstract class PluginShare extends BaseShare {
             return $this->getEmployeePostShared()->getFirstAndLastNames();
         } else {
             $employeeBoundToAdmin = $this->getSystemUserService()->getSystemUser(1)->getEmployee();
-            if ($employeeBoundToAdmin) {
+            if ($employeeBoundToAdmin->empNumber) {
                 return $employeeBoundToAdmin->getFirstAndLastNames();
             } else {
                 return 'Admin';
             }
+        }
+    }
+
+    public function getEmployeeNum() {
+        if ($this->getEmployeeNumber() != '') {
+            return $this->getEmployeePostShared()->getEmpNumber();
+        } else {
+            $employeeBoundToAdmin = $this->getSystemUserService()->getSystemUser(1)->getEmployee();
+            return $employeeBoundToAdmin->empNumber;
         }
     }
 

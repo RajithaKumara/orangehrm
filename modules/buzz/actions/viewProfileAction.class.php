@@ -14,6 +14,7 @@
 class viewProfileAction extends BaseBuzzAction {
 
     private $employeeService;
+    private $systemUserService;
 
     /**
      * Get EmployeeService
@@ -25,6 +26,18 @@ class viewProfileAction extends BaseBuzzAction {
             $this->employeeService->setEmployeeDao(new EmployeeDao());
         }
         return $this->employeeService;
+    }
+
+    /**
+     * 
+     * @return SystemUserService
+     */
+    private function getSystemUserService() {
+        if (!$this->systemUserService) {
+            $this->systemUserService = new SystemUserService();
+        }
+
+        return $this->systemUserService;
     }
 
     /**
@@ -71,8 +84,18 @@ class viewProfileAction extends BaseBuzzAction {
     protected function initializePostList() {
         $buzzService = $this->getBuzzService();
         $userId = $this->profileUserId;
-
-        $this->postList = $buzzService->getSharesByEmployeeNumber($this->shareCount, $userId);
+        $this->postListAsEmployee = $buzzService->getSharesByEmployeeNumber($this->shareCount, $userId);
+//        if ($userId == $this->getSystemUserService()->getSystemUser(1)->getEmployee()->empNumber) {
+//            $this->postListAsAdmin = $buzzService->getSharesByEmployeeNumber($this->shareCount, NULL);
+//        }
+        if (sizeof($this->postListAsEmployee) < $this->shareCount) {
+            //$this->postListAsEmployee = $buzzService->getSharesByEmployeeNumber(($this->shareCount - sizeof($this->postListAsAdmin)), $userId);
+            if ($userId == $this->getSystemUserService()->getSystemUser(1)->getEmployee()->empNumber) {
+                $this->postListAsAdmin = $buzzService->getSharesByEmployeeNumber(($this->shareCount - sizeof($this->postListAsEmployee)), NULL);
+            }
+        }
+//        $this->postList = array_merge_recursive($postListAsAdmin, $postListAsEmployee);
+//        print_r($this->postList);die;
     }
 
     /**

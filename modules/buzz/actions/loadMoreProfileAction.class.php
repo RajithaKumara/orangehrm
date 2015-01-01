@@ -14,6 +14,7 @@
 class loadMoreProfileAction extends BaseBuzzAction {
 
     protected $buzzService;
+    protected $systemUserService;
 
     /**
      * 
@@ -21,6 +22,18 @@ class loadMoreProfileAction extends BaseBuzzAction {
      */
     private function setPostForm($form) {
         $this->postForm = $form;
+    }
+
+    /**
+     * 
+     * @return SystemUserService
+     */
+    private function getSystemUserService() {
+        if (!$this->systemUserService) {
+            $this->systemUserService = new SystemUserService();
+        }
+
+        return $this->systemUserService;
     }
 
     /**
@@ -59,8 +72,11 @@ class loadMoreProfileAction extends BaseBuzzAction {
             $this->lastPostId = $request->getParameter('lastPostId');
             $this->profileUserId = $request->getParameter('profileUserId');
             $this->buzzService = $this->getBuzzService();
-
-            $this->nextSharesList = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber(5, $this->lastPostId, $this->profileUserId);
+            $this->postListAsEmployee = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber(5, $this->lastPostId, $this->profileUserId);
+            if (sizeof($this->postListAsEmployee) < 5 && $this->profileUserId == $this->getSystemUserService()->getSystemUser(1)->getEmployee()->empNumber) {
+                $this->postListAsAdmin = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber((5 - sizeof($this->postListAsEmployee)), 
+                        $this->lastPostId, NULL);
+            }
             $this->editForm = new CommentForm();
             $this->commentForm = $this->getCommentForm();
         } catch (Exception $ex) {

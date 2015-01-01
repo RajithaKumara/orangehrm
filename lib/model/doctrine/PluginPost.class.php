@@ -20,11 +20,20 @@ abstract class PluginPost extends BasePost {
             return $this->getEmployeePostAdded()->getFirstAndLastNames();
         } else {
             $employeeBoundToAdmin = $this->getSystemUserService()->getSystemUser(1)->getEmployee();
-            if ($employeeBoundToAdmin) {
+            if ($employeeBoundToAdmin->empNumber) {
                 return $employeeBoundToAdmin->getFirstAndLastNames();
             } else {
                 return 'Admin';
             }
+        }
+    }
+
+    public function getEmployeeNum() {
+        if ($this->getEmployeeNumber() != '') {
+            return $this->getEmployeePostShared()->getFirstAndLastNames();
+        } else {
+            $employeeBoundToAdmin = $this->getSystemUserService()->getSystemUser(1)->getEmployee();
+            return $employeeBoundToAdmin->empNumber;
         }
     }
 

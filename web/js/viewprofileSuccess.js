@@ -186,6 +186,7 @@ $(window).scroll(function ()
                 data: lastPostId,
                 success: function (data) {
                     $('#profileBuzz').append(data);
+                    $('.loadMoreBox').hide();
                 }
             });
         }

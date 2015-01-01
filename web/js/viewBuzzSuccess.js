@@ -17,7 +17,6 @@ $(document).ready(function () {
                 type: "POST",
                 data: $('#frmPublishPost').serialize(),
                 success: function (data) {
-
                     $('#buzz').prepend(data);
                     $('.postLoadingBox').hide();
                     $("#postLinkData").hide();
@@ -303,8 +302,8 @@ $(document).ready(function () {
         var elementId = "#" + e.target.id;
         var value = $(elementId).val();
 
-        $("#commentListContainer_" + elementId.split("_")[1]).css("display", "block");
-        if (trim(value).length > 1) {
+        $("#commentListContainer_" + elementId.split("Id")[1]).css("display", "block");
+        if (trim(value).length > 0) {
             $('#commentLoadingBox' + elementId.split("_")[1]).show();
 
             $(elementId).attr('placeholder', 'Write your comment...');
@@ -314,10 +313,14 @@ $(document).ready(function () {
                 type: 'POST',
                 data: $('#formCreateComment_' + elementId.split("_")[1]).serialize(),
                 success: function (data) {
-                    $("#commentListNew_listId" + commentId).append(data);
                     $("#commentListNew_popPostId" + commentId).append(data);
+                    $("#commentListNew_popPostId" + commentId + " " + "#modalEdit").replaceWith(' ');
                     $("#commentListNew_popShareId" + commentId).append(data);
+                    $("#commentListNew_popShareId" + commentId + " " + "#modalEdit").replaceWith(' ');
                     $("#commentListNew_popPhotoId" + commentId).append(data);
+                    $("#commentListNew_popPhotoId" + commentId + " " + "#modalEdit").replaceWith(' ');
+
+                    $("#commentListNew_listId" + commentId).append(data);
                     $('.commentLoadingBox').hide();
                     $(elementId).val('');
                 }
@@ -335,8 +338,8 @@ $(document).ready(function () {
             var elementId = "#" + e.target.id;
             var value = $(elementId).val();
 
-            $("#commentListContainer_" + elementId.split("_")[1]).css("display", "block");
-            if (trim(value).length > 1) {
+            $("#commentListContainer_" + elementId.split("Id")[1]).css("display", "block");
+            if (trim(value).length > 0) {
                 $('#commentLoadingBox' + elementId.split("_")[1]).show();
 
                 $(elementId).attr('placeholder', 'Write your comment...');
@@ -346,13 +349,13 @@ $(document).ready(function () {
                     type: 'POST',
                     data: $('#formCreateComment_' + elementId.split("_")[1]).serialize(),
                     success: function (data) {
-                        
+
                         $("#commentListNew_popPostId" + commentId).append(data);
-                        $("#commentListNew_popPostId" + commentId+" "+"#modalEdit").replaceWith(' ');
+                        $("#commentListNew_popPostId" + commentId + " " + "#modalEdit").replaceWith(' ');
                         $("#commentListNew_popShareId" + commentId).append(data);
-                        $("#commentListNew_popShareId" + commentId+" "+"#modalEdit").replaceWith(' ');
+                        $("#commentListNew_popShareId" + commentId + " " + "#modalEdit").replaceWith(' ');
                         $("#commentListNew_popPhotoId" + commentId).append(data);
-                        $("#commentListNew_popPhotoId" + commentId+" "+"#modalEdit").replaceWith(' ');
+                        $("#commentListNew_popPhotoId" + commentId + " " + "#modalEdit").replaceWith(' ');
 
                         $("#commentListNew_listId" + commentId).append(data);
                         $('.commentLoadingBox').hide();
@@ -424,7 +427,7 @@ $(document).ready(function () {
             type: "POST",
             data: data,
             success: function (data) {
-                $("#postInList" + idOfThePostToDelete).hide();
+                $("#postInList" + idOfThePostToDelete).hide(1000);
                 $("#loadingDataModal").modal('hide');
                 idOfThePostToDelete = -1;
                 $("#successBody").replaceWith("<div id='successBody' >Successfully Deleted!</div>");
@@ -570,7 +573,7 @@ $(document).ready(function () {
             type: "POST",
             data: data,
             success: function (data) {
-                $("[id=commentInPost_" + commentId + ']').remove();
+                $("[id=commentInPost_" + commentId + ']').hide(1000);
                 $("#loadingDataModal").modal('hide');
             }
         });

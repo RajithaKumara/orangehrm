@@ -110,7 +110,26 @@
     position: absolute;
 
 } 
+
+.likeCommentnewPopup{
+    background-color: transparent;
+    opacity: 0.8;
+
+    width: 30px;
+    margin-left: 0px;
+    position: absolute;
+
+} 
 .unlikeCommentnew{
+    background-color: transparent;
+    opacity: 0.8;
+
+    width: 30px;
+    margin-left: 40px;
+    position: absolute;
+
+}
+.unlikeCommentnewPopup{
     background-color: transparent;
     opacity: 0.8;
 
@@ -143,6 +162,15 @@
     height: 30px;
 
     margin-top: -25px;
+    margin-bottom: 10px;
+    float:right;
+}
+
+#commentBodyThirdRowNewPopup{
+    width: 70px;
+    height: 30px;
+
+    margin-top: -50px;
     margin-bottom: 10px;
     float:right;
 }
