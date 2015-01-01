@@ -346,13 +346,13 @@ $(document).ready(function () {
                     type: 'POST',
                     data: $('#formCreateComment_' + elementId.split("_")[1]).serialize(),
                     success: function (data) {
-
+                        
                         $("#commentListNew_popPostId" + commentId).append(data);
-                        $("#modalEdit").replaceWith(' ');
+                        $("#commentListNew_popPostId" + commentId+" "+"#modalEdit").replaceWith(' ');
                         $("#commentListNew_popShareId" + commentId).append(data);
-                        $("#modalEdit").replaceWith(' ');
+                        $("#commentListNew_popShareId" + commentId+" "+"#modalEdit").replaceWith(' ');
                         $("#commentListNew_popPhotoId" + commentId).append(data);
-                        $("#modalEdit").replaceWith(' ');
+                        $("#commentListNew_popPhotoId" + commentId+" "+"#modalEdit").replaceWith(' ');
 
                         $("#commentListNew_listId" + commentId).append(data);
                         $('.commentLoadingBox').hide();
@@ -566,7 +566,7 @@ $(document).ready(function () {
             'commentId': commentId,
         };
         $.ajax({
-            url: commentDeleteURL ,
+            url: commentDeleteURL,
             type: "POST",
             data: data,
             success: function (data) {
