@@ -17,14 +17,15 @@
  * Please refer http://www.orangehrm.com/Files/OrangeHRM_Commercial_License.pdf for the license which includes terms and conditions on using this software.
  *
  */
-use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
-//use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
-use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
+//use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
+////use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
+//use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 ?>
 
 <?php if ($isSuccessfullyAddedComment) { ?>
 
     <!-- start edit comment popup window-->
+    <div id="modalEdit">
     <div class="modal hide originalPostModal"  id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
 
         <div class="modal-body editPostModal-body" >
@@ -47,15 +48,16 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
                     </form>
 
                     <div class="editCommrntPageButton">
-                        <input type="button"  class="btnEditCommentNew" name="btnSaveDependent" id='<?php echo 'btnEditComment_' . $commentId ?>' value="<?php echo __("Save"); ?>"/>
+                        <button type="button"  class="btnEditCommentNew" name="btnSaveDependent" id='<?php echo 'btnEditComment_' . $commentId ?>' ><?php echo __("Save"); ?></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
     <!-- end edit comment pop up window-->
 
-    <li id="<?php echo "commentNew_" . $commentId; ?>" style="display: <?php echo $display; ?>" class="<?php echo $commentPostId; ?>" >
+    <li id="<?php echo "commentInPost_" . $commentId; ?>" style="display: <?php echo $display; ?>" class="<?php echo $commentPostId; ?>" >
         <div id="commentBody">
             <div id="commentRowOne">
                 <div id="commentColumnOne">
@@ -76,21 +78,21 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
                             <?php echo $commentTime; ?>
                         </div>
                     </div>
-                </div>
-                <div id="commentColumnThree">
-                    <?php if (($commentEmployeeId == $loggedInUser) || ($loggedInEmployeeUserRole == 'Admin')) { ?>
-                        <div id="commentOptionWidget">
-                            <div class="dropdown commentDropDown">
-                                <a class="commentAccount" id=<?php echo 'cnew' . $commentId ?>></a>
-                                <div class="submenu" id=<?php echo 'submenucnew' . $commentId ?>>
-                                    <ul class = "root">
-                                        <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
-                                        <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
-                                    </ul>
+                    <div id="commentColumnThree">
+                        <?php if (($commentEmployeeId == $loggedInUser) || ($loggedInEmployeeUserRole == 'Admin')) { ?>
+                            <div id="commentOptionWidget">
+                                <div class="dropdown commentDropDown">
+                                    <a class="commentAccount" id='<?php echo 'commentnew' . $commentId; ?>'></a>
+                                    <div class="submenu" id='<?php echo 'submenucommentnew' . $commentId; ?>'>
+                                        <ul class = "root">
+                                            <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
+                                            <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    <?php } ?>
+                        <?php } ?>
+                    </div>
                 </div>
             </div>
 

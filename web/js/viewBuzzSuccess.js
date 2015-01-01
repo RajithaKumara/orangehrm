@@ -308,20 +308,21 @@ $(document).ready(function () {
             $('#commentLoadingBox' + elementId.split("_")[1]).show();
 
             $(elementId).attr('placeholder', 'Write your comment...');
-            var commentListId = "#commentListNew_" + elementId.split("_")[1];
+            var commentId = elementId.split("Id")[1];
             $.ajax({
                 url: addBuzzCommentURL,
                 type: 'POST',
                 data: $('#formCreateComment_' + elementId.split("_")[1]).serialize(),
                 success: function (data) {
-                    $(commentListId).append(data);
-                    $(".popupCommentList").append(data);
+                    $("#commentListNew_listId" + commentId).append(data);
+                    $("#commentListNew_popPostId" + commentId).append(data);
+                    $("#commentListNew_popShareId" + commentId).append(data);
+                    $("#commentListNew_popPhotoId" + commentId).append(data);
                     $('.commentLoadingBox').hide();
                     $(elementId).val('');
                 }
             });
         }
-
     });
 
     /**
@@ -339,14 +340,21 @@ $(document).ready(function () {
                 $('#commentLoadingBox' + elementId.split("_")[1]).show();
 
                 $(elementId).attr('placeholder', 'Write your comment...');
-                var commentListId = "#commentListNew_" + elementId.split("_")[1];
+                var commentId = elementId.split("Id")[1];
                 $.ajax({
                     url: addBuzzCommentURL,
                     type: 'POST',
                     data: $('#formCreateComment_' + elementId.split("_")[1]).serialize(),
                     success: function (data) {
-                        $(commentListId).append(data);
-                        $(".popupCommentList").append(data);
+
+                        $("#commentListNew_popPostId" + commentId).append(data);
+                        $("#modalEdit").replaceWith(' ');
+                        $("#commentListNew_popShareId" + commentId).append(data);
+                        $("#modalEdit").replaceWith(' ');
+                        $("#commentListNew_popPhotoId" + commentId).append(data);
+                        $("#modalEdit").replaceWith(' ');
+
+                        $("#commentListNew_listId" + commentId).append(data);
                         $('.commentLoadingBox').hide();
                         $(elementId).val('');
                     }
@@ -370,29 +378,29 @@ $(document).ready(function () {
 
     $(".commentAccount").live("click", function (e)
     {
-        var elementId = "#submenu" + e.target.id;
-        $(elementId).toggle(100);
+        var elementId = "submenu" + e.target.id;
+        $('[id=' + elementId + "]").toggle(100);
     });
 
 //Mouse click on sub menu
-    $(".submenu").mouseup(function ()
+    $(".submenu").live("mouseup", function ()
     {
         return false;
     });
 
 //Mouse click on my account link
-    $(".account").mouseup(function ()
+    $(".account").live("mouseup", function ()
     {
         return false;
     });
-    $(".commentAccount").mouseup(function ()
+    $(".commentAccount").live("mouseup", function ()
     {
-        //return false;
+        return false;
     });
 
 
 //Document Click
-    $(document).mouseup(function ()
+    $(document).live("mouseup", function ()
     {
         $(".submenu").hide();
         //$(".account").attr('id', '');
@@ -408,10 +416,15 @@ $(document).ready(function () {
     $("#delete_confirm").live("click", function () {
         $("#deleteConfirmationModal").modal('hide');
         $("#loadingDataModal").modal();
+        var data = {
+            'shareId': idOfThePostToDelete,
+        };
         $.ajax({
-            url: shareDeleteURL + "?shareId=" + idOfThePostToDelete,
+            url: shareDeleteURL,
+            type: "POST",
+            data: data,
             success: function (data) {
-                $("#post" + idOfThePostToDelete).hide();
+                $("#postInList" + idOfThePostToDelete).hide();
                 $("#loadingDataModal").modal('hide');
                 idOfThePostToDelete = -1;
                 $("#successBody").replaceWith("<div id='successBody' >Successfully Deleted!</div>");
@@ -517,9 +530,15 @@ $(document).ready(function () {
         var content = $("#editshareBox_" + shareId).val();
         $("#editposthide_" + shareId).modal('hide');
         $("#loadingDataModal").modal();
+        var data = {
+            'shareId': shareId,
+            'textShare': content
+        };
 
         $.ajax({
-            url: shareEditURL + "?shareId=" + shareId + "&textShare=" + content,
+            url: shareEditURL,
+            type: "POST",
+            data: data,
             success: function (data) {
 
                 $("#postContent_" + shareId).replaceWith(data);
@@ -543,10 +562,15 @@ $(document).ready(function () {
         var commentId = e.target.id.split("_")[1];
         $("#loadingDataModal").modal();
 
+        var data = {
+            'commentId': commentId,
+        };
         $.ajax({
-            url: commentDeleteURL + "?commentId=" + commentId,
+            url: commentDeleteURL ,
+            type: "POST",
+            data: data,
             success: function (data) {
-                $("#commentInPost_" + commentId).remove();
+                $("[id=commentInPost_" + commentId + ']').remove();
                 $("#loadingDataModal").modal('hide');
             }
         });
@@ -574,7 +598,6 @@ $(document).ready(function () {
                 $("#loadingDataModal").modal('hide');
                 $("#successDataModal").modal();
                 setTimeout(hideSuccessModal, 3000);
-                setTimeout(refresh, 10000);
             }
         });
 
@@ -625,13 +648,18 @@ $(document).ready(function () {
         $("#editcommenthideNew2_" + commentId).modal('hide');
         $("#loadingDataModal").modal();
 
+        var data = {
+            'commentId': commentId,
+            'textComment': content
+        };
         $.ajax({
-            url: commentEditURL + "?commentId=" + commentId + "&textComment=" + content,
+            url: commentEditURL,
+            type: 'POST',
+            data: data,
             success: function (data) {
-                $("#commentContentNew_" + commentId).replaceWith(data);
-                reload();
+                $("[id=commentContentNew_" + commentId + ']').replaceWith(data);
                 $("#loadingDataModal").modal('hide');
-                setTimeout(refresh, 10000);
+
             }
         });
 
@@ -854,17 +882,17 @@ function activateTab(pageId) {
         if (node.nodeType == 1) { /* Element */
             node.style.display = (node == pageToActivate) ? 'block' : 'none';
             if (pageId === 'page1') {
-                $("#status_icon").attr("src", imageFolderPath + "/status2");
-                $("#img_upld_icon").attr("src", imageFolderPath + "/img");
-                $("#vid_upld_icon").attr("src", imageFolderPath + "/vid");
+                $("#status_icon").attr("src", imageFolderPath + "status2.png");
+                $("#img_upld_icon").attr("src", imageFolderPath + "img.png");
+                $("#vid_upld_icon").attr("src", imageFolderPath + "vid.png");
             } else if (pageId === 'page2') {
-                $("#status_icon").attr("src", imageFolderPath + "/status");
-                $("#img_upld_icon").attr("src", imageFolderPath + "/img2");
-                $("#vid_upld_icon").attr("src", imageFolderPath + "/vid");
+                $("#status_icon").attr("src", imageFolderPath + "status.png");
+                $("#img_upld_icon").attr("src", imageFolderPath + "img2.png");
+                $("#vid_upld_icon").attr("src", imageFolderPath + "vid.png");
             } else {
-                $("#status_icon").attr("src", imageFolderPath + "/status");
-                $("#img_upld_icon").attr("src", imageFolderPath + "/img");
-                $("#vid_upld_icon").attr("src", imageFolderPath + "/vid2");
+                $("#status_icon").attr("src", imageFolderPath + "status.png");
+                $("#img_upld_icon").attr("src", imageFolderPath + "img.png");
+                $("#vid_upld_icon").attr("src", imageFolderPath + "vid2.png");
             }
         }
     }

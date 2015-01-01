@@ -19,7 +19,7 @@
  */
 ?>
 <?php if ($error == 'no') { ?>
-    <div id='<?php echo 'commentContent_' . $commentId ?>'>
+    <div class="commentContent" id='<?php echo 'commentContent_' . $commentId ?>'>
         <?php echo BuzzTextParserService::parseText($comment->getCommentText()); ?>
     </div>
 <?php } else if ($error == 'yes') { ?>

@@ -66,14 +66,9 @@ $(document).ready(function () {
             var shareId = idValue.split("_")[1];
             $.post(shareLikeURL, {shareId: shareId, likeAction: action, CSRFToken: CSRFToken}, function (data) {
                 if (data.deleted === 'yes') {
-                    var likes = trim($("#postLiketext_" + idValue.split("_")[1]).html());
-                    likes--;
-
                     $("[id=noOfLikes_" + idValue.split("_")[1] + ']').html(data.likeCount);
                 }
                 if (data.states === 'savedUnLike') {
-                    var likes = trim($('#postUnLiketext_' + idValue.split("_")[1]).html());
-                    likes++;
                     $("[id=postUnLiketext_" + idValue.split("_")[1] + ']').html(data.unlikeCount);
                     $("[id=noOfUnLikes_" + idValue.split("_")[1] + ']').html(data.unlikeCount);
                 }
@@ -201,18 +196,18 @@ $(document).ready(function () {
                 var likes = trim($('#commentNoOfLiketext_' + idValue.split("_")[1]).html());
                 likes++;
 
-                $('#commentNoOfLiketext_' + idValue.split("_")[1]).html(likes);
-                $("#commentNoOfLikes_" + idValue.split("_")[1]).html(likes);
-                $("#commentLikeyes_" + idValue.split("_")[1]).show();
-                $("#commentLikeno_" + idValue.split("_")[1]).hide();
+                $('[id=commentNoOfLiketext_' + idValue.split("_")[1]+']').html(likes);
+                $("[id=commentNoOfLikes_" + idValue.split("_")[1]+']').html(likes);
+                $("[id=commentLikeyes_" + idValue.split("_")[1]+']').show();
+                $("[id=commentLikeno_" + idValue.split("_")[1]+']').hide();
             }
             if (data.deleted === 'yes') {
                 var likes = trim($('#commentNoOfUnLiketext_' + idValue.split("_")[1]).html());
                 likes--;
-                $('#commentNoOfUnLiketext_' + idValue.split("_")[1]).html(likes);
-                $('#commentNoOfUnLikes_' + idValue.split("_")[1]).html(likes);
-                $("#commentUnLikeno_" + idValue.split("_")[1]).show();
-                $("#commentUnLikeyes_" + idValue.split("_")[1]).hide();
+                $('[id=commentNoOfUnLiketext_' + idValue.split("_")[1]+']').html(likes);
+                $('[id=commentNoOfUnLikes_' + idValue.split("_")[1]+']').html(likes);
+                $("[id=commentUnLikeno_" + idValue.split("_")[1]+']').show();
+                $("[id=commentUnLikeyes_" + idValue.split("_")[1]+']').hide();
             }
         }, "json");
     });
@@ -233,18 +228,18 @@ $(document).ready(function () {
             if (data.deleted === 'yes') {
                 var likes = trim($('#commentNoOfLiketext_' + idValue.split("_")[1]).html());
                 likes--;
-                $('#commentNoOfLiketext_' + idValue.split("_")[1]).html(likes);
-                $("#commentNoOfLikes_" + idValue.split("_")[1]).html(likes);
-                $("#commentLikeno_" + idValue.split("_")[1]).show();
-                $("#commentLikeyes_" + idValue.split("_")[1]).hide();
+                $('[id=commentNoOfLiketext_' + idValue.split("_")[1]+']').html(likes);
+                $("[id=commentNoOfLikes_" + idValue.split("_")[1]+']').html(likes);
+                $("[id=commentLikeno_" + idValue.split("_")[1]+']').show();
+                $("[id=commentLikeyes_" + idValue.split("_")[1]+']').hide();
             }
             if (data.states === 'savedUnLike') {
                 var likes = trim($('#commentNoOfUnLiketext_' + idValue.split("_")[1]).html());
                 likes++;
-                $('#commentNoOfUnLiketext_' + idValue.split("_")[1]).html(likes);
-                $('#commentNoOfUnLikes_' + idValue.split("_")[1]).html(likes);
-                $("#commentUnLikeyes_" + idValue.split("_")[1]).show();
-                $("#commentUnLikeno_" + idValue.split("_")[1]).hide();
+                $('[id=commentNoOfUnLiketext_' + idValue.split("_")[1]+']').html(likes);
+                $('[id=commentNoOfUnLikes_' + idValue.split("_")[1]+']').html(likes);
+                $("[id=commentUnLikeyes_" + idValue.split("_")[1]+']').show();
+                $("[id=commentUnLikeno_" + idValue.split("_")[1]+']').hide();
             }
         }, "json");
     });
