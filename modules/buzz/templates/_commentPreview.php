@@ -166,6 +166,12 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                       echo $commentForm['shareId']->render();
                       echo $commentForm['_csrf_token']->render();
                       ?>
+                <div id="commentSubmitBtnInModal">
+                    <input type="button" value="<?php echo __("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn">
+                </div>
+                <button type="button" id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn commentSubmitBtnForIe">
+                    <?php echo __("Comment"); ?>
+                </button>
             </form>
         </div>
     </div>

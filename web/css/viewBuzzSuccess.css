@@ -610,18 +610,34 @@ input[type="button"]{
         padding: 5px;
         width: 17%;
     }
-    
+
     .submitBtn{
         margin-top: -40px;
     }
 }
 
+.commentSubmitBtnForIe{
+    display: none;
+}
+
+#commentSubmitBtnInModal input[type="button"]{
+    margin-left: 70%;
+    width: 27%;
+}
+
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none){  
-    .commentSubmitBtn{
-        margin-top: -100px;
+
+
+    input[type="button"]{
+        display: none;
     }
-    .submitBtn{
-        margin-top: -100px;
+
+    .commentSubmitBtnForIe{
+        display: block;
+        position: relative;
+        margin-top: -37px;
+        padding: 8px;
+        float: right;
     }
 }
 
