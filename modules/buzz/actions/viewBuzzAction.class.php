@@ -122,6 +122,7 @@ class viewBuzzAction extends BaseBuzzAction {
             $this->uploadImageForm = $this->getUploadImageForm(); //image upload form
             $this->actionValidateForm = $this->getActionValidateForm();
             $this->buzzService = $this->getBuzzService();
+            $this->allShareCount= $this->buzzService->getSharesCount();
             $this->initializePostList();
             $this->videoForm = $this->getVideoForm();  // video form added
             $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));

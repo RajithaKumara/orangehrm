@@ -37,6 +37,15 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
     /**
      * test save post to the database
      */
+    public function testGetSharesCount() {
+        
+        $resultShareCount = $this->buzzDao->getSharesCount();
+        $this->assertEquals(4, $resultShareCount);
+    }
+    
+    /**
+     * test save post to the database
+     */
     public function testSavePost() {
         $post = New Post();
         $post->setEmployeeNumber(1);

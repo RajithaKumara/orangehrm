@@ -43,6 +43,18 @@ class BuzzService extends BaseService {
      * @return share collection
      * @throws DaoException
      */
+    public function getSharesCount() {
+
+        return $this->getBuzzDao()->getSharesCount();
+    }
+    
+    /**
+     * get most resent share by giving limit
+     * 
+     * @param int $limit
+     * @return share collection
+     * @throws DaoException
+     */
     public function getShares($limit) {
 
         return $this->getBuzzDao()->getShares($limit);

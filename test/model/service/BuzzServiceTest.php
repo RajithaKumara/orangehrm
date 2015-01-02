@@ -41,6 +41,20 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
     /**
      * this is function to test saving post in the database
      */
+    public function testGetShareCount() {
+        $buzzDao = $this->getMock('buzzDao', array('getSharesCount'));
+        $buzzDao->expects($this->once())
+                ->method('getSharesCount')
+                ->will($this->returnValue(4));
+        $this->buzzService->setBuzzDao($buzzDao);
+
+        $resultShareCount = $this->buzzService->getSharesCount();
+        $this->assertEquals(4, $resultShareCount);
+    }
+    
+    /**
+     * this is function to test saving post in the database
+     */
     public function testSavePost() {
         $post = New Post();
         $buzzDao = $this->getMock('buzzDao', array('savePost'));

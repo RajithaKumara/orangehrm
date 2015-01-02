@@ -163,7 +163,7 @@ $(document).ready(function () {
 
 
     });
-  
+
 
 }
 );
@@ -173,22 +173,31 @@ $(window).scroll(function ()
 
     if ($(window).scrollTop() >= ($(document).height() - $(window).height()))
     {
+        var sharesLoadedCount = parseInt($('#buzzProfileSharesLoadedCount').html());
+        var allSharesCount = parseInt($('#buzzProfileAllSharesCount').html());
+        var sharesInceasingCount = parseInt($('#buzzProfileSharesInceasingCount').html());
+
         if ($('.loadMoreBox').css('display') == 'none') {
-            $('.loadMoreBox').show();
-            var lastPostId = {
-                'lastPostId': $('#profileBuzz .lastLoadedPost').last().attr('id'),
-                'profileUserId': trim($('#profileUserId').html())
-            };
-            
-            $.ajax({
-                url: loadNextSharesURL,
-                type: "POST",
-                data: lastPostId,
-                success: function (data) {
-                    $('#profileBuzz').append(data);
-                    $('.loadMoreBox').hide();
-                }
-            });
+            if (allSharesCount > sharesLoadedCount) {
+                sharesLoadedCount = sharesLoadedCount + sharesInceasingCount;
+                $('#buzzProfileSharesLoadedCount').html(sharesLoadedCount);
+
+                $('.loadMoreBox').show();
+                var lastPostId = {
+                    'lastPostId': $('#profileBuzz .lastLoadedPost').last().attr('id'),
+                    'profileUserId': trim($('#profileUserId').html())
+                };
+
+                $.ajax({
+                    url: loadNextSharesURL,
+                    type: "POST",
+                    data: lastPostId,
+                    success: function (data) {
+                        $('#profileBuzz').append(data);
+                        $('.loadMoreBox').hide();
+                    }
+                });
+            }
         }
 
     }

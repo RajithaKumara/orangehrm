@@ -22,6 +22,29 @@
 class BuzzDao extends BaseDao {
 
     /**
+     * get share count
+     * 
+     * @param int $limit
+     * @return share collection
+     * @throws DaoException
+     */
+    public function getSharesCount() {
+       try {
+            $q = Doctrine_Manager::getInstance()->getCurrentConnection();
+            
+            $result = $q->execute(
+                    "SELECT id
+                FROM ohrm_buzz_share"
+                           );
+            return $result->rowCount();
+            // @codeCoverageIgnoreStart
+        } catch (Exception $e) {
+            throw new DaoException($e->getMessage(), $e->getCode(), $e);
+        }
+        // @codeCoverageIgnoreEnd
+    }
+    
+    /**
      * get most recent share by giving limit
      * 
      * @param int $limit

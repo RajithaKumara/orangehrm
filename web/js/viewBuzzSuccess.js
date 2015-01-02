@@ -852,20 +852,29 @@ $(document).ready(function () {
     {
         if ($(window).scrollTop() >= ($(document).height() - $(window).height()))
         {
+            var sharesLoadedCount = parseInt($('#buzzSharesLoadedCount').html());
+            var allSharesCount = parseInt($('#buzzAllSharesCount').html());
+            var sharesInceasingCount = parseInt($('#buzzSharesInceasingCount').html());
+
             if ($('.loadMoreBox').css('display') == 'none') {
-                $('.loadMoreBox').show();
-                var lastPostId = {
-                    'lastPostId': $('#buzz .lastLoadedPost').last().attr('id')
-                };
-                $.ajax({
-                    url: loadNextSharesURL,
-                    type: "POST",
-                    data: lastPostId,
-                    success: function (data) {
-                        $('.loadMoreBox').hide();
-                        $('#buzz').append(data);
-                    }
-                });
+                if (allSharesCount > sharesLoadedCount) {
+                    sharesLoadedCount = sharesLoadedCount + sharesInceasingCount;
+                    $('#buzzSharesLoadedCount').html(sharesLoadedCount);
+
+                    $('.loadMoreBox').show();
+                    var lastPostId = {
+                        'lastPostId': $('#buzz .lastLoadedPost').last().attr('id')
+                    };
+                    $.ajax({
+                        url: loadNextSharesURL,
+                        type: "POST",
+                        data: lastPostId,
+                        success: function (data) {
+                            $('.loadMoreBox').hide();
+                            $('#buzz').append(data);
+                        }
+                    });
+                }
             }
         }
     });

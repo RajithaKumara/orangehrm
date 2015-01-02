@@ -63,14 +63,14 @@ class loadNextSharesAction extends BaseBuzzAction {
         }
         return $this->commentForm;
     }
-    
+
     /**
      * 
      * @return commentForm
      */
     private function getEditForm() {
         if (!($this->editForm instanceof CommentForm)) {
-            $this->editForm=new CommentForm();
+            $this->editForm = new CommentForm();
         }
         return $this->editForm;
     }
@@ -81,12 +81,21 @@ class loadNextSharesAction extends BaseBuzzAction {
             $this->lastPostId = $request->getParameter('lastPostId');
             $this->buzzService = $this->getBuzzService();
 
-            $this->nextSharesList = $this->buzzService->getMoreShares(5, $this->lastPostId);
+            $this->nextSharesList = $this->buzzService->getMoreShares($this->getShareCount(), $this->lastPostId);
             $this->editForm = $this->getEditForm();
             $this->commentForm = $this->getCommentForm();
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
+    }
+
+    /**
+     * get share count 
+     * @return Int
+     */
+    protected function getShareCount() {
+        $buzzConfigService = $this->getBuzzConfigService();
+        return $buzzConfigService->getBuzzShareCount();
     }
 
 }

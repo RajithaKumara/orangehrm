@@ -263,7 +263,9 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
             </fieldset>
 
         </form>
-
+        <div hidden="true" id="buzzAllSharesCount" ><?php echo $allShareCount; ?></div>
+        <div hidden="true" id="buzzSharesLoadedCount"><?php echo $shareCount; ?></div>
+        <div hidden="true" id="buzzSharesInceasingCount"><?php echo $shareCount; ?></div>
         <div id="loggedInUserId" hidden="true"><?php echo $loggedInUser; ?></div>
 
         <script  type="text/javascript">

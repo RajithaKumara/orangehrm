@@ -104,7 +104,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
                 </fieldset>
 
             </form>
-
+            <div hidden="true" id="buzzProfileAllSharesCount" ><?php echo $allShareCount; ?></div>
+            <div hidden="true" id="buzzProfileSharesLoadedCount"><?php echo $shareCount; ?></div>
+            <div hidden="true" id="buzzProfileSharesInceasingCount"><?php echo $shareCount; ?></div>
             <script  type="text/javascript">
 
                 var viewMoreShare = '<?php echo url_for('buzz/viewShare'); ?>';
