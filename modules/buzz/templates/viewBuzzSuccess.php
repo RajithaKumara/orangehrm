@@ -142,17 +142,47 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
                         <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/vload.gif"); ?>" 
                              height="20"  />
                     </div>
-                    <form id="frmUploadVideo" method="POST" action="" 
+                    <form id="frmSaveVideo" method="POST" action="" 
                           enctype="multipart/form-data">
                         <fieldset>
                             <ol>
-                                <?php echo $videoForm->render(); ?>            
+                                <?php echo $videoForm->render();
+                                echo $videoForm['linkAddress']->render();
+                                          echo $videoForm['_csrf_token']->render();
+                                ?>            
                             </ol>
                         </fieldset>
                         <p>
                         </p>
                     </form>
-                    <div id="videoPostArea">
+                    <div hidden="true" id="videoPostArea">
+                        <div id="tempVideoBlock">
+                            <div  id="postBody">
+<!--                                <form id="frmSaveVideo" method="" action="" 
+                                      enctype="multipart/form-data">
+                                          <?php
+                                          
+//                                          $placeholder = 'Write something about this video';
+//                                          echo $videoForm['content']->render(array(
+//                                              'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2', 'placeholder' => $placeholder));
+//                                          echo $videoForm['linkAddress']->render();
+//                                          echo $videoForm['_csrf_token']->render();
+                                          ?>
+
+                                </form>-->
+                                <div id="yuoutubeVideoId" hidden="true"><?php echo $videoFeedUrl; ?></div>
+
+                                <div style="text-align: center; margin-bottom: 10px;">
+                                    <iframe name="videoIframe" id="videoIframe" src="<?php echo $videoFeedUrl; ?>" width="80%" height="225px" frameborder="0" allowfullscreen></iframe >
+                                </div>
+
+                                <p>
+                                    <button type="submit" id='<?php echo 'btnSaveVideo_', $videoFeedUrl; ?>' class="submitBtn btnSaveVideo">
+                                        <?php echo __("Save Video"); ?>
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
