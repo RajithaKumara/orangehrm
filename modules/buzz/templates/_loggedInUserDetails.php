@@ -30,7 +30,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/loggedInUserDetails')
             echo $searchForm->render();
             ?>
         </form>
-        <img id="gotoProfile" height="30px" style="" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/search.png'); ?>">
+        <img id="gotoProfile" height="30px" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/search.png'); ?>">
     </div>
     <div id="leftSide">
         <div id="userName">

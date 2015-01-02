@@ -38,6 +38,24 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
         <div id="refreshTime" hidden="true" ><?php echo $refeshTime ?></div>
         <div id="profileContainer">
             <ul id="profileBuzz">
+                <div class="modal hide" id='deleteConfirmationModal'>
+
+                    <div class="modal-body originalPostModal-body" >
+                        <div class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>'
+                             ><img 
+                                class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>' 
+                                src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                                />
+                        </div>
+                        <div class="modal-body">
+                            <div id="maxImageErrorHeading">
+                                <?php echo __("Do you really want to delete this?"); ?>
+                            </div>
+                            <button id="delete_confirm" type="button">Yes</button>
+                            <button id="delete_discard" type="button">No</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="jason"></div>
                 <?php
                 foreach ($postListAsEmployee as $post) {

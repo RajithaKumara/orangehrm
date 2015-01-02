@@ -45,7 +45,7 @@
     margin-left: 6px;
     color: white;
     padding: 2px 5px;
-    
+
     border-radius: 5px;
 }
 
@@ -66,7 +66,15 @@
     margin-top: 6px; 
     border-radius: 0 5px 5px 0;
 }
-
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {  
+    #gotoProfile{
+        font-size: 12px;
+        margin-top: 7px;
+        background-color: white;
+        margin-top: 0px; 
+        border-radius: 0 5px 5px 0;
+    }
+}
 #gotoProfile:hover{
     cursor: pointer;
 
@@ -100,12 +108,12 @@
 }
 .logoutLink{
     padding: 2px 5px;
-    
+
     border-radius: 5px;
 }
 .ProfileLink{
     padding: 2px 5px;
-    
+
     border-radius: 5px;
 }
 

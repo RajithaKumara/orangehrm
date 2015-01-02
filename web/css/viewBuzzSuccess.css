@@ -82,7 +82,7 @@ textarea{
 .btnEditShare{
     margin-top: 10px;
     float: right;
-    
+
     background-color: #33ac3f;
     border: medium none;
     border-radius: 3px;
@@ -145,6 +145,7 @@ textarea{
     padding: 8px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
+    -ms-border-radius: 5px;
     border-radius: 4px; /* future proofing */
     -khtml-border-radius: 5px; /* for old Konqueror browsers */
 }
@@ -171,8 +172,10 @@ textarea{
 #postDateTime{
     display: -webkit-box;    
     display: -moz-box;
+    display: -ms-flexbox;    -ms-flex-direction: row;
     -webkit-box-orient: horizontal;    
     -moz-box-orient: horizontal;
+
     font-family: 'SourceSansProLight';
     font-size: 14px;
     margin-top: 3px;
@@ -216,7 +219,7 @@ textarea{
     margin-bottom: 0px;
     margin-top: -10px;
     font-size: 16px;
-    
+
 }
 
 /*Name hide row*/
@@ -271,8 +274,10 @@ textarea{
 #postBodyThirdRow{
     display: -webkit-box;    
     display: -moz-box;
+    display: -ms-flexbox;    -ms-flex-direction: row;
     -webkit-box-orient: horizontal;    
     -moz-box-orient: horizontal;
+
     padding-left: 5px;
     padding-right: 5px;
     margin-top: 5px;
@@ -282,8 +287,10 @@ textarea{
 #commentBodyThirdRow{
     display: -webkit-box;    
     display: -moz-box;
+    display: -ms-flexbox;    -ms-flex-direction: row;
     -webkit-box-orient: horizontal;    
     -moz-box-orient: horizontal;
+
     padding-left: 5px;
     padding-right: 5px;
     margin-top: 5px;
@@ -331,6 +338,8 @@ textarea{
     -webkit-border-bottom-right-radius: 4px;
     -moz-border-bottom-left-radius: 4px;
     -moz-border-bottom-right-radius: 4px;
+    -ms-border-bottom-left-radius: 4px;
+    -ms-border-bottom-right-radius: 4px;
 }
 
 #commentBody{
@@ -387,8 +396,10 @@ textarea{
 #commentColumnTwoRowOne{
     display: -webkit-box;    
     display: -moz-box;
+    display: -ms-flexbox;    -ms-flex-direction: row;
     -webkit-box-orient: horizontal;    
     -moz-box-orient: horizontal;
+
     margin-right: 5px;
 }
 
@@ -580,15 +591,40 @@ a.commentAccount
     font-size: 16px;
     font-family: "SourceSansProRegular";
     margin-bottom: 10px;
+    margin-top: -60px;
 }
 
 input[type="button"]{
     font-size: 16px;
     margin-left: 81.8%;
-    margin-top: -60px;
+    //margin-top: -60px;
     padding: 5px;
     width: 17%;
 }
+
+@media screen and (-webkit-min-device-pixel-ratio:0){  
+    input[type="button"]{
+        font-size: 16px;
+        margin-left: 81.8%;
+        margin-top: -36px;
+        padding: 5px;
+        width: 17%;
+    }
+    
+    .submitBtn{
+        margin-top: -40px;
+    }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none){  
+    .commentSubmitBtn{
+        margin-top: -100px;
+    }
+    .submitBtn{
+        margin-top: -100px;
+    }
+}
+
 .postCommentBox{
     font-size: 16px;
     font-family: "SourceSansProLight";
@@ -607,8 +643,14 @@ input[type="button"]{
 }
 
 #tabLinks{
-    display: -webkit-box;    display: -moz-box;
-    -webkit-box-orient: horizontal;    -moz-box-orient: horizontal;
+    display: -webkit-box;    
+    display: -moz-box;
+    display: -ms-flexbox;    -ms-flex-direction: row;
+    -webkit-box-orient: horizontal;    
+    -moz-box-orient: horizontal;
+
+    display: -ms-flexbox;
+    -ms-flex-direction: row;
     overflow-x: hidden;
     overflow: hidden;border-top-right-radius: 5px;
 }
@@ -679,6 +721,7 @@ input[type="button"]{
 #commentListContainerforpev{
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
+    -ms-border-radius: 10px;
     //border-radius: 10px; /* future proofing */
     -khtml-border-radius: 5px; /* for old Konqueror browsers */
     border: 10px ;
@@ -756,7 +799,7 @@ input[type="button"]{
 }
 
 .popupCommentList li #commentBody #commentBodyThirdRowNew .likeCommentnew .textTopOfImageComment{
-   color: white;
+    color: white;
     font-size: 15px;
     margin-left: 17px;
     margin-top: -21px;

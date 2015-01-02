@@ -133,7 +133,6 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
                             <button type="submit" id="imageUploadBtn" class="submitBtn">
                                 <?php echo __("Post"); ?>
                             </button>
-                            <a href="#" id="clearLink">CLEAR</a>
                         </p>
                     </form>
                 </div>
