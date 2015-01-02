@@ -322,7 +322,7 @@ $(document).ready(function () {
 
                     $("#commentListNew_listId" + commentId).append(data);
                     $('.commentLoadingBox').hide();
-                    $(elementId).val('');
+                    $("textarea").val('');
                 }
             });
         }
@@ -359,7 +359,7 @@ $(document).ready(function () {
 
                         $("#commentListNew_listId" + commentId).append(data);
                         $('.commentLoadingBox').hide();
-                        $(elementId).val('');
+                        $("textarea").val('');
                     }
                 });
             }
