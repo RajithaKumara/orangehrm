@@ -66,10 +66,6 @@ class addNewVideoAction extends BaseBuzzAction {
                 if ($this->videoFeedUrl === 'not') {
                     $this->isSuccessfullyPastedUrl = false;
                 }
-                 $arr = array('url' => $this->url, 'videoFeedUrl' => $this->videoFeedUrl);
-
-        echo json_encode($arr);
-        die();
             } else {
                 $this->isSuccessFullyPosted = false;
                 $this->videoForm->bind($request->getParameter($this->videoForm->getName()));
