@@ -43,7 +43,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                             <a class="account" id=<?php echo $postId ?>></a>
                             <div class="submenu" id=<?php echo 'submenu' . $postId ?>>
                                 <ul class = "root">
-                                    <li ><a href = "javascript:void(0)" class="editShare" id=<?php echo 'editShare_' . $postId ?> ><?php echo __("Edit"); ?></a></li>
+                                    <?php if (($employeeID == $loggedInUser)) { ?>
+                                        <li ><a href = "javascript:void(0)" class="editShare" id=<?php echo 'editShare_' . $postId ?> ><?php echo __("Edit"); ?></a></li>
+                                    <?php }
+                                    ?>
                                     <li ><a href = "javascript:void(0)" class="deleteShare" id=<?php echo 'deleteShare_' . $postId ?>><?php echo __("Delete"); ?></a></li>
                                 </ul>
                             </div>
@@ -682,8 +685,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                             <div class="dropdown commentDropDown">
                                                 <a class="commentAccount" id=<?php echo 'cnew' . $commentId ?>></a>
                                                 <div class="submenu" id=<?php echo 'submenucnew' . $commentId ?>>
-                                                    <ul class = "root">
-                                                        <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
+                                                    <ul class = "root"><?php if (($employeeID == $loggedInUser)) { ?>
+                                                            <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
+                                                        <?php }
+                                                        ?>
                                                         <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
                                                     </ul>
                                                 </div>
