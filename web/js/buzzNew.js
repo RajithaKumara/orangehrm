@@ -106,7 +106,8 @@ $(document).ready(function () {
         });
     });
 
-    function videoUrlPaste() {
+    function videoUrlPaste(e) {
+
         var url = "";
         var urlForIe = "";
 
@@ -160,8 +161,20 @@ $(document).ready(function () {
     }
 
     $("#createVideo_content").bind({
-        paste: function () {
-            setTimeout(videoUrlPaste, 100);
+        paste: function (e) {
+            var ua = window.navigator.userAgent;
+            var msie = ua.indexOf('MSIE ');
+            var trident = ua.indexOf('Trident/');
+
+            if (msie > 0) {
+                setTimeout(videoUrlPaste, 100);
+            }
+
+            else if (trident > 0) {
+                setTimeout(videoUrlPaste, 100);
+            } else {
+                setTimeout(videoUrlPaste(e), 100);
+            }
         }
 
     });

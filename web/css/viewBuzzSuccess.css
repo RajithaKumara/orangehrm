@@ -840,3 +840,7 @@ input[type="button"]{
 .postContent{
     word-wrap: break-word;
 }
+
+#postSubmitBtn, #imageUploadBtn, .btnSaveVideo{
+    margin-top: 0;
+}
