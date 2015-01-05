@@ -53,7 +53,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
             </div>  <br>  
             <div class="post_prev_content" id="post_prev_content_<?php echo $postId; ?>">
                 <div id="postBodySecondRow" class="previewSecondRow">
-                    <div id='<?php echo 'postContent_' . $postId ?>'>
+                    <div class="postContent" id='<?php echo 'postContent_' . $postId ?>'>
                         <?php echo BuzzTextParserService::parseText($postContent); ?>
                         <?php
                         if ($postType == '1') {

@@ -30,7 +30,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
         <img id="lessPostLiked" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" 
              height="30px" width="30px"/>
     </div>
-    <div id="ml_componentContainer" hidden="true">
+    <div id="ml_componentContainer" style="display:none;">
         <?php foreach ($result_ml_shares as $result) { ?>
 
             <?php include_component('buzz', 'viewPostPreview', array('post' => $result)); ?>
@@ -45,7 +45,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
         <img id="lessCommentLiked" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/less2.png"); ?>" 
              height="30px" width="30px"/>
     </div>
-    <div id="mc_componentContainer" hidden="true">
+    <div id="mc_componentContainer" style="display:none;">
         <?php foreach ($result_mc_shares as $resultMc) { ?>
 
             <?php include_component('buzz', 'viewPostPreview', array('post' => $resultMc)); ?>

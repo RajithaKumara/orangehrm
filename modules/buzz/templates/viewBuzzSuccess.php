@@ -28,6 +28,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeListSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
+ini_set("memory_limit", '-1');
 ?>
 
 <div id="dashBoardBuzz">
@@ -55,7 +56,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
         <!--End Most Liked Shares Component-->
     </div>
 
-    <div id="refreshTime" hidden="true" ><?php echo $refeshTime; ?></div>
+    <div id="refreshTime" style="display:none;" ><?php echo $refeshTime; ?></div>
     <div id="buzzContainer">
         <div id="spinner" class="spinner">
             <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="70"   />
@@ -92,8 +93,8 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
                     <div id="postLinkData">
                         <div id="postBodySecondRow"  >
                             <a class="closeFeed">x</a>
-                            <div id="postLinkState" hidden="true">not</div>
-                            <div id="postLinkAddress" hidden="true"></div>
+                            <div id="postLinkState" style="display:none;">not</div>
+                            <div id="postLinkAddress" style="display:none;"></div>
                             <p>
                                 <a id="linkTitle" ></a> 
                             </p>
@@ -118,16 +119,16 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
                             </ol>
                         </fieldset>
                         <div id="imageThumbnails">
-                            <span class="img_del" id="img_del_1" hidden="true">X</span>
-                            <img height="70px" hidden="true" class="imgThumbnailView" id="thumb1" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_2" hidden="true">X</span>
-                            <img height="70px" hidden="true" class="imgThumbnailView" id="thumb2" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_3" hidden="true">X</span>
-                            <img height="70px" hidden="true" class="imgThumbnailView" id="thumb3" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_4" hidden="true">X</span>
-                            <img height="70px" hidden="true" class="imgThumbnailView" id="thumb4" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_5" hidden="true">X</span>
-                            <img height="70px" hidden="true" class="imgThumbnailView" id="thumb5" src="#" alt="your image" />
+                            <span class="img_del" id="img_del_1" style="display:none;">X</span>
+                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb1" src="#" alt="your image" />
+                            <span class="img_del" id="img_del_2" style="display:none;">X</span>
+                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb2" src="#" alt="your image" />
+                            <span class="img_del" id="img_del_3" style="display:none;">X</span>
+                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb3" src="#" alt="your image" />
+                            <span class="img_del" id="img_del_4" style="display:none;">X</span>
+                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb4" src="#" alt="your image" />
+                            <span class="img_del" id="img_del_5" style="display:none;">X</span>
+                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb5" src="#" alt="your image" />
                         </div>
                         <p id="imgUpBtnPara">
                             <button type="submit" id="imageUploadBtn" class="submitBtn">
@@ -138,7 +139,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
                 </div>
                 <div id="page3">
                     <!--Image uploading tab-->
-                    <div hidden="true" id="loadVideo">
+                    <div style="display:none;" id="loadVideo">
                         <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/vload.gif"); ?>" 
                              height="20"  />
                     </div>
@@ -263,10 +264,10 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
             </fieldset>
 
         </form>
-        <div hidden="true" id="buzzAllSharesCount" ><?php echo $allShareCount; ?></div>
-        <div hidden="true" id="buzzSharesLoadedCount"><?php echo $shareCount; ?></div>
-        <div hidden="true" id="buzzSharesInceasingCount"><?php echo $shareCount; ?></div>
-        <div id="loggedInUserId" hidden="true"><?php echo $loggedInUser; ?></div>
+        <div style="display:none;" id="buzzAllSharesCount" ><?php echo $allShareCount; ?></div>
+        <div style="display:none;" id="buzzSharesLoadedCount"><?php echo $shareCount; ?></div>
+        <div style="display:none;" id="buzzSharesInceasingCount"><?php echo $shareCount; ?></div>
+        <div id="loggedInUserId" style="display:none;"><?php echo $loggedInUser; ?></div>
 
         <script  type="text/javascript">
             var getAccessUrl = '<?php echo url_for('buzz/getLogedToBuzz'); ?>';

@@ -25,6 +25,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewProfileSuccess'))
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/buzzNew'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
+ini_set("memory_limit", '-1');
 ?>
 <div id="profileFullContainer">
     <div class="buzzProfileRightBar">
@@ -35,7 +36,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 
     <div id="dashBoardProfile">
 
-        <div id="refreshTime" hidden="true" ><?php echo $refeshTime ?></div>
+        <div id="refreshTime" style="display:none;" ><?php echo $refeshTime ?></div>
         <div id="profileContainer">
             <ul id="profileBuzz">
                 <div class="modal hide" id='deleteConfirmationModal'>
@@ -91,10 +92,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
             </div>
             <!--end loading window pop up window-->
 
-            <div hidden="true" id="loadMorePosts">
+            <div style="display:none;" id="loadMorePosts">
                 <a href="javascript:void(0)" class="loadMorePostsLink" id=<?php echo $postId ?>><?php echo __("Load more posts"); ?></a>
             </div> 
-            <div id="profileUserId" hidden="true"><?php echo $profileUserId; ?></div>
+            <div id="profileUserId" style="display:none;"><?php echo $profileUserId; ?></div>
             <form id="actionValidateForm" method="POST" action="" 
                   enctype="multipart/form-data">
                 <fieldset>
@@ -104,9 +105,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
                 </fieldset>
 
             </form>
-            <div hidden="true" id="buzzProfileAllSharesCount" ><?php echo $allShareCount; ?></div>
-            <div hidden="true" id="buzzProfileSharesLoadedCount"><?php echo $shareCount; ?></div>
-            <div hidden="true" id="buzzProfileSharesInceasingCount"><?php echo $shareCount; ?></div>
+            <div style="display:none;" id="buzzProfileAllSharesCount" ><?php echo $allShareCount; ?></div>
+            <div style="display:none;" id="buzzProfileSharesLoadedCount"><?php echo $shareCount; ?></div>
+            <div style="display:none;" id="buzzProfileSharesInceasingCount"><?php echo $shareCount; ?></div>
             <script  type="text/javascript">
 
                 var viewMoreShare = '<?php echo url_for('buzz/viewShare'); ?>';

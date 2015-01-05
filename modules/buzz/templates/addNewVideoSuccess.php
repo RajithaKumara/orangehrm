@@ -38,7 +38,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                           ?>
 
                 </form>
-                <div id="yuoutubeVideoId" hidden="true"><?php echo $videoFeedUrl; ?></div>
+                <div id="yuoutubeVideoId" style="display:none;"><?php echo $videoFeedUrl; ?></div>
 
                 <div style="text-align: center; margin-bottom: 10px;">
                     <iframe src="<?php echo $videoFeedUrl; ?>" width="80%" height="225px" frameborder="0" allowfullscreen></iframe >

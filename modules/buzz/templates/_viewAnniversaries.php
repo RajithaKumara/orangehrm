@@ -28,8 +28,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
              height="30px" width="30px"/>
     </div>
     <div class ="rightBarBody">
-        <div class="toggling" hidden="true" id="upcomingAnnivMonth"><?php echo date('M Y'); ?></div>
-        <ul class="toggling" hidden="true" id="upcomingAnnivList">    
+        <div class="toggling" style="display:none;" id="upcomingAnnivMonth"><?php echo date('M Y'); ?></div>
+        <ul class="toggling" style="display:none;" id="upcomingAnnivList">    
             <?php if (count($anniversaryEmpList) == 0) { ?>
                 <li id="anniversaryPostNull">
                     <div id="anniversaryUserName">

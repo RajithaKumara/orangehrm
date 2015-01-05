@@ -837,6 +837,6 @@ input[type="button"]{
     padding-left: 2px;
     padding-right: 2px;
 }
-/*#photoPage #postBody #postBodyFirstRow #postFirstRowColumnThree {
-    margin-left: 375px;
-}*/
+.postContent{
+    word-wrap: break-word;
+}

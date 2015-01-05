@@ -21,7 +21,7 @@ $(document).ready(function () {
                     $('.postLoadingBox').hide();
                     $("#postLinkData").hide();
                     $("#postLinkState").html('no');
-                    $("textarea").val('');
+                    $("#createPost_content").val('');
                 }
             });
 
@@ -38,8 +38,10 @@ $(document).ready(function () {
             reader.readAsDataURL(file);
             imageList[thumbnailDivId] = file;
             reader.onload = function (e) {
-                $('#thumb' + thumbnailDivId).attr('hidden', false);
-                $('#img_del_' + thumbnailDivId).attr('hidden', false);
+//                $('#thumb' + thumbnailDivId).attr('hidden', false);
+//                $('#img_del_' + thumbnailDivId).attr('hidden', false);
+                $('#thumb' + thumbnailDivId).show();
+                $('#img_del_' + thumbnailDivId).show();
                 $('#thumb' + thumbnailDivId).attr('src', e.target.result);
             };
         }
@@ -66,10 +68,12 @@ $(document).ready(function () {
 
     $(".img_del").live('click', function () {
         var id = $(this).attr('id').split("_")[2];
-        $('#thumb' + id).attr('hidden', true);
+//        $('#thumb' + id).attr('hidden', true);
+        $('#thumb' + id).hide();
         $('#thumb' + id).attr('src', null);
         delete imageList[id];
-        $(this).attr('hidden', 'true');
+//        $(this).attr('hidden', 'true');
+        $(this).hide();
     });
 
     $(".hidePhotoPopUp").click(function (e) {
@@ -114,10 +118,12 @@ $(document).ready(function () {
                 success: function (data) {
                     $('#buzz').prepend(data);
                     $('.postLoadingBox').hide();
-                    $(".imgThumbnailView").attr("hidden", "true");
+//                    $(".imgThumbnailView").attr("hidden", "true");
+                    $(".imgThumbnailView").hide();
                     $("#phototext").val('');
                     $("#photofile").replaceWith($("#photofile").val('').clone(true));
-                    $(".img_del").attr('hidden', 'true');
+//                    $(".img_del").attr('hidden', 'true');
+                    $(".img_del").hide();
                     imageList = {};
                     formData = new FormData();
                 }
