@@ -13,27 +13,12 @@
 abstract class PluginPost extends BasePost {
 
     protected $buzzConfigService;
-    protected $systemUserService;
 
     public function getEmployeeFirstLastName() {
         if ($this->getEmployeeNumber() != '') {
             return $this->getEmployeePostAdded()->getFirstAndLastNames();
         } else {
-            $employeeBoundToAdmin = $this->getSystemUserService()->getSystemUser(1)->getEmployee();
-            if ($employeeBoundToAdmin->empNumber) {
-                return $employeeBoundToAdmin->getFirstAndLastNames();
-            } else {
-                return 'Admin';
-            }
-        }
-    }
-
-    public function getEmployeeNum() {
-        if ($this->getEmployeeNumber() != '') {
-            return $this->getEmployeePostShared()->getFirstAndLastNames();
-        } else {
-            $employeeBoundToAdmin = $this->getSystemUserService()->getSystemUser(1)->getEmployee();
-            return $employeeBoundToAdmin->empNumber;
+            return 'Admin';
         }
     }
 
@@ -47,18 +32,6 @@ abstract class PluginPost extends BasePost {
         }
 
         return $this->buzzConfigService;
-    }
-
-    /**
-     * 
-     * @return SystemUserService
-     */
-    private function getSystemUserService() {
-        if (!$this->systemUserService) {
-            $this->systemUserService = new SystemUserService();
-        }
-
-        return $this->systemUserService;
     }
 
     public function getDate() {

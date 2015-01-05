@@ -14,7 +14,6 @@
 class viewProfileAction extends BaseBuzzAction {
 
     private $employeeService;
-    private $systemUserService;
 
     /**
      * Get EmployeeService
@@ -26,18 +25,6 @@ class viewProfileAction extends BaseBuzzAction {
             $this->employeeService->setEmployeeDao(new EmployeeDao());
         }
         return $this->employeeService;
-    }
-
-    /**
-     * 
-     * @return SystemUserService
-     */
-    private function getSystemUserService() {
-        if (!$this->systemUserService) {
-            $this->systemUserService = new SystemUserService();
-        }
-
-        return $this->systemUserService;
     }
 
     /**
@@ -84,17 +71,9 @@ class viewProfileAction extends BaseBuzzAction {
     protected function initializePostList() {
         $buzzService = $this->getBuzzService();
         $userId = $this->profileUserId;
-        $this->postListAsEmployee = $buzzService->getSharesByEmployeeNumber($this->shareCount, $userId);
-        $this->allShareCount = $buzzService->getNoOfSharesByEmployeeNumber($userId);
 
-        if ($userId == $this->getSystemUserService()->getSystemUser(1)->getEmployee()->empNumber && $userId!=null) {
-            if (sizeof($this->postListAsEmployee) < $this->shareCount) {
-
-                $this->postListAsAdmin = $buzzService->getSharesByEmployeeNumber(($this->shareCount - sizeof($this->postListAsEmployee)), NULL);
+        $this->postList = $buzzService->getSharesByEmployeeNumber($this->shareCount, $userId);
             }
-            $this->allShareCount=$this->allShareCount+$buzzService->getNoOfSharesByEmployeeNumber('');
-        }
-    }
 
     /**
      * initialize config valuves from database

@@ -14,7 +14,6 @@
 class loadMoreProfileAction extends BaseBuzzAction {
 
     protected $buzzService;
-    protected $systemUserService;
 
     /**
      * 
@@ -22,18 +21,6 @@ class loadMoreProfileAction extends BaseBuzzAction {
      */
     private function setPostForm($form) {
         $this->postForm = $form;
-    }
-
-    /**
-     * 
-     * @return SystemUserService
-     */
-    private function getSystemUserService() {
-        if (!$this->systemUserService) {
-            $this->systemUserService = new SystemUserService();
-        }
-
-        return $this->systemUserService;
     }
 
     /**
@@ -72,25 +59,8 @@ class loadMoreProfileAction extends BaseBuzzAction {
             $this->lastPostId = $request->getParameter('lastPostId');
             $this->profileUserId = $request->getParameter('profileUserId');
             $this->buzzService = $this->getBuzzService();
-            $this->shareCount = $this->getShareCount();
-            if ($this->profileUserId == $this->getSystemUserService()->getSystemUser(1)->getEmployee()->empNumber && $this->profileUserId != null) {
-                $lastPost = $this->buzzService->getShareById($this->lastPostId);
-                if ($lastPost->getEmployeeNumber() == null) {
-                    $this->postListAsEmploye = array();
-                } else {
-                    $this->postListAsEmployee = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber($this->shareCount, $this->lastPostId, $this->profileUserId);
-                }
-            } else {
-                $this->postListAsEmployee = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber($this->shareCount, $this->lastPostId, $this->profileUserId);
-            }
-            if (sizeof($this->postListAsEmployee) < $this->shareCount && $this->profileUserId == $this->getSystemUserService()->getSystemUser(1)->getEmployee()->empNumber && $this->profileUserId != null) {
 
-                if (sizeof($this->postListAsEmployee) == 0) {
-                    $this->postListAsAdmin = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber($this->shareCount, $this->lastPostId, NULL);
-                } else {
-                    $this->postListAsAdmin = $this->buzzService->getSharesByEmployeeNumber(($this->shareCount - sizeof($this->postListAsEmployee)), null);
-                }
-            }
+            $this->nextSharesList = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber(5, $this->lastPostId, $this->profileUserId);
             $this->editForm = new CommentForm();
             $this->commentForm = $this->getCommentForm();
         } catch (Exception $ex) {
@@ -98,13 +68,4 @@ class loadMoreProfileAction extends BaseBuzzAction {
         }
     }
 
-    /**
-     * get share count 
-     * @return Int
-     */
-    protected function getShareCount() {
-        $buzzConfigService = $this->getBuzzConfigService();
-        return $buzzConfigService->getBuzzShareCount();
     }
-
-}
