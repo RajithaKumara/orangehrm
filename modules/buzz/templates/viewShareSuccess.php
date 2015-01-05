@@ -114,18 +114,18 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
                 <div class="shareLinknew" id='<?php echo 'postSharebody_' . $postId ?>' >
                     <?php if ($postShareCount > 0) { ?>
-                        <a href="javascript:void(0)" class="postShare" id=<?php echo 'postShareyes_' . $postId ?>> 
+                        <a href="javascript:void(0)" class="postSharePopup" id=<?php echo 'postShareyes_' . $postId ?>> 
                             <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" 
                                   border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
-                        <a style="display:none;" href="javascript:void(0)" class="postShare" id=<?php echo 'postShareno_' . $postId ?>> 
+                        <a style="display:none;" href="javascript:void(0)" class="postSharePopup" id=<?php echo 'postShareno_' . $postId ?>> 
                             <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share.png"); ?>" 
                                   border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
 
                     <?php } else { ?>
-                        <a style="display:none;" href="javascript:void(0)" class="postShare" id=<?php echo 'postShareyes_' . $postId ?>> 
+                        <a style="display:none;" href="javascript:void(0)" class="postSharePopup" id=<?php echo 'postShareyes_' . $postId ?>> 
                             <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" 
                                   border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
-                        <a href="javascript:void(0)" class="postShare" id=<?php echo 'postShareno_' . $postId ?>> 
+                        <a href="javascript:void(0)" class="postSharePopup" id=<?php echo 'postShareno_' . $postId ?>> 
                             <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share.png"); ?>" 
                                   border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
                             <?php
@@ -240,11 +240,105 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 </div>
             </div>
 
-
-
-
         </div>
     </div>
+
+    <!-- start share post popup window-->
+    <div class="modal hide sharePostPopUpModal"   id='<?php echo 'posthidePopup_' . $postId ?>'>
+
+        <div class="modal-body originalPostModal-body" >
+            <div class="hideModalPopUp" id='<?php echo 'posthidePopup_' . $postId ?>'
+                 ><img 
+                    class="hideModalPopUp" id='<?php echo 'posthidePopup_' . $postId ?>' 
+                    src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                    /></div>
+            <div class="sharePageForm">
+                <form id="frmCreateComment" method="" action="" style="margin-top: 10px;"
+                      enctype="multipart/form-data">
+                          <?php
+                          $placeholder = 'Whats on your mind';
+                          echo $commentForm['comment']->render(array('id' => "shareBox_" . $postId,
+                              'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2', 'placeholder' => $placeholder));
+                          ?>
+
+                </form>
+                <div id="sharedPostBody">
+
+                    <div id="postBodyFirstRow">
+                        <div id="postFirstRowColumnOne">
+                            <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic" height="40" width="30"/></a>
+                        </div>
+                        <div id="postFirstRowColumnTwo">
+                            <div id="postEmployeeName" >
+                                <a class="name" href="javascript:void(0);">
+                                    <?php echo $originalPostSharerName; ?>
+                                </a>
+                            </div>
+                            <div id="postDateTime">
+                                <div id="postDate">
+                                    <?php echo $originalPostDate; ?>
+                                </div>
+                                <div id="postTime">
+                                    <?php echo $postTime; ?>
+                                </div>
+                            </div>                        
+                        </div>
+                    </div>
+
+                    <div id="postBodySecondRow">
+                        <div id="postContent">
+
+                            <?php
+                            if (strlen($originalPostContent) > 500) {
+                                echo BuzzTextParserService::parseText(substr($originalPostContent, 0, 500) . '...');
+                            } else {
+                                echo BuzzTextParserService::parseText($originalPostContent);
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <?php if (count($originalPost->getLinks()) > 0) { ?>
+                        <?php foreach ($originalPost->getLinks() as $link) { ?>
+                            <?php if ($link->getType() == 1) { ?>
+                                <div class="sharePageIframe">
+                                    <iframe src="<?php echo $link->getLink(); ?>" width="100%" height="150" style="margin-top: 5px;margin: 0 auto; " frameborder="0" allowfullscreen></iframe >
+                                </div>
+                            <?php } ?>
+                            <?php if ($link->getType() == 0) { ?>
+                                <div id="postBodySecondRow">
+                                    <div id="postContent" >
+                                        <p>
+                                            <a id="linkTitle" href="<?php echo $link->getLink(); ?>">
+                                                <?php echo $link->getTitle(); ?></a> 
+                                        </p>
+                                        <p>
+                                        <div id="linkText"><?php echo BuzzTextParserService::parseText($link->getDescription()); ?></div>
+                                        </p>
+
+                                    </div>
+                                </div>
+                            <?php } ?>
+                        <?php } ?>    
+                    <?php } ?>  
+
+                    <?php
+                    $photos = $sf_data->getRaw('originalPost')->getPhotos();
+                    $imgCount = 1;
+                    if (count($photos) > 0) {
+                        ?>
+                        <div class="sharePagePhotoComponent">
+                            <?php include_component('buzz', 'photoTilling', array('photos' => $photos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
+                        </div>
+                    <?php } ?>
+
+                    <button type="button" class="btnShare" name="btnSaveDependent" id='<?php echo 'btnShare_' . $postId . "_" . $originalPostId ?>'><?php echo __("Share"); ?></button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end share post pop up window-->
+
     <div id="photoPageComment" >
         <div id="postBodyFirstRow photo" class="photoViewEmp">
             <div id="postFirstRowColumnOne" >

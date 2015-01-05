@@ -160,8 +160,8 @@ $(document).ready(function () {
         }
     }
 
-    $("#createVideo_content").bind({
-        paste: function (e) {
+    $("#createVideo_content").live('input paste',function(e){
+        
             var ua = window.navigator.userAgent;
             var msie = ua.indexOf('MSIE ');
             var trident = ua.indexOf('Trident/');
@@ -175,7 +175,7 @@ $(document).ready(function () {
             } else {
                 setTimeout(videoUrlPaste(e), 100);
             }
-        }
+        
 
     });
     $("#createPost_content").bind({paste: function (e) {

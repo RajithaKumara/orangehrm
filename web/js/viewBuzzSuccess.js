@@ -189,7 +189,7 @@ $(document).ready(function () {
     });
     $('.hideModalPopUp').live("click", function (e) {
         var id = e.target.id;
-        $(".modal").modal('hide');
+        $("#"+id).modal('hide');
     });
 
     $(".postViewMoreCommentsLink").live("click", function (e) {
@@ -603,6 +603,7 @@ $(document).ready(function () {
         var idValue = e.target.id;
         $("#posthide_" + idValue.split("_")[1]).modal('hide');
         $("#loadingDataModal").modal();
+        var shareId = idValue.split("_")[1];
         var share = $("#shareBox_" + idValue.split("_")[1]).val();
         var data = {
             'postId': idValue.split("_")[2],
@@ -613,7 +614,8 @@ $(document).ready(function () {
             type: 'POST',
             data: data,
             success: function (data) {
-                $(".modal").modal("hide");
+                $("#posthide_"+shareId).modal("hide");
+                $("#posthidePopup_"+shareId).modal("hide");
                 $('#buzz').prepend(data);
                 $("#loadingDataModal").modal('hide');
                 $("#successDataModal").modal();
@@ -653,7 +655,14 @@ $(document).ready(function () {
         var idValue = e.target.id;
         $("#posthide_" + idValue.split("_")[1]).modal();
 
-
+    });
+    
+    /**
+     * share post popup window view in PopUp
+     */
+    $(".postSharePopup").live("click", function (e) {
+        var idValue = e.target.id;
+        $("#posthidePopup_" + idValue.split("_")[1]).modal();
 
     });
 

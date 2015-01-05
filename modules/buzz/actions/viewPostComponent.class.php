@@ -16,7 +16,7 @@ class viewPostComponent extends sfComponent {
     protected $buzzService;
     protected $buzzConfigService;
     protected $buzzCookieService;
-       
+
     /**
      * 
      * @return BuzzCookieService
@@ -145,7 +145,7 @@ class viewPostComponent extends sfComponent {
         $this->originalPostTime = $this->originalPost->getTime();
         $this->originalPostContent = $this->originalPost->getText();
         $this->likeEmployeList = $post->getLikedEmployeeList();
-        $this->loggedInEmployeeUserRole=  $this->getLoggedInEmployeeUserRole();
+        $this->loggedInEmployeeUserRole = $this->getLoggedInEmployeeUserRole();
 //        echo $this->loggedInEmployeeUserRole;die;
     }
 
@@ -162,13 +162,28 @@ class viewPostComponent extends sfComponent {
         $this->postLenth = $buzzConfigService->getBuzzPostTextLenth();
         $this->postLines = $buzzConfigService->getBuzzPostTextLines();
     }
-    
-     /**
+
+    /**
      * get loged in employee user role
      * @return type
      */
-    public function getLoggedInEmployeeUserRole(){
-        return $this->getBuzzCookieService()->getEmployeeUserRole();
+    public function getLoggedInEmployeeUserRole() {
+        $employeeUserRole = null;
+        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
+            if ($this->getUser()->getAttribute('auth.isAdmin') == 'Yes') {
+                $employeeUserRole = 'Admin';
+            } else {
+                $employeeUserRole = 'Ess';
+            }
+            $employeeNumber = $this->getUser()->getAttribute('auth.empNumber');
+            if ($this->getBuzzCookieService()->getEmployeeNumber() != $employeeNumber) {
+                $this->getBuzzCookieService()->saveCookieValuves($employeeNumber, $employeeUserRole);
+            }
+        } else {
+            $employeeUserRole = $this->getBuzzCookieService()->getEmployeeUserRole();
+        }
+
+        return $employeeUserRole;
     }
 
 }

@@ -65,6 +65,7 @@ class addNewVideoAction extends BaseBuzzAction {
                 $this->videoFeedUrl = $this->getVideoFeedLinkFromUrl($this->url);
                 if ($this->videoFeedUrl === 'not') {
                     $this->isSuccessfullyPastedUrl = false;
+                    $this->getUser()->setFlash('error', __("This url is not valid video url or this url not supported by system"));
                 }
             } else {
                 $this->isSuccessFullyPosted = false;
@@ -104,7 +105,7 @@ class addNewVideoAction extends BaseBuzzAction {
             return $embededUrl;
         }
 
-        $temp4 = split("screen.yahoo.com/", $url);
+        $temp4 = split("yahoo.com/", $url);
         if (count($temp4) > 1) {
             $lstCode = split("/", $temp4[1]);
             $last = count($lstCode) - 1;

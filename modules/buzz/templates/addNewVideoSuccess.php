@@ -53,7 +53,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
         </div>
 
     <?php } else if ($isSuccessFullyPosted) { ?>
-        <?php include_component('buzz', 'viewPost', array('post' => $postSaved,'loggedInUser' => $loggedInUser)); ?>
+        <?php include_component('buzz', 'viewPost', array('post' => $postSaved, 'loggedInUser' => $loggedInUser)); ?>
 
 
     <?php } else if ($error == 'redirect') { ?>
@@ -72,9 +72,11 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 
                     </p>
                 </form>
-                <p>
-                    <?php echo 'not a correct video' ?>
-                </p>
+                <div id ='errorMessageDiv'>
+                    <?php
+                    include_partial('global/flash_messages');
+                    ?>
+                </div>
             </div>
         </div>
     <?php } else if (!$isSuccessFullyPosted) { ?>
