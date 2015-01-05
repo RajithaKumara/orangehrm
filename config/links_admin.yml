@@ -2,6 +2,6 @@ link1:
   name: Orange Buzz
   url: 'buzz/viewBuzz'
   plugin: orangehrmBuzzPlugin
-  target: '_new'
+  target: '_blank'
   image: 'orange.png'
   ohrm_module: 'buzz'

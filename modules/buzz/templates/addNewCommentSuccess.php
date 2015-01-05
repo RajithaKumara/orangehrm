@@ -26,39 +26,39 @@
 
     <!-- start edit comment popup window-->
     <div id="modalEdit">
-    <div class="modal hide originalPostModal"  id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
+        <div class="modal hide originalPostModal"  id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
 
-        <div class="modal-body editPostModal-body" >
-            <div class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
-                 ><img 
-                    class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
-                    src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
-                    /></div>
-            <div class="popUpContainer">
-                <div id="postBodySecondRow" >
-                    <h3><?php echo __('Edit your comment'); ?></h3>
-                    <form id="frmCreateComment" method="" action="" 
-                          enctype="multipart/form-data">
-                              <?php
-                              $editForm->setDefault('comment', $commentContent);
-                              echo $editForm['comment']->render(array('id' => "editcommentBoxNew2_" . $commentId,
-                                  'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2'));
-                              ?>
+            <div class="modal-body editPostModal-body" >
+                <div class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
+                     ><img 
+                        class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
+                        src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                        /></div>
+                <div class="popUpContainer">
+                    <div id="postBodySecondRow" >
+                        <h3><?php echo __('Edit your comment'); ?></h3>
+                        <form id="frmCreateComment" method="" action="" 
+                              enctype="multipart/form-data">
+                                  <?php
+                                  $editForm->setDefault('comment', $commentContent);
+                                  echo $editForm['comment']->render(array('id' => "editcommentBoxNew2_" . $commentId,
+                                      'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                  ?>
 
-                    </form>
+                        </form>
 
-                    <div class="editCommrntPageButton">
-                        <button type="button"  class="btnEditCommentNew" name="btnSaveDependent" id='<?php echo 'btnEditComment_' . $commentId ?>' ><?php echo __("Save"); ?></button>
+                        <div class="editCommrntPageButton">
+                            <button type="button"  class="btnEditCommentNew" name="btnSaveDependent" id='<?php echo 'btnEditComment_' . $commentId ?>' ><?php echo __("Save"); ?></button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
     <!-- end edit comment pop up window-->
 
     <li id="<?php echo "commentInPost_" . $commentId; ?>" style="display: <?php echo $display; ?>" class="<?php echo $commentPostId; ?>" >
-        <div id="commentBody">
+        <div class="addNewCommentBody" id="commentBody">
             <div id="commentRowOne">
                 <div id="commentColumnOne">
                     <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/></a>
@@ -97,16 +97,18 @@
             </div>
 
             <!-- start like window popup window-->
-            <div class="modal hide" id='<?php echo 'postlikehide_' . $commentId ?>'>
-                <div id="modalHeader" >
-                    People who likes this comment
-                </div>
-                <div class="modal-body originalPostModal-body" >
-                    <div class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>'><img 
-                            class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>' 
-                            src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
-                            /></div>
-                    <div class=""  id='<?php echo 'postlikehidebody_' . $commentId ?>'></div>
+            <div id="modatLikeWindow" >
+                <div class="modal hide" id='<?php echo 'postlikehide_' . $commentId ?>'>
+                    <div id="modalHeader" >
+                        People who likes this comment
+                    </div>
+                    <div class="modal-body originalPostModal-body" >
+                        <div class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>'><img 
+                                class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>' 
+                                src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                                /></div>
+                        <div class=""  id='<?php echo 'postlikehidebody_' . $commentId ?>'></div>
+                    </div>
                 </div>
             </div>
             <!-- end like window pop up window-->

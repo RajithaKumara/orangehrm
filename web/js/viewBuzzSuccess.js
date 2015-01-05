@@ -319,16 +319,22 @@ $(document).ready(function () {
                 type: 'POST',
                 data: $('#formCreateComment_' + elementId.split("_")[1]).serialize(),
                 success: function (data) {
+
                     $("#commentListNew_popPostId" + commentId).append(data);
                     $("#commentListNew_popPostId" + commentId + " " + "#modalEdit").replaceWith(' ');
+                    $("#commentListNew_popPostId" + commentId + " li .addNewCommentBody " + "#modatLikeWindow").replaceWith(' ');
+
                     $("#commentListNew_popShareId" + commentId).append(data);
                     $("#commentListNew_popShareId" + commentId + " " + "#modalEdit").replaceWith(' ');
+                    $("#commentListNew_popShareId" + commentId + " li .addNewCommentBody " + "#modatLikeWindow").replaceWith(' ');
+
                     $("#commentListNew_popPhotoId" + commentId).append(data);
                     $("#commentListNew_popPhotoId" + commentId + " " + "#modalEdit").replaceWith(' ');
+                    $("#commentListNew_popPhotoId" + commentId + " li .addNewCommentBody " + "#modatLikeWindow").replaceWith(' ');
 
                     $("#commentListNew_listId" + commentId).append(data);
                     $('.commentLoadingBox').hide();
-                    $("textarea").val('');
+                    $(elementId).val('');
                 }
             });
         }
@@ -358,14 +364,19 @@ $(document).ready(function () {
 
                         $("#commentListNew_popPostId" + commentId).append(data);
                         $("#commentListNew_popPostId" + commentId + " " + "#modalEdit").replaceWith(' ');
+                        $("#commentListNew_popPostId" + commentId + " li .addNewCommentBody " + "#modatLikeWindow").replaceWith(' ');
+
                         $("#commentListNew_popShareId" + commentId).append(data);
                         $("#commentListNew_popShareId" + commentId + " " + "#modalEdit").replaceWith(' ');
+                        $("#commentListNew_popShareId" + commentId + " li .addNewCommentBody " + "#modatLikeWindow").replaceWith(' ');
+
                         $("#commentListNew_popPhotoId" + commentId).append(data);
                         $("#commentListNew_popPhotoId" + commentId + " " + "#modalEdit").replaceWith(' ');
+                        $("#commentListNew_popPhotoId" + commentId + " li .addNewCommentBody " + "#modatLikeWindow").replaceWith(' ');
 
                         $("#commentListNew_listId" + commentId).append(data);
                         $('.commentLoadingBox').hide();
-                        $("textarea").val('');
+                        $(elementId).val('');
                     }
                 });
             }
