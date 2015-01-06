@@ -52,21 +52,21 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 </div>                        
             </div>
 
-            <div id="postFirstRowColumnThree">
-                <?php if (($employeeID == $loggedInUser) || ($loggedInUser == '')) { ?>
+<!--            <div id="postFirstRowColumnThree">
+                <?php // if (($employeeID == $loggedInUser) || ($loggedInUser == '')) { ?>
                     <div id="postOptionWidget">
                         <div class="dropdown" >
-                            <a class="account"  id=<?php echo $postId ?> ></a>
-                            <div class="submenu" id=<?php echo 'submenu' . $postId ?>>
+                            <a class="account"  id=<?php // echo $postId ?> ></a>
+                            <div class="submenu" id=<?php // echo 'submenu' . $postId ?>>
                                 <ul class = "root">
-                                    <li ><a href = "javascript:void(0)" class="editShare" id=<?php echo 'editShare_' . $postId ?> ><?php echo __("Edit"); ?></a></li>
-                                    <li ><a href = "javascript:void(0)" class="deleteShare" id=<?php echo 'deleteShare_' . $postId ?>><?php echo __("Delete"); ?></a></li>
+                                    <li ><a href = "javascript:void(0)" class="editShare" id=<?php // echo 'editShare_' . $postId ?> ><?php // echo __("Edit"); ?></a></li>
+                                    <li ><a href = "javascript:void(0)" class="deleteShare" id=<?php // echo 'deleteShare_' . $postId ?>><?php // echo __("Delete"); ?></a></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
-                <?php } ?>
-            </div>
+                <?php // } ?>
+            </div>-->
         </div>
 
         <!--new Code of like, unlike and share buttons-->

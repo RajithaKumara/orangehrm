@@ -93,46 +93,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
             </div>
 
         </div>
-<!--        <div  id="postBody_<?php echo $postId; ?>" class="previewPost">
-
-            <div id="postBodyFirstRow">
-
-                <div id="postFirstRowColumnTwo" class="previewFirstRowColTwo">
-                    <div id="postEmployeeName" >
-                        <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
-                            <?php echo $postEmployeeName; ?>
-                        </a>
-                    </div>                       
-                </div>
-            </div>
-            <?php if (count($originalPost->getLinks()) > 0) { ?>
-                <?php foreach ($originalPost->getLinks() as $link) { ?>
-                    <?php if ($link->getType() == 1) { ?>
-                        <iframe src="<?php echo $link->getLink(); ?>" width="100%" height="250" class="iframePrev" frameborder="0" allowfullscreen></iframe >
-
-                    <?php } ?>  
-                <?php } ?>    
-            <?php } ?>    
-            <?php
-            $photos = $sf_data->getRaw('originalPost')->getPhotos();
-            $imgCount = 1;
-            if (count($photos) == 1) {
-                ?>
-                <div class="photoPreviewOne">
-                    <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
-                </div>
-                <?php
-            } else if (count($photos) > 1) {
-
-                foreach ($photos as $photo) {
-                    ?>
-                    <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
-                    <?php
-                    break;
-                }
-            }
-            ?>
-        </div>-->
     </li>
 </div>
 
