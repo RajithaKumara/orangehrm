@@ -48,7 +48,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBirthdays'));
                                  src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee->getEmpNumber()); ?>" border="0" id="empPic"/>
                         </div>  
                         <div id="birthdayUserName">
-                            <a href="#" class="name" id="name2">
+                            <a href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employee->getEmpNumber()); ?>' class="name" id="name2">
                                 <?php echo $employee->getFirstName() . " " . $employee->getLastName(); ?>
                             </a>
                         </div>        

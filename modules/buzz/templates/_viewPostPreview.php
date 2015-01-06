@@ -22,8 +22,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
     </div>
 </div>
 <div class="likeRaw" id="likeRaw_<?php echo $postId; ?>">
-    <li class="previewPost" id=<?php echo "post" . $postId; ?>>
-        <div id="picAndNameContainer">
+    <li class="previewPost" id=<?php echo "post_" . $postId; ?>>
+        <div class="picAndNameContainer" id="picAndNameContainer_<?php echo $postId; ?>">
             <div id="profilePicContainer">
                 <img class="profPic" id="profPic_<?php echo $postId; ?>" alt="<?php echo __("Employee Photo"); ?>"src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic"/></a>
             </div>  
@@ -59,7 +59,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                         if ($postType == '1') {
                             ?>
                             <!--SUB POST START-->
-                            <div id="sharedPostBody">
+                            <div class="sharedPostBodyPreview" id="sharedPostBodyPreview_<?php echo $postId; ?>">
 
                                 <div id="postBodyFirstRow">
                                     <div id="postFirstRowColumnOne">
@@ -93,7 +93,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
             </div>
 
         </div>
-        <div  id="postBody" class="previewPost">
+<!--        <div  id="postBody_<?php echo $postId; ?>" class="previewPost">
 
             <div id="postBodyFirstRow">
 
@@ -132,7 +132,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                 }
             }
             ?>
-        </div>
+        </div>-->
     </li>
 </div>
 

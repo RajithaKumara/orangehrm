@@ -37,12 +37,15 @@ class CreatePostForm extends sfForm {
 
         $linkAddress = new sfWidgetFormTextarea();
         $linkAddress->setAttribute('hidden', 'hidden');
+        $linkAddress->setAttribute('class', 'linkAddress');
 
         $linkTitle = new sfWidgetFormTextarea();
         $linkTitle->setAttribute('hidden', 'hidden');
+        $linkTitle->setAttribute('class', 'linkTitle');
 
         $linkText = new sfWidgetFormTextarea();
         $linkText->setAttribute('hidden', 'hidden');
+        $linkText->setAttribute('class', 'linkText');
 
         $this->widgets = array(
             'content' => $textArea,

@@ -47,7 +47,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
                                  src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee['emp_number']); ?>" id="empPic"/>
                         </div>  
                         <div id="anniversaryUserName">
-                            <a href="#" class="name">
+                            <a href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employee['emp_number']); ?>' class="name">
                                 <?php echo $employee['emp_firstname'] . " " . $employee['emp_lastname']; ?>
                             </a>
                         </div>        

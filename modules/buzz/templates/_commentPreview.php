@@ -144,7 +144,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                             <?php echo BuzzTextParserService::parseText($commentContent); ?>
                         </div>
                     </div>
-                                        
+
                 </div>
             </li>
         <?php } ?>
@@ -163,9 +163,13 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                       echo $commentForm['comment']->render(array('id' => "commentBoxnew_" . $commentBoxId . $postId,
                           'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '1', 'placeholder' => $placeholder));
                       $commentForm->setDefault('shareId', $postId);
-                      echo $commentForm['shareId']->render();
-                      echo $commentForm['_csrf_token']->render();
                       ?>
+                <div style="display:none">
+                    <?php echo $commentForm['shareId']->render(); ?>
+                </div>
+                <?php
+                echo $commentForm['_csrf_token']->render();
+                ?>
                 <div id="commentSubmitBtnInModal">
                     <input type="button" value="<?php echo __("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn">
                 </div>

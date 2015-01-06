@@ -160,7 +160,7 @@ $(document).ready(function () {
         }
     }
 
-    $("#createVideo_content").live('input paste',function(e){
+    $("#createVideo_content").live('paste',function(e){
         
             var ua = window.navigator.userAgent;
             var msie = ua.indexOf('MSIE ');

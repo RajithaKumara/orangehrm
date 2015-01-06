@@ -32,6 +32,7 @@ class CreateVideoForm extends sfForm {
 
         $linkAddress = new sfWidgetFormTextarea();
         $linkAddress->setAttribute('hidden', 'hidden');
+        $linkAddress->setAttribute('class', 'linkAddress');
 
         $this->widgets = array(
             'content' => $textArea,

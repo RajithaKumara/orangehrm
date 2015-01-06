@@ -22,11 +22,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 ?>
 <?php
 
-foreach ($postListAsEmployee as $post) {
-    include_component('buzz', 'viewPost', array('post' => $post, 'loggedInUser' => $loggedInUser));
-}
-
-foreach ($postListAsAdmin as $post) {
+foreach ($nextSharesList as $post) {
     include_component('buzz', 'viewPost', array('post' => $post, 'loggedInUser' => $loggedInUser));
 }
 

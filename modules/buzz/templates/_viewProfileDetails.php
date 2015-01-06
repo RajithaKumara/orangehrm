@@ -33,32 +33,32 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
     <div id="panelPersonal">
 
         <div class="inlineBlock">
-            <div id="panelfirst">Gender</div>
+            <div id="panelfirst"><?php echo __("Gender"); ?></div>
             <div id="panelsecond"> <?php echo $gender; ?></div>
         </div>
 
         <div class="inlineBlock">
-            <div id="panelfirst">Birth Day</div>
+            <div id="panelfirst"><?php echo __("Birthday"); ?></div>
             <div id="panelsecond"> <?php echo $birthDay; ?></div>
         </div>
 
         <div class="inlineBlock">
-            <div id="panelfirst">Locations</div>
+            <div id="panelfirst"><?php echo __("Locations"); ?></div>
             <div id="panelsecond"> <?php echo $locations; ?></div>
         </div>
 
         <div class="inlineBlock">
-            <div id="panelfirst">Work Email</div>
+            <div id="panelfirst"><?php echo __("Work Email"); ?></div>
             <div id="panelsecond"> <?php echo $workEmail; ?></div>
         </div>
 
         <div class="inlineBlock">
-            <div id="panelfirst">Work Tel.</div>
+            <div id="panelfirst"><?php echo __("Work Telephone"); ?></div>
             <div id="panelsecond"> <?php echo $workTel; ?></div>
         </div>
 
         <div class="inlineBlock">
-            <div id="panelfirst">Job Title</div>
+            <div id="panelfirst"><?php echo __("Job Title"); ?></div>
             <div id="panelsecond"> <?php echo $jobtitle; ?></div>
         </div>
     </div>

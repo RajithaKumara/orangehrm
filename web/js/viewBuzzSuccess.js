@@ -49,19 +49,30 @@ $(document).ready(function () {
     var noOfPhotosPreviewed = 1;
     $("#photofile").change(function () {
         if (noOfPhotosPreviewed > 5) {
-            $("#imageCountError").modal();
+            $("#imageUploadError").modal();
+            $("#maxImageErrorBody").show();
+            $("#invalidTypeImageErrorBody").hide();
             return;
         }
         var files = $("#photofile")[0].files;
         var imagesChoosed = $("#photofile")[0].files.length;
         if (imagesChoosed > 5) {
-            $("#imageCountError").modal();
-            fileInput.replaceWith(fileInput.val('').clone(true));
+            $("#imageUploadError").modal();
+            $("#maxImageErrorBody").show();
+            $("#phototext").val('');
+            $("#photofile").replaceWith($("#photofile").val('').clone(true));
             return;
         }
         for (var i = 1; i <= imagesChoosed; i++) {
-            readURL(files[i - 1], noOfPhotosPreviewed);
-            noOfPhotosPreviewed++;
+            var ext = files[i - 1].name.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == -1) {
+                $("#imageUploadError").modal();
+                $("#invalidTypeImageErrorBody").show();
+                $("#maxImageErrorBody").hide();
+            } else {
+                readURL(files[i - 1], noOfPhotosPreviewed);
+                noOfPhotosPreviewed++;
+            }
         }
 
     });
@@ -189,7 +200,7 @@ $(document).ready(function () {
     });
     $('.hideModalPopUp').live("click", function (e) {
         var id = e.target.id;
-        $("#"+id).modal('hide');
+        $("#" + id).modal('hide');
     });
 
     $(".postViewMoreCommentsLink").live("click", function (e) {
@@ -225,41 +236,47 @@ $(document).ready(function () {
     });
 
     $(".postNoofLikesTooltip").live("hover", function (e) {
-        isAccess();
-        var idValue = e.target.id;
-        var shareId = idValue.split("_")[1];
-        var data = {
-            'id': shareId,
-            'type': 'post'
-        };
-        $.ajax({
-            url: getLikedEmployeeListURL,
-            type: "POST",
-            data: data,
-            success: function (data) {
-                $('#' + idValue).attr('title', '');
-                $('#' + idValue).attr('title', data);
-            }
-        });
+        if (e.type == 'mouseenter') {
+            isAccess();
+            var idValue = e.target.id;
+            var shareId = idValue.split("_")[1];
+            var data = {
+                'id': shareId,
+                'type': 'post'
+            };
+            $.ajax({
+                url: getLikedEmployeeListURL,
+                type: "POST",
+                data: data,
+                success: function (data) {
+                    $('#' + idValue).attr('title', '');
+                    $('#' + idValue).attr('title', data);
+                }
+            });
+        }
     });
     $(".postNoofSharesTooltip").live("hover", function (e) {
-        isAccess();
-        var idValue = e.target.id;
-        var shareId = idValue.split("_")[1];
-        var data = {
-            'id': shareId,
-            'type': 'post',
-            'event': 'hover'
-        };
-        $.ajax({
-            url: getSharedEmployeeListURL,
-            type: "POST",
-            data: data,
-            success: function (data) {
-                $('#' + idValue).attr('title', '');
-                $('#' + idValue).attr('title', data);
-            }
-        });
+        if (e.type == 'mouseenter') {
+            isAccess();
+            var idValue = e.target.id;
+            var shareId = idValue.split("_")[1];
+//        alert(shareId);
+//        return;
+            var data = {
+                'id': shareId,
+                'type': 'post',
+                'event': 'hover'
+            };
+            $.ajax({
+                url: getSharedEmployeeListURL,
+                type: "POST",
+                data: data,
+                success: function (data) {
+                    $('#' + idValue).attr('title', '');
+                    $('#' + idValue).attr('title', data);
+                }
+            });
+        }
     });
 
     $(".postNoofSharesTooltip").live("click", function (e) {
@@ -283,22 +300,24 @@ $(document).ready(function () {
     });
 
     $(".commentNoofLikesTooltip").live("hover", function (e) {
-        isAccess();
-        var idValue = e.target.id;
-        var commentId = idValue.split("_")[1];
-        var data = {
-            'id': commentId,
-            'type': 'comment'
-        };
-        $.ajax({
-            url: getLikedEmployeeListURL,
-            type: "POST",
-            data: data,
-            success: function (data) {
-                $('#' + idValue).attr('title', '');
-                $('#' + idValue).attr('title', data);
-            }
-        });
+        if (e.type == 'mouseenter') {
+            isAccess();
+            var idValue = e.target.id;
+            var commentId = idValue.split("_")[1];
+            var data = {
+                'id': commentId,
+                'type': 'comment'
+            };
+            $.ajax({
+                url: getLikedEmployeeListURL,
+                type: "POST",
+                data: data,
+                success: function (data) {
+                    $('#' + idValue).attr('title', '');
+                    $('#' + idValue).attr('title', data);
+                }
+            });
+        }
     });
 
 
@@ -614,8 +633,8 @@ $(document).ready(function () {
             type: 'POST',
             data: data,
             success: function (data) {
-                $("#posthide_"+shareId).modal("hide");
-                $("#posthidePopup_"+shareId).modal("hide");
+                $("#posthide_" + shareId).modal("hide");
+                $("#posthidePopup_" + shareId).modal("hide");
                 $('#buzz').prepend(data);
                 $("#loadingDataModal").modal('hide');
                 $("#successDataModal").modal();
@@ -656,7 +675,7 @@ $(document).ready(function () {
         $("#posthide_" + idValue.split("_")[1]).modal();
 
     });
-    
+
     /**
      * share post popup window view in PopUp
      */

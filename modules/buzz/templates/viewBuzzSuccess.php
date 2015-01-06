@@ -158,7 +158,7 @@ ini_set("memory_limit", '-1');
                 </div>
             </div>
 
-            <div class="modal hide" id='imageCountError'>
+            <div class="modal hide" id='imageUploadError'>
 
                 <div class="modal-body originalPostModal-body" >
                     <div class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>'
@@ -168,12 +168,15 @@ ini_set("memory_limit", '-1');
                             />
                     </div>
                     <div class="modal-body">
-                        <div id="maxImageErrorHeading">
+                        <div id="imageUploadErrorHeading">
                             <?php echo __("Sorry!"); ?>
                         </div>
                         <br>
                         <div id="maxImageErrorBody">
                             <?php echo __("Only five images are allowed in a single post!"); ?>
+                        </div>
+                        <div id="invalidTypeImageErrorBody">
+                            <?php echo __("Only 'gif', 'png', 'jpg', 'jpeg' type images are allowed!"); ?>
                         </div>
                     </div>
                 </div>
@@ -189,7 +192,7 @@ ini_set("memory_limit", '-1');
                             />
                     </div>
                     <div class="modal-body">
-                        <div id="maxImageErrorHeading">
+                        <div id="deleteConfirmationHeading">
                             <?php echo __("Do you really want to delete this?"); ?>
                         </div>
                         <button id="delete_confirm" type="button">Yes</button>
@@ -231,7 +234,7 @@ ini_set("memory_limit", '-1');
             <div class="modal-body successDataModal-body" >
 
                 <!--<div id="successHeader" style="width: 100%;height: 20px;background-color: green;">Success</div>-->
-                <div id="successBody" >SuccessFully Saved</div>
+                <div id="successBody" ><?php echo __("Successfully Saved"); ?></div>
 
             </div>
         </div>

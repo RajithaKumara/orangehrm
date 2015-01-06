@@ -154,6 +154,21 @@ textarea{
     -khtml-border-radius: 5px; /* for old Konqueror browsers */
 }
 
+.sharedPostBodyPreview{
+    border: 1px solid #d0d1d5;
+    border-radius: 2px;
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 12px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -ms-border-radius: 5px;
+    border-radius: 4px; /* future proofing */
+    -khtml-border-radius: 5px; /* for old Konqueror browsers */
+}
+
 /*profile picture, name, date, time and the options widget is in this row */
 #postBodyFirstRow{
     background-color: white;
@@ -505,11 +520,12 @@ textarea{
     background: #fff;
     position: absolute;
     //top: 11px;
-    left: -34px;
+    /*left: -34px;*/
     z-index: 100;
-    width: 60px;
+    /*width: 60px;*/
     display: none;
-    margin-left: 19px;
+    left: 21px;
+    /*margin-left: 19px;*/
     padding: 20px 0 5px;
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
@@ -568,11 +584,11 @@ a.commentAccount
     background: #fff;
     position: absolute;
     top: 11px;
-    left: -34px;
+    /*left: -34px;*/
     z-index: 100;
-    width: 60px;
+    /*width: 60px;*/
     display: none;
-    margin-left: 17px;
+    /*margin-left: 17px;*/
     padding: 20px 0 5px;
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
@@ -612,7 +628,7 @@ input[type="button"]{
     margin-left: 81.8%;
     //margin-top: -60px;
     padding: 5px;
-    width: 17%;
+    width: 105px;
 }
 
 @media screen and (-webkit-min-device-pixel-ratio:0){  
@@ -634,8 +650,7 @@ input[type="button"]{
 }
 
 #commentSubmitBtnInModal input[type="button"]{
-    margin-left: 70%;
-    width: 27%;
+    margin-left: 62%;
 }
 
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none){  
@@ -781,19 +796,26 @@ input[type="button"]{
     color: white;
 }
 
-#maxImageErrorHeading{
+#imageUploadErrorHeading{
     float:left;
     font-size: 21px;
     font-family: "SourceSansProBold";
 }
 
-#maxImageErrorBody{
+#deleteConfirmationHeading{
+    float:left;
+    font-size: 21px;
+    font-family: "SourceSansProBold";
+}
+
+#maxImageErrorBody, #invalidTypeImageErrorBody{
     float:left;
     font-size: 16px;
     font-family: "SourceSansProRegular";
+    display: none;
 }
 
-#imageCountError{
+#imageUploadError{
     height: 120px;
     overflow-y: hidden;
 }
@@ -856,4 +878,8 @@ input[type="button"]{
 
 #postSubmitBtn, #imageUploadBtn, .btnSaveVideo{
     margin-top: 0;
+}
+
+.linkAddress, .linkTitle, .linkText{
+    display: none;
 }

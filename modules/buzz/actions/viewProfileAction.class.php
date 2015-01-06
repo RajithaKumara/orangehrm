@@ -73,7 +73,8 @@ class viewProfileAction extends BaseBuzzAction {
         $userId = $this->profileUserId;
 
         $this->postList = $buzzService->getSharesByEmployeeNumber($this->shareCount, $userId);
-            }
+        $this->allShareCount = $buzzService->getNoOfSharesByEmployeeNumber($userId);
+    }
 
     /**
      * initialize config valuves from database

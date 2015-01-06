@@ -515,7 +515,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
         <!-- start like window popup window-->
         <div class="modal hide" id='<?php echo 'postlikehide_' . $postId ?>'>
             <div id="modalHeader" >
-                People who likes this post
+                <?php echo __("People who like this post"); ?>
             </div>
             <div class="modal-body originalPostModal-body" >
                 <div class="hideModalPopUp" id='<?php echo 'postlikehide_' . $postId ?>'
@@ -540,7 +540,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
             <div id="noOfSharesLinknew" >
                 <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' >
                     <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $postShareCount; ?></span>
-                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
+                    <img  id='<?php echo 'postNoOfSharesImage_' . $postId ?>' src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>
@@ -704,7 +704,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         <!-- start like window popup window-->
                         <div class="modal hide" id='<?php echo 'postlikehide_' . $commentId ?>'>
                             <div id="modalHeader" >
-                                <?php echo __("People who likes this comment"); ?>
+                                <?php echo __("People who like this comment"); ?>
                             </div>
                             <div class="modal-body originalPostModal-body" >
                                 <div class="hideModalPopUp" id='<?php echo 'postlikehide_' . $commentId ?>'><img 

@@ -23,6 +23,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewProfileSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeListSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/buzzNew'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 ini_set("memory_limit", '-1');
@@ -59,10 +60,7 @@ ini_set("memory_limit", '-1');
                 </div>
                 <div class="jason"></div>
                 <?php
-                foreach ($postListAsEmployee as $post) {
-                    include_component('buzz', 'viewPost', array('post' => $post, 'loggedInUser' => $loggedInUser));
-                }
-                foreach ($postListAsAdmin as $post) {
+                foreach ($postList as $post) {
                     include_component('buzz', 'viewPost', array('post' => $post, 'loggedInUser' => $loggedInUser));
                 }
                 ?> 
@@ -87,7 +85,7 @@ ini_set("memory_limit", '-1');
             <!--start Success popup window-->
             <div class="modal hide" id="successDataModal" >
                 <div class="modal-body successDataModal-body" >
-                    <div id="successBody" >SuccessFully Saved</div>
+                    <div id="successBody" ><?php echo __("Successfully Saved"); ?></div>
                 </div>
             </div>
             <!--end loading window pop up window-->
