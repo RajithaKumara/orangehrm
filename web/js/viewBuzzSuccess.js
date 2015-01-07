@@ -46,6 +46,11 @@ $(document).ready(function () {
             };
         }
     }
+
+    $("#image-upload-button").live("click", function () {
+        $("#photofile").click();
+    });
+
     var noOfPhotosPreviewed = 1;
     $("#photofile").change(function () {
         if (noOfPhotosPreviewed > 5) {
@@ -353,7 +358,7 @@ $(document).ready(function () {
 
                     $("#commentListNew_listId" + commentId).append(data);
                     $('.commentLoadingBox').hide();
-                    $(elementId).val('');
+                    $(".commentBox").val('');
                 }
             });
         }
@@ -791,6 +796,7 @@ $(document).ready(function () {
     var time = new Date().getTime();
     $(document.body).bind("mousemove keypress", function (e) {
         time = new Date().getTime();
+        //alert(time);
     });
 
     /**
@@ -822,21 +828,26 @@ $(document).ready(function () {
         var idValue = e.target.className;
         $("#commentBoxNew_" + idValue).focus();
     });
+        var refreshTime = trim($("#refreshTime").html());
+//    var refreshTime = 3000;
 
     function refresh() {
-        var refreshTime = trim($("#refreshTime").html());
-//        var refreshTime = 3000;
 
+        
         if (new Date().getTime() - time >= refreshTime) {
-
             if (!$('.modal').is(":visible")) {
 
                 reload();
             }
-            setTimeout(refresh, refreshTime);
+//            window.setTimeout(function(){refresh(this);}, refreshTime);
+            window.setTimeout(function () {
+                refresh(this);
+            }, refreshTime);            //setTimeout(refresh, refreshTime);
         } else {
 
-            setTimeout(refresh, refreshTime);
+            window.setTimeout(function () {
+                refresh(this);
+            }, refreshTime);            //setTimeout(refresh, refreshTime);
         }
 
     }
@@ -866,7 +877,9 @@ $(document).ready(function () {
         window.location = loginpageURL;
     }
 
-    setTimeout(refresh, refreshTime);
+    window.setTimeout(function () {
+        refresh(this);
+    }, refreshTime);            //setTimeout(refresh, refreshTime);
 
     // Clicking the tabs make it selected.
     $(".tabButton").live("click", function () {

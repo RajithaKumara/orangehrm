@@ -28,6 +28,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeListSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/photoTiling'));
 ini_set("memory_limit", '-1');
 ?>
 
@@ -115,9 +116,12 @@ ini_set("memory_limit", '-1');
                           enctype="multipart/form-data">
                         <fieldset>
                             <ol>
-                                <?php echo $uploadImageForm->render(); ?>            
+                                <?php echo $uploadImageForm->render(); ?>
                             </ol>
                         </fieldset>
+                        <button type="button" id="image-upload-button">
+                            <?php echo __("Upload Images"); ?>
+                        </button>
                         <div id="imageThumbnails">
                             <span class="img_del" id="img_del_1" style="display:none;">X</span>
                             <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb1" src="#" alt="your image" />

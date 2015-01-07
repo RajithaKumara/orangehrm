@@ -82,6 +82,7 @@ class addNewCommentAction extends BaseBuzzAction {
         $this->comment = $comment;
         $this->commentPostId = $this->comment->getShareId();
         $this->commentEmployeeName = $this->comment->getEmployeeFirstLastName();
+        $this->commentEmployeeJobTitle = $this->comment->getEmployeeComment()->getJobTitleName();
         $this->commentContent = $this->comment->getCommentText();
         $this->commentDate = $this->comment->getDate();
         $this->commentTime = $this->comment->getTime();

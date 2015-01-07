@@ -19,6 +19,7 @@
  */
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/photoTiling'));
 ?>
 <!--A single post-->
 <?php if ($isSuccessfullyAddedPost) { ?>

@@ -26,8 +26,13 @@ html, body{
 }
 
 a{
-    color: royalblue;
+    color: #f28c38;
+    text-decoration: none;
+    font-family: SourceSansProRegular;
+}
 
+a:hover{
+    text-decoration: underline;
 }
 
 .Collage{
@@ -882,4 +887,31 @@ input[type="button"]{
 
 .linkAddress, .linkTitle, .linkText{
     display: none;
+}
+
+#photofile{
+    display: none;
+}
+
+#image-upload-button{
+    float: left;
+    background: #33ac3f;
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+    border-radius: 7px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 16px;
+    padding: 5px 20px;
+    text-decoration: none;
+    border: 0;
+    margin-left: 10px;
+    border-radius: 3px;
+    font-family: "SourceSansProRegular";
+    margin-top: -18px;
+}
+
+#image-upload-button:hover{
+    background: #33ac3f;
+    text-decoration: none;
 }
