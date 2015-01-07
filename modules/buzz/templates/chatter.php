@@ -53,7 +53,7 @@
     }
 
 </style>
-<?php require_once '_header.php'; ?>
+<?php include_partial('global/header'); ?>
 
 </head>
 <body>
