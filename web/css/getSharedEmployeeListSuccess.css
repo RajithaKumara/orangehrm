@@ -38,8 +38,8 @@
 }
 
 #empProfilePicContainer{
-    width: 60px;
-    height: 60px;
+    width: 62px;
+    height: 62px;
     float: left;
     border: 2px solid white;
     vertical-align: middle;
@@ -51,18 +51,22 @@
 }
 
 #employeeUserName{
-    margin-top: 10px;
-    float: left;
-    font-size: 30px;
+    font-size: 20px;
     font-family: SourceSansProRegular;
 }
 
 #empname{
     /*font-family: SourceSansProRegular;*/
-    font-size: 30px;
-    font-family: SourceSansProRegular;
+    font-size: 20px;
+    font-family: SourceSansProLight;
 }
 #buttonDiv{
     float: right;
     margin-top: 10px;
+}
+
+#employeeJobTitle{
+    font-family: 'SourceSansProLight';
+    margin-bottom: 10px;
+    font-size: 13px;
 }

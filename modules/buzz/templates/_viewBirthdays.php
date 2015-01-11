@@ -40,35 +40,46 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBirthdays'));
                     </div>        
                 </li>
             <?php } ?>
-            <?php foreach ($employeesHavingBirthday as $employee) { ?>
-                <li id="birthdayPost">
-                    <div id="picAndNameContainer">
-                        <div id="profilePicContainer">
-                            <img alt="<?php echo __("Employee Photo"); ?>" 
-                                 src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee->getEmpNumber()); ?>" border="0" id="empPic"/>
-                        </div>  
-                        <div id="birthdayUserName">
-                            <a href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employee->getEmpNumber()); ?>' class="name" id="name2">
-                                <?php echo $employee->getFirstName() . " " . $employee->getLastName(); ?>
-                            </a>
-                        </div>        
-                    </div>
-                    <br>
-                    <br>
-                    <div id="birthdayUserJobTitle">
-                        <?php echo $employee->getJobTitleName(); ?>
-                    </div>
-                    <div id="date">
-                        <?php
-                        if (date('Y-m-d') == $employee->getEmpBirthday()) {
-                            echo __("Today is his birthday");
-                        } else {
-                            echo date('F d', strtotime($employee->getEmpBirthday()));
-                        }
-                        ?>
-                    </div>
-                </li>
-                <?php
+            <?php
+            foreach ($employeesHavingBirthday as $employee) {
+                if ($employee->getState() != "TERMINATED") {
+                    ?>
+                    <li id="birthdayPost">
+                        <div id="picAndNameContainer">
+                            <div id="profilePicContainer">
+                                <img alt="<?php echo __("Employee Photo"); ?>" 
+                                     src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee->getEmpNumber()); ?>" border="0" id="empPic"/>
+                            </div>  
+                            <?php $employeeFirstAndLastNames = $employee->getFirstName() . " " . $employee->getLastName(); ?>
+                            <div id="birthdayUserName" title="<?php echo $employeeFirstAndLastNames; ?>">
+                                <a href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employee->getEmpNumber()); ?>' class="name" id="name2">
+                                    <?php
+                                    if (strlen($employeeFirstAndLastNames) > 18) {
+                                        echo substr($employeeFirstAndLastNames, 0, 18) . '...';
+                                    } else {
+                                        echo $employeeFirstAndLastNames;
+                                    }
+                                    ?>
+                                </a>
+                            </div>        
+                        </div>
+                        <br>
+                        <br>
+                        <div id="birthdayUserJobTitle">
+                            <?php echo $employee->getJobTitleName(); ?>
+                        </div>
+                        <div id="date">
+                            <?php
+                            if (date('Y-m-d') == $employee->getEmpBirthday()) {
+                                echo __("Today is his birthday");
+                            } else {
+                                echo date('F d', strtotime($employee->getEmpBirthday()));
+                            }
+                            ?>
+                        </div>
+                    </li>
+                    <?php
+                }
             }
             ?>
         </ul>

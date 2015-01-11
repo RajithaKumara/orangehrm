@@ -166,7 +166,7 @@ textarea{
     margin: 0 auto;
     margin-top: 10px;
     margin-bottom: 10px;
-    padding: 12px;
+    padding: 24px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     -ms-border-radius: 5px;
@@ -416,11 +416,17 @@ textarea{
 #commentColumnThree{
     height: 45px;
     float: right;
-    margin-right: -145px;
+    margin-right: -410px;
     margin-top: -62.5px;
 }
 
 #commentColumnTwo{
+    /*width: 60%;*/
+    margin-left: -2px;
+    vertical-align: top;
+}
+
+#commentRowOneColumnTwo{
     width: 60%;
     margin-left: -2px;
     vertical-align: top;
@@ -474,6 +480,7 @@ textarea{
     padding: 8px 0 2px 0;
     font-size: 16px;
     font-family: 'SourceSansProLight';
+    word-break: break-all;
 }
 
 #commentTime{
@@ -674,6 +681,13 @@ input[type="button"]{
     }
 }
 
+#comment-text-width-analyzer{
+    font-size: 16px;
+    display: inline-block;
+    white-space: nowrap;
+    height: 0;
+}
+
 .postCommentBox{
     font-size: 16px;
     font-family: "SourceSansProLight";
@@ -825,7 +839,7 @@ input[type="button"]{
     overflow-y: hidden;
 }
 
-#deleteConfirmationModal{
+.deleteConfirmationModal{
     height: 120px;
     overflow-y: hidden;
     margin-top: 0px;
@@ -914,4 +928,8 @@ input[type="button"]{
 #image-upload-button:hover{
     background: #33ac3f;
     text-decoration: none;
+}
+
+.modal-on-preview{
+    z-index: 10000;
 }

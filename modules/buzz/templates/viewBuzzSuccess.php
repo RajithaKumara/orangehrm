@@ -26,6 +26,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/jquerycollagePlus'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/jqueryremoveWhitespace'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
+use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/jquery.autosize.min'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeListSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/photoTiling'));
@@ -186,12 +187,12 @@ ini_set("memory_limit", '-1');
                 </div>
             </div>
 
-            <div class="modal hide" id='deleteConfirmationModal'>
+            <div class="modal hide deleteConfirmationModal" id='postViewOriginal'>
 
                 <div class="modal-body originalPostModal-body" >
-                    <div class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>'
+                    <div class="hideModalPopUp" id='<?php echo 'postViewOriginal' ?>'
                          ><img 
-                            class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>' 
+                            class="hideModalPopUp" id='<?php echo 'postViewOriginal' ?>' 
                             src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                             />
                     </div>

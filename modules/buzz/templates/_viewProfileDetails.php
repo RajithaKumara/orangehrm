@@ -11,7 +11,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
 ?>
 
 <div class="rightBarBodyAllProf">
-    <div style="height: 260px;overflow: hidden">
+    <div id="profile-img-container">
         <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $empNum); ?>" border="0" id="empPicPof" 
              width="105%"  style=""/>
     </div>

@@ -27,7 +27,8 @@ class CreateVideoForm extends sfForm {
      */
     public function configure() {
         $textArea = new sfWidgetFormTextarea();
-        $textArea->setAttribute('placeholder', 'Past Video Url');
+        $placeholder = __("Paste Video Url");
+        $textArea->setAttribute('placeholder', $placeholder);
         $textArea->setAttribute('rows', '1');
 
         $linkAddress = new sfWidgetFormTextarea();

@@ -28,13 +28,25 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeList
                     <?php if ($employee->getEmpNumber() != "") { ?>
                         <div id="empFirstRaw">
                             <div id="empProfilePicContainer">
-                                <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee->getEmpNumber()); ?>" border="0" id="empPic" height="60" width="60"/>
+                                <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee->getEmpNumber()); ?>" border="0" id="empPic"/>
                             </div>
-                            <div id="employeeUserName">
-                                <div id="empname"  >
-                                    <?php echo $employee->getFirstName() . " " . $employee->getLastName(); ?>                 
+                            <?php $employeeFirstAndLastNames = $employee->getFirstName() . " " . $employee->getLastName(); ?>
+                            <div>
+                                <div id="employeeUserName" title="<?php echo $employeeFirstAndLastNames; ?>">
+                                    <div id="empname" title="<?php echo $employeeFirstAndLastNames; ?>">
+                                        <?php
+                                        if (strlen($employeeFirstAndLastNames) > 29) {
+                                            echo substr($employeeFirstAndLastNames, 0, 29) . '...';
+                                        } else {
+                                            echo $employeeFirstAndLastNames;
+                                        }
+                                        ?>              
 
+                                    </div>
                                 </div>
+                                <div id="employeeJobTitle">
+                                    <?php echo $employee->getJobTitleName(); ?>
+                                </div>                                
                             </div>
                         </div>
                     <?php } else { ?>

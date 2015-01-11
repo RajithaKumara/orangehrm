@@ -119,7 +119,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                     <a href="javascript:void(0)" class="postShare" id=<?php echo 'postShareyes_' . $postId ?>> 
                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" 
                               border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
-                    <a style="display:none;" href="javascript:void(0)" class="postShare" id=<?php echo 'postShareno_' . $postId ?>> 
+                    <a style="display:none;" href="javascript:void(0)" class="postShareOnOriginalPostPopup" id=<?php echo 'postShareno_' . $postId ?>> 
                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share.png"); ?>" 
                               border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
 
@@ -243,7 +243,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
     </div>
 </div>
 <!-- start share post popup window-->
-<div class="modal hide sharePostPopUpModal"   id='<?php echo 'posthidePopup_' . $postId ?>'>
+<div class="modal hide sharePostPopUpModal"   id='<?php echo 'posthidePopupOnOriginalPost_' . $postId ?>'>
 
     <div class="modal-body originalPostModal-body" >
         <div class="hideModalPopUp" id='<?php echo 'posthidePopup_' . $postId ?>'
@@ -256,7 +256,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                   enctype="multipart/form-data">
                       <?php
                       $placeholder = 'Whats on your mind';
-                      echo $commentForm['comment']->render(array('id' => "shareBox_" . $postId,
+                      echo $commentForm['comment']->render(array('id' => "share1Box_" . $postId,
                           'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2', 'placeholder' => $placeholder));
                       ?>
 
@@ -330,7 +330,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                     </div>
                 <?php } ?>
 
-                <button type="button" class="btnShare" name="btnSaveDependent" id='<?php echo 'btnShare_' . $postId . "_" . $originalPostId ?>'><?php echo __("Share"); ?></button>
+                <button type="button" class="btnShareOnPreview" name="btnSaveDependent" id='<?php echo 'btnShare_' . $postId . "_" . $originalPostId ?>'><?php echo __("Share"); ?></button>
 
             </div>
         </div>

@@ -298,10 +298,10 @@ $(document).ready(function () {
             type: "POST",
             data: data,
             success: function (data) {
-                $("#postlikehidebody_" + shareId).replaceWith(data);
+                $("#postsharehidebody_" + shareId).replaceWith(data);
             }
         });
-        $("#postlikehide_" + shareId).modal();
+        $("#postsharehide_" + shareId).modal();
     });
 
     $(".commentNoofLikesTooltip").live("hover", function (e) {
@@ -343,6 +343,8 @@ $(document).ready(function () {
                 type: 'POST',
                 data: $('#formCreateComment_' + elementId.split("_")[1]).serialize(),
                 success: function (data) {
+                    $("#comment-text-width-analyzer").html("");
+                    commentMaxLineLength = 510;
 
                     $("#commentListNew_popPostId" + commentId).append(data);
                     $("#commentListNew_popPostId" + commentId + " " + "#modalEdit").replaceWith(' ');
@@ -364,17 +366,91 @@ $(document).ready(function () {
         }
     });
 
+    function getCaret(el) {
+        if (el.selectionStart) {
+            return el.selectionStart;
+        } else if (document.selection) {
+            el.focus();
+
+            var r = document.selection.createRange();
+            if (r == null) {
+                return 0;
+            }
+
+            var re = el.createTextRange(),
+                    rc = re.duplicate();
+            re.moveToBookmark(r.getBookmark());
+            rc.setEndPoint('EndToStart', re);
+
+            return rc.text.length;
+        }
+        return 0;
+    }
+
+    var commentMaxLineLength = 510;
+    var oldText = "";
+    $("#comment-text-width-analyzer").hide();
     /**
      * Commenting on a share.
      */
-    $(".commentBox").live("keydown", function (e) {
+    $(".commentBox").live("keyup", function (e) {
         isAccess();
+        var elementId = "#" + e.target.id;
+        var value = $(elementId).val();
+        var txt = $("#comment-text-width-analyzer").html();
+//        var str = txt + "" + String.fromCharCode(e.which);
+//        str = str.replace(/[\t\n]+/g,' ');
+        $("#comment-text-width-analyzer").html(value.replace(/[\t\n]+/g, ''));
+//        $(String.fromCharCode(e.which)).appendTo("#comment-text-width-analyzer");
+//        console.log(getCaret(this));
+//        alert(getCaret(this));
+        $("#debug").html(commentMaxLineLength + " : " + $("#comment-text-width-analyzer").width());
+        if (e.keyCode == 8) {
+            $("#comment-text-width-analyzer").html(value.replace(/[\t\n]+/g, ''));
+            if ($("#comment-text-width-analyzer").width() < (commentMaxLineLength - 510)
+                    || oldText == $("#comment-text-width-analyzer").html() && $("#comment-text-width-analyzer").width() != 0) {
+                commentMaxLineLength -= 510;
+            }
+            $("#debug").html(commentMaxLineLength + " : " + $("#comment-text-width-analyzer").width());
+//            $("#comment-text-width-analyzer").html(txt.slice(0, -1));
+//            if (commentMaxLineLength > 530) {
+//                commentMaxLineLength -= 530;
+//            }else{
+//                commentMaxLineLength = 0;
+//            }
+        } else {
+            if (value.length === 0) {
+                $(elementId).val(null);
+                $(elementId).css('height', '');
+            }
+            else if ($("#comment-text-width-analyzer").width() > commentMaxLineLength) {
+                commentMaxLineLength += 510;
+//                $("#comment-text-width-analyzer").html("");
+//                $("#comment-text-width-analyzer").width(0);
+
+//            var ev = jQuery.Event("keydown");
+//            ev.which = 13; // # about:startpageSome key code value
+//            $(elementId).trigger(ev);
+//            $(elementId).autosize();
+//            $(elementId).val(value + "\n");
+//                alert("nes");
+               $("#debug").html(commentMaxLineLength + " : " + $("#comment-text-width-analyzer").width());
+                var content = this.value;
+                var caret = getCaret(this);
+                this.value = content.substring(0, caret) +
+                        "\n" + content.substring(caret, content.length);
+                e.stopPropagation();
+            }
+        }
+        
+        oldText = $("#comment-text-width-analyzer").html();
+
+
         if ((e.keyCode === 13) && !e.shiftKey) {
-
-            var elementId = "#" + e.target.id;
-            var value = $(elementId).val();
-
+            $("#comment-text-width-analyzer").html("");
+            commentMaxLineLength = 510;
             $("#commentListContainer_" + elementId.split("Id")[1]).css("display", "block");
+            $(elementId).css('height', '');
             if (trim(value).length > 0) {
                 $('#commentLoadingBox' + elementId.split("_")[1]).show();
 
@@ -453,12 +529,12 @@ $(document).ready(function () {
 
     var idOfThePostToDelete = -1;
     $(".deleteShare").live("click", function (e) {
-        $("#deleteConfirmationModal").modal();
+        $(".deleteConfirmationModal").modal();
         idOfThePostToDelete = e.target.id.split("_")[1];
     });
 
     $("#delete_confirm").live("click", function () {
-        $("#deleteConfirmationModal").modal('hide');
+        $(".deleteConfirmationModal").modal('hide');
         $("#loadingDataModal").modal();
         var data = {
             'shareId': idOfThePostToDelete,
@@ -480,7 +556,7 @@ $(document).ready(function () {
     });
 
     $("#delete_discard").live("click", function () {
-        $("#deleteConfirmationModal").modal('hide');
+        $(".deleteConfirmationModal").modal('hide');
     });
 
     /**
@@ -628,7 +704,41 @@ $(document).ready(function () {
         $("#posthide_" + idValue.split("_")[1]).modal('hide');
         $("#loadingDataModal").modal();
         var shareId = idValue.split("_")[1];
-        var share = $("#shareBox_" + idValue.split("_")[1]).val();
+//        var share = $("#shareBox_" + idValue.split("_")[1]).val();
+        var share = $("[id=shareBox_" + idValue.split("_")[1] + ']').val();
+        var data = {
+            'postId': idValue.split("_")[2],
+            'textShare': share
+        };
+        $.ajax({
+            url: shareShareURL,
+            type: 'POST',
+            data: data,
+            success: function (data) {
+                $("#posthide_" + shareId).modal("hide");
+                $("#posthidePopup_" + shareId).modal("hide");
+                $('#buzz').prepend(data);
+                $("#loadingDataModal").modal('hide');
+                $("#successDataModal").modal();
+                setTimeout(hideSuccessModal, 3000);
+            }
+        });
+
+
+
+
+    });
+
+    /**
+     * share post save 
+     */
+    $(".btnShareOnPreview").live("click", function (e) {
+        var idValue = e.target.id;
+        $("#posthide_" + idValue.split("_")[1]).modal('hide');
+        $("#loadingDataModal").modal();
+        var shareId = idValue.split("_")[1];
+//        var share = $("#shareBox_" + idValue.split("_")[1]).val();
+        var share = $("[id=share1Box_" + idValue.split("_")[1] + ']').val();
         var data = {
             'postId': idValue.split("_")[2],
             'textShare': share
@@ -678,6 +788,15 @@ $(document).ready(function () {
     $(".postShare").live("click", function (e) {
         var idValue = e.target.id;
         $("#posthide_" + idValue.split("_")[1]).modal();
+
+    });
+
+    /**
+     * share post popup window in original post popup
+     */
+    $(".postShareOnOriginalPostPopup").live("click", function (e) {
+        var idValue = e.target.id;
+        $("#posthidePopupOnOriginalPost_" + idValue.split("_")[1]).modal();
 
     });
 
@@ -826,14 +945,14 @@ $(document).ready(function () {
 
     $(".postCommentBox").live('click', function (e) {
         var idValue = e.target.className;
-        $("#commentBoxNew_" + idValue).focus();
+        $("#commentBoxNew_listId" + idValue).focus();
     });
-        var refreshTime = trim($("#refreshTime").html());
+    var refreshTime = trim($("#refreshTime").html());
 //    var refreshTime = 3000;
 
     function refresh() {
 
-        
+
         if (new Date().getTime() - time >= refreshTime) {
             if (!$('.modal').is(":visible")) {
 

@@ -70,7 +70,7 @@ class loggedInUserDetailsComponent extends sfComponent {
 
         $this->employee = $this->getEmployeeService()->getEmployee($this->empNumber);
         if ($this->employee) {
-            $this->name = $this->employee->getFirstAndMiddleName();
+            $this->name = $this->employee->getFirstAndLastNames();
             $this->jobtitle = ' ' . $this->employee->getJobTitleName();
         } else {
             $this->name = 'Admin';

@@ -39,40 +39,51 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
                     </div>
                 </li>
             <?php } ?>
-            <?php foreach ($anniversaryEmpList as $employee) { ?>
-                <li id="anniversaryPost">
-                    <div id="annivPicAndNameContainer">
-                        <div id="annivProfilePicContainer">
-                            <img alt="<?php echo __("Employee Photo"); ?>" 
-                                 src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee['emp_number']); ?>" id="empPic"/>
-                        </div>  
-                        <div id="anniversaryUserName">
-                            <a href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employee['emp_number']); ?>' class="name">
-                                <?php echo $employee['emp_firstname'] . " " . $employee['emp_lastname']; ?>
-                            </a>
-                        </div>        
-                    </div>
-                    <br>
-                    <br>
-                    <div id="annivDate">
-                        <?php echo date('F d', strtotime($employee['joined_date'])); ?>
-                    </div>
-                    <div id="anniversaryText"><?php
-                        $years = (date('Y') - (date('Y', strtotime($employee['joined_date']))));
-                        ?><div id="yearsBox" ><?php
-                        if ($years > 1) {
-                            echo __($years . ' years');
-                        } else {
-                            echo __($years . ' year');
-                        }
-                        ?>
+            <?php
+            foreach ($anniversaryEmpList as $employee) {
+                if ($employee['termination_id'] == NULL) {
+                    ?>
+                    <li id="anniversaryPost">
+                        <div id="annivPicAndNameContainer">
+                            <div id="annivProfilePicContainer">
+                                <img alt="<?php echo __("Employee Photo"); ?>" 
+                                     src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee['emp_number']); ?>" id="empPic"/>
+                            </div>  
+                            <?php $employeeFirstAndLastNames = $employee['emp_firstname'] . " " . $employee['emp_lastname']; ?>
+                            <div id="anniversaryUserName" title="<?php echo $employeeFirstAndLastNames; ?>">
+                                <a href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employee['emp_number']); ?>' class="name">
+                                    <?php
+                                    if (strlen($employeeFirstAndLastNames) > 18) {
+                                        echo substr($employeeFirstAndLastNames, 0, 18) . '...';
+                                    } else {
+                                        echo $employeeFirstAndLastNames;
+                                    }
+                                    ?>
+                                </a>
+                            </div>        
                         </div>
-                        <div id="joinedDate">
-                            <?php echo __("Joined Date") . " : " . date('Y-M-d', strtotime($employee['joined_date'])); ?>
+                        <br>
+                        <br>
+                        <div id="annivDate">
+                            <?php echo date('F d', strtotime($employee['joined_date'])); ?>
                         </div>
-                    </div>
-                </li>
-                <?php
+                        <div id="anniversaryText"><?php
+                            $years = (date('Y') - (date('Y', strtotime($employee['joined_date']))));
+                            ?><div id="yearsBox" ><?php
+                            if ($years > 1) {
+                                echo __($years . ' years');
+                            } else {
+                                echo __($years . ' year');
+                            }
+                            ?>
+                            </div>
+                            <div id="joinedDate">
+                                <?php echo __("Joined Date") . " : " . date('Y-M-d', strtotime($employee['joined_date'])); ?>
+                            </div>
+                        </div>
+                    </li>
+                    <?php
+                }
             }
             ?>
         </ul>

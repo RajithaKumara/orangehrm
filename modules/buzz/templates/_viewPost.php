@@ -514,7 +514,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
         </div>
         <!-- end edit post pop up window-->
         <!-- start like window popup window-->
-        <div class="modal hide" id='<?php echo 'postlikehide_' . $postId ?>'>
+        <div class="modal hide modal-on-preview" id='<?php echo 'postlikehide_' . $postId ?>'>
             <div id="modalHeader" >
                 <?php echo __("People who like this post"); ?>
             </div>
@@ -525,6 +525,22 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                         /></div>
                 <div class=""  id='<?php echo 'postlikehidebody_' . $postId ?>'></div>
+
+            </div>
+        </div>
+        <!-- end like window pop up window-->
+        <!-- start like window popup window-->
+        <div class="modal hide modal-on-preview" id='<?php echo 'postsharehide_' . $postId ?>'>
+            <div id="modalHeader" >
+                <?php echo __("People who shared this post"); ?>
+            </div>
+            <div class="modal-body originalPostModal-body" >
+                <div class="hideModalPopUp" id='<?php echo 'postsharehide_' . $postId ?>'
+                     ><img 
+                        class="hideModalPopUp" id='<?php echo 'postsharehide_' . $postId ?>' 
+                        src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                        /></div>
+                <div class=""  id='<?php echo 'postsharehidebody_' . $postId ?>'></div>
 
             </div>
         </div>
@@ -565,6 +581,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 }
                 ?>
             </a>
+        </div>
+        
+        <div id="comment-text-width-analyzer">
+            
         </div>
 
         <div id="postFifthRow" class="postRow">
@@ -665,11 +685,11 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                     <div id="commentBody">
                         <div id="commentRowOne">
                             <div id="commentColumnOne">
-                                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/></a>
+                                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $commentEmployeeId); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/></a>
                             </div>
                             <div id="commentColumnTwo">
                                 <div id="commentEmployeeName">
-                                    <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' ><?php echo $commentEmployeeName; ?></a>
+                                    <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $commentEmployeeId); ?>' ><?php echo $commentEmployeeName; ?></a>
                                 </div>
                                 <div id="commentEmployeeJobTitle">
                                     <?php echo $commentEmployeeJobTitle; ?>
@@ -688,7 +708,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                             <div class="dropdown commentDropDown">
                                                 <a class="commentAccount" id=<?php echo 'cnew' . $commentId ?>></a>
                                                 <div class="submenu" id=<?php echo 'submenucnew' . $commentId ?>>
-                                                    <ul class = "root"><?php if (($employeeID == $loggedInUser)) { ?>
+                                                    <ul class = "root"><?php if (($commentEmployeeId == $loggedInUser)) { ?>
                                                             <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
                                                         <?php }
                                                         ?>
@@ -772,14 +792,14 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                             </div>
                         </div>
                         <div id="commentRowTwo">
-
-                        </div>
-
-                        <div  id="commentColumnTwo">
-                            <div class="commentContent"id='<?php echo 'commentContentNew_' . $commentId ?>'>
-                                <?php echo BuzzTextParserService::parseText($commentContent); ?>
+                            <div  id="commentColumnTwo">
+                                <div class="commentContent"id='<?php echo 'commentContentNew_' . $commentId ?>'>
+                                    <?php echo BuzzTextParserService::parseText($commentContent); ?>
+                                </div>
                             </div>
                         </div>
+
+
                     </div>
                 </li>
             <?php } ?>

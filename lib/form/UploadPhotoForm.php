@@ -52,7 +52,8 @@ class UploadPhotoForm extends BaseForm {
             'file_src' => ''));
         $fileInput->setAttribute('multiple', true);
         $inputText = new sfWidgetFormTextarea();
-        $inputText->setAttribute('placeholder', 'Say something about these photos');
+        $placeholder = __("Say something about these photos");
+        $inputText->setAttribute('placeholder', $placeholder);
         $inputText->setAttribute('rows', '1');
         $widgets = array(
             'phototext' => $inputText,

@@ -60,7 +60,9 @@
     <div id="buzzHeader">
         <div id="dashBoardHeaderBuzz">
             <div id="logo">
-                <img height="60px" style="" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/logo.png'); ?>">
+                <a href="<?php echo url_for("buzz/viewBuzz"); ?>">
+                    <img id="buzz-logo" height="60px" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/logo.png'); ?>">
+                </a>
             </div>
             <div id="buzzHeaderRight">
                 <div id="buzzHeaderDetails">
@@ -80,5 +82,4 @@
 
     </div> <!-- wrapper -->
 
-    <?php
-    // require_once '_footer.php'; ?>
+    <?php // require_once '_footer.php'; ?>

@@ -58,21 +58,35 @@ class getSharedEmployeeListAction extends BaseBuzzAction {
      */
     private function getPostSharedEmployeeList($post) {
         $sharedEmployeeList = array();
-        $isAdminShare= false;
+        $isAdminShare = false;
         foreach ($post->getShare() as $share) {
             if ($share->getEmployeeNumber() == null) {
-                $isAdminShare=true;
-               
+                $isAdminShare = true;
             } else {
-            $employee = $share->getEmployeePostShared();
-            array_push($sharedEmployeeList, $employee);
+                $employee = $share->getEmployeePostShared();
+                array_push($sharedEmployeeList, $employee);
             }
         }
-        $sharedUniqueEmployeeList=array_unique($sharedEmployeeList);
-        if($isAdminShare){
-             array_push($sharedUniqueEmployeeList, new Employee());
+//        $sharedUniqueEmployeeList=array_unique($sharedEmployeeList);
+        $sharedUniqueEmployeeList = $this->generateUniqueEmployeeList($sharedEmployeeList);
+        if ($isAdminShare) {
+            array_push($sharedUniqueEmployeeList, new Employee());
         }
         return $sharedUniqueEmployeeList;
+    }
+
+    /**
+     * Returns a unique list of employees from the $employeeList
+     * @param array $employeeList
+     * @return array
+     */
+    private function generateUniqueEmployeeList($employeeList) {
+        $uniqueEmployeeList = array();
+        foreach ($employeeList as $employee) {
+            $id = $employee->getEmpNumber();
+            isset($uniqueEmployeeList[$id]) or $uniqueEmployeeList[$id] = $employee;
+        }
+        return $uniqueEmployeeList;
     }
 
     /**
@@ -83,7 +97,7 @@ class getSharedEmployeeListAction extends BaseBuzzAction {
     private function getPostSharedEmployeeNameList($post) {
         $sharedEmployeeNameList = array();
         foreach ($post->getShare() as $share) {
-            
+
             if ($share->getEmployeeNumber() == null) {
                 $empName = 'Admin';
             } else {
