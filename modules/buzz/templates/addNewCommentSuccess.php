@@ -115,7 +115,14 @@
 
             <div id="commentBodyThirdRow">
                 <div id="noOfLikesLinknew" >
-                    <a title="" class="commentNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
+                    <?php
+                    if ($commentNoOfLikes > 0) {
+                        $tooltipClass = "commentNoofLikesTooltip";
+                    } else {
+                        $tooltipClass = "commentNoofLikesTooltip disabledLinks";
+                    }
+                    ?>
+                    <a title="" class="<?php echo $tooltipClass; ?>" href="javascript:void(0)" id='<?php echo 'cmntNoOfLikes_' . $commentId ?>' >
                         <span id="<?php echo 'commentNoOfLikes_' . $commentId; ?>"><?php echo $commentNoOfLikes; ?></span>
                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                               height="16" width="16"/><?php echo __(" this"); ?>
@@ -123,7 +130,7 @@
                 </div>
 
                 <div id="noOfUnLikesLinknew" >
-                    <a class="postNoofUnLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
+                    <a class="postNoofUnLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'cmntNoOfLikes_' . $commentId ?>' >
                         <span id="<?php echo 'commentNoOfUnLikes_' . $commentId; ?>"><?php echo $commentNoOfUnLikes; ?></span>
                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                               height="16" width="16"/><?php echo __(" this"); ?>

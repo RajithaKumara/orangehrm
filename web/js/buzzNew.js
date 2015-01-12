@@ -25,6 +25,7 @@ $(document).ready(function () {
                     var likes = trim($('#postLiketext_' + idValue.split("_")[1]).html());
                     likes++;
                     $("[id=noOfLikes_" + idValue.split("_")[1] + ']').html(data.likeCount);
+                    $("[id=postNoOfLikes_" + idValue.split("_")[1] + ']').removeClass("disabledLinks");
                     $('[id=postLiketext_' + idValue.split("_")[1] + ']').html(likes);
 
                     //div.style.backgroundColor = 'orange';
@@ -67,6 +68,9 @@ $(document).ready(function () {
             $.post(shareLikeURL, {shareId: shareId, likeAction: action, CSRFToken: CSRFToken}, function (data) {
                 if (data.deleted === 'yes') {
                     $("[id=noOfLikes_" + idValue.split("_")[1] + ']').html(data.likeCount);
+                }
+                if (data.likeCount == 0) {
+                    $("[id=postNoOfLikes_" + idValue.split("_")[1] + ']').addClass("disabledLinks");
                 }
                 if (data.states === 'savedUnLike') {
                     $("[id=postUnLiketext_" + idValue.split("_")[1] + ']').html(data.unlikeCount);
@@ -160,22 +164,22 @@ $(document).ready(function () {
         }
     }
 
-    $("#createVideo_content").live('paste',function(e){
-        
-            var ua = window.navigator.userAgent;
-            var msie = ua.indexOf('MSIE ');
-            var trident = ua.indexOf('Trident/');
+    $("#createVideo_content").live('paste', function (e) {
 
-            if (msie > 0) {
-                setTimeout(videoUrlPaste, 100);
-            }
+        var ua = window.navigator.userAgent;
+        var msie = ua.indexOf('MSIE ');
+        var trident = ua.indexOf('Trident/');
 
-            else if (trident > 0) {
-                setTimeout(videoUrlPaste, 100);
-            } else {
-                setTimeout(videoUrlPaste(e), 100);
-            }
-        
+        if (msie > 0) {
+            setTimeout(videoUrlPaste, 100);
+        }
+
+        else if (trident > 0) {
+            setTimeout(videoUrlPaste, 100);
+        } else {
+            setTimeout(videoUrlPaste(e), 100);
+        }
+
 
     });
     $("#createPost_content").bind({paste: function (e) {
@@ -268,6 +272,7 @@ $(document).ready(function () {
 
                 $('[id=commentNoOfLiketext_' + idValue.split("_")[1] + ']').html(likes);
                 $("[id=commentNoOfLikes_" + idValue.split("_")[1] + ']').html(likes);
+                $("[id=cmntNoOfLikes_" + idValue.split("_")[1] + ']').removeClass("disabledLinks");
                 $("[id=commentLikeyes_" + idValue.split("_")[1] + ']').show();
                 $("[id=commentLikeno_" + idValue.split("_")[1] + ']').hide();
             }
@@ -298,6 +303,9 @@ $(document).ready(function () {
             if (data.deleted === 'yes') {
                 var likes = trim($('#commentNoOfLiketext_' + idValue.split("_")[1]).html());
                 likes--;
+                if (likes === 0) {
+                    $("[id=cmntNoOfLikes_" + idValue.split("_")[1] + ']').addClass("disabledLinks");
+                }
                 $('[id=commentNoOfLiketext_' + idValue.split("_")[1] + ']').html(likes);
                 $("[id=commentNoOfLikes_" + idValue.split("_")[1] + ']').html(likes);
                 $("[id=commentLikeno_" + idValue.split("_")[1] + ']').show();

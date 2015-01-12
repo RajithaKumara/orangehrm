@@ -145,7 +145,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
                             <div id="postBodyFirstRow">
                                 <div id="postFirstRowColumnOne">
-                                    <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic" height="40" width="30"/>
+                                    <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic"/>
                                 </div>
                                 <div id="postFirstRowColumnTwo">
                                     <div id="postEmployeeName" >
@@ -218,7 +218,14 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
             <div id="postBodyThirdRow">
                 <div id="noOfLikesLinknewPopUp" >
-                    <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
+                    <?php
+                    if ($postNoOfLikes > 0) {
+                        $tooltipClass = "postNoofLikesTooltip";
+                    } else {
+                        $tooltipClass = "postNoofLikesTooltip disabledLinks";
+                    }
+                    ?>
+                    <a class="<?php echo $tooltipClass; ?>" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
                         <span id="<?php echo 'noOfLikes_' . $postId; ?>"><?php echo $postNoOfLikes; ?></span>
                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
                               height="16" width="16"/><?php echo __(" this"); ?>
@@ -232,7 +239,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                     </a>
                 </div>
                 <div id="noOfUnLikesLinknewPopUp" >
-                    <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
+                    <a class="postNoofLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'postNoOfUnlikes_' . $postId ?>' >
                         <span id="<?php echo 'noOfUnLikes_' . $postId; ?>"><?php echo $postUnlike; ?></span>
                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                               height="16" width="16"/><?php echo __(" this"); ?>
@@ -266,7 +273,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
                     <div id="postBodyFirstRow">
                         <div id="postFirstRowColumnOne">
-                            <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic" height="40" width="30"/></a>
+                            <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic"/></a>
                         </div>
                         <div id="postFirstRowColumnTwo">
                             <div id="postEmployeeName" >
@@ -341,7 +348,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
 
     <div id="photoPageComment" >
         <div id="postBodyFirstRow photo" class="photoViewEmp">
-            <div id="postFirstRowColumnOne" >
+            <div id="postFirstRowColumnOneViewShare" >
                 <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic-popUp" />
             </div>
             <div id="postFirstRowColumnTwo" >

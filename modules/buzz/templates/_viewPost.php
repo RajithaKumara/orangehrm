@@ -166,7 +166,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
                         <div id="postBodyFirstRow">
                             <div id="postFirstRowColumnOne">
-                                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic" height="40" width="30"/></a>
+                                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $originalPostEmpNumber); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic"/></a>
                             </div>
                             <div id="postFirstRowColumnTwo">
                                 <div id="postEmployeeName" >
@@ -345,7 +345,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 </div>
                 <div id="photoPageComment" >
                     <div id="postBodyFirstRow photo" class="photoViewEmp">
-                        <div id="postFirstRowColumnOne"  style="width: 50px;height: 50px;overflow: hidden">
+                        <div id="postFirstRowColumnOne"  style="width: 70px;height: 70px;overflow: hidden; margin-top: -5px; border-radius: 5px;">
                             <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
                         </div>
                         <div id="postFirstRowColumnTwo">
@@ -547,7 +547,14 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
         <!-- end like window pop up window-->
         <div id="postBodyThirdRow">
             <div id="noOfLikesLinknew" >
-                <a class="postNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' 
+                <?php
+                if ($postNoOfLikes > 0) {
+                    $tooltipClass = "postNoofLikesTooltip";
+                } else {
+                    $tooltipClass = "postNoofLikesTooltip disabledLinks";
+                }
+                ?>
+                <a class="<?php echo $tooltipClass; ?>" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' 
                    >
                     <span id="<?php echo 'noOfLikes_' . $postId; ?>"><?php echo $postNoOfLikes; ?></span>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
@@ -562,7 +569,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 </a>
             </div>
             <div id="noOfUnLikesLinknew" >
-                <a class="postNoofUnLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
+                <a class="postNoofUnLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'postNoOfUnlikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfUnLikes_' . $postId; ?>"><?php echo $postUnlike; ?></span>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                           height="16" width="16"/><?php echo __(" this"); ?>
@@ -582,9 +589,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 ?>
             </a>
         </div>
-        
+
         <div id="comment-text-width-analyzer">
-            
+
         </div>
 
         <div id="postFifthRow" class="postRow">
@@ -739,7 +746,14 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
                         <div id="commentBodyThirdRow">
                             <div id="noOfLikesLinknew" >
-                                <a class="commentNoofLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
+                                <?php
+                                if ($commentNoOfLikes > 0) {
+                                    $tooltipClass = "commentNoofLikesTooltip";
+                                } else {
+                                    $tooltipClass = "commentNoofLikesTooltip disabledLinks";
+                                }
+                                ?>
+                                <a class="<?php echo $tooltipClass; ?>" href="javascript:void(0)" id='<?php echo 'cmntNoOfLikes_' . $commentId ?>' >
                                     <span id="<?php echo 'commentNoOfLikes_' . $commentId; ?>"><?php echo $commentNoOfLikes; ?></span>
                                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                                           height="16" width="16"/><?php echo __(" this"); ?>
@@ -747,7 +761,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                             </div>
 
                             <div id="noOfUnLikesLinknew" >
-                                <a class="postNoofUnLikesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $commentId ?>' >
+                                <a class="postNoofUnLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'cmntNoOfLikes_' . $commentId ?>' >
                                     <span id="<?php echo 'commentNoOfUnLikes_' . $commentId; ?>"><?php echo $commentNoOfUnLikes; ?></span>
                                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                                           height="16" width="16"/><?php echo __(" this"); ?>

@@ -124,7 +124,7 @@ textarea{
     top: 50%;
     left: 50%;
 }
-#successBody{
+#successBodyShare, #successBodyEdit, #successBodyDelete{
     width: 100%;
     height: 20px;
     color: green;
@@ -192,6 +192,15 @@ textarea{
     border-radius: 5px;
 }
 
+#postFirstRowColumnOneViewShare img{
+    top:0;
+    max-width: 70px;
+    bottom:0;
+    margin: auto 0;
+    vertical-align: middle;
+    border-radius: 5px;
+}
+
 /*Date and time container*/
 #postDateTime{
     display: -webkit-box;    
@@ -215,6 +224,17 @@ textarea{
     width: 70px;
     display: inline-block;
     overflow: hidden;
+    border-radius: 5px;
+}
+
+/*Profile picture column*/
+#postFirstRowColumnOneViewShare{
+    height: 70px;
+    width: 70px;
+    display: inline-block;
+    overflow: hidden;
+    margin-top: -5px;
+    border-radius: 5px;
 }
 
 /*Name date and time row*/
@@ -406,22 +426,24 @@ textarea{
 }
 
 #commentColumnOne{
-    width: 50px;
-    height: 50px;
-    overflow: hidden;
-    border: 4px solid white;
+    border: 2px solid white;
     border-radius: 5px;
+    height: 50px;
+    margin-left: 3px;
+    margin-top: 3px;
+    overflow: hidden;
+    width: 50px;
 }
 
 #commentColumnThree{
     height: 45px;
     float: right;
-    margin-right: -410px;
+    margin-right: -145px;
     margin-top: -62.5px;
 }
 
 #commentColumnTwo{
-    /*width: 60%;*/
+    width: 60%;
     margin-left: -2px;
     vertical-align: top;
 }
@@ -646,10 +668,10 @@ input[type="button"]{
 @media screen and (-webkit-min-device-pixel-ratio:0){  
     input[type="button"]{
         font-size: 16px;
-        margin-left: 81.8%;
+        margin-left: 81.7%;
         margin-top: -36px;
         padding: 5px;
-        width: 17%;
+        /*width: 17%;*/
     }
 
     .submitBtn{
@@ -662,7 +684,7 @@ input[type="button"]{
 }
 
 #commentSubmitBtnInModal input[type="button"]{
-    margin-left: 62%;
+    margin-left: 73%;
 }
 
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none){  

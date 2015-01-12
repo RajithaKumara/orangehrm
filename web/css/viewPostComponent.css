@@ -278,9 +278,9 @@
     -khtml-border-radius: 5px; /* for old Konqueror browsers */
 }
 .viewMoreModal{
-    width: 800px;
+    width: 920px;
     height: 600px;
-    left: 40%;
+    left: 36%;
     top:50%;
     overflow-x: hidden;
 }
@@ -302,7 +302,7 @@
 }
 
 .originalPostModal{
-    width: 800px;
+    width: 920px;
     height: 700px;
     left: 40%;
     top:50%;
@@ -339,7 +339,7 @@
     
     top: 5px;
     left: 467px;
-    width: 320px;
+    width: 440px;
     margin-bottom: -20px;
     position: absolute;background-color: #e2e2e2;
 }
@@ -411,6 +411,11 @@
     font-family: 'SourceSansProLight';
     text-decoration: none;
 }
+
+.disabledLinks{
+    pointer-events: none;
+}
+
 .postNoofSharesTooltip{
     color: #232323;
     font-family: 'SourceSansProLight';

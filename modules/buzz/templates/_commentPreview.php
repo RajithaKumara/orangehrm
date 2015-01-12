@@ -13,6 +13,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
             $commentPostId = $comment->getShareId();
             $commentContent = $comment->getCommentText();
             $commentEmployeeName = $comment->getEmployeeFirstLastName();
+            $commentEmployeeJobTitle = $comment->getEmployeeComment()->getJobTitleName();
             $commentEmployeeId = $comment->getEmployeeNumber();
             $commentNoOfLikes = $comment->getNumberOfLikes();
             $commentNoOfUnLikes = $comment->getNumberOfUnlikes();
@@ -73,7 +74,15 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                         </div>
                         <div class="cmnt_prev_commentColTwo" id="commentColumnTwo">
                             <div id="commentEmployeeName">
-                                <a class="name" href="javascript:void(0);"><?php echo $commentEmployeeName; ?></a>
+                                <a class="name" href="javascript:void(0);" title="<?php echo $commentEmployeeName; ?>">
+                                    <?php
+                                    if (strlen($commentEmployeeName) > 26) {
+                                        echo substr($commentEmployeeName, 0, 26) . '...';
+                                    } else {
+                                        echo $commentEmployeeName;
+                                    }
+                                    ?>
+                                </a>
                             </div>
                             <div id="commentEmployeeJobTitle">
                                 <?php echo $commentEmployeeJobTitle; ?>

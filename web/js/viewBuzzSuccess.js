@@ -547,7 +547,9 @@ $(document).ready(function () {
                 $("#postInList" + idOfThePostToDelete).hide(1000);
                 $("#loadingDataModal").modal('hide');
                 idOfThePostToDelete = -1;
-                $("#successBody").replaceWith("<div id='successBody' >Successfully Deleted!</div>");
+                $("#successBodyDelete").show();
+                $("#successBodyShare").hide();
+                $("#successBodyEdit").hide();
                 $("#successDataModal").modal();
                 setTimeout(hideSuccessModal, 3000);
                 setTimeout(refresh, 10000);
@@ -664,7 +666,10 @@ $(document).ready(function () {
                 $("#postContent_" + shareId).replaceWith(data);
                 reload();
                 $("#loadingDataModal").modal('hide');
-                $("#successBody").replaceWith("<div id='successBody' >Successfully Saved!</div>");
+                
+                $("#successBodyShare").hide();
+                $("#successBodyEdit").show();
+                $("#successBodyDelete").hide();
                 $("#successDataModal").modal();
                 setTimeout(hideSuccessModal, 3000);
                 setTimeout(refresh, 10000);
@@ -719,6 +724,9 @@ $(document).ready(function () {
                 $("#posthidePopup_" + shareId).modal("hide");
                 $('#buzz').prepend(data);
                 $("#loadingDataModal").modal('hide');
+                $("#successBodyShare").show();
+                $("#successBodyEdit").hide();
+                $("#successBodyDelete").hide();
                 $("#successDataModal").modal();
                 setTimeout(hideSuccessModal, 3000);
             }
@@ -752,6 +760,9 @@ $(document).ready(function () {
                 $("#posthidePopup_" + shareId).modal("hide");
                 $('#buzz').prepend(data);
                 $("#loadingDataModal").modal('hide');
+                $("#successBodyDelete").hide();
+                $("#successBodyShare").show();
+                $("#successBodyEdit").hide();
                 $("#successDataModal").modal();
                 setTimeout(hideSuccessModal, 3000);
             }
