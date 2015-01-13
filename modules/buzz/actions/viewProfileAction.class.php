@@ -14,7 +14,7 @@
 class viewProfileAction extends BaseBuzzAction {
 
     private $employeeService;
-
+    const TERMINATED = "TERMINATED";
     /**
      * Get EmployeeService
      * @returns EmployeeService
@@ -58,6 +58,9 @@ class viewProfileAction extends BaseBuzzAction {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->profileUserId = $request->getParameter('empNumber');
             $this->employee = $this->getEmployeeService()->getEmployee($this->profileUserId);
+            if ($this->employee->getState() == viewProfileAction::TERMINATED) {
+                $this->redirect('buzz/viewBuzz');
+            }
             $this->intializeConfigValuves();
             $this->initializePostList();
         } catch (Exception $ex) {
