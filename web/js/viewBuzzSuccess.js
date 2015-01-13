@@ -156,6 +156,11 @@ $(document).ready(function () {
         }
     });
 
+    var windowTitle = "Orange Buzz";
+    var newlyAddedPostCount = 0;
+    var previousNoOfPosts = 0;
+    var isPageReload = true;
+
     function reload() {
         isAccess();
         var lastPostId = {
@@ -167,6 +172,15 @@ $(document).ready(function () {
             data: lastPostId,
             success: function (data) {
                 $('#buzz').replaceWith(data);
+                var noOfPostsNow = $('.singlePost').length;
+                if (!isPageReload) {
+                    newlyAddedPostCount = noOfPostsNow - previousNoOfPosts;
+                    if (newlyAddedPostCount > 0) {
+                        $(document).prop('title', windowTitle + "(" + newlyAddedPostCount + ")");
+                    }
+                }
+                isPageReload = false;
+                previousNoOfPosts = $('.singlePost').length;
             }
         });
 
@@ -434,7 +448,7 @@ $(document).ready(function () {
 //            $(elementId).autosize();
 //            $(elementId).val(value + "\n");
 //                alert("nes");
-               $("#debug").html(commentMaxLineLength + " : " + $("#comment-text-width-analyzer").width());
+                $("#debug").html(commentMaxLineLength + " : " + $("#comment-text-width-analyzer").width());
                 var content = this.value;
                 var caret = getCaret(this);
                 this.value = content.substring(0, caret) +
@@ -442,7 +456,7 @@ $(document).ready(function () {
                 e.stopPropagation();
             }
         }
-        
+
         oldText = $("#comment-text-width-analyzer").html();
 
 
@@ -666,7 +680,7 @@ $(document).ready(function () {
                 $("#postContent_" + shareId).replaceWith(data);
                 reload();
                 $("#loadingDataModal").modal('hide');
-                
+
                 $("#successBodyShare").hide();
                 $("#successBodyEdit").show();
                 $("#successBodyDelete").hide();
@@ -926,6 +940,7 @@ $(document).ready(function () {
     var time = new Date().getTime();
     $(document.body).bind("mousemove keypress", function (e) {
         time = new Date().getTime();
+        $(document).prop('title', windowTitle);
         //alert(time);
     });
 

@@ -65,7 +65,7 @@ class addNewVideoAction extends BaseBuzzAction {
                 $this->videoFeedUrl = $this->getVideoFeedLinkFromUrl($this->url);
                 if ($this->videoFeedUrl === 'not') {
                     $this->isSuccessfullyPastedUrl = false;
-                    $this->getUser()->setFlash('error', __("This url is not valid video url or this url not supported by system"));
+                    $this->getUser()->setFlash('error', __("This url is not a valid url of a video or it is not supported by the system"));
                 }
             } else {
                 $this->isSuccessFullyPosted = false;

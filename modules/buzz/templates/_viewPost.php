@@ -10,8 +10,8 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/photoTiling'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 ?>
-<li id=<?php echo "postInList" . $postId; ?>>
-
+<li class="singlePost" id=<?php echo "postInList" . $postId; ?>>
+<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime(); ?></div>-->
     <div id="postBody">
 
         <div id="postBodyFirstRow">
@@ -761,7 +761,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                             </div>
 
                             <div id="noOfUnLikesLinknew" >
-                                <a class="postNoofUnLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'cmntNoOfLikes_' . $commentId ?>' >
+                                <a class="postNoofUnLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'cmntNoOfUnLikes_' . $commentId ?>' >
                                     <span id="<?php echo 'commentNoOfUnLikes_' . $commentId; ?>"><?php echo $commentNoOfUnLikes; ?></span>
                                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
                                           height="16" width="16"/><?php echo __(" this"); ?>

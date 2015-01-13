@@ -705,7 +705,6 @@ input[type="button"]{
 
 #comment-text-width-analyzer{
     font-size: 16px;
-    display: inline-block;
     white-space: nowrap;
     height: 0;
 }

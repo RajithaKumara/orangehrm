@@ -37,6 +37,7 @@ ini_set("memory_limit", '-1');
     <div class="buzzRightBar">
         <!--Start Birthdays Component-->
         <div id="birthdayComponent">
+            
             <?php include_component('buzz', 'viewBirthdays', array()); ?>
         </div>
         <!--End Birthdays Component-->
@@ -215,7 +216,7 @@ ini_set("memory_limit", '-1');
 
         <ul id="buzz">
             <div class="jason"></div>
-
+            
             <?php
             foreach ($postList as $post) {
                 include_component('buzz', 'viewPost', array('post' => $post, 'loggedInUser' => $loggedInUser));
@@ -315,7 +316,7 @@ ini_set("memory_limit", '-1');
         <style type="text/css">
             .homeLink{
                 padding: 2px 5px;
-                background-color: #6B6B6B;
+                background-color: #d66807;
                 border-radius: 5px;
             }
         </style>
