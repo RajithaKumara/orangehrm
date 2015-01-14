@@ -810,7 +810,7 @@ input[type="button"]{
     -khtml-border-radius: 5px; /* for old Konqueror browsers */
     border: 10px ;
     height: 290px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     background-color: #e2e2e2;
     padding-right: 10px;
@@ -864,6 +864,10 @@ input[type="button"]{
     height: 120px;
     overflow-y: hidden;
     margin-top: 0px;
+}
+
+.popupCommentList{
+    margin-top: 10px;
 }
 
 .popupCommentList li #commentBody #commentBodyThirdRow{

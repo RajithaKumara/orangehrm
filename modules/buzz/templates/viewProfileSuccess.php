@@ -133,6 +133,7 @@ ini_set("memory_limit", '-1');
                 var refreshStatsURL = '<?php echo url_for('buzz/viewStatistics'); ?>';
                 var viewMoreShare = '<?php echo url_for('buzz/viewShare'); ?>';
                 var getSharedEmployeeListURL = '<?php echo url_for('buzz/getSharedEmployeeList'); ?>';
+                var logoutActionURL = '<?php echo url_for('auth/logout'); ?>';
             </script>
 
         </div>

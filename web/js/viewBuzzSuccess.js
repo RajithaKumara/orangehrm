@@ -1,6 +1,46 @@
 var modalVisible = false;
 var fileInput = $("#photofile");
+//var timeElapsed;
+//var isWindowFocused = true;
+//var timer;
+//
+//$(window).focus(function () {
+//    timer = setInterval(function () {
+//        timeElapsed = new Date - start;
+//        if (timeElapsed > 20000) {
+//            $.ajax({
+//                url: logoutActionURL,
+//                type: "POST",
+//                success: function (data) {
+//                }
+//            });
+//        }
+//        $('.Timer').text((timeElapsed) / 1000 + " Seconds");
+//    }, 1000);
+//});
+//
+//$(window).blur(function () {
+//    start = new Date();
+//    clearInterval(timer);
+//});
+
 $(document).ready(function () {
+//
+//    var start = new Date;
+//
+//    timer = setInterval(function () {
+//        timeElapsed = new Date - start;
+//        if (timeElapsed > 20000) {
+//            $.ajax({
+//                url: logoutActionURL,
+//                type: "POST",
+//                success: function (data) {
+//                }
+//            });
+//        }
+//        $('.Timer').text((timeElapsed) / 1000 + " Seconds");
+//    }, 1000);
+
     /**
      * Submitting a new post
      */

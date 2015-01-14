@@ -11,7 +11,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/photoTiling'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 ?>
 <li class="singlePost" id=<?php echo "postInList" . $postId; ?>>
-<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime(); ?></div>-->
+<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime();      ?></div>-->
     <div id="postBody">
 
         <div id="postBodyFirstRow">
@@ -271,52 +271,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         /></div>
                 <div class="photopageCss" id="photoPage" >
                     <!--new Code of like, unlike and share buttons-->
-                    <div id="postBodyThirdRowNewPopUP">
-                        <div class="likeLinknew"  id="<?php echo 'postLikebody_' . $postId ?>" > 
-                            <?php if ($isLike == 'Unlike') { ?>
-                                <a  href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeyes_' . $postId ?>'> 
-                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                                          class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
-                                <a style="display:none;" href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeno_' . $postId ?>'> 
-                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                                          class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
-                                    <?php
-                                } else {
-                                    ?>
-                                <a style="display:none;" href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeyes_' . $postId ?>'> 
-                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                                          class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
-                                <a  href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeno_' . $postId ?>'> 
-                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
-                                          class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
-                                    <?php
-                                }
-                                ?>
 
-                        </div>
-                        <div class="unlikeLinknew" id='<?php echo 'postUnLikebody_' . $postId ?>' >
-                            <?php if ($isUnlike == 'yes') { ?>
-
-                                <a  href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeyes_' . $postId ?>> 
-                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" 
-                                          border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
-                                <a style="display:none;" href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeno_' . $postId ?>> 
-                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" 
-                                          border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
-                                <?php } else {
-                                    ?>
-                                <a href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeno_' . $postId ?>> 
-                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" 
-                                          border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
-                                <a  style="display:none;" href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeyes_' . $postId ?>> 
-                                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" 
-                                          border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
-                                    <?php
-                                }
-                                ?>
-
-                        </div>
-                    </div>
                     <?php
                     $imgCount = 1;
                     foreach ($photos as $photo) {
@@ -345,6 +300,54 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 </div>
                 <div id="photoPageComment" >
                     <div id="postBodyFirstRow photo" class="photoViewEmp">
+
+                        <div id="postBodyThirdRowNewPopUP">
+                            <div class="likeLinknew"  id="<?php echo 'postLikebody_' . $postId ?>" > 
+                                <?php if ($isLike == 'Unlike') { ?>
+                                    <a  href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeyes_' . $postId ?>'> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
+                                              class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
+                                    <a style="display:none;" href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeno_' . $postId ?>'> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
+                                              class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
+                                        <?php
+                                    } else {
+                                        ?>
+                                    <a style="display:none;" href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeyes_' . $postId ?>'> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
+                                              class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
+                                    <a  href="javascript:void(0)" class="<?php echo $isLike . ' postLike'; ?>" id='<?php echo 'postLikeno_' . $postId ?>'> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'postLike_' . $postId ?>'
+                                              class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/></a>
+                                        <?php
+                                    }
+                                    ?>
+
+                            </div>
+                            <div class="unlikeLinknew" id='<?php echo 'postUnLikebody_' . $postId ?>' >
+                                <?php if ($isUnlike == 'yes') { ?>
+
+                                    <a  href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeyes_' . $postId ?>> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" 
+                                              border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
+                                    <a style="display:none;" href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeno_' . $postId ?>> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" 
+                                              border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
+                                    <?php } else {
+                                        ?>
+                                    <a href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeno_' . $postId ?>> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike.png"); ?>" 
+                                              border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
+                                    <a  style="display:none;" href="javascript:void(0)" class="postUnlike2" id=<?php echo 'postUnlikeyes_' . $postId ?>> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" 
+                                              border="0" id='<?php echo 'postLike_' . $postId ?>'  height="30" width="30"/></a>
+                                        <?php
+                                    }
+                                    ?>
+
+                            </div>
+                        </div>
+
                         <div id="postFirstRowColumnOne"  style="width: 70px;height: 70px;overflow: hidden; margin-top: -5px; border-radius: 5px;">
                             <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
                         </div>
@@ -353,6 +356,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                 <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
                                     <?php echo $postEmployeeName; ?>
                                 </a>
+                            </div>
+                            <div>
+                                <?php echo $postEmployeeJobTitle; ?>
                             </div>
                             <div id="postDateTime">
                                 <div id="postDate">
@@ -364,8 +370,56 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                             </div>                        
                         </div>
                     </div>
-                    <?php include_component('buzz', 'commentPreview', array('commentList' => $commentList, 'editForm' => $editForm, 'loggedInUser' => $loggedInUser, 'postId' => $postId, 'commentForm' => $commentForm, 'commentBoxId' => 'popPhotoId')); ?>
 
+                    <div class="postContent">
+                        <?php
+                        if (strlen($postContent) > $postLenth) {
+                            $subContent = substr($postContent, 0, $postLenth);
+                            echo BuzzTextParserService::parseText($subContent . '...');
+                            ?><a  class="viewMoreShare"  id='<?php echo 'shareViewMore_' . $postId ?>'
+                                ><?php echo _('Read More'); ?></a>
+
+                            <?php
+                        } else {
+                            echo BuzzTextParserService::parseText($postContent);
+                        }
+                        ?>
+                    </div>
+
+                    <div id="postBodyThirdRow">
+                        <div id="noOfLikesLinknewInModal" >
+                            <?php
+                            if ($postNoOfLikes > 0) {
+                                $tooltipClass = "postNoofLikesTooltip";
+                            } else {
+                                $tooltipClass = "postNoofLikesTooltip disabledLinks";
+                            }
+                            ?>
+                            <a class="<?php echo $tooltipClass; ?>" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' 
+                               >
+                                <span id="<?php echo 'noOfLikes_' . $postId; ?>"><?php echo $postNoOfLikes; ?></span>
+                                <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
+                                      height="16" width="16"/><?php echo __(" this"); ?>
+                            </a>
+                        </div>
+                        <div id="noOfSharesLinknewInModal" >
+                            <a class="postNoofSharesTooltip tooltipInsideModal" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' >
+                                <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $postShareCount; ?></span>
+                                <img  id='<?php echo 'postNoOfSharesImage_' . $postId ?>' src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
+                                      height="16" width="16"/><?php echo __(" this"); ?>
+                            </a>
+                        </div>
+                        <div id="noOfUnLikesLinknewInModal" >
+                            <a class="postNoofUnLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'postNoOfUnlikes_' . $postId ?>' >
+                                <span id="<?php echo 'noOfUnLikes_' . $postId; ?>"><?php echo $postUnlike; ?></span>
+                                <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
+                                      height="16" width="16"/><?php echo __(" this"); ?>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="commentBoxContainer">
+                        <?php include_component('buzz', 'commentPreview', array('commentList' => $commentList, 'editForm' => $editForm, 'loggedInUser' => $loggedInUser, 'postId' => $postId, 'commentForm' => $commentForm, 'commentBoxId' => 'popPhotoId')); ?>
+                    </div>
                 </div>
 
             </div>

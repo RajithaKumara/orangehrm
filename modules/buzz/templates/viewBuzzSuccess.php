@@ -37,7 +37,7 @@ ini_set("memory_limit", '-1');
     <div class="buzzRightBar">
         <!--Start Birthdays Component-->
         <div id="birthdayComponent">
-            
+            <div class="Timer"></div>
             <?php include_component('buzz', 'viewBirthdays', array()); ?>
         </div>
         <!--End Birthdays Component-->
@@ -312,6 +312,7 @@ ini_set("memory_limit", '-1');
             var getSharedEmployeeListURL = '<?php echo url_for('buzz/getSharedEmployeeList'); ?>';
             var imageFolderPath = '<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/"); ?>';
             var viewShareCss = '<?php echo plugin_web_path('orangehrmBuzzPlugin', 'css/viewShareSuccess'); ?>';
+            var logoutActionURL = '<?php echo url_for('auth/logout'); ?>';
         </script>
         <style type="text/css">
             .homeLink{
