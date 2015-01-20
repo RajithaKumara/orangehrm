@@ -44,12 +44,23 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
 
         <div class="inlineBlock">
             <div id="panelfirst"><?php echo __("Locations"); ?></div>
-            <div id="panelsecond"> <?php echo $locations; ?></div>
+            <div id="panelsecond"> 
+                <?php
+                echo $locations;
+                ?>
+            </div>
         </div>
 
         <div class="inlineBlock">
             <div id="panelfirst"><?php echo __("Work Email"); ?></div>
-            <div id="panelsecond"> <?php echo $workEmail; ?></div>
+            <div id="panelsecond"> 
+                <?php
+                if (sizeof($workEmail > 16)) {
+                    $email = explode("@", $workEmail);
+                }
+                echo $email[0] . "@ " . $email[1];
+                ?>
+            </div>
         </div>
 
         <div class="inlineBlock">

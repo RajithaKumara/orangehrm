@@ -260,7 +260,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
         ?>
         <?php include_component('buzz', 'photoTilling', array('photos' => $photos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
 
-        <!-- photo privies pop up-->
+        <!-- photo preview pop up-->
         <div class="modal hide originalPostModal"  id='<?php echo "showPhotos" . $postId; ?>'>
             <div class="modal-body originalPostModal-body"  id="modalnewlook">
 
@@ -371,17 +371,17 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         </div>
                     </div>
 
-                    <div class="postContent">
+                    <div id="postBodySecondRow" class="postContent">
                         <?php
-                        if (strlen($postContent) > $postLenth) {
-                            $subContent = substr($postContent, 0, $postLenth);
+                        if (strlen($originalPostContent) > $postLenth) {
+                            $subContent = substr($originalPostContent, 0, $postLenth);
                             echo BuzzTextParserService::parseText($subContent . '...');
                             ?><a  class="viewMoreShare"  id='<?php echo 'shareViewMore_' . $postId ?>'
                                 ><?php echo _('Read More'); ?></a>
 
                             <?php
                         } else {
-                            echo BuzzTextParserService::parseText($postContent);
+                            echo BuzzTextParserService::parseText($originalPostContent);
                         }
                         ?>
                     </div>

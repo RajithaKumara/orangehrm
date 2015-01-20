@@ -110,11 +110,9 @@ class viewBuzzAction extends BaseBuzzAction {
 
     public function execute($request) {
 
-//echo date("h:i:s", $this->getUser()->getLastRequestTime());die;
-//        echo sfConfig::getAll();die;
+        
         $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
         $this->setLayout($template . '/chatter');
-
         try {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->setConfigurationValues();
@@ -132,9 +130,7 @@ class viewBuzzAction extends BaseBuzzAction {
         } catch (Exception $ex) {
             $this->forward('auth', 'login');
         }
-        
-        $this->getUser()->setAuthenticated(FALSE);
-//        echo $this->getUser()->isTimedOut(); die;
+
     }
 
     /**

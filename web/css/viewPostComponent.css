@@ -106,9 +106,9 @@
     font-size: 14px;
 }
 .commentBoxContainer .postRow{
-    position: absolute;
-    bottom: 0;
-    width: 98%;
+/*    position: absolute;
+    bottom: -50px;
+    width: 98%;*/
 }
 .tooltipInsideModal{
     margin-top: 5px;

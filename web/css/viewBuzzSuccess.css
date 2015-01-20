@@ -438,12 +438,12 @@ textarea{
 #commentColumnThree{
     height: 45px;
     float: right;
-    margin-right: -145px;
+    margin-right: -410px;
     margin-top: -62.5px;
 }
 
 #commentColumnTwo{
-    width: 60%;
+    //width: 60%;
     margin-left: -2px;
     vertical-align: top;
 }
@@ -707,6 +707,7 @@ input[type="button"]{
     font-size: 16px;
     white-space: nowrap;
     height: 0;
+    display: none;
 }
 
 .postCommentBox{
@@ -809,7 +810,7 @@ input[type="button"]{
     //border-radius: 10px; /* future proofing */
     -khtml-border-radius: 5px; /* for old Konqueror browsers */
     border: 10px ;
-    height: 290px;
+    height: 240px;
     overflow-y: auto;
     overflow-x: hidden;
     background-color: #e2e2e2;
@@ -957,4 +958,12 @@ input[type="button"]{
 
 .modal-on-preview{
     z-index: 10000;
+}
+
+.commentBox{
+    border-radius: 5px;
+    font-family: "SourceSansProLight";
+    font-size: 16px;
+    min-width: 99.5%;
+    padding: 10px 0 10px 10px;
 }
