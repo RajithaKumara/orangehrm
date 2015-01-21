@@ -27,28 +27,36 @@
 class BuzzTextParserService {
 
     protected static $smiles = array(
-        '8:)' => 'cool.ico',
-        ':\'(' => 'cry.ico',
-        'xD' => 'devil.ico',
-        '>:)' => 'devil.ico',
-        'x(' => 'angry.ico',
-        ':((' => 'cry.ico',
-        ':*' => 'kiss.ico',
-        ':))' => 'laugh.ico',
-        ':D' => 'laugh.ico',
-        ':-D' => 'laugh.ico',
-        ':x' => 'love.ico',
-        '(:|' => 'sleepy.ico',
-        ':)' => 'smile.ico',
-        ':-)' => 'smile.ico',
-        ':(' => 'sad.ico',
-        ':-(' => 'sad.ico',
-        ':O' => 'surprise.ico',
-        ':-O' => 'surprise.ico',
-        ':P' => 'tongue.ico',
-        ':-P' => 'tongue.ico',
-        ';)' => 'wink.ico',
-        ';-)' => 'wink.ico'
+        '8:)' => 'cool.png',
+        '8-)' => 'cool2.png',
+        ':_(' => 'cry.png',
+        'xD' => 'devil.png',
+        '3:)' => 'devil.png',
+        'x(' => 'angry.png',
+        ':((' => 'cry.png',
+        ':*' => 'kiss.png',
+        ':))' => 'laugh.png',
+        ':D' => 'laugh.png',
+        ':-D' => 'laugh.png',
+        ':x' => 'love.png',
+        '(:|' => 'sleepy.png',
+        ':)' => 'smile.png',
+        ':-)' => 'smile.png',
+        ':(' => 'sad.png',
+        ':-(' => 'sad.png',
+        ':O' => 'surprise.png',
+        ':-O' => 'surprise.png',
+        'o.O' => 'surprise2.png',
+        'o)' => 'blesed.png',
+        ':P' => 'tongue.png',
+        ':-P' => 'tongue.png',
+        ';)' => 'wink.png',
+        ';-)' => 'wink.png',
+        '^_^' => 'star.png',
+        '(y)' => 'y.png',
+        '-_-' => '3.png',
+        ';/' => 'sad3.png',
+        ':v' => 'v.png'
     );
 
     /**
@@ -58,6 +66,7 @@ class BuzzTextParserService {
      * @return $text emoticons inserted text
      */
     public static function parseText($text) {
+        
         if (BuzzTextParserService::isImage($text) === true) {
 
             return "<img src=\"" . $text . "\" height=\"100px\" >";
@@ -71,7 +80,7 @@ class BuzzTextParserService {
 
             $emoticonPath = '<img src="' .
                     plugin_web_path('orangehrmBuzzPlugin', 'images/emoticons/') . $img .
-                    '" height="18" width="18" />';
+                    '" height="22" width="22" />';
             $text = str_replace($key, $emoticonPath, $text);
         }
         return str_replace("\n", "<br />", $text);
