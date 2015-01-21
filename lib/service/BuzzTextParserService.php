@@ -80,7 +80,7 @@ class BuzzTextParserService {
 
             $emoticonPath = '<img src="' .
                     plugin_web_path('orangehrmBuzzPlugin', 'images/emoticons/') . $img .
-                    '" height="22" width="22" />';
+                    '" height="70" width="70" />';
             $text = str_replace($key, $emoticonPath, $text);
         }
         return str_replace("\n", "<br />", $text);
