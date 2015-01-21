@@ -43,8 +43,8 @@ class BuzzTextParserServiceTest extends PHPUnit_Framework_TestCase{
         $url=':)';
         $result=BuzzTextParserService::parseText($url);
         $trueResult= '<img src="' .
-                    plugin_web_path('orangehrmBuzzPlugin', 'images/emoticons/') . 'smile.ico' .
-                    '" height="18" width="18" />';
+                    plugin_web_path('orangehrmBuzzPlugin', 'images/emoticons/') . 'smile.png' .
+                    '" height="70" width="70" />';
         
         $this->assertEquals($result,$trueResult);
     }
