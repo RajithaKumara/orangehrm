@@ -216,7 +216,7 @@ ini_set("memory_limit", '-1');
 
         <ul id="buzz">
             <div class="jason"></div>
-            
+
             <?php
             foreach ($postList as $post) {
                 include_component('buzz', 'viewPost', array('post' => $post, 'loggedInUser' => $loggedInUser));

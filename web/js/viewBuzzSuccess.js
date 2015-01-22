@@ -1,45 +1,7 @@
 var modalVisible = false;
 var fileInput = $("#photofile");
-//var timeElapsed;
-//var isWindowFocused = true;
-//var timer;
-//
-//$(window).focus(function () {
-//    timer = setInterval(function () {
-//        timeElapsed = new Date - start;
-//        if (timeElapsed > 20000) {
-//            $.ajax({
-//                url: logoutActionURL,
-//                type: "POST",
-//                success: function (data) {
-//                }
-//            });
-//        }
-//        $('.Timer').text((timeElapsed) / 1000 + " Seconds");
-//    }, 1000);
-//});
-//
-//$(window).blur(function () {
-//    start = new Date();
-//    clearInterval(timer);
-//});
 
 $(document).ready(function () {
-//
-//    var start = new Date;
-//
-//    timer = setInterval(function () {
-//        timeElapsed = new Date - start;
-//        if (timeElapsed > 20000) {
-//            $.ajax({
-//                url: logoutActionURL,
-//                type: "POST",
-//                success: function (data) {
-//                }
-//            });
-//        }
-//        $('.Timer').text((timeElapsed) / 1000 + " Seconds");
-//    }, 1000);
 
     /**
      * Submitting a new post
@@ -448,7 +410,7 @@ $(document).ready(function () {
      * Commenting on a share.
      */
     $(".commentBox").live("keyup", function (e) {
-        isAccess();
+        //isAccess();
         var elementId = "#" + e.target.id;
         var value = $(elementId).val();
         var txt = $("#comment-text-width-analyzer").html();
@@ -1093,8 +1055,11 @@ $(document).ready(function () {
 
     $(window).scroll(function ()
     {
-        if ($(window).scrollTop() >= ($(document).height() - $(window).height()))
+
+//        alert($(document).height() + " ----- " + $(window).height());
+        if ($(window).scrollTop() + $(window).height() >= $(document).height())
         {
+//            $(window).unbind('scroll');
             var sharesLoadedCount = parseInt($('#buzzSharesLoadedCount').html());
             var allSharesCount = parseInt($('#buzzAllSharesCount').html());
             var sharesInceasingCount = parseInt($('#buzzSharesInceasingCount').html());

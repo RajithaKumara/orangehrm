@@ -19,6 +19,7 @@
  */
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/loggedInUserDetails'));
+//use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/buzzHeader'));
 ?>
 
 <div id="buzzDetailContainer">

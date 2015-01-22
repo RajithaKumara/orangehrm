@@ -16,6 +16,7 @@ abstract class BaseBuzzAction extends sfAction {
     protected $buzzService;
     protected $buzzConfigService;
     protected $buzzCookieService;
+    protected $ohrmCookieManager;
 
     /**
      * 
@@ -49,15 +50,26 @@ abstract class BaseBuzzAction extends sfAction {
         }
         return $this->buzzCookieService;
     }
+    
+    /**
+     * 
+     * @return CookieManager
+     */
+    protected function getOhrmCookieManager() {
+        if (!$this->ohrmCookieManager instanceof CookieManager) {
+            $this->ohrmCookieManager = new CookieManager();
+        }
+        return $this->ohrmCookieManager;
+    }
 
     /**
-     * get loged in employee number
+     * get logged in employee number
      * @return employee number
      * @throws Exception
      */
     public function getLogedInEmployeeNumber() {
         $employeeNumber = null;
-        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
+        if ($this->getOhrmCookieManager()->isCookieSet("Loggedin")) {
             if ($this->getUser()->getAttribute('auth.isAdmin') == 'Yes') {
                 $userRole = 'Admin';
             } else {

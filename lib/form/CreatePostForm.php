@@ -90,10 +90,10 @@ class CreatePostForm extends sfForm {
     protected function getFormLabels() {
 
         $labels = array(
-            'content' => __(' '),
-            'linkAddress' => __(' '),
-            'linkTitle' => __(' '),
-            'linkText' => __(' ')
+            'content' => ' ',
+            'linkAddress' => ' ',
+            'linkTitle' => ' ',
+            'linkText' => ' '
         );
         return $labels;
     }
