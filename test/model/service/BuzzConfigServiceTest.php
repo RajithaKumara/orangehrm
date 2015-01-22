@@ -21,6 +21,17 @@ class BuzzConfigServiceTest extends PHPUnit_Framework_TestCase {
         $this->buzzConfigService = new BuzzConfigService();
         TestDataService::populate(sfConfig::get('sf_plugins_dir') . '/orangehrmBuzzPlugin/test/fixtures/OrangeBuzz.yml');
     }
+    
+    
+    /**
+     * test ititial share count onfiguration
+     */
+    public function testgetAllBuzzValues(){
+        $returnValue =$this->buzzConfigService->setAllBuzzValues();
+        
+        $this->assertEquals(TRUE,$returnValue);
+    }
+    
     /**
      * test ititial share count onfiguration
      */

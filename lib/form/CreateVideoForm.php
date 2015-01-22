@@ -73,8 +73,8 @@ class CreateVideoForm extends sfForm {
     protected function getFormLabels() {
 
         $labels = array(
-            'content' => __(' '),
-            'linkAddress' => __(' ')
+            'content' => ' ',
+            'linkAddress' => ' '
         );
         return $labels;
     }

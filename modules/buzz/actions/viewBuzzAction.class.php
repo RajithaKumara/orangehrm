@@ -113,7 +113,7 @@ class viewBuzzAction extends BaseBuzzAction {
         
         $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
         $this->setLayout($template . '/chatter');
-        try {
+//        try {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->setConfigurationValues();
             $this->postForm = $this->getPostForm();
@@ -127,9 +127,10 @@ class viewBuzzAction extends BaseBuzzAction {
             $this->videoForm = $this->getVideoForm();  // video form added
             $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
             $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("Y-m-d"));
-        } catch (Exception $ex) {
-            $this->forward('auth', 'login');
-        }
+//        } 
+//        catch (Exception $ex) {
+//            $this->forward('auth', 'login');
+//        }
 
     }
 
@@ -142,6 +143,7 @@ class viewBuzzAction extends BaseBuzzAction {
 
     protected function setConfigurationValues() {
         $buzzConfigService = $this->getBuzzConfigService();
+//        echo $buzzConfigService->getBuzzShareCount(); die;
         $this->shareCount = $buzzConfigService->getBuzzShareCount();
         $this->commentCount = $buzzConfigService->getBuzzInitialCommentCount();
         $this->viewMoreComment = $buzzConfigService->getBuzzViewCommentCount();

@@ -306,7 +306,7 @@
     width: 920px;
     height: 600px;
     left: 36%;
-    top:50%;
+    top:55%;
     overflow-x: hidden;
 }
 .viewMoreModal-body{
@@ -330,7 +330,7 @@
     width: 920px;
     height: 700px;
     left: 40%;
-    top:50%;
+    top:55%;
     overflow-x: hidden;
 }
 .originalPostModal-body{
