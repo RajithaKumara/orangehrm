@@ -376,7 +376,7 @@ $(document).ready(function () {
 
                     $("#commentListNew_listId" + commentId).append(data);
                     $('.commentLoadingBox').hide();
-                    $(".commentBox").val('');
+                    $(elementId).val('');
                 }
             });
         }

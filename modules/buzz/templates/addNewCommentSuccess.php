@@ -78,21 +78,21 @@
                             <?php echo $commentTime; ?>
                         </div>
                     </div>
-                    <div id="commentColumnThree">
-                        <?php if (($commentEmployeeId == $loggedInUser) || ($loggedInEmployeeUserRole == 'Admin')) { ?>
-                            <div id="commentOptionWidget">
-                                <div class="dropdown commentDropDown">
-                                    <a class="commentAccount" id='<?php echo 'commentnew' . $commentId; ?>'></a>
-                                    <div class="submenu" id='<?php echo 'submenucommentnew' . $commentId; ?>'>
-                                        <ul class = "root">
-                                            <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
-                                            <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
-                                        </ul>
-                                    </div>
+                </div>
+                <div id="commentColumnThree">
+                    <?php if (($commentEmployeeId == $loggedInUser) || ($loggedInEmployeeUserRole == 'Admin')) { ?>
+                        <div id="commentOptionWidget">
+                            <div class="dropdown commentDropDown">
+                                <a class="commentAccount" id='<?php echo 'commentnew' . $commentId; ?>'></a>
+                                <div class="submenu" id='<?php echo 'submenucommentnew' . $commentId; ?>'>
+                                    <ul class = "root">
+                                        <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
+                                        <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
+                                    </ul>
                                 </div>
                             </div>
-                        <?php } ?>
-                    </div>
+                        </div>
+                    <?php } ?>
                 </div>
             </div>
 

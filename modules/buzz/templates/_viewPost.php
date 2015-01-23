@@ -11,7 +11,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/photoTiling'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 ?>
 <li class="singlePost" id=<?php echo "postInList" . $postId; ?>>
-<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime();      ?></div>-->
+<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime();       ?></div>-->
     <div id="postBody">
 
         <div id="postBodyFirstRow">
@@ -763,23 +763,23 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                         <?php echo $commentTime; ?>
                                     </div>
                                 </div>
-                                <div id="commentColumnThree">
-                                    <?php if (($commentEmployeeId == $loggedInUser) || ($loggedInEmployeeUserRole == 'Admin')) { ?>
-                                        <div id="commentOptionWidget">
-                                            <div class="dropdown commentDropDown">
-                                                <a class="commentAccount" id=<?php echo 'cnew' . $commentId ?>></a>
-                                                <div class="submenu" id=<?php echo 'submenucnew' . $commentId ?>>
-                                                    <ul class = "root"><?php if (($commentEmployeeId == $loggedInUser)) { ?>
-                                                            <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
-                                                        <?php }
-                                                        ?>
-                                                        <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
-                                                    </ul>
-                                                </div>
+                            </div>
+                            <div id="commentColumnThree">
+                                <?php if (($commentEmployeeId == $loggedInUser) || ($loggedInEmployeeUserRole == 'Admin')) { ?>
+                                    <div id="commentOptionWidget">
+                                        <div class="dropdown commentDropDown">
+                                            <a class="commentAccount" id=<?php echo 'cnew' . $commentId ?>></a>
+                                            <div class="submenu" id=<?php echo 'submenucnew' . $commentId ?>>
+                                                <ul class = "root"><?php if (($commentEmployeeId == $loggedInUser)) { ?>
+                                                        <li ><a href = "javascript:void(0)" class="editComment" id=<?php echo 'editComment_' . $commentId ?> ><?php echo __("Edit"); ?></a></li>
+                                                    <?php }
+                                                    ?>
+                                                    <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php echo 'deleteComment_' . $commentId ?>><?php echo __("Delete"); ?></a></li>
+                                                </ul>
                                             </div>
                                         </div>
-                                    <?php } ?>
-                                </div>
+                                    </div>
+                                <?php } ?>
                             </div>
                         </div>
 

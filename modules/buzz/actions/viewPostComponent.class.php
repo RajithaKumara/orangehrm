@@ -16,6 +16,7 @@ class viewPostComponent extends sfComponent {
     protected $buzzService;
     protected $buzzConfigService;
     protected $buzzCookieService;
+    protected $ohrmCookieManager;
 
     /**
      * 
@@ -26,6 +27,17 @@ class viewPostComponent extends sfComponent {
             $this->buzzCookieService = new BuzzCookieService();
         }
         return $this->buzzCookieService;
+    }
+    
+    /**
+     * 
+     * @return CookieManager
+     */
+    protected function getOhrmCookieManager() {
+        if (!$this->ohrmCookieManager instanceof CookieManager) {
+            $this->ohrmCookieManager = new CookieManager();
+        }
+        return $this->ohrmCookieManager;
     }
 
     /**
@@ -111,7 +123,7 @@ class viewPostComponent extends sfComponent {
 
         $this->setBuzzService(new BuzzService());
         $this->setShare($this->post);
-        $this->postForm = $this->getPostForm();
+        //$this->postForm = $this->getPostForm();
         $this->commentForm = $this->getCommentForm();
         $this->editForm = $this->getEditForm();
         $this->intializeConfigValuves();
@@ -128,8 +140,8 @@ class viewPostComponent extends sfComponent {
         $this->postDate = $post->getDate();
         $this->postTime = $post->getTime();
         $this->postContent = $post->getText();
-        $this->postNoOfLikes = $post->getLike()->count();
-        $this->postUnlike = $post->getUnlike()->count();
+        $this->postNoOfLikes = $post->getNumberOfLikes();
+        $this->postUnlike = $post->getNumberOfUnlikes();
         $this->postShareCount = $post->calShareCount();
         $this->postType = $post->getType();
         $this->employeeID = $post->getEmployeeNumber();
@@ -144,7 +156,7 @@ class viewPostComponent extends sfComponent {
         $this->originalPostDate = $this->originalPost->getDate();
         $this->originalPostTime = $this->originalPost->getTime();
         $this->originalPostContent = $this->originalPost->getText();
-        $this->likeEmployeList = $post->getLikedEmployeeList();
+//        $this->likeEmployeList = $post->getLikedEmployeeList();
         $this->loggedInEmployeeUserRole = $this->getLoggedInEmployeeUserRole();
 //        echo $this->loggedInEmployeeUserRole;die;
     }
@@ -154,11 +166,11 @@ class viewPostComponent extends sfComponent {
      */
     protected function intializeConfigValuves() {
         $buzzConfigService = $this->getBuzzConfigService();
-        $this->shareCount = $buzzConfigService->getBuzzShareCount();
+        //$this->shareCount = $buzzConfigService->getBuzzShareCount();
         $this->initialcommentCount = $buzzConfigService->getBuzzInitialCommentCount();
         $this->viewMoreComment = $buzzConfigService->getBuzzViewCommentCount();
         $this->likeCount = $buzzConfigService->getBuzzLikeCount();
-        $this->refeshTime = $buzzConfigService->getRefreshTime();
+        //$this->refeshTime = $buzzConfigService->getRefreshTime();
         $this->postLenth = $buzzConfigService->getBuzzPostTextLenth();
         $this->postLines = $buzzConfigService->getBuzzPostTextLines();
     }
@@ -169,7 +181,7 @@ class viewPostComponent extends sfComponent {
      */
     public function getLoggedInEmployeeUserRole() {
         $employeeUserRole = null;
-        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
+        if ($this->getOhrmCookieManager()->isCookieSet("Loggedin")) {
             if ($this->getUser()->getAttribute('auth.isAdmin') == 'Yes') {
                 $employeeUserRole = 'Admin';
             } else {

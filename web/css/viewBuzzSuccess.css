@@ -436,10 +436,10 @@ textarea{
 }
 
 #commentColumnThree{
-    height: 45px;
     float: right;
-    margin-right: -410px;
-    margin-top: -62.5px;
+    height: 45px;
+    margin-right: 50px;
+    margin-top: -10px;
 }
 
 #commentColumnTwo{
@@ -967,3 +967,34 @@ input[type="button"]{
     min-width: 99.5%;
     padding: 10px 0 10px 10px;
 }
+/*
+#buzzHeader{
+    font-size: 30px; 
+    position: fixed; 
+    width: 100%;  
+    background-color: #F07C00;
+    padding: 10px; 
+    z-index: 9999; 
+    color: white;
+    height: 58.5px;
+}
+
+#logo{
+    float: left;
+}
+
+#logo{
+    width: 24%;
+    margin-left: -20px;
+}
+
+#buzzHeaderRight{
+    //position: absolute;
+    float: right;
+    top: 10%;
+}
+#dashBoardHeaderBuzz{
+    width: 960px;
+    margin: 0 auto;
+}*/
+
