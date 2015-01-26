@@ -86,6 +86,23 @@ class addNewVideoAction extends BaseBuzzAction {
      * @return string
      */
     private function getVideoFeedLinkFromUrl($url) {
+        $isValidUrl = true;
+        $allowedDomains = array("www.youtube.com", "www.vimeo.com", "www.yahoo.com", "www.dailymotion.com", "www.vube.com",
+            "www.metacafe.com", "www.ustream.tv");
+        $parsed = parse_url($url);
+
+        if ($parsed['scheme'] != 'http' && $parsed['scheme'] != 'https') {
+            $isValidUrl = false;
+        }
+
+        if (!in_array($parsed['host'], $allowedDomains)) {
+            $isValidUrl = false;
+        }
+        
+        if (!$isValidUrl) {
+            return 'not';
+        }
+
         $temp = split("youtu.be/", $url);
 
         if (count($temp) > 1) {
@@ -95,6 +112,10 @@ class addNewVideoAction extends BaseBuzzAction {
 
         $temp2 = split("v=", $url);
         if (count($temp2) > 1) {
+            $headers = get_headers('http://gdata.youtube.com/feeds/api/videos/' . $temp2[1]);
+            if (!strpos($headers[0], '200')) {
+                return 'not';
+            }
             $embededUrl = "http://www.youtube.com/embed/" . $temp2[1] . "?rel=0";
             return $embededUrl;
         }
@@ -158,6 +179,24 @@ class addNewVideoAction extends BaseBuzzAction {
 
 
         return 'not';
+    }
+
+    function urlExist($url) {
+        $handle = curl_init($url);
+        if (false === $handle) {
+            return 'not';
+        }
+        curl_setopt($handle, CURLOPT_HEADER, false);
+        curl_setopt($handle, CURLOPT_FAILONERROR, true);  // this works
+        curl_setopt($handle, CURLOPT_HTTPHEADER, Array("User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.15) Gecko/20080623 Firefox/2.0.0.15")); // request as if Firefox
+        curl_setopt($handle, CURLOPT_NOBODY, true);
+        curl_setopt($handle, CURLOPT_RETURNTRANSFER, false);
+        $connectable = curl_exec($handle);
+        ##print $connectable;
+        curl_close($handle);
+        var_dump($connectable);
+        die;
+        return $connectable;
     }
 
 }

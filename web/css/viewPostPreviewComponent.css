@@ -3,7 +3,8 @@ li{
     list-style: none;
 }
 .previewSecondRow{
-    padding: 0;
+    background-color: white;
+    padding: 10px;
     margin: 0;
 }
 .previewFirstRowColTwo #postEmployeeName .name{

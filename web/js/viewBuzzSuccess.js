@@ -328,15 +328,16 @@ $(document).ready(function () {
             'type': 'post',
             'event': 'click'
         };
+        $("#postsharehidebody").html("");
         $.ajax({
             url: getSharedEmployeeListURL,
             type: "POST",
             data: data,
-            success: function (data) {
-                $("#postsharehidebody_" + shareId).replaceWith(data);
+            success: function (data) { 
+                $("#postsharehidebody").html(data);
             }
         });
-        $("#postsharehide_" + shareId).modal();
+        $("#postsharehide").modal();
     });
 
     $(".commentNoofLikesTooltip").live("hover", function (e) {
@@ -742,6 +743,7 @@ $(document).ready(function () {
     $(".btnShare").live("click", function (e) {
         var idValue = e.target.id;
         $("#posthide_" + idValue.split("_")[1]).modal('hide');
+        $(".modal").modal('hide');
         $("#loadingDataModal").modal();
         var shareId = idValue.split("_")[1];
 //        var share = $("#shareBox_" + idValue.split("_")[1]).val();
@@ -777,7 +779,8 @@ $(document).ready(function () {
      */
     $(".btnShareOnPreview").live("click", function (e) {
         var idValue = e.target.id;
-        $("#posthide_" + idValue.split("_")[1]).modal('hide');
+        $("#posthide_" + idValue.split("_")[1]).hide();
+        $(".modal").hide();
         $("#loadingDataModal").modal();
         var shareId = idValue.split("_")[1];
 //        var share = $("#shareBox_" + idValue.split("_")[1]).val();
@@ -891,6 +894,7 @@ $(document).ready(function () {
         var shareId = idValue.split("_")[1];
         var likeLabelId = "#noOfLikes_" + idValue.split("_")[1];
         var existingLikes = parseInt($(likeLabelId).html());
+        $("#postlikehidebody").html("");
         if (existingLikes > 0) {
             var action = "post";
 
@@ -903,12 +907,12 @@ $(document).ready(function () {
                 type: 'POST',
                 data: data,
                 success: function (data) {
-                    $("#postlikehidebody_" + shareId).replaceWith(data);
+                    $("#postlikehidebody").html(data);
                 }
             });
 
 
-            $("#postlikehide_" + shareId).modal();
+            $("#postlikehide").modal();
         }
     });
     /**

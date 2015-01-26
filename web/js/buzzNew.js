@@ -157,8 +157,8 @@ $(document).ready(function () {
                     $('#videoPostArea').replaceWith(data);
                 },
                 error: function (error) {
-                    alert(addNewVideo);
-                    alert(JSON.stringify(error));
+//                    alert(addNewVideo);
+//                    alert(JSON.stringify(error));
                 }
             });
         }

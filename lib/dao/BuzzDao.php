@@ -207,7 +207,7 @@ class BuzzDao extends BaseDao {
         try {
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
             $result = $q->execute("SELECT * FROM hs_hr_employee WHERE MONTH(emp_birthday) = " . date('m', strtotime($fromDate)) . " AND "
-                    . " DAY(emp_birthday) >= " . date('d', strtotime($fromDate)) . " ORDER BY DATE(emp_birthday) DESC");
+                    . " DAY(emp_birthday) >= " . date('d', strtotime($fromDate)) . " ORDER BY DATE(emp_birthday) ASC");
 
             return $result->fetchAll();
             // @codeCoverageIgnoreStart
