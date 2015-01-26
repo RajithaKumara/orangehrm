@@ -14,39 +14,18 @@ abstract class PluginShare extends BaseShare {
 
     protected $buzzConfigService;
 
-    /**
-     * check loged In User Like this post
-     * @param int $id
-     * @return string
-     */
-    public function isLike($id) {
-        $likes = $this->getLike();
-        $userId = $id;
-        if ($userId != "") {
-
-            foreach ($likes as $like) {
-
-                if ($like->getEmployeeNumber() == $userId) {
-                    return 'Unlike';
-                }
-            }
-            return 'Like';
-        } else {
-            foreach ($likes as $like) {
-                if ($like->getEmployeeNumber() == "") {
-                    return 'Unlike';
-                }
-            }
-            return 'Like';
-        }
-    }
-
-    public function getEmployeeFirstLastName() {
+    public function getEmployeeFirstLastName($employee = NULL) {
+        $employeeName = "";
         if ($this->getEmployeeNumber() != '') {
-            return $this->getEmployeePostShared()->getFirstAndLastNames();
+            if ($employee == NULL) {
+                $employeeName = $this->getEmployeePostShared()->getFirstAndLastNames();
+            } else {
+                $employeeName = $employee->getFirstAndLastNames();
+            }
         } else {
-            return 'Admin';
+            $employeeName = 'Admin';
         }
+        return $employeeName;
     }
 
     public function getTypeName() {
@@ -185,26 +164,71 @@ abstract class PluginShare extends BaseShare {
         $likes = $this->getUnlike();
         $userId = $id;
 
-        if ($userId != "") {
+        foreach ($likes as $like) {
+            if ($like->getEmployeeNumber() == $userId) {
 
-            foreach ($likes as $like) {
-                if ($like->getEmployeeNumber() == $userId) {
-
-                    return 'yes';
-                }
+                return 'yes';
             }
-
-            return 'no';
-        } else {
-
-            foreach ($likes as $like) {
-                if ($like->getEmployeeNumber() == "") {
-
-                    return 'yes';
-                }
-            }
-            return 'no';
         }
+
+        return 'no';
+
+//        if ($userId != "") {
+//
+//            foreach ($likes as $like) {
+//                if ($like->getEmployeeNumber() == $userId) {
+//
+//                    return 'yes';
+//                }
+//            }
+//
+//            return 'no';
+//        } else {
+//
+//            foreach ($likes as $like) {
+//                if ($like->getEmployeeNumber() == "") {
+//
+//                    return 'yes';
+//                }
+//            }
+//            return 'no';
+//        }
+    }
+
+    /**
+     * check loged In User Like this post
+     * @param int $id
+     * @return string
+     */
+    public function isLike($id) {
+        $likes = $this->getLike();
+        $userId = $id;
+        
+        foreach ($likes as $like) {
+
+                if ($like->getEmployeeNumber() == $userId) {
+                    return 'Unlike';
+                }
+            }
+            return 'Like';
+        
+//        if ($userId != "") {
+//
+//            foreach ($likes as $like) {
+//
+//                if ($like->getEmployeeNumber() == $userId) {
+//                    return 'Unlike';
+//                }
+//            }
+//            return 'Like';
+//        } else {
+//            foreach ($likes as $like) {
+//                if ($like->getEmployeeNumber() == "") {
+//                    return 'Unlike';
+//                }
+//            }
+//            return 'Like';
+//        }
     }
 
     public function isUnLikeUser($id) {
@@ -227,9 +251,15 @@ abstract class PluginShare extends BaseShare {
         }
     }
 
-    public function calShareCount() {
-        $post = $this->getPostShared();
-        return count($post->getShare()) - 1;
+    public function calShareCount($post = NULL) {
+        $shareCount = 0;
+        if ($post == NULL) {
+            $post = $this->getPostShared();
+            $shareCount = count($post->getShare()) - 1;
+        } else {
+            $shareCount = count($post->getShare()) - 1;
+        }
+        return $shareCount;
     }
 
     public function getSharedEmployeeNames() {

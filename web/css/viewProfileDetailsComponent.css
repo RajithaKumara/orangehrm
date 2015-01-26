@@ -66,8 +66,8 @@
     background: -ms-linear-gradient(90deg, rgb(40, 134, 49) 20%, rgb(124, 202, 132) 100%);
     background: linear-gradient( #f3f3f3, #ececec);
     color: #5d5d5d;
-    font-size: 22px;
-    padding: 15px;
+    font-size: 18px;
+    padding: 12px;
 
     border: 2px solid #dedede;
     z-index: 99999;
@@ -145,8 +145,8 @@
     background: -ms-linear-gradient(90deg, rgb(40, 134, 49) 20%, rgb(124, 202, 132) 100%);
     background: linear-gradient( #f3f3f3, #ececec);
     color: #5d5d5d;
-    font-size: 22px;
-    padding: 15px;
+    font-size: 18px;
+    padding: 12px;
 
     border: 2px solid #dedede;
     z-index: 99999;
@@ -175,8 +175,8 @@
 }
 
 #profile-img-container{
-    height: 296px;
-    width: 296px;
+    height: 266px;
+    width: 266px;
     overflow: hidden;
 }
 
@@ -184,7 +184,7 @@
     /*border-radius: 5px;*/
     bottom: 0;
     margin: auto 0;
-    max-width: 296px;
+    max-width: 266px;
     top: 0;
     vertical-align: middle;
 }

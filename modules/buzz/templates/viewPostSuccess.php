@@ -219,7 +219,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
         <div id="postBodyThirdRow">
             <div id="noOfLikesLinknewPopUp" >
                 <?php
-                if ($commentNoOfLikes > 0) {
+                if ($postNoOfLikes > 0) {
                     $tooltipClass = "postNoofLikesTooltip";
                 } else {
                     $tooltipClass = "postNoofLikesTooltip disabledLinks";
@@ -233,8 +233,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
             </div>
             <div id="noOfSharesLinknewPopUp" >
                 <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' >
-                    <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $postShareCount; ?></span>
-                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
+                    <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $shareCount; ?></span>
+                    <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  id='<?php echo 'commentLike_' . $postId ?>'
                           height="16" width="16"/><?php echo __(" this"); ?>
                 </a>
             </div>

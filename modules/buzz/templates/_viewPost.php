@@ -8,10 +8,11 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/photoTiling'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/messageBoxStyles'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 ?>
 <li class="singlePost" id=<?php echo "postInList" . $postId; ?>>
-<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime();       ?></div>-->
+<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime();        ?></div>-->
     <div id="postBody">
 
         <div id="postBodyFirstRow">
@@ -522,7 +523,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
         </div>
         <!-- end share post pop up window-->
         <!-- start edit post popup window-->
-        <div class="modal hide originalPostModal"  id='<?php echo 'editposthide_' . $postId ?>'>
+        <div class="modal hide"  id='<?php echo 'editposthide_' . $postId ?>'>
 
             <div class="modal-body editPostModal-body" >
                 <div class="hideModalPopUp" id='<?php echo 'editposthide_' . $postId ?>'
@@ -532,8 +533,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         /></div>
                 <div class="popUpContainer">
                     <div id="postBodySecondRow" >
-
-                        <h3><?php echo __('Edit your post'); ?></h3>
+                        <div class="mb-heading">
+                            <?php echo __('Edit your post'); ?>
+                        </div>
 
                         <?php
                         if ($postType == '1') {
@@ -543,7 +545,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                       <?php
                                       $editForm->setDefault('comment', $postContent);
                                       echo $editForm['comment']->render(array('id' => "editshareBox_" . $postId,
-                                          'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                          'class' => 'shareBox', 'style' => 'width: 100%', 'rows' => '2'));
                                       ?>
 
                             </form>
@@ -553,7 +555,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                       <?php
                                       $editForm->setDefault('comment', $originalPostContent);
                                       echo $editForm['comment']->render(array('id' => "editshareBox_" . $postId,
-                                          'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                          'class' => 'shareBox', 'style' => 'width: 100%', 'rows' => '2'));
                                       ?>
 
                             </form>
@@ -712,7 +714,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 ?>
 
                 <!-- start edit comment popup window-->
-                <div class="modal hide originalPostModal"  id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
+                <div class="modal hide"  id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
 
                     <div class="modal-body editPostModal-body" >
                         <div class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
@@ -722,13 +724,15 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                 /></div>
                         <div class="popUpContainer">
                             <div id="postBodySecondRow" >
-                                <h3><?php echo __('Edit your comment'); ?></h3>
+                                <div class="mb-heading">
+                                    <?php echo __('Edit your comment'); ?>
+                                </div>
                                 <form id="frmCreateComment" method="" action="" 
                                       enctype="multipart/form-data">
                                           <?php
                                           $editForm->setDefault('comment', $commentContent);
                                           echo $editForm['comment']->render(array('id' => "editcommentBoxNew2_" . $commentId,
-                                              'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                              'class' => 'commentBox', 'style' => 'width: 100%', 'rows' => '2'));
                                           ?>
 
                                 </form>

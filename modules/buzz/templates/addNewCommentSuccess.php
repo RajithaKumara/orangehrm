@@ -26,7 +26,7 @@
 
     <!-- start edit comment popup window-->
     <div id="modalEdit">
-        <div class="modal hide originalPostModal"  id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
+        <div class="modal hide"  id='<?php echo 'editcommenthideNew2_' . $commentId ?>'>
 
             <div class="modal-body editPostModal-body" >
                 <div class="hideModalPopUp" id='<?php echo 'editcommenthideNew2_' . $commentId ?>'
@@ -36,13 +36,15 @@
                         /></div>
                 <div class="popUpContainer">
                     <div id="postBodySecondRow" >
-                        <h3><?php echo __('Edit your comment'); ?></h3>
+                        <div class="mb-heading">
+                                    <?php echo __('Edit your comment'); ?>
+                                </div>
                         <form id="frmCreateComment" method="" action="" 
                               enctype="multipart/form-data">
                                   <?php
                                   $editForm->setDefault('comment', $commentContent);
                                   echo $editForm['comment']->render(array('id' => "editcommentBoxNew2_" . $commentId,
-                                      'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                      'class' => 'commentBox', 'style' => 'width: 100%', 'rows' => '2'));
                                   ?>
 
                         </form>

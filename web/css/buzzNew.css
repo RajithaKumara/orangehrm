@@ -105,7 +105,11 @@ input[type="file"] {
     font-size: 110%;
     margin-left: 5px;
     vertical-align: middle;
-    color: #d66807;
+    /*color: #d66807;*/
+}
+
+#images-tab-label, #video-tab-label{
+    color: #5d5d5d;
 }
 
 .tabButton img{

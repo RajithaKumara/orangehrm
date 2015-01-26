@@ -123,7 +123,8 @@ class CreatePostForm extends sfForm {
         $post->setText($this->getValue('content'));
         $post->setPostTime(date("Y-m-d H:i:s"));
 
-        return $this->getBuzzService()->savePost($post);
+//        return $this->getBuzzService()->savePost($post);
+        return $post;
     }
 
     /**
@@ -143,6 +144,7 @@ class CreatePostForm extends sfForm {
      */
     public function setShare($post) {
         $share = new Share();
+        $share->setPostShared($post);
         $share->setPostId($post->getId());
         $share->setEmployeeNumber($post->getEmployeeNumber());
         $share->setNumberOfComments(0);

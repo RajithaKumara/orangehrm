@@ -110,7 +110,7 @@ class viewBuzzAction extends BaseBuzzAction {
 
     public function execute($request) {
 
-        
+
         $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
         $this->setLayout($template . '/chatter');
         try {
@@ -127,11 +127,9 @@ class viewBuzzAction extends BaseBuzzAction {
             $this->videoForm = $this->getVideoForm();  // video form added
             $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
             $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("Y-m-d"));
-        } 
-        catch (Exception $ex) {
-            $this->forward('auth', 'login');
+        } catch (Exception $ex) {
+            //$this->forward('auth', 'login');
         }
-
     }
 
     /**
@@ -142,12 +140,27 @@ class viewBuzzAction extends BaseBuzzAction {
     }
 
     protected function setConfigurationValues() {
-        $buzzConfigService = $this->getBuzzConfigService();
-        $this->shareCount = $buzzConfigService->getBuzzShareCount();
-        $this->commentCount = $buzzConfigService->getBuzzInitialCommentCount();
-        $this->viewMoreComment = $buzzConfigService->getBuzzViewCommentCount();
-        $this->likeCount = $buzzConfigService->getBuzzLikeCount();
-        $this->refeshTime = $buzzConfigService->getRefreshTime();
+
+        if (!($this->getUser()->getAttribute("buzz_user_logged_in"))) {
+            $buzzConfigService = $this->getBuzzConfigService();
+            $this->getUser()->setAttribute("buzz_user_logged_in", TRUE);
+            $this->getUser()->setAttribute("share_count", $buzzConfigService->getBuzzShareCount());
+            $this->getUser()->setAttribute("comment_count", $buzzConfigService->getBuzzInitialCommentCount());
+            $this->getUser()->setAttribute("view_more_comment", $buzzConfigService->getBuzzViewCommentCount());
+            $this->getUser()->setAttribute("like_count", $buzzConfigService->getBuzzLikeCount());
+            $this->getUser()->setAttribute("refresh_time", $buzzConfigService->getRefreshTime());
+            $this->getUser()->setAttribute("initial_comment_count", $buzzConfigService->getBuzzInitialCommentCount());
+            $this->getUser()->setAttribute("post_length", $buzzConfigService->getBuzzPostTextLenth());
+            $this->getUser()->setAttribute("post_lines", $buzzConfigService->getBuzzPostTextLines());
+        }
+        $this->shareCount = $this->getUser()->getAttribute("share_count");
+        $this->commentCount = $this->getUser()->getAttribute("comment_count");
+        $this->viewMoreComment = $this->getUser()->getAttribute("view_more_comment");
+        $this->likeCount = $this->getUser()->getAttribute("like_count");
+        $this->refeshTime = $this->getUser()->getAttribute("refresh_time");
+        $this->initialcommentCount = $this->getUser()->getAttribute("initial_comment_count");
+        $this->postLenth = $this->getUser()->getAttribute("post_length");
+        $this->postLines = $this->getUser()->getAttribute("post_lines");
     }
 
 }

@@ -119,16 +119,19 @@ textarea{
     left: 50%;
 }
 .successDataModal-body{
-    height: 40px;
+    height: 30px;
     background-color: white;
     top: 50%;
     left: 50%;
+    text-align: center;
 }
 #successBodyShare, #successBodyEdit, #successBodyDelete{
     width: 100%;
     height: 20px;
     color: green;
     font-size: 25px;
+    font-family: "SourceSansProRegular";
+    text-align: center;
 }
 /*Main post area*/
 #postBody{
@@ -305,11 +308,11 @@ textarea{
 
 /*Content row*/
 #postBodySecondRow{
-    padding: 5px;
+    padding: 10px;
     margin-top: -3px;
     text-align: justify;
     background-color: white;
-    border-radius: 0 0 4px 4px;
+    border-radius: 4px;
     line-height: 1.5;
     font-family: 'SourceSansProLight';
     font-size: 16px;
@@ -775,6 +778,7 @@ input[type="button"]{
 
 #postLinkData{
     display:none;
+    padding: 12px;
 }
 #spinner{
     display:none;
@@ -967,34 +971,17 @@ input[type="button"]{
     min-width: 99.5%;
     padding: 10px 0 10px 10px;
 }
-/*
-#buzzHeader{
-    font-size: 30px; 
-    position: fixed; 
-    width: 100%;  
-    background-color: #F07C00;
-    padding: 10px; 
-    z-index: 9999; 
-    color: white;
-    height: 58.5px;
+
+.delete-share-message-box{
+    top: 70%;
 }
 
-#logo{
-    float: left;
+.message-box-modal-body{
+    min-height: 110px;
+    overflow-y: hidden;
 }
 
-#logo{
-    width: 24%;
-    margin-left: -20px;
+#frmPublishPost{
+    margin-bottom: -45px;
 }
-
-#buzzHeaderRight{
-    //position: absolute;
-    float: right;
-    top: 10%;
-}
-#dashBoardHeaderBuzz{
-    width: 960px;
-    margin: 0 auto;
-}*/
 

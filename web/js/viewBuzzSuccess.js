@@ -160,8 +160,19 @@ $(document).ready(function () {
 
     var windowTitle = "Orange Buzz";
     var newlyAddedPostCount = 0;
-    var previousNoOfPosts = 0;
-    var isPageReload = true;
+    var noOfPostsWhenLeavingWindow = 0;
+    var isWindowFocussed = true;
+
+    $(window).focus(function () {
+        isWindowFocussed = true;
+    });
+
+    $(window).blur(function () {
+        isWindowFocussed = false;
+        noOfPostsWhenLeavingWindow = $('.singlePost').length;
+    });
+
+
 
     function reload() {
         isAccess();
@@ -175,14 +186,22 @@ $(document).ready(function () {
             success: function (data) {
                 $('#buzz').replaceWith(data);
                 var noOfPostsNow = $('.singlePost').length;
-                if (!isPageReload) {
-                    newlyAddedPostCount = noOfPostsNow - previousNoOfPosts;
+                if (!isWindowFocussed) {
+                    newlyAddedPostCount = noOfPostsNow - noOfPostsWhenLeavingWindow;
                     if (newlyAddedPostCount > 0) {
                         $(document).prop('title', windowTitle + "(" + newlyAddedPostCount + ")");
+//                        var listItems = $("#buzz #postBody");
+//                        var count = 0;
+//                        listItems.each(function (idx, li) {
+//                            var post = $(li);
+//                            $(post).css('background-color', 'red');
+//                            count++;
+//                            if (count > newlyAddedPostCount) {
+//                                return false;
+//                            }
+//                        });
                     }
                 }
-                isPageReload = false;
-                previousNoOfPosts = $('.singlePost').length;
             }
         });
 
@@ -545,12 +564,12 @@ $(document).ready(function () {
 
     var idOfThePostToDelete = -1;
     $(".deleteShare").live("click", function (e) {
-        $(".deleteConfirmationModal").modal();
+        $(".delete-share-message-box").modal();
         idOfThePostToDelete = e.target.id.split("_")[1];
     });
 
     $("#delete_confirm").live("click", function () {
-        $(".deleteConfirmationModal").modal('hide');
+        $(".delete-share-message-box").modal('hide');
         $("#loadingDataModal").modal();
         var data = {
             'shareId': idOfThePostToDelete,
@@ -574,7 +593,7 @@ $(document).ready(function () {
     });
 
     $("#delete_discard").live("click", function () {
-        $(".deleteConfirmationModal").modal('hide');
+        $(".delete-share-message-box").modal('hide');
     });
 
     /**
@@ -976,7 +995,7 @@ $(document).ready(function () {
         $("#commentBoxNew_listId" + idValue).focus();
     });
     var refreshTime = trim($("#refreshTime").html());
-//    var refreshTime = 3000;
+//    var refreshTime = 10000;
 
     function refresh() {
 
@@ -1052,12 +1071,20 @@ $(document).ready(function () {
         });
     });
 
+    function viewport() {
+        var e = window, a = 'inner';
+        if (!('innerWidth' in window)) {
+            a = 'client';
+            e = document.documentElement || document.body;
+        }
+        return {width: e[a + 'Width'], height: e[a + 'Height']};
+    }
 
     $(window).scroll(function ()
     {
 
 //        alert($(document).height() + " ----- " + $(window).height());
-        if ($(window).scrollTop() + $(window).height() >= $(document).height())
+        if ($(window).scrollTop() + viewport().height >= $(document).height())
         {
 //            $(window).unbind('scroll');
             var sharesLoadedCount = parseInt($('#buzzSharesLoadedCount').html());
@@ -1103,14 +1130,23 @@ function activateTab(pageId) {
             node.style.display = (node == pageToActivate) ? 'block' : 'none';
             if (pageId === 'page1') {
                 $("#status_icon").attr("src", imageFolderPath + "status2.png");
+                $("#status-tab-label").css("color", "#f07c00");
+                $("#images-tab-label").css("color", "#5d5d5d");
+                $("#video-tab-label").css("color", "#5d5d5d");
                 $("#img_upld_icon").attr("src", imageFolderPath + "img.png");
                 $("#vid_upld_icon").attr("src", imageFolderPath + "vid.png");
             } else if (pageId === 'page2') {
                 $("#status_icon").attr("src", imageFolderPath + "status.png");
+                $("#status-tab-label").css("color", "#5d5d5d");
+                $("#images-tab-label").css("color", "#f07c00");
+                $("#video-tab-label").css("color", "#5d5d5d");
                 $("#img_upld_icon").attr("src", imageFolderPath + "img2.png");
                 $("#vid_upld_icon").attr("src", imageFolderPath + "vid.png");
             } else {
                 $("#status_icon").attr("src", imageFolderPath + "status.png");
+                $("#status-tab-label").css("color", "#5d5d5d");
+                $("#images-tab-label").css("color", "#5d5d5d");
+                $("#video-tab-label").css("color", "#f07c00");
                 $("#img_upld_icon").attr("src", imageFolderPath + "img.png");
                 $("#vid_upld_icon").attr("src", imageFolderPath + "vid2.png");
             }

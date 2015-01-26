@@ -30,10 +30,23 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/jquery.autosize.min'))
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeListSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/photoTiling'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/messageBoxStyles'));
 ini_set("memory_limit", '-1');
 ?>
 
 <div id="dashBoardBuzz">
+    <div class="delete-share-message-box modal hide" id="delete-share">
+        <div class="hideModalPopUp"
+             ><img 
+                class="hideModalPopUp" id="delete-share"
+                src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                />
+        </div>
+        <div class="modal-body message-box-modal-body">
+            <?php include_component('buzz', 'messageBox', array('messageType' => 'delete')); ?>
+        </div>
+    </div>
+
     <div class="buzzRightBar">
         <!--Start Birthdays Component-->
         <div id="birthdayComponent">
@@ -69,18 +82,18 @@ ini_set("memory_limit", '-1');
                 <li id="tabLink1" onclick="activateTab('page1');" class="tabButton tb_one tabSelected">
                     <div>
                         <img id="status_icon" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/status2.png"); ?>" height="25"   />
-                        <span><a class="tabLabel" href="javascript:void(0)"/><?php echo __('Update Status'); ?></a></span>
+                        <span><a id="status-tab-label" class="tabLabel" href="javascript:void(0)"/><?php echo __('Update Status'); ?></a></span>
                     </div>
                 </li>
                 <li id="tabLink2" onclick="activateTab('page2');" class="tabButton tb_two">
                     <img id="img_upld_icon"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/img.png"); ?>" height="25"   />
                     <!--This line was previously commented. This is the new button to activate the image uploading tab which is created below-->
-                    <span><a class="tabLabel" href="javascript:void(0)"/><?php echo __('Upload Images'); ?></a></span>
+                    <span><a id="images-tab-label" class="tabLabel" href="javascript:void(0)"/><?php echo __('Upload Images'); ?></a></span>
                 </li>
                 <li id="tabLink3" onclick="activateTab('page3');" class="tabButton">
                     <img id="vid_upld_icon"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/vid.png"); ?>" height="25"   />
                     <!--This line was previously commented. This is the new button to activate the image uploading tab which is created below-->
-                    <span><a class="tabLabel" href="javascript:void(0)"/><?php echo __('Share Video'); ?></a></span>
+                    <span><a id="video-tab-label" class="tabLabel" href="javascript:void(0)"/><?php echo __('Share Video'); ?></a></span>
                 </li>
             </ul>
             <div id="tabCtrl">

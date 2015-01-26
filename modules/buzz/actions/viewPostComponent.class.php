@@ -142,37 +142,42 @@ class viewPostComponent extends sfComponent {
         $this->postContent = $post->getText();
         $this->postNoOfLikes = $post->getNumberOfLikes();
         $this->postUnlike = $post->getNumberOfUnlikes();
-        $this->postShareCount = $post->calShareCount();
         $this->postType = $post->getType();
         $this->employeeID = $post->getEmployeeNumber();
         $this->commentList = $post->getComment();
-        $this->postEmployeeName = $post->getEmployeeFirstLastName();
+        $this->postEmployeeName = $post->getEmployeeFirstLastName($this->postEmployee);
         $this->isLike = $post->isLike($this->loggedInUser);
         $this->isUnlike = $post->isUnLike($this->loggedInUser);
         $this->originalPost = $post->getPostShared();
+        $this->postShareCount = $post->calShareCount($this->originalPost);
         $this->originalPostId = $this->originalPost->getId();
         $this->originalPostEmpNumber = $this->originalPost->getEmployeeNumber();
         $this->originalPostSharerName = $this->originalPost->getEmployeeFirstLastName();
         $this->originalPostDate = $this->originalPost->getDate();
         $this->originalPostTime = $this->originalPost->getTime();
         $this->originalPostContent = $this->originalPost->getText();
-//        $this->likeEmployeList = $post->getLikedEmployeeList();
+        $this->likeEmployeList = $post->getLikedEmployeeList();
         $this->loggedInEmployeeUserRole = $this->getLoggedInEmployeeUserRole();
-//        echo $this->loggedInEmployeeUserRole;die;
     }
 
     /**
      * initialize config valuves
      */
     protected function intializeConfigValuves() {
-        $buzzConfigService = $this->getBuzzConfigService();
-        //$this->shareCount = $buzzConfigService->getBuzzShareCount();
-        $this->initialcommentCount = $buzzConfigService->getBuzzInitialCommentCount();
-        $this->viewMoreComment = $buzzConfigService->getBuzzViewCommentCount();
-        $this->likeCount = $buzzConfigService->getBuzzLikeCount();
-        //$this->refeshTime = $buzzConfigService->getRefreshTime();
-        $this->postLenth = $buzzConfigService->getBuzzPostTextLenth();
-        $this->postLines = $buzzConfigService->getBuzzPostTextLines();
+//        $buzzConfigService = $this->getBuzzConfigService();
+//        //$this->shareCount = $buzzConfigService->getBuzzShareCount();
+//        $this->initialcommentCount = $buzzConfigService->getBuzzInitialCommentCount();
+//        $this->viewMoreComment = $buzzConfigService->getBuzzViewCommentCount();
+//        $this->likeCount = $buzzConfigService->getBuzzLikeCount();
+//        //$this->refeshTime = $buzzConfigService->getRefreshTime();
+//        $this->postLenth = $buzzConfigService->getBuzzPostTextLenth();
+//        $this->postLines = $buzzConfigService->getBuzzPostTextLines();
+        
+        $this->initialcommentCount = $this->getUser()->getAttribute("initial_comment_count");
+        $this->viewMoreComment = $this->getUser()->getAttribute("view_more_comment");
+        $this->likeCount = $this->getUser()->getAttribute("like_count");
+        $this->postLenth = $this->getUser()->getAttribute("post_length");
+        $this->postLines = $this->getUser()->getAttribute("post_lines");
     }
 
     /**
