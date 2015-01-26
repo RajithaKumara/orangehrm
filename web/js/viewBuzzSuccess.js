@@ -42,25 +42,34 @@ $(document).ready(function () {
             reader.onload = function (e) {
 //                $('#thumb' + thumbnailDivId).attr('hidden', false);
 //                $('#img_del_' + thumbnailDivId).attr('hidden', false);
-                $('#thumb' + thumbnailDivId).show();
-                $('#img_del_' + thumbnailDivId).show();
-                $('#thumb' + thumbnailDivId).attr('src', e.target.result);
+                var x = '<li><span class="img_del" id="img_del_' + thumbnailDivId + '">X</span> <img height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' + e.target.result +'" alt="your image" /></li>';
+                $("#imageThumbnails").append(x);
+//                $('#thumb' + thumbnailDivId).show();
+//                $('#img_del_' + thumbnailDivId).show();
+//                $('#thumb' + thumbnailDivId).attr('src', e.target.result);
             };
         }
     }
 
     $("#image-upload-button").live("click", function () {
-        $("#photofile").click();
-    });
-
-    var noOfPhotosPreviewed = 1;
-    $("#photofile").change(function () {
-        if (noOfPhotosPreviewed > 5) {
+        if (noOfPhotosStacked > 5) {
             $("#imageUploadError").modal();
             $("#maxImageErrorBody").show();
             $("#invalidTypeImageErrorBody").hide();
             return;
         }
+        $("#photofile").click();
+    });
+
+    var noOfPhotosPreviewed = 1;
+    var noOfPhotosStacked = 1;
+    $("#photofile").change(function () {
+//        if (noOfPhotosStacked > 5) {
+//            $("#imageUploadError").modal();
+//            $("#maxImageErrorBody").show();
+//            $("#invalidTypeImageErrorBody").hide();
+//            return;
+//        }
         var files = $("#photofile")[0].files;
         var imagesChoosed = $("#photofile")[0].files.length;
         if (imagesChoosed > 5) {
@@ -79,6 +88,7 @@ $(document).ready(function () {
             } else {
                 readURL(files[i - 1], noOfPhotosPreviewed);
                 noOfPhotosPreviewed++;
+                noOfPhotosStacked++;
             }
         }
 
@@ -86,12 +96,13 @@ $(document).ready(function () {
 
     $(".img_del").live('click', function () {
         var id = $(this).attr('id').split("_")[2];
-//        $('#thumb' + id).attr('hidden', true);
+        $('#thumb' + id).attr('hidden', true);
         $('#thumb' + id).hide();
         $('#thumb' + id).attr('src', null);
         delete imageList[id];
 //        $(this).attr('hidden', 'true');
         $(this).hide();
+        noOfPhotosStacked--;
     });
 
     $(".hidePhotoPopUp").click(function (e) {
@@ -105,21 +116,16 @@ $(document).ready(function () {
 
         noOfPhotosPreviewed = 1;
         e.preventDefault();
-        var imageFiles = $("#photofile")[0].files;
+//        var imageFiles = 2;
         var photoText = $("#phototext").val();
-        if (imageFiles.length > 0) {
+        if (true) {
             activateTab('page1');
             $("#tabLink1").attr("class", "tabButton tb_one tabSelected");
             $("#tabLink2").removeClass("tabSelected");
             var str = "";
-            if (imageFiles.length > 5) {
-                //Handel proper validation here...
 
-                return;
-            }
             $('.postLoadingBox').show();
-            $.each(imageFiles, function (k, v) {
-            });
+
             for (var key in imageList) {
                 formData.append(key, imageList[key]);
             }
@@ -333,7 +339,7 @@ $(document).ready(function () {
             url: getSharedEmployeeListURL,
             type: "POST",
             data: data,
-            success: function (data) { 
+            success: function (data) {
                 $("#postsharehidebody").html(data);
             }
         });
@@ -998,8 +1004,8 @@ $(document).ready(function () {
         var idValue = e.target.className;
         $("#commentBoxNew_listId" + idValue).focus();
     });
-    var refreshTime = trim($("#refreshTime").html());
-//    var refreshTime = 10000;
+//    var refreshTime = trim($("#refreshTime").html());
+    var refreshTime = 10000;
 
     function refresh() {
 

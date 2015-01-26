@@ -84,8 +84,20 @@ ini_set("memory_limit", '-1');
 
             <!--start Success popup window-->
             <div class="modal hide" id="successDataModal" >
+
                 <div class="modal-body successDataModal-body" >
-                    <div id="successBody" ><?php echo __("Successfully Saved"); ?></div>
+
+                    <!--<div id="successHeader" style="width: 100%;height: 20px;background-color: green;">Success</div>-->
+                    <div id="successBodyEdit" >
+                        <?php echo __("Successfully Saved"); ?>
+                    </div>
+                    <div id="successBodyShare" >
+                        <?php echo __("Successfully Shared"); ?>
+                    </div>
+                    <div id="successBodyDelete" >
+                        <?php echo __("Successfully Deleted"); ?>
+                    </div>
+
                 </div>
             </div>
             <!--end loading window pop up window-->

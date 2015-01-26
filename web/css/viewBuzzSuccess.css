@@ -776,6 +776,11 @@ input[type="button"]{
     margin-top: 10px;
 }
 
+#imageThumbnails li{
+    display:inline-block; 
+    display:inline; 
+}
+
 #postLinkData{
     display:none;
     padding: 12px;

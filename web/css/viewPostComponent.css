@@ -62,6 +62,7 @@
 }
 
 #postBodyViewMore{
+    opacity: 0.8;
     float: right;
     height: 35px;
     margin: -36px 0 0 -460px;

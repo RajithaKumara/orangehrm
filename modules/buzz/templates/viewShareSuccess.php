@@ -90,6 +90,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                             <?php
                         }
                         ?>
+                    <img style="display:none;" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" border="0" id='<?php echo 'postLikeLoading_' . $postId ?>'
+                     class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/>
                 </div>
                 <div class="unlikeLinknew" id='<?php echo 'postUnLikebody_' . $postId ?>' >
                     <?php if ($isUnlike == 'yes') { ?>
@@ -110,6 +112,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                             <?php
                         }
                         ?>
+                    <img style="display:none;" src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" border="0" id='<?php echo 'postUnLikeLoading_' . $postId ?>'
+                     class="<?php echo $isLike . ' postLike'; ?>" height="30" width="30"/>
                 </div>
 
                 <div class="shareLinknew" id='<?php echo 'postSharebody_' . $postId ?>' >
