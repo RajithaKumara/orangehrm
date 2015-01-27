@@ -96,21 +96,21 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                                 </div>
                             </div>
                         </div>
-<!--                        <div id="commentColumnThree">
-                            <?php // if ($commentEmployeeId == $loggedInUser) { ?>
-                                <div id="commentOptionWidget">
-                                    <div class="dropdown cmnt_prev_drop_down">
-                                        <a class="account" id=<?php // echo 'c' . $commentId ?>></a>
-                                        <div class="submenu" id=<?php // echo 'submenuc' . $commentId ?>>
-                                            <ul class = "root">
-                                                <li ><a href = "javascript:void(0)" class="editComment" id=<?php // echo 'editComment_' . $commentId ?> ><?php // echo __("Edit"); ?></a></li>
-                                                <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php // echo 'deleteComment_' . $commentId ?>><?php // echo __("Delete"); ?></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php // } ?>
-                        </div>-->
+                        <!--                        <div id="commentColumnThree">
+                        <?php // if ($commentEmployeeId == $loggedInUser) { ?>
+                                                        <div id="commentOptionWidget">
+                                                            <div class="dropdown cmnt_prev_drop_down">
+                                                                <a class="account" id=<?php // echo 'c' . $commentId  ?>></a>
+                                                                <div class="submenu" id=<?php // echo 'submenuc' . $commentId  ?>>
+                                                                    <ul class = "root">
+                                                                        <li ><a href = "javascript:void(0)" class="editComment" id=<?php // echo 'editComment_' . $commentId  ?> ><?php // echo __("Edit");  ?></a></li>
+                                                                        <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php // echo 'deleteComment_' . $commentId  ?>><?php // echo __("Delete");  ?></a></li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                        <?php // } ?>
+                                                </div>-->
                     </div>
                     <div  id="commentBodyThirdRowNew">
                         <div class="likeCommentnewPop"  id="<?php echo 'commentLikebody_' . $commentId ?>" >
@@ -163,29 +163,30 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
             <img id="img-spinner"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/loading2.gif"); ?>" height="20" style="margin-left: 40%; margin-top: 15px" />
         </div>
     </div>
-    <div id="postFifthRow" class="postRow">
-        <div id=<?php echo "postCommentTextBox" . $postId; ?>>
-            <form class="frmCreateComment" id='<?php echo 'formCreateComment_' . $commentBoxId . $postId; ?>' method="" action="" 
-                  enctype="multipart/form-data">
-                      <?php
-                      $placeholder = __("Add your comment");
-                      echo $commentForm['comment']->render(array('id' => "commentBoxnew_" . $commentBoxId . $postId,
-                          'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '1', 'placeholder' => $placeholder));
-                      $commentForm->setDefault('shareId', $postId);
-                      ?>
-                <div style="display:none">
-                    <?php echo $commentForm['shareId']->render(); ?>
-                </div>
-                <?php
-                echo $commentForm['_csrf_token']->render();
-                ?>
-                <div id="commentSubmitBtnInModal">
-                    <input type="button" value="<?php echo __("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn">
-                </div>
-                <button type="button" id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn commentSubmitBtnForIe">
-                    <?php echo __("Comment"); ?>
-                </button>
-            </form>
-        </div>
+
+</div>
+<div id="postFifthRow" class="postRow">
+    <div id=<?php echo "postCommentTextBox" . $postId; ?>>
+        <form class="frmCreateComment" id='<?php echo 'formCreateComment_' . $commentBoxId . $postId; ?>' method="" action="" 
+              enctype="multipart/form-data">
+                  <?php
+                  $placeholder = __("Add your comment");
+                  echo $commentForm['comment']->render(array('id' => "commentBoxnew_" . $commentBoxId . $postId,
+                      'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '1', 'placeholder' => $placeholder));
+                  $commentForm->setDefault('shareId', $postId);
+                  ?>
+            <div style="display:none">
+                <?php echo $commentForm['shareId']->render(); ?>
+            </div>
+            <?php
+            echo $commentForm['_csrf_token']->render();
+            ?>
+            <div id="commentSubmitBtnInModal">
+                <input type="button" value="<?php echo __("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn">
+            </div>
+            <button type="button" id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn commentSubmitBtnForIe">
+                <?php echo __("Comment"); ?>
+            </button>
+        </form>
     </div>
 </div>

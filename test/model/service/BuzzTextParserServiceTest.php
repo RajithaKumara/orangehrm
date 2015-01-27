@@ -42,9 +42,9 @@ class BuzzTextParserServiceTest extends PHPUnit_Framework_TestCase{
     public function testTextWithEmoticals(){
         $url=':)';
         $result=BuzzTextParserService::parseText($url);
-        $trueResult= '<img src="' .
+        $trueResult= '<img class = "smileys" src="' .
                     plugin_web_path('orangehrmBuzzPlugin', 'images/emoticons/') . 'smile.png' .
-                    '" height="70" width="70" />';
+                    '" height="40" width="40" />';
         
         $this->assertEquals($result,$trueResult);
     }

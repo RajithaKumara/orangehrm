@@ -818,7 +818,7 @@ input[type="button"]{
     //border-radius: 10px; /* future proofing */
     -khtml-border-radius: 5px; /* for old Konqueror browsers */
     border: 10px ;
-    height: 240px;
+    height: 180px;
     overflow-y: auto;
     overflow-x: hidden;
     background-color: #e2e2e2;

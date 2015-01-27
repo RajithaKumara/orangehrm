@@ -55,7 +55,7 @@ class BuzzTextParserService {
         '^_^' => 'star.png',
         '(y)' => 'y.png',
         '-_-' => '3.png',
-        ':/' => 'sad3.png',
+        ';/' => 'sad3.png',
         ':v' => 'v.png'
     );
 
