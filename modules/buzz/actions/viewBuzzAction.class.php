@@ -126,7 +126,7 @@ class viewBuzzAction extends BaseBuzzAction {
             $this->initializePostList();
             $this->videoForm = $this->getVideoForm();  // video form added
             $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
-            $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("Y-m-d"));
+//            $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("Y-m-d"));
         } catch (Exception $ex) {
             //$this->forward('auth', 'login');
         }

@@ -75,6 +75,7 @@ $(document).ready(function () {
         if (imagesChoosed > 5) {
             $("#imageUploadError").modal();
             $("#maxImageErrorBody").show();
+            $("#invalidTypeImageErrorBody").hide();
             $("#phototext").val('');
             $("#photofile").replaceWith($("#photofile").val('').clone(true));
             return;
@@ -115,6 +116,7 @@ $(document).ready(function () {
 
 
         noOfPhotosPreviewed = 1;
+        noOfPhotosStacked = 1;
         e.preventDefault();
 //        var imageFiles = 2;
         var photoText = $("#phototext").val();
@@ -402,7 +404,8 @@ $(document).ready(function () {
 
                     $("#commentListNew_listId" + commentId).append(data);
                     $('.commentLoadingBox').hide();
-                    $(elementId).val('');
+                    $(".commentBox").val('');
+//                    $(".commentSubmitBtn").val()
                 }
             });
         }
@@ -1004,8 +1007,8 @@ $(document).ready(function () {
         var idValue = e.target.className;
         $("#commentBoxNew_listId" + idValue).focus();
     });
-//    var refreshTime = trim($("#refreshTime").html());
-    var refreshTime = 10000;
+    var refreshTime = trim($("#refreshTime").html());
+//    var refreshTime = 10000;
 
     function refresh() {
 

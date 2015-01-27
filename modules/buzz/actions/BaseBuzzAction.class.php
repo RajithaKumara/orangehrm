@@ -69,7 +69,7 @@ abstract class BaseBuzzAction extends sfAction {
      */
     public function getLogedInEmployeeNumber() {
         $employeeNumber = null;
-        if ($this->getOhrmCookieManager()->isCookieSet("Loggedin")) {
+        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
             if ($this->getUser()->getAttribute('auth.isAdmin') == 'Yes') {
                 $userRole = 'Admin';
             } else {
@@ -101,7 +101,7 @@ abstract class BaseBuzzAction extends sfAction {
      */
     public function getLoggedInEmployeeUserRole() {
         $employeeUserRole = null;
-        if ($this->getOhrmCookieManager()->isCookieSet("Loggedin")) {
+        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
             if ($this->getUser()->getAttribute('auth.isAdmin') == 'Yes') {
                 $employeeUserRole = 'Admin';
             } else {

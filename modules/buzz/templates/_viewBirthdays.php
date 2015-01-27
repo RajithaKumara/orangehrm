@@ -65,8 +65,15 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBirthdays'));
                         </div>
                         <br>
                         <br>
-                        <div id="birthdayUserJobTitle">
-                            <?php echo $employee->getJobTitleName(); ?>
+                        <?php $jobTitle = $employee->getJobTitleName(); ?>
+                        <div id="birthdayUserJobTitle" title="<?php echo $jobTitle; ?>">
+                            <?php
+                            if (strlen($jobTitle) > 25) {
+                                echo substr($jobTitle, 0, 25) . '...';
+                            }else{
+                                echo $jobTitle;
+                            }
+                            ?>
                         </div>
                         <div id="date">
                             <?php

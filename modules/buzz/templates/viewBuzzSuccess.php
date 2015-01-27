@@ -35,6 +35,27 @@ ini_set("memory_limit", '-1');
 ?>
 
 <div id="dashBoardBuzz">
+
+    <div class="modal hide" id="successDataModal" >
+
+        <div class="modal-body" >
+            <div class="mb-heading">
+                <?php echo __("Success!"); ?>
+            </div>
+            <!--<div id="successHeader" style="width: 100%;height: 20px;background-color: green;">Success</div>-->
+            <div id="successBodyEdit" >
+                <?php echo __("Successfully Saved"); ?>
+            </div>
+            <div id="successBodyShare" >
+                <?php echo __("Successfully Shared"); ?>
+            </div>
+            <div id="successBodyDelete" >
+                <?php echo __("Successfully Deleted"); ?>
+            </div>
+
+        </div>
+    </div>
+
     <div class="delete-share-message-box modal hide" id="delete-share">
         <div class="hideModalPopUp"
              ><img 
@@ -50,14 +71,14 @@ ini_set("memory_limit", '-1');
     <div class="image-upload-error-message modal hide" id='imageUploadError'>
 
         <div class="modal-body originalPostModal-body" >
-            <div class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>'
+            <div class="hideModalPopUp" id='imageUploadError'
                  ><img 
-                    class="hideModalPopUp" id='<?php echo 'postViewOriginal_' . $postId ?>' 
+                    class="hideModalPopUp" id='imageUploadError' 
                     src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
                     />
             </div>
-            <div class="modal-body">
-                <div id="imageUploadErrorHeading">
+            <div class="modal-body message-box-modal-body">
+                <div class="mb-heading">
                     <?php echo __("Sorry!"); ?>
                 </div>
                 <br>
@@ -161,19 +182,19 @@ ini_set("memory_limit", '-1');
                         <button type="button" id="image-upload-button">
                             <?php echo __("Upload Images"); ?>
                         </button>
-<!--                        <div id="imageThumbnails">
-                            <span class="img_del" id="img_del_1" style="display:none;">X</span>
-                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb1" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_2" style="display:none;">X</span>
-                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb2" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_3" style="display:none;">X</span>
-                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb3" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_4" style="display:none;">X</span>
-                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb4" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_5" style="display:none;">X</span>
-                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb5" src="#" alt="your image" />
-                        </div>-->
-                        
+                        <!--                        <div id="imageThumbnails">
+                                                    <span class="img_del" id="img_del_1" style="display:none;">X</span>
+                                                    <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb1" src="#" alt="your image" />
+                                                    <span class="img_del" id="img_del_2" style="display:none;">X</span>
+                                                    <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb2" src="#" alt="your image" />
+                                                    <span class="img_del" id="img_del_3" style="display:none;">X</span>
+                                                    <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb3" src="#" alt="your image" />
+                                                    <span class="img_del" id="img_del_4" style="display:none;">X</span>
+                                                    <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb4" src="#" alt="your image" />
+                                                    <span class="img_del" id="img_del_5" style="display:none;">X</span>
+                                                    <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb5" src="#" alt="your image" />
+                                                </div>-->
+
                         <ul id="imageThumbnails">
 <!--                            <span class="img_del" id="img_del_1" style="display:none;">X</span>
                             <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb1" src="#" alt="your image" />
@@ -263,23 +284,7 @@ ini_set("memory_limit", '-1');
         </div>
         <!--end loading window pop up window-->
         <!--start Success popup window-->
-        <div class="modal hide" id="successDataModal" >
 
-            <div class="modal-body successDataModal-body" >
-
-                <!--<div id="successHeader" style="width: 100%;height: 20px;background-color: green;">Success</div>-->
-                <div id="successBodyEdit" >
-                    <?php echo __("Successfully Saved"); ?>
-                </div>
-                <div id="successBodyShare" >
-                    <?php echo __("Successfully Shared"); ?>
-                </div>
-                <div id="successBodyDelete" >
-                    <?php echo __("Successfully Deleted"); ?>
-                </div>
-
-            </div>
-        </div>
         <!--end loading window pop up window-->
         <div class="loadMoreBox">
             <div id="lodingGif">
@@ -316,7 +321,7 @@ ini_set("memory_limit", '-1');
             </div>
         </div>
         <!-- end like window pop up window-->
-        
+
         <!-- start like window popup window-->
         <div class="modal hide modal-on-preview" id='<?php echo 'postlikehide' ?>'>
             <div id="modalHeader" >

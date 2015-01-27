@@ -24,9 +24,24 @@
  *
  * @author aruna
  */
-class viewAnniversariesComponent extends sfComponent{
+class viewAnniversariesComponent extends sfComponent {
+
+    protected $buzzService;
+
     public function execute($request) {
-        
+        $this->setBuzzService(new BuzzService());
+        $this->employeeList = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("Y-m-d"));
+        $this->employeeService = new EmployeeService();
+        $this->anniversaryEmpList = array();
+        foreach ($this->employeeList as $employee) {
+            array_push($this->anniversaryEmpList, $this->employeeService->getEmployee($employee['emp_number']));
+        }
+    }
+    
+    protected function setBuzzService(BuzzService $buzzService) {
+        if (!($this->buzzService instanceof BuzzService)) {
+            $this->buzzService = $buzzService;
+        }
     }
 
 }

@@ -48,7 +48,7 @@
         top: 10%;
     }
     #dashBoardHeaderBuzz{
-        width: 960px;
+        width: 74%;
         margin: 0 auto;
     }
 

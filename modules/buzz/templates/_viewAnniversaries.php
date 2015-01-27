@@ -41,17 +41,17 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
             <?php } ?>
             <?php
             foreach ($anniversaryEmpList as $employee) {
-                if ($employee['termination_id'] == NULL) {
+                if ($employee->getTerminationId() == NULL) {
                     ?>
                     <li id="anniversaryPost">
                         <div id="annivPicAndNameContainer">
                             <div id="annivProfilePicContainer">
                                 <img alt="<?php echo __("Employee Photo"); ?>" 
-                                     src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee['emp_number']); ?>" id="empPic"/>
+                                     src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employee->getEmpNumber()); ?>" id="empPic"/>
                             </div>  
-                            <?php $employeeFirstAndLastNames = $employee['emp_firstname'] . " " . $employee['emp_lastname']; ?>
+                            <?php $employeeFirstAndLastNames = $employee->getFirstName() . " " . $employee->getLastName(); ?>
                             <div id="anniversaryUserName" title="<?php echo $employeeFirstAndLastNames; ?>">
-                                <a href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employee['emp_number']); ?>' class="name">
+                                <a href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employee->getEmpNumber()); ?>' class="name">
                                     <?php
                                     if (strlen($employeeFirstAndLastNames) > 18) {
                                         echo substr($employeeFirstAndLastNames, 0, 18) . '...';
@@ -64,11 +64,21 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
                         </div>
                         <br>
                         <br>
+                        <?php $jobTitle = $employee->getJobTitleName(); ?>
+                        <div id="birthdayUserJobTitle" title="<?php echo $jobTitle; ?>">
+                            <?php
+                            if (strlen($jobTitle) > 25) {
+                                echo substr($jobTitle, 0, 25) . '...';
+                            }else{
+                                echo $jobTitle;
+                            }
+                            ?>
+                        </div>
                         <div id="annivDate">
-                            <?php echo date('F d', strtotime($employee['joined_date'])); ?>
+                            <?php echo date('F d', strtotime($employee->getJoinedDate())); ?>
                         </div>
                         <div id="anniversaryText"><?php
-                            $years = (date('Y') - (date('Y', strtotime($employee['joined_date']))));
+                            $years = (date('Y') - (date('Y', strtotime($employee->getJoinedDate()))));
                             ?><div id="yearsBox" ><?php
                             if ($years > 1) {
                                 echo __($years . ' years');
@@ -78,7 +88,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
                             ?>
                             </div>
                             <div id="joinedDate">
-                                <?php echo __("Joined Date") . " : " . date('Y-M-d', strtotime($employee['joined_date'])); ?>
+                                <?php echo __("Joined Date") . " : " . date('Y-M-d', strtotime($employee->getJoinedDate())); ?>
                             </div>
                         </div>
                     </li>

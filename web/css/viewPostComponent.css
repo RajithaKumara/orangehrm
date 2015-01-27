@@ -87,7 +87,6 @@
 
 }
 #noOfLikesLinknew{
-    margin-top: 5px;
     margin-left: 1%;
     font-size: 14px;
 }
@@ -97,7 +96,6 @@
     font-size: 14px;
 }
 #noOfUnLikesLinknew{
-    margin-top: 5px;
     margin-left: 170px;
     font-size: 14px;
 }
@@ -117,7 +115,6 @@
     font-size: 14px;
 }
 #noOfSharesLinknew{
-    margin-top: 5px;
     margin-left:130px;
     font-size: 14px;
 }
@@ -331,7 +328,7 @@
     width: 920px;
     height: 700px;
     left: 40%;
-    top:55%;
+    top:58%;
     overflow-x: hidden;
 }
 .originalPostModal-body{

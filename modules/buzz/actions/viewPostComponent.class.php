@@ -187,7 +187,7 @@ class viewPostComponent extends sfComponent {
      */
     public function getLoggedInEmployeeUserRole() {
         $employeeUserRole = null;
-        if ($this->getOhrmCookieManager()->isCookieSet("Loggedin")) {
+        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
             if ($this->getUser()->getAttribute('auth.isAdmin') == 'Yes') {
                 $employeeUserRole = 'Admin';
             } else {

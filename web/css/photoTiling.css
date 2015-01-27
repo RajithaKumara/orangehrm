@@ -5,6 +5,9 @@
     height: 250px;
     overflow: hidden;
 }
+.oneImageOne img{
+    vertical-align: middle;
+}
 
 .twoImageOne{
     top: -5px; 

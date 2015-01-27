@@ -58,7 +58,7 @@
 .buzzProfileRightBar{
     width: 270px;
     float: right;
-    position: fixed;
+    /*position: fixed;*/
     right: 160px;
     max-width: 300px;
     margin-top: 65px;

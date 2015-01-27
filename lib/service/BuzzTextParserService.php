@@ -33,7 +33,7 @@ class BuzzTextParserService {
         'xD' => 'devil.png',
         '3:)' => 'devil.png',
         'x(' => 'angry.png',
-        ':((' => 'cry.png',
+        ":'(" => 'cry.png',
         ':*' => 'kiss.png',
         ':))' => 'laugh.png',
         ':D' => 'laugh.png',
@@ -55,7 +55,7 @@ class BuzzTextParserService {
         '^_^' => 'star.png',
         '(y)' => 'y.png',
         '-_-' => '3.png',
-        ';/' => 'sad3.png',
+        ':/' => 'sad3.png',
         ':v' => 'v.png'
     );
 
@@ -66,7 +66,11 @@ class BuzzTextParserService {
      * @return $text emoticons inserted text
      */
     public static function parseText($text) {
-        
+//        var_dump(self::$smiles);
+        if (strpos($text, "'") !== FALSE) {
+            echo 'true';
+            die;
+        }
         if (BuzzTextParserService::isImage($text) === true) {
 
             return "<img src=\"" . $text . "\" height=\"100px\" >";
@@ -76,13 +80,15 @@ class BuzzTextParserService {
         if (preg_match($reg_exUrl, $text, $url)) {
             $text = preg_replace($reg_exUrl, "<a href=\"{$url[0]}\" target=\"_blank\">{$url[0]}</a> ", $text);
         }
+        
         foreach (self::$smiles as $key => $img) {
 
-            $emoticonPath = '<img src="' .
+            $emoticonPath = '<img class = "smileys" src="' .
                     plugin_web_path('orangehrmBuzzPlugin', 'images/emoticons/') . $img .
-                    '" height="70" width="70" />';
+                    '" height="40" width="40" />';
             $text = str_replace($key, $emoticonPath, $text);
         }
+
         return str_replace("\n", "<br />", $text);
     }
 
