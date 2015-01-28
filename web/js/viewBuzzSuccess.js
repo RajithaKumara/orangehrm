@@ -42,7 +42,7 @@ $(document).ready(function () {
             reader.onload = function (e) {
 //                $('#thumb' + thumbnailDivId).attr('hidden', false);
 //                $('#img_del_' + thumbnailDivId).attr('hidden', false);
-                var x = '<li><span class="img_del" id="img_del_' + thumbnailDivId + '">X</span> <img height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' + e.target.result +'" alt="your image" /></li>';
+                var x = '<li><span class="img_del" id="img_del_' + thumbnailDivId + '">X</span> <img width="70px" height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' + e.target.result +'" alt="your image" /></li>';
                 $("#imageThumbnails").append(x);
 //                $('#thumb' + thumbnailDivId).show();
 //                $('#img_del_' + thumbnailDivId).show();

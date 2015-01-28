@@ -207,7 +207,7 @@ class BuzzDao extends BaseDao {
         try {
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
             $result = $q->execute("SELECT * FROM hs_hr_employee WHERE MONTH(emp_birthday) = " . date('m', strtotime($fromDate)) . " AND "
-                    . " DAY(emp_birthday) >= " . date('d', strtotime($fromDate)) . " ORDER BY DATE(emp_birthday) ASC");
+                    . " DAY(emp_birthday) >= " . date('d', strtotime($fromDate)) . " ORDER BY DAY(emp_birthday) ASC");
 
             return $result->fetchAll();
             // @codeCoverageIgnoreStart
@@ -227,7 +227,7 @@ class BuzzDao extends BaseDao {
         try {
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
             $result = $q->execute("SELECT * FROM hs_hr_employee WHERE MONTH(joined_date) = " . date('m', strtotime($date)) . " AND "
-                    . " DAY(joined_date) >= " . date('d', strtotime($date)) . " ORDER BY DATE(joined_date) ASC");
+                    . " DAY(joined_date) >= " . date('d', strtotime($date)) . " ORDER BY DAY(joined_date) ASC");
             return $result->fetchAll();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {

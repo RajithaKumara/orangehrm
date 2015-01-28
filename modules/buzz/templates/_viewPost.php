@@ -12,7 +12,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/messageBoxStyles'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 ?>
 <li class="singlePost" id=<?php echo "postInList" . $postId; ?>>
-<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime();        ?></div>-->
+<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime();              ?></div>-->
     <div id="postBody">
 
         <div id="postBodyFirstRow">
@@ -302,6 +302,29 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 <div id="photoPageComment" >
                     <div id="postBodyFirstRow photo" class="photoViewEmp">
 
+
+
+                        <div id="postFirstRowColumnOne"  style="width: 70px;height: 70px;overflow: hidden; margin-top: -5px; border-radius: 5px;">
+                            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
+                        </div>
+                        <div id="postFirstRowColumnTwo">
+                            <div id="postEmployeeName" >
+                                <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
+                                    <?php echo $postEmployeeName; ?>
+                                </a>
+                            </div>
+                            <div>
+                                <?php echo $postEmployeeJobTitle; ?>
+                            </div>
+                            <div id="postDateTime">
+                                <div id="postDate">
+                                    <?php echo $postDate; ?>
+                                </div>
+                                <div id="postTime">
+                                    <?php echo $postTime; ?>
+                                </div>
+                            </div>                        
+                        </div>
                         <div id="postBodyThirdRowNewPopUP">
                             <div class="likeLinknew"  id="<?php echo 'postLikebody_' . $postId ?>" > 
                                 <?php if ($isLike == 'Unlike') { ?>
@@ -347,45 +370,48 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                     ?>
 
                             </div>
-                        </div>
+                            <div class="shareLinknew" id='<?php echo 'postSharebody_' . $postId ?>' >
+                                <?php if ($postShareCount > 0) { ?>
+                                    <a href="javascript:void(0)" class="postShare" id=<?php echo 'postShareyes_' . $postId ?>> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" 
+                                              border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
+                                    <a style="display:none;" href="javascript:void(0)" class="postShare" id=<?php echo 'postShareno_' . $postId ?>> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share.png"); ?>" 
+                                              border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
 
-                        <div id="postFirstRowColumnOne"  style="width: 70px;height: 70px;overflow: hidden; margin-top: -5px; border-radius: 5px;">
-                            <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
-                        </div>
-                        <div id="postFirstRowColumnTwo">
-                            <div id="postEmployeeName" >
-                                <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
-                                    <?php echo $postEmployeeName; ?>
-                                </a>
+                                <?php } else { ?>
+                                    <a style="display:none;" href="javascript:void(0)" class="postShare" id=<?php echo 'postShareyes_' . $postId ?>> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" 
+                                              border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
+                                    <a href="javascript:void(0)" class="postShare" id=<?php echo 'postShareno_' . $postId ?>> 
+                                        <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share.png"); ?>" 
+                                              border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
+                                        <?php
+                                    }
+                                    ?>
                             </div>
-                            <div>
-                                <?php echo $postEmployeeJobTitle; ?>
-                            </div>
-                            <div id="postDateTime">
-                                <div id="postDate">
-                                    <?php echo $postDate; ?>
-                                </div>
-                                <div id="postTime">
-                                    <?php echo $postTime; ?>
-                                </div>
-                            </div>                        
                         </div>
                     </div>
 
-                    <div id="postBodySecondRow" class="postContent">
-                        <?php
-                        if (strlen($originalPostContent) > $postLenth) {
-                            $subContent = substr($originalPostContent, 0, $postLenth);
-                            echo BuzzTextParserService::parseText($subContent . '...');
-                            ?><a  class="viewMoreShare"  id='<?php echo 'shareViewMore_' . $postId ?>'
-                                ><?php echo _('Read More'); ?></a>
 
+                    <?php if (strlen($originalPostContent) > 0) { ?>
+                        <div id="postBodySecondRow" class="postContent">
                             <?php
-                        } else {
-                            echo BuzzTextParserService::parseText($originalPostContent);
-                        }
-                        ?>
-                    </div>
+                            if (strlen($originalPostContent) > $postLenth) {
+                                $subContent = substr($originalPostContent, 0, $postLenth);
+                                echo BuzzTextParserService::parseText($subContent . '...');
+                                ?><a  class="viewMoreShare"  id='<?php echo 'shareViewMore_' . $postId ?>'
+                                    ><?php echo _('Read More'); ?></a>
+
+                                <?php
+                            } else {
+                                echo BuzzTextParserService::parseText($originalPostContent);
+                            }
+                            ?>
+                        </div>
+                        <?php
+                    }
+                    ?>
 
                     <div id="postBodyThirdRow">
                         <div id="noOfLikesLinknewInModal" >
@@ -569,8 +595,8 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
             </div>
         </div>
         <!-- end edit post pop up window-->
-        
-        
+
+
         <div id="postBodyThirdRow">
             <div id="noOfLikesLinknew" >
                 <?php

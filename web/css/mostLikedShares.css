@@ -89,7 +89,7 @@
 
 #ml_componentContainer{
     padding: 5px;
-
+    border-radius: 0 0 8px 8px;
     // max-height: 100px;
     overflow-y:auto;
     margin-bottom: 20px;
@@ -100,7 +100,7 @@
 
 #mc_componentContainer{
     padding: 5px;
-
+    border-radius: 0 0 8px 8px;
     // max-height: 100px;
     overflow-y:auto;
     margin-bottom: 20px;
