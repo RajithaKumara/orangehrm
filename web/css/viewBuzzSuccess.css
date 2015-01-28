@@ -994,3 +994,11 @@ input[type="button"]{
     vertical-align: middle;
 }
 
+.originalPostModal #commentColumnThree{
+    display: none;
+}
+
+.viewMoreModal #commentColumnThree{
+    display: none;
+}
+
