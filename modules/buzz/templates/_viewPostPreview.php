@@ -28,7 +28,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                 <img class="profPic" id="profPic_<?php echo $postId; ?>" alt="<?php echo __("Employee Photo"); ?>"src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic"/></a>
             </div>  
             <div class="birthdayUserName" id="birthdayUserName_<?php echo $postId; ?>">
-                <?php
+                <?php echo $employee['emp_firstname'] . " " . $postEmployeeName; ?>
+            </div>  <br> 
+            <?php
                 $photos = $sf_data->getRaw('originalPost')->getPhotos();
                 $imgCount = 1;
                 if (count($photos) == 1) {
@@ -47,10 +49,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                     }
                 }
                 ?>
-
-                <?php echo $employee['emp_firstname'] . " " . $postEmployeeName; ?>
-
-            </div>  <br>  
             <div class="post_prev_content" id="post_prev_content_<?php echo $postId; ?>">
                 <div id="postBodySecondRow_<?php echo $postId; ?>" class="previewSecondRow">
                     <div class="postContent" id='<?php echo 'postContent_' . $postId ?>'>

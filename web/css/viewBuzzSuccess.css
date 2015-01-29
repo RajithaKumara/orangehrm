@@ -1002,3 +1002,7 @@ input[type="button"]{
     display: none;
 }
 
+.popupCommentList #commentColumnThree{
+    display: none;
+}
+
