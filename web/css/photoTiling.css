@@ -6,6 +6,7 @@
     overflow: hidden;
     text-align: center;
     line-height: 250px;
+    margin-top: -5px;
 }
 .oneImageOne img{
     display:block;
