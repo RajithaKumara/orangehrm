@@ -26,6 +26,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewprofileSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeListSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/buzzNew'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
+use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/messageBoxStyles'));
 ini_set("memory_limit", '-1');
 ?>
 <div id="profileFullContainer">
@@ -33,6 +34,37 @@ ini_set("memory_limit", '-1');
         <?php
         include_component('buzz', 'viewProfileDetails', array('employee' => $employee, 'logedInUserId' => $loggedInUser));
         ?> 
+    </div>
+    <div class="delete-share-message-box modal hide" id="delete-share">
+        <div class="hideModalPopUp"
+             ><img 
+                class="hideModalPopUp" id="delete-share"
+                src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                />
+        </div>
+        <div class="modal-body message-box-modal-body">
+            <?php include_component('buzz', 'messageBox', array('messageType' => 'delete')); ?>
+        </div>
+    </div>
+    
+    <div class="modal hide" id="successDataModal" >
+
+        <div class="modal-body" >
+            <div class="mb-heading">
+                <?php echo __("Success!"); ?>
+            </div>
+            <!--<div id="successHeader" style="width: 100%;height: 20px;background-color: green;">Success</div>-->
+            <div id="successBodyEdit" >
+                <?php echo __("Successfully Saved"); ?>
+            </div>
+            <div id="successBodyShare" >
+                <?php echo __("Successfully Shared"); ?>
+            </div>
+            <div id="successBodyDelete" >
+                <?php echo __("Successfully Deleted"); ?>
+            </div>
+
+        </div>
     </div>
 
     <div id="dashBoardProfile">

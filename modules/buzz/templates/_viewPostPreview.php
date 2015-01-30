@@ -36,14 +36,14 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                 if (count($photos) == 1) {
                     ?>
                     <div class="photoPreviewOne">
-                        <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
+                        <img id="<?php echo $imgCount . "_" . $postId; ?>" class="" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
                     </div>
                     <?php
                 } else if (count($photos) > 1) {
 
                     foreach ($photos as $photo) {
                         ?>
-                        <img id="<?php echo $imgCount . "_" . $postId; ?>" class="postPhoto" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
+                        <img id="<?php echo $imgCount . "_" . $postId; ?>" class="" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
                         <?php
                         break;
                     }
