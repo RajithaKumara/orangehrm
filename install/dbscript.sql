@@ -54,11 +54,11 @@ INSERT INTO `ohrm_user_role_data_group` (`user_role_id`, `data_group_id`, `can_r
 CREATE TABLE IF NOT EXISTS `ohrm_buzz_post` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `employee_number` int(7) ,
-  `text` text CHARACTER SET utf32 COLLATE utf32_bin,
+  `text` text ,
   `post_time` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `employee_number` (`employee_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 --
 -- Constraints for table `ohrm_buzz_post`
 --
@@ -78,11 +78,11 @@ CREATE TABLE IF NOT EXISTS `ohrm_buzz_share` (
   `number_of_comments` int(6) DEFAULT NULL,
   `share_time` datetime NOT NULL,
   `type` tinyint(1) DEFAULT NULL,
-  `text` text CHARACTER SET utf32 COLLATE utf32_bin,
+  `text` text,
   PRIMARY KEY (`id`),
   KEY `post_id` (`post_id`),
   KEY `employee_number` (`employee_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 --
 -- Constraints for table `ohrm_buzz_share`
 --
@@ -101,12 +101,12 @@ CREATE TABLE IF NOT EXISTS `ohrm_buzz_comment` (
   `employee_number` int(7) ,
   `number_of_likes` int(6) DEFAULT NULL,
   `number_of_unlikes` int(6) DEFAULT NULL,
-  `comment_text` text CHARACTER SET utf32 COLLATE utf32_bin,
+  `comment_text` text,
   `comment_time` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `share_id` (`share_id`),
   KEY `employee_number` (`employee_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 --
 -- Constraints for table `ohrm_buzz_comment`
 --
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `ohrm_buzz_like_on_comment` (
   PRIMARY KEY (`id`),
   KEY `comment_id` (`comment_id`),
   KEY `employee_number` (`employee_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 --
 -- Constraints for table `ohrm_buzz_comment_like`
 --
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS `ohrm_buzz_like_on_share` (
   PRIMARY KEY (`id`),
   KEY `share_id` (`share_id`),
   KEY `employee_number` (`employee_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 --
 -- Constraints for table `ohrm_buzz_share_like`
 --
@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS `ohrm_buzz_photo` (
   `height` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `attachment_id` (`post_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 --
 -- Constraints for table `ohrm_buzz_photo`
 --
@@ -190,11 +190,11 @@ CREATE TABLE IF NOT EXISTS `ohrm_buzz_link` (
   `link` text NOT NULL,
   `type` tinyint(2) DEFAULT NULL,
   `title` VARCHAR( 600 ) NULL,
-  `description` text CHARACTER SET utf32 COLLATE utf32_bin,
+  `description` text,
   PRIMARY KEY (`id`),
   KEY `attachment_id` (`post_id`),
   KEY `photo_id` (`post_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 --
 -- Constraints for table `ohrm_buzz_link`
 --
@@ -213,7 +213,7 @@ CREATE TABLE IF NOT EXISTS `ohrm_buzz_unlike_on_comment` (
   PRIMARY KEY (`id`),
   KEY `comment_id` (`comment_id`),
   KEY `employee_number` (`employee_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 --
 -- Constraints for table `ohrm_buzz_comment_like`
 --
@@ -234,7 +234,7 @@ CREATE TABLE IF NOT EXISTS `ohrm_buzz_unlike_on_share` (
   PRIMARY KEY (`id`),
   KEY `share_id` (`share_id`),
   KEY `employee_number` (`employee_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 --
 -- Constraints for table `ohrm_buzz_share_like`
 --
