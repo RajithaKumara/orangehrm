@@ -426,21 +426,21 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                >
                                 <span id="<?php echo 'noOfLikes_' . $postId; ?>"><?php echo $postNoOfLikes; ?></span>
                                 <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
-                                      height="16" width="16"/><?php echo __(" this"); ?>
+                                      height="16" width="16"/><?php echo __("this"); ?>
                             </a>
                         </div>
                         <div id="noOfSharesLinknewInModal" >
                             <a class="postNoofSharesTooltip tooltipInsideModal" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' >
                                 <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $postShareCount; ?></span>
                                 <img  id='<?php echo 'postNoOfSharesImage_' . $postId ?>' src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
-                                      height="16" width="16"/><?php echo __(" this"); ?>
+                                      height="16" width="16"/> <?php echo __("this"); ?>
                             </a>
                         </div>
                         <div id="noOfUnLikesLinknewInModal" >
                             <a class="postNoofUnLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'postNoOfUnlikes_' . $postId ?>' >
                                 <span id="<?php echo 'noOfUnLikes_' . $postId; ?>"><?php echo $postUnlike; ?></span>
                                 <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
-                                      height="16" width="16"/><?php echo __(" this"); ?>
+                                      height="16" width="16"/> <?php echo __("this"); ?>
                             </a>
                         </div>
                     </div>
@@ -610,21 +610,21 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                    >
                     <span id="<?php echo 'noOfLikes_' . $postId; ?>"><?php echo $postNoOfLikes; ?></span>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
-                          height="16" width="16"/><?php echo __(" this"); ?>
+                          height="16" width="16"/> <?php echo __("this"); ?>
                 </a>
             </div>
             <div id="noOfSharesLinknew" >
                 <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' >
                     <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $postShareCount; ?></span>
                     <img  id='<?php echo 'postNoOfSharesImage_' . $postId ?>' src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  
-                          height="16" width="16"/><?php echo __(" this"); ?>
+                          height="16" width="16"/> <?php echo __("this"); ?>
                 </a>
             </div>
             <div id="noOfUnLikesLinknew" >
                 <a class="postNoofUnLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'postNoOfUnlikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfUnLikes_' . $postId; ?>"><?php echo $postUnlike; ?></span>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
-                          height="16" width="16"/><?php echo __(" this"); ?>
+                          height="16" width="16"/> <?php echo __("this"); ?>
                 </a>
             </div>
         </div>
@@ -636,7 +636,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 if ($commentCount > $initialcommentCount) {
                     echo __("View") . " " . ($commentCount - $initialcommentCount) . " ";
                     echo __("more comments");
-                    echo __(" out of" . " " . $commentCount . " " . "comments");
+                    echo ' ' . __("out of" . " " . $commentCount . " " . "comments");
                 }
                 ?>
             </a>
@@ -810,7 +810,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                 <a class="<?php echo $tooltipClass; ?>" href="javascript:void(0)" id='<?php echo 'cmntNoOfLikes_' . $commentId ?>' >
                                     <span id="<?php echo 'commentNoOfLikes_' . $commentId; ?>"><?php echo $commentNoOfLikes; ?></span>
                                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
-                                          height="16" width="16"/><?php echo __(" this"); ?>
+                                          height="16" width="16"/> <?php echo __("this"); ?>
                                 </a>
                             </div>
 
@@ -818,7 +818,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                 <a class="postNoofUnLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'cmntNoOfUnLikes_' . $commentId ?>' >
                                     <span id="<?php echo 'commentNoOfUnLikes_' . $commentId; ?>"><?php echo $commentNoOfUnLikes; ?></span>
                                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
-                                          height="16" width="16"/><?php echo __(" this"); ?>
+                                          height="16" width="16"/> <?php echo __("this"); ?>
                                 </a>
                             </div>
                         </div>

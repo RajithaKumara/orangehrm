@@ -127,7 +127,7 @@
                     <a title="" class="<?php echo $tooltipClass; ?>" href="javascript:void(0)" id='<?php echo 'cmntNoOfLikes_' . $commentId ?>' >
                         <span id="<?php echo 'commentNoOfLikes_' . $commentId; ?>"><?php echo $commentNoOfLikes; ?></span>
                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
-                              height="16" width="16"/><?php echo __(" this"); ?>
+                              height="16" width="16"/> <?php echo __("this"); ?>
                     </a>
                 </div>
 
@@ -135,7 +135,7 @@
                     <a class="postNoofUnLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'cmntNoOfLikes_' . $commentId ?>' >
                         <span id="<?php echo 'commentNoOfUnLikes_' . $commentId; ?>"><?php echo $commentNoOfUnLikes; ?></span>
                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
-                              height="16" width="16"/><?php echo __(" this"); ?>
+                              height="16" width="16"/> <?php echo __("this"); ?>
                     </a>
                 </div>
             </div>

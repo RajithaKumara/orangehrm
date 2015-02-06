@@ -232,21 +232,21 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 <a class="<?php echo $tooltipClass; ?>" href="javascript:void(0)" id='<?php echo 'postNoOfLikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfLikes_' . $postId; ?>"><?php echo $postNoOfLikes; ?></span>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like-this.png"); ?>" border="0" id='<?php echo 'commentLike_' . $postId ?>' 
-                          height="16" width="16"/><?php echo __(" this"); ?>
+                          height="16" width="16"/> <?php echo __("this"); ?>
                 </a>
             </div>
             <div id="noOfSharesLinknewPopUp" >
                 <a class="postNoofSharesTooltip" href="javascript:void(0)" id='<?php echo 'postNoOfShares_' . $postId ?>' >
                     <span id="<?php echo 'noOfShares_' . $postId; ?>"><?php echo $shareCount; ?></span>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" border="0"  id='<?php echo 'commentLike_' . $postId ?>'
-                          height="16" width="16"/><?php echo __(" this"); ?>
+                          height="16" width="16"/> <?php echo __("this"); ?>
                 </a>
             </div>
             <div id="noOfUnLikesLinknewPopUp" >
                 <a class="postNoofLikesTooltip disabledLinks" href="javascript:void(0)" id='<?php echo 'postNoOfUnlikes_' . $postId ?>' >
                     <span id="<?php echo 'noOfUnLikes_' . $postId; ?>"><?php echo $postUnlike; ?></span>
                     <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/unlike2.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>' 
-                          height="16" width="16"/><?php echo __(" this"); ?>
+                          height="16" width="16"/> <?php echo __("this"); ?>
                 </a>
             </div>
         </div>
