@@ -1,4 +1,4 @@
-link1:
+buzz:
   name: Orange Buzz
   url: 'buzz/viewBuzz'
   plugin: orangehrmBuzzPlugin

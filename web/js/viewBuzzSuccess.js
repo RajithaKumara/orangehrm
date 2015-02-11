@@ -1056,9 +1056,9 @@ $(document).ready(function () {
         window.location = loginpageURL;
     }
 
-    window.setTimeout(function () {
-        refresh(this);
-    }, refreshTime);            //setTimeout(refresh, refreshTime);
+//    window.setTimeout(function () {
+//        refresh(this);
+//    }, refreshTime);            //setTimeout(refresh, refreshTime);
 
     // Clicking the tabs make it selected.
     $(".tabButton").live("click", function () {
