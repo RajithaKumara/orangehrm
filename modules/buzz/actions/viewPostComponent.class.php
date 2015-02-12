@@ -149,6 +149,7 @@ class viewPostComponent extends sfComponent {
         $this->isLike = $post->isLike($this->loggedInUser);
         $this->isUnlike = $post->isUnLike($this->loggedInUser);
         $this->originalPost = $post->getPostShared();
+        $this->postPhotos = $this->getBuzzService()->getPostPhotos($this->originalPost->getId());
         $this->postShareCount = $post->calShareCount($this->originalPost);
         $this->originalPostId = $this->originalPost->getId();
         $this->originalPostEmpNumber = $this->originalPost->getEmployeeNumber();

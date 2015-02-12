@@ -34,7 +34,6 @@ class UploadPhotoForm extends BaseForm {
         $photographValidators = $this->getPhotographValidators();
 
         $this->widgets = array_merge($this->widgets, $photographWidgets);
-        $validators = array_merge($validators, $photographValidators);
         $this->setWidgets($this->widgets);
         $this->setValidators($photographValidators);
         $this->widgetSchema->setLabel('photofile', false);

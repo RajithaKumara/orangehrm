@@ -788,6 +788,42 @@ class BuzzDao extends BaseDao {
         }
         // @codeCoverageIgnoreEnd
     }
+    
+    /**
+     * Get photo by id
+     * @param int $id
+     * @return Photo object
+     */
+    public function getPhoto($id) {
+        try {
+            return Doctrine :: getTable('Photo')->find($id);
+            // @codeCoverageIgnoreStart
+        } catch (Exception $e) {
+            throw new DaoException($e->getMessage(), $e->getCode(), $e);
+        }
+        // @codeCoverageIgnoreEnd
+    }      
+    
+    /**
+     * Get photos related to given post. Does not load the actual photo blob
+     * 
+     * @param int $postId Post ID
+     * @return Array of Post objects
+     */
+    public function getPostPhotos($postId) {
+        try {
+            $q = Doctrine_Query::create()
+                    ->select('p.id, p.post_id, p.width, p.height, p.filename, p.size')
+                    ->from('Photo p')
+                    ->where('p.post_id = ? ', $postId)
+                    ->orderBy('p.id ASC');
+            return $q->execute();
+            // @codeCoverageIgnoreStart
+        } catch (Exception $e) {
+            throw new DaoException($e->getMessage(), $e->getCode(), $e);
+        }
+        // @codeCoverageIgnoreEnd
+    }    
 
     /**
      * save link to data base

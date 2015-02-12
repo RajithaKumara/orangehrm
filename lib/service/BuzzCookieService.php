@@ -17,6 +17,7 @@ class BuzzCookieService extends BaseService {
     const COOKIE_NAME_USER_ROLE = 'buzzCookieUserRole';
 
     protected $buzzConfigService;
+    protected $cookieManager;
 
     /**
      * this is function to get CookieManager

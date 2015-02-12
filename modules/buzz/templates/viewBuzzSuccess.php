@@ -26,7 +26,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/jquerycollagePlus'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/jqueryremoveWhitespace'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
-use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/jquery.autosize.min'));
+use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/jquery.autosize.min.js'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/getSharedEmployeeListSuccess'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewPostComponent'));
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/photoTiling'));

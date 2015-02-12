@@ -820,5 +820,40 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $resultShares = $this->buzzService->saveShare($share);
         $this->assertTrue($resultShares instanceof Share);
     }
+    
+    public function testGetPhoto() {
+        $id = 3;
+        $photo = new Photo();
+        $photo->setId($id);
+        
+        $buzzDao = $this->getMock('buzzDao', array('getPhoto'));
+        $buzzDao->expects($this->once())
+                ->method('getPhoto')
+                ->with($id)
+                ->will($this->returnValue($photo));
+        $this->buzzService->setBuzzDao($buzzDao);
+        $returnedPhoto = $this->buzzService->getPhoto($id);
 
+        $this->assertEquals($photo, $returnedPhoto);
+    }    
+    
+    public function testGetPostPhotos() {
+        $postId = 31;
+        
+        $photo1 = new Photo();
+        $photo1->setId(11);
+        $photo2 = new Photo();
+        $photo2->setId(13);
+        $postPhotos = array($photo1, $photo2);
+        
+        $buzzDao = $this->getMock('buzzDao', array('getPostPhotos'));
+        $buzzDao->expects($this->once())
+                ->method('getPostPhotos')
+                ->with($postId)
+                ->will($this->returnValue($postPhotos));
+        $this->buzzService->setBuzzDao($buzzDao);
+        $returnedPhotos = $this->buzzService->getPostPhotos($postId);
+
+        $this->assertEquals($postPhotos, $returnedPhotos);
+    }    
 }

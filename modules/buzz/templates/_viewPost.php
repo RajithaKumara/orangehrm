@@ -256,10 +256,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
             <?php } ?>    
         <?php } ?>  
 
-        <?php
-        $photos = $sf_data->getRaw('originalPost')->getPhotos();
-        ?>
-        <?php include_component('buzz', 'photoTilling', array('photos' => $photos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
+        <?php include_component('buzz', 'photoTilling', array('photos' => $postPhotos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
 
         <!-- photo preview pop up-->
         <div class="modal hide originalPostModal"  id='<?php echo "showPhotos" . $postId; ?>'>
@@ -275,7 +272,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
                     <?php
                     $imgCount = 1;
-                    foreach ($photos as $photo) {
+                    foreach ($postPhotos as $photo) {
                         ?>
                         <img class="postPhotoPrev"  id="<?php echo "img_" . $imgCount . "_" . $postId; ?>" 
                              style="display:none;<?php
@@ -284,13 +281,13 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                              } else {
                                  echo 'width:99%';
                              }
-                             ?>;" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
+                             ?>;" src="<?php echo url_for("buzz/viewPostPhoto?id=" . $photo->getId()); ?>"/>
 
                         <?php
                         $imgCount++;
                     }
                     ?>
-                    <?php if (count($photos) > 1) { ?>
+                    <?php if (count($postPhotos) > 1) { ?>
 
 
                         <button class="imageNextBtn" disabled="true" id="imageNextBtn<?php echo $postId; ?>">
@@ -534,10 +531,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         <?php
                         $photos = $sf_data->getRaw('originalPost')->getPhotos();
                         $imgCount = 1;
-                        if (count($photos) > 0) {
+                        if (count($postPhotos) > 0) {
                             ?>
                             <div class="sharePagePhotoComponent">
-                                <?php include_component('buzz', 'photoTilling', array('photos' => $photos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
+                                <?php include_component('buzz', 'photoTilling', array('photos' => $postPhotos, 'originalPost' => $originalPost, 'postId' => $postId)); ?>
                             </div>
                         <?php } ?>
 

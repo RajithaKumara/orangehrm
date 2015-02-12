@@ -36,6 +36,9 @@ LikeOnComment:
 Photo:
   0: {id: 1, post_id: '1', filename: 'test.jpg', file_type: 'jpg'}
   1: {id: 2, post_id: '2', filename: 'test2.jpg', file_type: 'jpg'}
+  2: {id: 3, post_id: '4', filename: 'First.jpg', file_type: 'jpg'}
+  3: {id: 4, post_id: '4', filename: 'Second.jpg', file_type: 'jpg'}
+  4: {id: 5, post_id: '4', filename: 'Third.jpg', file_type: 'jpg'}
 
 Link:
   0: {id: 1, post_id: 1, type : '1', link: 'testLink.com' }

@@ -21,6 +21,8 @@
 
 class BuzzService extends BaseService {
 
+    protected $buzzDao;
+    
     /**
      * this is function to get buzzDao 
      * @return BuzzDao
@@ -473,7 +475,26 @@ class BuzzService extends BaseService {
 
         return $this->getBuzzDao()->savePhoto($photo);
     }
+    
+    /**
+     * Get photo by id
+     * @param int $id
+     * @return Photo object
+     */
+    public function getPhoto($id) {
+        return $this->getBuzzDao()->getPhoto($id);
+    }    
 
+    /**
+     * Get photos related to given post. Does not load the actual photo blob
+     * 
+     * @param int $postId Post ID
+     * @return Array of Post objects
+     */
+    public function getPostPhotos($postId) {
+        return $this->getBuzzDao()->getPostPhotos($postId);
+    }
+    
     /**
      * save Link to database
      * 
