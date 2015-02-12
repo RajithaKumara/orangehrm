@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS `ohrm_buzz_post` (
   `employee_number` int(7) ,
   `text` text ,
   `post_time` datetime NOT NULL,
+  `updated_at` timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `employee_number` (`employee_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -79,6 +80,7 @@ CREATE TABLE IF NOT EXISTS `ohrm_buzz_share` (
   `share_time` datetime NOT NULL,
   `type` tinyint(1) DEFAULT NULL,
   `text` text,
+  `updated_at` timestamp ON UPDATE CURRENT_TIMESTAMP,   
   PRIMARY KEY (`id`),
   KEY `post_id` (`post_id`),
   KEY `employee_number` (`employee_number`)
@@ -103,6 +105,7 @@ CREATE TABLE IF NOT EXISTS `ohrm_buzz_comment` (
   `number_of_unlikes` int(6) DEFAULT NULL,
   `comment_text` text,
   `comment_time` datetime NOT NULL,
+  `updated_at` timestamp ON UPDATE CURRENT_TIMESTAMP, 
   PRIMARY KEY (`id`),
   KEY `share_id` (`share_id`),
   KEY `employee_number` (`employee_number`)

@@ -13,6 +13,8 @@ Post:
     post_time:
       type: timestamp
       notnull: true   
+    updated_at:
+      type: timestamp
   relations:
     employeePostAdded:
       class: Employee
@@ -102,6 +104,8 @@ Share:
       type: int(1)
     text:
       type: string(600)
+    updated_at:
+      type: timestamp   
   relations:
     employeePostShared:
       class: Employee
@@ -139,6 +143,8 @@ Comment:
     comment_time:
       type: timestamp
       notnull: true   
+    updated_at:
+      type: timestamp      
   relations:
     employeeComment:
       class: Employee
