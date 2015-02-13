@@ -55,7 +55,8 @@ class BuzzCookieService extends BaseService {
      */
     public function saveUserRole($userRole) {
         $cookieValidTime = $this->getBuzzConfigService()->getCookieValidTime();
-        $this->getCookieManager()->setCookie(self::COOKIE_NAME_USER_ROLE, $userRole, time() + $cookieValidTime, "/");
+        $webRoot = sfContext::getInstance()->getRequest()->getRelativeUrlRoot();
+        $this->getCookieManager()->setCookie(self::COOKIE_NAME_USER_ROLE, $userRole, time() + $cookieValidTime, $webRoot);
         return $userRole;
     }
 
@@ -69,8 +70,8 @@ class BuzzCookieService extends BaseService {
         if($employeNumber==null){
             $employeeId='Admin';
         }
-        
-        $this->getCookieManager()->setCookie(self::COOKIE_NAME_EMPLOYE_NUMBER, $employeeId, time() + $cookieValidTime, "/");
+        $webRoot = sfContext::getInstance()->getRequest()->getRelativeUrlRoot();
+        $this->getCookieManager()->setCookie(self::COOKIE_NAME_EMPLOYE_NUMBER, $employeeId, time() + $cookieValidTime, $webRoot);
         return $employeNumber;
     }
 
@@ -119,9 +120,9 @@ class BuzzCookieService extends BaseService {
      */
     public function saveCookieValuves($employeNumber, $userRole) {
         $cookieValidTime = $this->getBuzzConfigService()->getCookieValidTime();
-
-        $this->getCookieManager()->setCookie(self::COOKIE_NAME_USER_ROLE, $userRole, time() + $cookieValidTime, "/");
-        $this->getCookieManager()->setCookie(self::COOKIE_NAME_EMPLOYE_NUMBER, $employeNumber, time() + $cookieValidTime, "/");
+        $webRoot = sfContext::getInstance()->getRequest()->getRelativeUrlRoot();
+        $this->getCookieManager()->setCookie(self::COOKIE_NAME_USER_ROLE, $userRole, time() + $cookieValidTime, $webRoot);
+        $this->getCookieManager()->setCookie(self::COOKIE_NAME_EMPLOYE_NUMBER, $employeNumber, time() + $cookieValidTime, $webRoot);
         return true;
     }
 
