@@ -348,6 +348,7 @@ ini_set("memory_limit", '-1');
             </fieldset>
 
         </form>
+        <div style="display:none;" id="buzzLastTimestamp" ><?php echo $timestamp; ?></div>
         <div style="display:none;" id="buzzAllSharesCount" ><?php echo $allShareCount; ?></div>
         <div style="display:none;" id="buzzSharesLoadedCount"><?php echo $shareCount; ?></div>
         <div style="display:none;" id="buzzSharesInceasingCount"><?php echo $shareCount; ?></div>
@@ -373,7 +374,7 @@ ini_set("memory_limit", '-1');
             var commentEditURL = '<?php echo url_for('buzz/editComment'); ?>';
             var loadNextSharesURL = '<?php echo url_for('buzz/loadNextShares'); ?>';
             var getLikedEmployeeListURL = '<?php echo url_for('buzz/getLikedEmployeeList'); ?>';
-            var refreshPageURL = '<?php echo url_for('buzz/refreshPage'); ?>';
+            var refreshPageURL = '<?php echo url_for('buzz/getUpdatedPosts'); ?>';
             var uploadImageURL = '<?php echo url_for('buzz/uploadImage'); ?>';
             var refreshStatsURL = '<?php echo url_for('buzz/viewStatistics'); ?>';
             var getSharedEmployeeListURL = '<?php echo url_for('buzz/getSharedEmployeeList'); ?>';

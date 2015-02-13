@@ -198,6 +198,16 @@ class BuzzService extends BaseService {
     }
 
     /**
+     * Get shares for posts/comments added/changed since the given time
+     * 
+     * @param DateTime $dateTime
+     * @return array Shares
+     */
+    public function getSharesChangedSince(DateTime $dateTime) {
+        return $this->getBuzzDao()->getSharesChangedSince($dateTime);
+    }
+    
+    /**
      * get share By \Id
      * 
      * @param int Id

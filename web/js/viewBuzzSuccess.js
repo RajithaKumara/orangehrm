@@ -184,30 +184,34 @@ $(document).ready(function () {
 
     function reload() {
         isAccess();
-        var lastPostId = {
-            'lastPostId': $('#buzz .lastLoadedPost').last().attr('id')
+        var params = {
+            'timestamp': $('#buzzLastTimestamp').text()
         };
         $.ajax({
             url: refreshPageURL,
-            type: "POST",
-            data: lastPostId,
+            type: "GET",
+            data: params,
+            dataType: 'html',
             success: function (data) {
-                $('#buzz').replaceWith(data);
+                var result = $(data);
+                var newTimestamp = result.find('#new_timestamp').text();
+                $('#buzzLastTimestamp').text(newTimestamp);
+                
+                result.find('#changed_shares li.singlePost').each(function() {
+                    var id = $(this).prop('id');
+                    var existing = $('#'+id);
+                    if (existing.length) {
+                        existing.replaceWith($(this).html());
+                    } else {
+                        $('#buzz').prepend($(this).html());
+                    }
+                });
+                
                 var noOfPostsNow = $('.singlePost').length;
                 if (!isWindowFocussed) {
                     newlyAddedPostCount = noOfPostsNow - noOfPostsWhenLeavingWindow;
                     if (newlyAddedPostCount > 0) {
                         $(document).prop('title', windowTitle + "(" + newlyAddedPostCount + ")");
-//                        var listItems = $("#buzz #postBody");
-//                        var count = 0;
-//                        listItems.each(function (idx, li) {
-//                            var post = $(li);
-//                            $(post).css('background-color', 'red');
-//                            count++;
-//                            if (count > newlyAddedPostCount) {
-//                                return false;
-//                            }
-//                        });
                     }
                 }
             }
@@ -971,12 +975,6 @@ $(document).ready(function () {
     }).bind("ajaxError", function () {
         $(this).hide();
     });
-    var time = new Date().getTime();
-    $(document.body).bind("mousemove keypress", function (e) {
-        time = new Date().getTime();
-        $(document).prop('title', windowTitle);
-        //alert(time);
-    });
 
     /**
      * original post view
@@ -1007,32 +1005,35 @@ $(document).ready(function () {
         var idValue = e.target.className;
         $("#commentBoxNew_listId" + idValue).focus();
     });
-    var refreshTime = trim($("#refreshTime").html());
-//    var refreshTime = 10000;
-
+    
+    var refreshTime = trim($("#refreshTime").text());    
+    var lastActivityTime = new Date().getTime();
+    
+    $(document.body).bind("mousemove keypress", function (e) {
+        lastActivityTime = new Date().getTime();
+    });
+    
+    window.setTimeout(function () {
+        refresh(this);
+    }, refreshTime);     
+    
     function refresh() {
-
-
-        if (new Date().getTime() - time >= refreshTime) {
+        $(document).prop('title', windowTitle);
+        
+        if (new Date().getTime() - lastActivityTime >= refreshTime) {
             if (!$('.modal').is(":visible")) {
-
                 reload();
             }
-//            window.setTimeout(function(){refresh(this);}, refreshTime);
-            window.setTimeout(function () {
-                refresh(this);
-            }, refreshTime);            //setTimeout(refresh, refreshTime);
-        } else {
-
-            window.setTimeout(function () {
-                refresh(this);
-            }, refreshTime);            //setTimeout(refresh, refreshTime);
-        }
-
+        }  
+        
+        window.setTimeout(function() {
+            refresh(this);
+        }, refreshTime);
     }
+        
     var loggedInEmpNum = -1;
     function isAccess() {
-//        alert(modalVisible);
+
         $.getJSON(getAccessUrl, {get_param: 'value'}, function (data) {
             if (loggedInEmpNum == -1) {
                 loggedInEmpNum = data.empNum;
@@ -1056,9 +1057,6 @@ $(document).ready(function () {
         window.location = loginpageURL;
     }
 
-//    window.setTimeout(function () {
-//        refresh(this);
-//    }, refreshTime);            //setTimeout(refresh, refreshTime);
 
     // Clicking the tabs make it selected.
     $(".tabButton").live("click", function () {

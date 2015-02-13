@@ -417,6 +417,46 @@ class BuzzDao extends BaseDao {
         }
         // @codeCoverageIgnoreEnd
     }
+    
+    /**
+     * Get shares for posts/comments added/changed since the given time
+     * 
+     * @param DateTime $dateTime
+     * @return array Shares
+     */
+    public function getSharesChangedSince(DateTime $dateTime) {
+        try {
+            
+            
+            $timeStamp = $dateTime->format('Y-m-d H:i:s');
+            //var_dump($timeStamp);
+            $q = Doctrine_Query::create()
+                    ->select('s.*')
+                    ->from('Share s')
+                    ->leftJoin('s.PostShared p')
+                    ->leftJoin('s.comment c')
+                    ->leftJoin('s.Like l')
+                    ->leftJoin('s.Unlike u')
+                    ->leftJoin('c.Like cl')
+                    ->leftJoin('c.Unlike cu')
+                    ->where('s.share_time > ?',$timeStamp)
+                    ->orWhere('s.updated_at > ?', $timeStamp)
+                    ->orWhere('p.post_time > ?', $timeStamp)                    
+                    ->orWhere('p.updated_at > ?', $timeStamp)
+                    ->orWhere('c.comment_time > ?', $timeStamp)
+                    ->orWhere('c.updated_at > ?', $timeStamp)
+                    ->orWhere('l.like_time > ?', $timeStamp)
+                    ->orWhere('u.like_time > ?', $timeStamp)
+                    ->orWhere('cl.like_time > ?', $timeStamp)
+                    ->orWhere('cu.like_time > ?', $timeStamp)                    
+                    ->orderBy('share_time DESC');
+            return $q->execute();
+            // @codeCoverageIgnoreStart
+        } catch (Exception $e) {
+            throw new DaoException($e->getMessage(), $e->getCode(), $e);
+        }
+        // @codeCoverageIgnoreEnd        
+    }    
 
     /**
      * get share By ID 

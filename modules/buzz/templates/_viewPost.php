@@ -127,10 +127,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 <?php if ($postShareCount > 0) { ?>
                     <a href="javascript:void(0)" class="postShare" id=<?php echo 'postShareyes_' . $postId ?>> 
                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share2.png"); ?>" 
-                              border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
+                              border="0" id='<?php echo 'postLike_' . $postId ?>' height="30" width="30"/></a>
                     <a style="display:none;" href="javascript:void(0)" class="postShare" id=<?php echo 'postShareno_' . $postId ?>> 
                         <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/share.png"); ?>" 
-                              border="0" id='<?php echo 'postLike_' . $postId ?>'height="30" width="30"/></a>
+                              border="0" id='<?php echo 'postLike_' . $postId ?>' height="30" width="30"/></a>
 
                 <?php } else { ?>
                     <a style="display:none;" href="javascript:void(0)" class="postShare" id=<?php echo 'postShareyes_' . $postId ?>> 
