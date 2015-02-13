@@ -34,7 +34,6 @@ class BuzzDao extends BaseDao {
                     ->select('id')
                     ->from('Share');
             
-//            $result = $q->execute();
             return $q->count();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -81,7 +80,6 @@ class BuzzDao extends BaseDao {
                 $q->andWhere('employee_number is NULL');
             }
             
-//            $result = $q->execute();
             return $q->count();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -107,7 +105,6 @@ class BuzzDao extends BaseDao {
                 $q->andWhere('employee_number is NULL');
             }
             
-//            $result = $q->execute();
             return $q->count();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
