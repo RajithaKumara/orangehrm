@@ -29,14 +29,13 @@ class BuzzDao extends BaseDao {
      * @throws DaoException
      */
     public function getSharesCount() {
-       try {
-            $q = Doctrine_Manager::getInstance()->getCurrentConnection();
+       try {            
+            $q = Doctrine_Query :: create()
+                    ->select('id')
+                    ->from('Share');
             
-            $result = $q->execute(
-                    "SELECT id
-                FROM ohrm_buzz_share"
-                           );
-            return $result->rowCount();
+//            $result = $q->execute();
+            return $q->count();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
             throw new DaoException($e->getMessage(), $e->getCode(), $e);
@@ -73,14 +72,17 @@ class BuzzDao extends BaseDao {
      */
     public function getNoOfSharesByEmployeeNumber($employeeNumber) {
         try {
-            $q = Doctrine_Manager::getInstance()->getCurrentConnection();
-            if ($employeeNumber == '') {
-                $queryLastBlock = "is NULL";
+            $q = Doctrine_Query :: create()
+                    ->from('Share');
+            
+            if (!empty($employeeNumber)) {
+                $q->andWhere('employee_number = ?', $employeeNumber);
             } else {
-                $queryLastBlock = "=" . $employeeNumber;
+                $q->andWhere('employee_number is NULL');
             }
-            $result = $q->execute("SELECT * FROM ohrm_buzz_share WHERE employee_number " . $queryLastBlock);
-            return $result->rowCount();
+            
+//            $result = $q->execute();
+            return $q->count();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
             throw new DaoException($e->getMessage(), $e->getCode(), $e);
@@ -96,14 +98,17 @@ class BuzzDao extends BaseDao {
      */
     public function getNoOfCommentsByEmployeeNumber($employeeNumber) {
         try {
-            $q = Doctrine_Manager::getInstance()->getCurrentConnection();
-            if ($employeeNumber == '') {
-                $queryLastBlock = "is NULL";
+            $q = Doctrine_Query :: create()
+                    ->from('Comment');
+            
+            if (!empty($employeeNumber)) {
+                $q->andWhere('employee_number = ?', $employeeNumber);
             } else {
-                $queryLastBlock = "=" . $employeeNumber;
+                $q->andWhere('employee_number is NULL');
             }
-            $result = $q->execute("SELECT * FROM ohrm_buzz_comment WHERE employee_number " . $queryLastBlock);
-            return $result->rowCount();
+            
+//            $result = $q->execute();
+            return $q->count();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
             throw new DaoException($e->getMessage(), $e->getCode(), $e);
@@ -121,16 +126,18 @@ class BuzzDao extends BaseDao {
         try {
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
             if ($employeeNumber == '') {
-                $queryLastBlock = "is NULL";
+                $queryLastBlock = "WHERE ohrm_buzz_share.employee_number is NULL";
+                $params = array();
             } else {
-                $queryLastBlock = "= " . $employeeNumber;
+                $queryLastBlock = "WHERE ohrm_buzz_share.employee_number = :empNumber";
+                $params = array(':empNumber' => $employeeNumber);
             }
 
             $shareLikesPerEmployee = $q->execute(
                     "SELECT *
                 FROM ohrm_buzz_share
                 INNER JOIN ohrm_buzz_like_on_share ON ohrm_buzz_like_on_share.share_id=ohrm_buzz_share.id
-                WHERE ohrm_buzz_share.employee_number " . $queryLastBlock
+                $queryLastBlock", $params
             );
             return $shareLikesPerEmployee->rowCount();
             // @codeCoverageIgnoreStart
@@ -150,15 +157,17 @@ class BuzzDao extends BaseDao {
         try {
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
             if ($employeeNumber == '') {
-                $queryLastBlock = "is NULL";
+                $queryLastBlock = "WHERE ohrm_buzz_comment.employee_number is NULL";
+                $params = array();
             } else {
-                $queryLastBlock = "=" . $employeeNumber;
+                $queryLastBlock = "WHERE ohrm_buzz_comment.employee_number =:empNumber";
+                $params = array(':empNumber' => $employeeNumber);
             }
             $result = $q->execute(
                     "SELECT *
                 FROM ohrm_buzz_comment
                 INNER JOIN ohrm_buzz_like_on_comment ON ohrm_buzz_like_on_comment.comment_id=ohrm_buzz_comment.id
-                WHERE ohrm_buzz_comment.employee_number " . $queryLastBlock
+                $queryLastBlock" , $params
             );
             return $result->rowCount();
             // @codeCoverageIgnoreStart
@@ -178,15 +187,17 @@ class BuzzDao extends BaseDao {
         try {
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
             if ($employeeNumber == '') {
-                $queryLastBlock = "is NULL";
+                $queryLastBlock = "WHERE ohrm_buzz_share.employee_number is NULL";
+                $params = array();
             } else {
-                $queryLastBlock = "= " . $employeeNumber;
+                $queryLastBlock = "WHERE ohrm_buzz_share.employee_number =:empNumber";
+                $params = array(':empNumber' => $employeeNumber);
             }
             $result = $q->execute(
                     "SELECT *
                 FROM ohrm_buzz_share
                 INNER JOIN ohrm_buzz_comment ON ohrm_buzz_comment.share_id=ohrm_buzz_share.id
-                WHERE ohrm_buzz_share.employee_number " . $queryLastBlock
+                $queryLastBlock", $params
             );
 
             return $result->rowCount();
@@ -205,9 +216,11 @@ class BuzzDao extends BaseDao {
      */
     public function getEmployeesHavingBdaysBetweenTwoDates($fromDate, $toDate) {
         try {
+            $whereClause = "WHERE MONTH(emp_birthday) = :month AND "
+                    . " DAY(emp_birthday) >= :date";
+            $params = array(':month' => date('m', strtotime($fromDate)), ':date' => date('d', strtotime($fromDate)));
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
-            $result = $q->execute("SELECT * FROM hs_hr_employee WHERE MONTH(emp_birthday) = " . date('m', strtotime($fromDate)) . " AND "
-                    . " DAY(emp_birthday) >= " . date('d', strtotime($fromDate)) . " ORDER BY DAY(emp_birthday) ASC");
+            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY DAY(emp_birthday) ASC", $params);
 
             return $result->fetchAll();
             // @codeCoverageIgnoreStart
@@ -225,9 +238,11 @@ class BuzzDao extends BaseDao {
      */
     public function getEmployeesHavingAnniversaryOnMonth($date) {
         try {
+            $whereClause = "WHERE MONTH(joined_date) = :joinedMonth AND "
+                    . " DAY(joined_date) >= :joinedDate";
+            $params = array(':joinedMonth' => date('m', strtotime($date)), ':joinedDate' => date('d', strtotime($date)));
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
-            $result = $q->execute("SELECT * FROM hs_hr_employee WHERE MONTH(joined_date) = " . date('m', strtotime($date)) . " AND "
-                    . " DAY(joined_date) >= " . date('d', strtotime($date)) . " ORDER BY DAY(joined_date) ASC");
+            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY DAY(joined_date) ASC", $params);
             return $result->fetchAll();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -295,7 +310,7 @@ class BuzzDao extends BaseDao {
             $q = Doctrine_Query::create()
                     ->select('*')
                     ->from('Share')
-                    ->where('id < ' . $fromId)
+                    ->where('id < ?' , $fromId)
                     ->limit($limit)
                     ->orderBy('share_time DESC');
             return $q->execute();
@@ -324,7 +339,7 @@ class BuzzDao extends BaseDao {
             $q = Doctrine_Query::create()
                     ->select('*')
                     ->from('Share')
-                    ->andWhere('id < ' . $fromId)
+                    ->andWhere('id < ?' , $fromId)
                     ->andWhere($queryBlock)
                     ->limit($limit)
                     ->orderBy('share_time DESC');
@@ -339,16 +354,16 @@ class BuzzDao extends BaseDao {
 
     public function getSharesByEmployeeNumber($limit, $employeeNumber) {
         try {
-            if (!$employeeNumber) {
-                $queryBlock = 'employee_number is NULL';
-            } else {
-                $queryBlock = 'employee_number=' . $employeeNumber;
-            }
+            
             $q = Doctrine_Query::create()
                     ->from('Share')
-                    ->where($queryBlock)
                     ->limit($limit)
                     ->orderBy('share_time DESC');
+            if (!$employeeNumber) {
+                $q->addWhere('employee_number is NULL');
+            } else {
+                $q->addWhere('employee_number = ?', $employeeNumber);
+            }
             return $q->execute();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -366,17 +381,17 @@ class BuzzDao extends BaseDao {
      */
     public function getEmployeeSharesUptoShareId($lastId, $employeeNumber) {
         try {
-            if (!$employeeNumber) {
-                $queryBlock = 'employee_number is NULL';
-            } else {
-                $queryBlock = 'employee_number=' . $employeeNumber;
-            }
+            
             $q = Doctrine_Query::create()
                     ->select('*')
                     ->from('Share')
-                    ->andWhere('id >= ' . $lastId)
-                    ->andWhere($queryBlock)
+                    ->andWhere('id >= ?' , $lastId)
                     ->orderBy('share_time DESC');
+            if (!$employeeNumber) {
+                $q->andWhere('employee_number is NULL');
+            } else {
+                $q->andWhere('employee_number =?', $employeeNumber);
+            }
             return $q->execute();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -396,7 +411,7 @@ class BuzzDao extends BaseDao {
             $q = Doctrine_Query::create()
                     ->select('*')
                     ->from('Share')
-                    ->where('id >= ' . $lastId)
+                    ->where('id >= ?' , $lastId)
                     ->orderBy('share_time DESC');
             return $q->execute();
             // @codeCoverageIgnoreStart
@@ -523,17 +538,15 @@ class BuzzDao extends BaseDao {
      */
     public function deleteLikeForShare($like) {
         try {
-            if ($like->getEmployeeNumber() == '') {
-
-                $queryBlock = 'employee_number is NULL';
-            } else {
-                $queryBlock = 'employee_number=' . $like->getEmployeeNumber();
-            }
             $q = Doctrine_Query::create()
                     ->delete('LikeOnShare')
-                    ->andWhere('share_id =' . $like->getShareId())
-                    ->andWhere($queryBlock);
-
+                    ->andWhere('share_id = ?' , $like->getShareId());
+            
+            if ($like->getEmployeeNumber() == '') {
+                $q->andWhere('employee_number is NULL');
+            } else {
+                $q->andWhere('employee_number =?', $like->getEmployeeNumber());
+            }
             return $q->execute();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -561,16 +574,15 @@ class BuzzDao extends BaseDao {
 
     public function deleteUnLikeForShare($like) {
         try {
-            if ($like->getEmployeeNumber() == '') {
-                $queryBlock = 'employee_number is NULL';
-            } else {
-                $queryBlock = 'employee_number=' . $like->getEmployeeNumber();
-            }
             $q = Doctrine_Query::create()
                     ->delete('UnLikeOnShare')
-                    ->andWhere('share_id =' . $like->getShareId())
-                    ->andWhere($queryBlock);
+                    ->andWhere('share_id = ?' , $like->getShareId());
 
+            if ($like->getEmployeeNumber() == '') {
+                $q->andWhere('employee_number is NULL');
+            } else {
+                $q->andWhere('employee_number = ?', $like->getEmployeeNumber());
+            }
             return $q->execute();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -605,17 +617,15 @@ class BuzzDao extends BaseDao {
      */
     public function deleteLikeForComment($like) {
         try {
-            if ($like->getEmployeeNumber() == '') {
-
-                $queryBlock = 'employee_number is NULL';
-            } else {
-                $queryBlock = 'employee_number=' . $like->getEmployeeNumber();
-            }
             $q = Doctrine_Query::create()
                     ->delete('LikeOnComment')
-                    ->andWhere('comment_id =' . $like->getCommentId())
-                    ->andWhere($queryBlock);
+                    ->andWhere('comment_id = ?', $like->getCommentId());
 
+            if ($like->getEmployeeNumber() == '') {
+                $q->andWhere('employee_number is NULL');
+            } else {
+                $q->andWhere('employee_number= ?', $like->getEmployeeNumber());
+            }
             return $q->execute();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -637,17 +647,15 @@ class BuzzDao extends BaseDao {
 
     public function deleteUnLikeForComment($like) {
         try {
-            if ($like->getEmployeeNumber() == '') {
-
-                $queryBlock = 'employee_number is NULL';
-            } else {
-                $queryBlock = 'employee_number=' . $like->getEmployeeNumber();
-            }
             $q = Doctrine_Query::create()
                     ->delete('UnLikeOnComment')
-                    ->andWhere('comment_id =' . $like->getCommentId())
-                    ->andWhere($queryBlock);
+                    ->andWhere('comment_id = ?', $like->getCommentId());
 
+            if ($like->getEmployeeNumber() == '') {
+                $q->andWhere('employee_number is NULL');
+            } else {
+                $q->andWhere('employee_number = ?', $like->getEmployeeNumber());
+            }
             return $q->execute();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -723,7 +731,7 @@ class BuzzDao extends BaseDao {
         try {
             $q = Doctrine_Query::create()
                     ->delete('Share')
-                    ->where('id=' . $shareId);
+                    ->where('id= ?' , $shareId);
             return $q->execute();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -762,7 +770,7 @@ class BuzzDao extends BaseDao {
         try {
             $q = Doctrine_Query::create()
                     ->delete('Post')
-                    ->where('id=' . $postId);
+                    ->where('id= ?' , $postId);
             return $q->execute();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
