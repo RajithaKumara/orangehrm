@@ -40,7 +40,12 @@ class uploadImageAction extends BaseBuzzAction {
             }
             $this->saveShare();
         } catch (Exception $ex) {
-            $this->redirect('auth/login');
+            $logger = Logger::getLogger('buzz');
+            $logger->error('Exception when uploading image: ' . $ex);            
+            
+            $response = $this->getResponse();
+            $response->setStatusCode(500, __('Error uploading image'));
+            return sfView::NONE;
         }
     }
 
@@ -61,7 +66,13 @@ class uploadImageAction extends BaseBuzzAction {
     private function getPhoto($file) {
         $photo = new Photo();
 
-        $photo->photo = file_get_contents($file['tmp_name']);
+        $buzzConfigService = $this->getBuzzConfigService();
+        $maxDimension = $buzzConfigService->getMaxImageDimension();
+            
+        $imageUtility = new ImageResizeUtility();
+        $imageData = $imageUtility->convertUploadedImage($file['tmp_name'], $maxDimension, $maxDimension);               
+        
+        $photo->photo = $imageData;
         $photo->filename = $file['name'];
         $photo->file_type = $file['type'];
         list($width, $height) = getimagesize($file['tmp_name']);

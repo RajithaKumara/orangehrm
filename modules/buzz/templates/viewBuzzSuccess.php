@@ -182,30 +182,7 @@ ini_set("memory_limit", '-1');
                         <button type="button" id="image-upload-button">
                             <?php echo __("Upload Images"); ?>
                         </button>
-                        <!--                        <div id="imageThumbnails">
-                                                    <span class="img_del" id="img_del_1" style="display:none;">X</span>
-                                                    <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb1" src="#" alt="your image" />
-                                                    <span class="img_del" id="img_del_2" style="display:none;">X</span>
-                                                    <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb2" src="#" alt="your image" />
-                                                    <span class="img_del" id="img_del_3" style="display:none;">X</span>
-                                                    <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb3" src="#" alt="your image" />
-                                                    <span class="img_del" id="img_del_4" style="display:none;">X</span>
-                                                    <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb4" src="#" alt="your image" />
-                                                    <span class="img_del" id="img_del_5" style="display:none;">X</span>
-                                                    <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb5" src="#" alt="your image" />
-                                                </div>-->
-
                         <ul id="imageThumbnails">
-<!--                            <span class="img_del" id="img_del_1" style="display:none;">X</span>
-                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb1" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_2" style="display:none;">X</span>
-                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb2" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_3" style="display:none;">X</span>
-                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb3" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_4" style="display:none;">X</span>
-                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb4" src="#" alt="your image" />
-                            <span class="img_del" id="img_del_5" style="display:none;">X</span>
-                            <img height="70px" style="display:none;" class="imgThumbnailView" id="thumb5" src="#" alt="your image" />-->
                         </ul>
                         <p id="imgUpBtnPara">
                             <button type="submit" id="imageUploadBtn" class="submitBtn">
@@ -381,6 +358,8 @@ ini_set("memory_limit", '-1');
             var imageFolderPath = '<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/"); ?>';
             var viewShareCss = '<?php echo plugin_web_path('orangehrmBuzzPlugin', 'css/viewShareSuccess'); ?>';
             var logoutActionURL = '<?php echo url_for('auth/logout'); ?>';
+            var imageMaxWidth = <?php echo $imageMaxDimension; ?>;
+            var imageMaxHeight = <?php echo $imageMaxDimension; ?>;
         </script>
         <style type="text/css">
             .homeLink{

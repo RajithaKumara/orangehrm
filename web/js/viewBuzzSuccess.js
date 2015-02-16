@@ -30,6 +30,52 @@ $(document).ready(function () {
         }
     });
 
+    function getResizedImage(image) {       
+        var sourceWidth = image.naturalWidth;
+        var sourceHeight = image.naturalHeight;
+        var destImageWidth;
+        var destImageHeight;
+            
+        var sourceAspectRatio = sourceWidth / sourceHeight;
+        var destAspectRatio = imageMaxWidth / imageMaxHeight;
+        if (sourceWidth <= imageMaxWidth && sourceHeight <= imageMaxHeight) {
+            destImageWidth = sourceWidth;
+            destImageHeight = sourceHeight;
+        } else if (destAspectRatio > sourceAspectRatio) {
+            destImageWidth = Math.floor(imageMaxHeight * sourceAspectRatio);
+            destImageHeight = imageMaxHeight;
+        } else {
+            destImageWidth = imageMaxWidth;
+            destImageHeight = Math.floor(imageMaxWidth / sourceAspectRatio);
+        }
+        
+
+        var canvas = document.createElement("canvas");
+        canvas.width = destImageWidth;
+        canvas.height = destImageHeight;
+
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);  
+        
+        return canvas.toDataURL("image/jpeg");
+    }
+    
+    function convertDataURI2Blob(uri) {
+        var byteString = atob(uri.split(',')[1]);
+
+        var mimeString = uri.split(',')[0].split(':')[1].split(';')[0]
+
+        var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(ab);
+        for (var i = 0; i < byteString.length; i++)
+        {
+            ia[i] = byteString.charCodeAt(i);
+        }
+
+        var bb = new Blob([ab], {"type": mimeString});
+        return bb;
+    }
+    
     var formData = new FormData();
     var imageList = {};
     function readURL(file, thumbnailDivId) {
@@ -39,14 +85,16 @@ $(document).ready(function () {
             var reader = new FileReader();
             reader.readAsDataURL(file);
             imageList[thumbnailDivId] = file;
-            reader.onload = function (e) {
-//                $('#thumb' + thumbnailDivId).attr('hidden', false);
-//                $('#img_del_' + thumbnailDivId).attr('hidden', false);
-                var x = '<li><span class="img_del" id="img_del_' + thumbnailDivId + '">X</span> <img width="70px" height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' + e.target.result + '" alt="your image" /></li>';
-                $("#imageThumbnails").append(x);
-//                $('#thumb' + thumbnailDivId).show();
-//                $('#img_del_' + thumbnailDivId).show();
-//                $('#thumb' + thumbnailDivId).attr('src', e.target.result);
+            reader.onload = function (e) {  
+                
+                var image = new Image();
+                image.onload = function() {
+                    var x = '<li><span class="img_del" id="img_del_' + thumbnailDivId + '">X</span> ' + 
+                            '<img height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' + 
+                            getResizedImage(image) + '" alt="your image" /></li>';
+                    $("#imageThumbnails").append(x);                    
+                };
+                image.src = e.target.result;                
             };
         }
     }
@@ -64,12 +112,7 @@ $(document).ready(function () {
     var noOfPhotosPreviewed = 1;
     var noOfPhotosStacked = 1;
     $("#photofile").change(function () {
-//        if (noOfPhotosStacked > 5) {
-//            $("#imageUploadError").modal();
-//            $("#maxImageErrorBody").show();
-//            $("#invalidTypeImageErrorBody").hide();
-//            return;
-//        }
+
         var files = $("#photofile")[0].files;
         var imagesChoosed = $("#photofile")[0].files.length;
         if (imagesChoosed > 5) {
@@ -129,7 +172,9 @@ $(document).ready(function () {
             $('.postLoadingBox').show();
 
             for (var key in imageList) {
-                formData.append(key, imageList[key]);
+                // Get thumbnail src and file name
+                var blob = convertDataURI2Blob($("#thumb" + key).attr('src'));
+                formData.append(key, blob, imageList[key].name);
             }
             formData.append('postContent', photoText);
 
@@ -143,19 +188,25 @@ $(document).ready(function () {
                 contentType: false,
                 success: function (data) {
                     $('#buzz').prepend(data);
-                    $('.postLoadingBox').hide();
-//                    $(".imgThumbnailView").attr("hidden", "true");
-                    $(".imgThumbnailView").hide();
-                    $("#phototext").val('');
-                    $("#photofile").replaceWith($("#photofile").val('').clone(true));
-//                    $(".img_del").attr('hidden', 'true');
-                    $(".img_del").hide();
-                    imageList = {};
-                    formData = new FormData();
-                }
+                    clearImageUpload();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    clearImageUpload();
+                } 
             });
         }
     });
+    
+    function clearImageUpload() {
+        $('imageThumbnails').html('');
+        $('.postLoadingBox').hide();
+        $(".imgThumbnailView").hide();
+        $("#phototext").val('');
+        $("#photofile").replaceWith($("#photofile").val('').clone(true));
+        $(".img_del").hide();
+        imageList = {};
+        formData = new FormData();        
+    }
 
     $("#gotoProfile").click(function () {
         var id = $('#searchChatter_emp_name_empId').val();

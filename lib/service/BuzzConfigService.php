@@ -35,8 +35,12 @@ class BuzzConfigService extends ConfigService {
     const KEY_POST_TEXT_HEIGHT = 'buzz_post_text_lines';
     const KEY_BUZZ_POST_SHARE_COUNT = 'buzz_post_share_count';
     const KEY_BUZZ_COOKIE_VALID_TIME = 'buzz_cookie_valid_time';
+    const KEY_BUZZ_IMAGE_MAX_DIMENSION = 'buzz_image_max_dimension';
+    const DEFAULT_BUZZ_IMAGE_MAX_DIMENSION = '1024';
+    
 
     public function __construct() {
+        parent::__construct();
         $this->setAllBuzzValues();
     }
 
@@ -153,6 +157,18 @@ class BuzzConfigService extends ConfigService {
      */
     public function getCookieValidTime() {
         return $this->buzzConfigValues[BuzzConfigService:: KEY_BUZZ_COOKIE_VALID_TIME];
+    }
+
+    /**
+     * get maximum image width
+     * @return int 
+     */
+    public function getMaxImageDimension() {
+        if (isset($this->buzzConfigValues[self:: KEY_BUZZ_IMAGE_MAX_DIMENSION])) {
+            return $this->buzzConfigValues[self:: KEY_BUZZ_IMAGE_MAX_DIMENSION];
+        } else {
+            return self::DEFAULT_BUZZ_IMAGE_MAX_DIMENSION;
+        }
     }
 
 }
