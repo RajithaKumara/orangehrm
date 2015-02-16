@@ -24,7 +24,6 @@ class getLogedToBuzzAction extends BaseBuzzAction {
             $arr = array('state' => 'refresh');
         }
         echo json_encode($arr);
-        die();
 
         return sfView::NONE;
     }
