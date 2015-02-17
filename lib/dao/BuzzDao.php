@@ -850,6 +850,24 @@ class BuzzDao extends BaseDao {
     }      
     
     /**
+     * Get all photos in buzz
+     * @return DoctrineCollection of Photo objects
+     * @throws DaoException
+     */
+    public function getAllPhotos() {
+        try {
+            $q = Doctrine_Query::create()
+                    ->select('p.id, p.width, p.height, p.size, p.filename')
+                    ->from('Photo p');
+            return $q->execute();
+            // @codeCoverageIgnoreStart
+        } catch (Exception $e) {
+            throw new DaoException($e->getMessage(), $e->getCode(), $e);
+        }
+        // @codeCoverageIgnoreEnd        
+    }
+    
+    /**
      * Get photos related to given post. Does not load the actual photo blob
      * 
      * @param int $postId Post ID

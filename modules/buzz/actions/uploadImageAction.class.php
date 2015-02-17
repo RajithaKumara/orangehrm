@@ -72,13 +72,12 @@ class uploadImageAction extends BaseBuzzAction {
         $imageUtility = new ImageResizeUtility();
         $imageData = $imageUtility->convertUploadedImage($file['tmp_name'], $maxDimension, $maxDimension);               
         
-        $photo->photo = $imageData;
+        $photo->photo = $imageData['image'];
         $photo->filename = $file['name'];
         $photo->file_type = $file['type'];
-        list($width, $height) = getimagesize($file['tmp_name']);
-        $photo->setHeight($height);
-        $photo->setWidth($width);
-        $photo->size = $file['size'];
+        $photo->setHeight($imageData['height']);
+        $photo->setWidth($imageData['width']);
+        $photo->size = strlen($imageData['image']);
         $photo->post_id = $this->post->getId();
         return $photo;
     }
