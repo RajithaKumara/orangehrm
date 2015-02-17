@@ -198,7 +198,7 @@ $(document).ready(function () {
     });
     
     function clearImageUpload() {
-        $('imageThumbnails').html('');
+        $('#imageThumbnails').html('');
         $('.postLoadingBox').hide();
         $(".imgThumbnailView").hide();
         $("#phototext").val('');
