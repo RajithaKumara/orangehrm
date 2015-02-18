@@ -78,25 +78,27 @@ $(document).ready(function () {
     
     var formData = new FormData();
     var imageList = {};
+    
     function readURL(file, thumbnailDivId) {
+        var deferredObject = $.Deferred();
+        
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        imageList[thumbnailDivId] = file;
+        reader.onload = function (e) {  
 
-        if (file) {
-
-            var reader = new FileReader();
-            reader.readAsDataURL(file);
-            imageList[thumbnailDivId] = file;
-            reader.onload = function (e) {  
-                
-                var image = new Image();
-                image.onload = function() {
-                    var x = '<td><a class="img_del" id="img_del_' + thumbnailDivId + '"></a>' + 
-                            '<img height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' + 
-                            getResizedImage(image) + '" alt="your image" /></td>';
-                    $("#imageThumbnails").append(x);                    
-                };
-                image.src = e.target.result;                
+            var image = new Image();
+            image.onload = function() {
+                var x = '<td><a class="img_del" id="img_del_' + thumbnailDivId + '"></a>' + 
+                        '<img height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' + 
+                        getResizedImage(image) + '" alt="your image" /></td>';
+                $("#imageThumbnails").append(x);
+                deferredObject.resolve();
             };
-        }
+            image.src = e.target.result;                
+        };
+        
+        return deferredObject.promise();
     }
 
     $("#image-upload-button").live("click", function () {
@@ -130,9 +132,22 @@ $(document).ready(function () {
                 $("#invalidTypeImageErrorBody").show();
                 $("#maxImageErrorBody").hide();
             } else {
-                readURL(files[i - 1], noOfPhotosPreviewed);
-                noOfPhotosPreviewed++;
-                noOfPhotosStacked++;
+                var file = files[i - 1];
+                var promises = [];
+                
+                // Disable upload button
+                $('#image-upload-button').prop('disabled', true);
+                
+                if (file) {
+                    promises.push(readURL(file, noOfPhotosPreviewed));
+                    noOfPhotosPreviewed++;
+                    noOfPhotosStacked++;
+                }
+                
+                // Enable upload/publish button when all images have loaded.
+                $.when.apply($, promises).then(function() {
+                    $('#image-upload-button').prop('disabled', false);                    
+                });
             }
         }
 
