@@ -750,14 +750,33 @@ input[type="button"]{
 }
 
 .img_del{
-    color: red; 
-    font-size: 9px; 
-    font-weight: 900; 
-    padding: 3px; 
-    background-color: black; 
-    position: relative; 
-    left: 17px; 
-    top: -5px;
+    float:right;
+    margin-top: -15px;
+    margin-right: 0px;
+    cursor:pointer;
+    color: #fff;    
+    border-radius: 9px;
+    background: #bebac3;
+    font-size: 15px;
+    font-weight: bold;
+    display: inline-block;
+    line-height: 0px;
+    padding: 9px 5px; 
+    text-decoration: none;
+}
+
+.img_del:before {
+    content: "×";
+}
+
+.img_del:hover {
+    color: red;
+    text-decoration: none;
+    background: #605F61;
+}
+
+img.imgThumbnailView {
+    border-radius: 5px;    
 }
 
 .closeFeed{
@@ -772,12 +791,19 @@ input[type="button"]{
 
 #imageThumbnails{
     display:inline-block; 
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 #imageThumbnails li{
     display:inline-block; 
     display:inline; 
+}
+
+#imageThumbnailTable {
+    width: 100%;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 20px;
 }
 
 #postLinkData{

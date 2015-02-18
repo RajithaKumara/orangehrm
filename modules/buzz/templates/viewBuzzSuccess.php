@@ -182,8 +182,11 @@ ini_set("memory_limit", '-1');
                         <button type="button" id="image-upload-button">
                             <?php echo __("Upload Images"); ?>
                         </button>
-                        <ul id="imageThumbnails">
-                        </ul>
+                        <table id="imageThumbnailTable">
+                            <tbody>
+                                <tr id="imageThumbnails"><td></td></tr>
+                            </tbody>
+                        </table>
                         <p id="imgUpBtnPara">
                             <button type="submit" id="imageUploadBtn" class="submitBtn">
                                 <?php echo __("Post"); ?>

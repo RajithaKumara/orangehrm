@@ -89,9 +89,9 @@ $(document).ready(function () {
                 
                 var image = new Image();
                 image.onload = function() {
-                    var x = '<li><span class="img_del" id="img_del_' + thumbnailDivId + '">X</span> ' + 
+                    var x = '<td><a class="img_del" id="img_del_' + thumbnailDivId + '"></a>' + 
                             '<img height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' + 
-                            getResizedImage(image) + '" alt="your image" /></li>';
+                            getResizedImage(image) + '" alt="your image" /></td>';
                     $("#imageThumbnails").append(x);                    
                 };
                 image.src = e.target.result;                
@@ -172,9 +172,13 @@ $(document).ready(function () {
             $('.postLoadingBox').show();
 
             for (var key in imageList) {
-                // Get thumbnail src and file name
-                var blob = convertDataURI2Blob($("#thumb" + key).attr('src'));
-                formData.append(key, blob, imageList[key].name);
+                
+                if (imageList.hasOwnProperty(key)) {
+                    
+                    // Get thumbnail src and file name
+                    var blob = convertDataURI2Blob($("#thumb" + key).attr('src'));
+                    formData.append(key, blob, imageList[key].name);
+                }
             }
             formData.append('postContent', photoText);
 
