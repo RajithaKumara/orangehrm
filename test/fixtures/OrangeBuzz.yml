@@ -4,7 +4,7 @@ Employee:
   2: {emp_number:3, employee_id:'003', emp_lastname:'tebel3' emp_birthday:'2014-06-07', joined_date:'2010-05-10'}
   
 EmpPicture:
-  0: {emp_number: '1', epic_filename: 'test_file.jpg', epic_type: 'test/type', epic_file_size: '2000'}
+  0: {emp_number: '1', epic_filename: 'test_file.jpg', epic_type: 'test/type'}
 
 Post:
   0: {id: 1, employee_number: '1', text: 'this is first post', post_time: '2015-01-01 00:00:00'}
