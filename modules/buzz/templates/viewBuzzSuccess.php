@@ -40,7 +40,7 @@ ini_set("memory_limit", '-1');
 
         <div class="modal-body" >
             <div class="mb-heading">
-                <?php echo __("Success!"); ?>
+                <?php echo __("Success")."!"; ?>
             </div>
             <!--<div id="successHeader" style="width: 100%;height: 20px;background-color: green;">Success</div>-->
             <div id="successBodyEdit" >

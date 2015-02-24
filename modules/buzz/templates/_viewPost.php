@@ -463,7 +463,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                     <form id="frmCreateComment" method="" action="" style="margin-top: 10px;"
                           enctype="multipart/form-data">
                               <?php
-                              $placeholder = 'Whats on your mind';
+                              $placeholder = __('Whats on your mind');
                               echo $commentForm['comment']->render(array('id' => "shareBox_" . $postId,
                                   'class' => 'shareBox', 'style' => 'width: 95%', 'rows' => '2', 'placeholder' => $placeholder));
                               ?>
@@ -633,7 +633,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 if ($commentCount > $initialcommentCount) {
                     echo __("View") . " " . ($commentCount - $initialcommentCount) . " ";
                     echo __("more comments");
-                    echo ' ' . __("out of" . " " . $commentCount . " " . "comments");
+                    echo ' ' . __("out of") . " " . $commentCount . " " . __("comments");
                 }
                 ?>
             </a>
