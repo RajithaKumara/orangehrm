@@ -3,6 +3,6 @@ buzz:
   url: 'buzz/viewBuzz'
   plugin: orangehrmBuzzPlugin
   target: '_blank'
-  image: 'orange.png'
+  image: 'buzz_logo_small.png'
   requiredPermissions: {'data_group': {'buzz_link': {'canRead': true, 'canCreate': false, 'canUpdate': false, 'canDelete': false}}}
   ohrm_module: 'buzz'

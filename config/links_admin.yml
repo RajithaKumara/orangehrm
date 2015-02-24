@@ -3,5 +3,5 @@ buzz:
   url: 'buzz/viewBuzz'
   plugin: orangehrmBuzzPlugin
   target: '_blank'
-  image: 'orange.png'
+  image: 'buzz_logo_small.png'
   ohrm_module: 'buzz'
