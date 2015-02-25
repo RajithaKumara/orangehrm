@@ -29,7 +29,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBirthdays'));
     </div>
 
     <div class ="rightBarBody">
-        <div class="toggling" id="upcomingBdaysMonth"><?php echo date('M Y'); ?></div>
+        <div class="toggling" id="upcomingBdaysMonth"><?php echo __(date('M')).' '.date('Y'); ?></div>
         <ul class="toggling" id="upcomingBdaysList">    
             <?php if (count($employeeList) == 0) { ?>
                 <li id="birthdayPostNull">
@@ -80,7 +80,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBirthdays'));
                             if (date('Y-m-d') == $employee->getEmpBirthday()) {
                                 echo __("Today is his birthday");
                             } else {
-                                echo date('F d', strtotime($employee->getEmpBirthday()));
+                                echo __(date('F', strtotime($employee->getEmpBirthday()))).' '.date('d', strtotime($employee->getEmpBirthday()));
                             }
                             ?>
                         </div>

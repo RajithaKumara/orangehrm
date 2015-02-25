@@ -454,7 +454,7 @@ $(document).ready(function () {
         if (trim(value).length > 0) {
             $('#commentLoadingBox' + elementId.split("_")[1]).show();
 
-            $(elementId).attr('placeholder', 'Write your comment...');
+            $(elementId).attr('placeholder', writeYourComment);
             var commentId = elementId.split("Id")[1];
             $.ajax({
                 url: addBuzzCommentURL,
@@ -573,7 +573,7 @@ $(document).ready(function () {
             if (trim(value).length > 0) {
                 $('#commentLoadingBox' + elementId.split("_")[1]).show();
 
-                $(elementId).attr('placeholder', 'Write your comment...');
+                $(elementId).attr('placeholder', writeYourComment);
                 var commentId = elementId.split("Id")[1];
                 $.ajax({
                     url: addBuzzCommentURL,

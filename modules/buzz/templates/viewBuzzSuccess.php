@@ -363,6 +363,7 @@ ini_set("memory_limit", '-1');
             var logoutActionURL = '<?php echo url_for('auth/logout'); ?>';
             var imageMaxWidth = <?php echo $imageMaxDimension; ?>;
             var imageMaxHeight = <?php echo $imageMaxDimension; ?>;
+            var writeYourComment = "<?php echo __js('Write your comment...');?>";
         </script>
         <style type="text/css">
             .homeLink{
