@@ -28,7 +28,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
              height="30px" width="30px"/>
     </div>
     <div class ="rightBarBody">
-        <div class="toggling" style="display:none;" id="upcomingAnnivMonth"><?php echo date('M Y'); ?></div>
+        <div class="toggling" style="display:none;" id="upcomingAnnivMonth"><?php echo __(date('M')).' '.date('Y'); ?></div>
         <ul class="toggling" style="display:none;" id="upcomingAnnivList">    
             <?php if (count($anniversaryEmpList) == 0) { ?>
                 <li id="anniversaryPostNull">
@@ -75,20 +75,20 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
                             ?>
                         </div>
                         <div id="annivDate">
-                            <?php echo date('F d', strtotime($employee->getJoinedDate())); ?>
+                            <?php echo __(date('F', strtotime($employee->getJoinedDate()))).' '. date('d', strtotime($employee->getJoinedDate())); ?>
                         </div>
                         <div id="anniversaryText"><?php
                             $years = (date('Y') - (date('Y', strtotime($employee->getJoinedDate()))));
                             ?><div id="yearsBox" ><?php
                             if ($years > 1) {
-                                echo __($years . ' years');
+                                echo $years.' '.__('years');
                             } else {
-                                echo __($years . ' year');
+                                echo $years.' '.__('year');
                             }
                             ?>
                             </div>
                             <div id="joinedDate">
-                                <?php echo __("Joined Date") . " : " . date('Y-M-d', strtotime($employee->getJoinedDate())); ?>
+                                <?php echo __("Joined Date") . " : " . date('Y', strtotime($employee->getJoinedDate())).'-'.__(date('M', strtotime($employee->getJoinedDate()))).'-'.date('d', strtotime($employee->getJoinedDate())); ?>
                             </div>
                         </div>
                     </li>
