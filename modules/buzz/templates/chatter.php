@@ -39,7 +39,7 @@
     #logo{
         width: 24%;
 
-        margin-left: -20px;
+        margin-left: -10px;
     }
 
     #buzzHeaderRight{
@@ -61,7 +61,7 @@
         <div id="dashBoardHeaderBuzz">
             <div id="logo">
                 <a href="<?php echo url_for("buzz/viewBuzz"); ?>">
-                    <img id="buzz-logo" height="60px" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/logo.png'); ?>">
+                    <img id="buzz-logo" height="60px" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/buzz_logo_small.png'); ?>">
                 </a>
             </div>
             <div id="buzzHeaderRight">
