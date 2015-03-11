@@ -46,7 +46,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
 
 
                         <input type="button" class="btnEditCommentNew" name="btnSaveDependent" 
-                               id='<?php echo 'btnEditComment_' . $commentId ?>' value="<?php echo __("Save"); ?>"/>
+                               id='<?php echo 'btnEditComment_' . $commentId ?>' value="<?php echo __attr("Save"); ?>"/>
 
                     </div>
                 </div>
@@ -182,7 +182,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
             echo $commentForm['_csrf_token']->render();
             ?>
             <div id="commentSubmitBtnInModal">
-                <input type="button" value="<?php echo __("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn">
+                <input type="button" value="<?php echo __attr("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn">
             </div>
             <button type="button" id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn commentSubmitBtnForIe">
                 <?php echo __("Comment"); ?>
