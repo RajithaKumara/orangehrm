@@ -50,7 +50,7 @@
                         </form>
 
                         <div class="editCommrntPageButton">
-                            <button type="button"  class="btnEditCommentNew" name="btnSaveDependent" id='<?php echo 'btnEditComment_' . $commentId ?>' ><?php echo __("Save"); ?></button>
+                            <button type="button"  class="btnEditCommentNew" name="btnSaveDependent" id='<?php echo 'btnEditComment_' . $commentId ?>' ><?php echo __attr("Save"); ?></button>
                         </div>
                     </div>
                 </div>

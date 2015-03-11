@@ -116,7 +116,7 @@
                 <?php echo __("This share has been deleted or you do not have permission to perform this action"); ?>
             </div> 
             <div id ='errorFirstRow'>
-                <input type="button" class="btnBackHide" name="btnSaveDependent" id='<?php echo 'btnhideLike_' . $id ?>' value="<?php echo __("Back"); ?> " />
+                <input type="button" class="btnBackHide" name="btnSaveDependent" id='<?php echo 'btnhideLike_' . $id ?>' value="<?php echo __attr("Back"); ?> " />
             </div>
 
         </div>
@@ -126,7 +126,7 @@
                 <?php echo __("This comment has been deleted or you do not have permission to perform this action"); ?>
             </div>
             <div id="errorFirstRow">
-                <input type="button" class="btnBackHideComment" name="btnSaveDependent" id='<?php echo 'btnhideLikecomment_' . $id ?>' value="<?php echo __("Back"); ?> " />
+                <input type="button" class="btnBackHideComment" name="btnSaveDependent" id='<?php echo 'btnhideLikecomment_' . $id ?>' value="<?php echo __attr("Back"); ?> " />
             </div>
 
         </div>

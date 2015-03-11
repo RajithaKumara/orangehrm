@@ -341,7 +341,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                     </div>
                 <?php } ?>
 
-                <button type="button" class="btnShareOnPreview" name="btnSaveDependent" id='<?php echo 'btnShare_' . $postId . "_" . $originalPostId ?>'><?php echo __("Share"); ?></button>
+                <button type="button" class="btnShareOnPreview" name="btnSaveDependent" id='<?php echo 'btnShare_' . $postId . "_" . $originalPostId ?>'><?php echo __attr("Share"); ?></button>
 
             </div>
         </div>
