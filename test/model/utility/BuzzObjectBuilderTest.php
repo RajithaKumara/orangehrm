@@ -10,6 +10,7 @@
  * Description of BuzzObjectBuilderTest
  *
  * @author nirmal
+ * @group buzz
  */
 class BuzzObjectBuilderTest extends PHPUnit_Framework_TestCase {
 

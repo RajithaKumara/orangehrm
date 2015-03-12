@@ -10,6 +10,7 @@
  * Description of BuzzWebServiceHelperUtilityTest
  *
  * @author nirmal
+ * @group buzz
  */
 class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
 
