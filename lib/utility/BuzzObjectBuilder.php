@@ -26,8 +26,8 @@ class BuzzObjectBuilder {
     const KEY_EMPLOYEE_PHOTO_URL = 'employee_photo_url';
     const KEY_POST_DETAILS = 'post_details';
     const KEY_POSTED_EMPLOYEE_DETAILS = 'posted_employee_details';
-    const KEY_POST_PHOTO_DETAILS = 'posted_phpto_details';
-    const KEY_POST_PHOTO_URL = 'posted_phpto_url';
+    const KEY_POST_PHOTO_DETAILS = 'posted_photo_details';
+    const KEY_POST_PHOTO_URL = 'posted_photo_url';
     const KEY_COMMENT_DETAILS = 'comment_details';
     const KEY_COMMENTED_EMPLOYEE_DETAILS = 'commented_employee_details';
     const KEY_LIKES_FOR_COMMENT = 'likes_for_comment';
