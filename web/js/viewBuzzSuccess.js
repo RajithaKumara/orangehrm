@@ -236,7 +236,7 @@ $(document).ready(function () {
         }
     });
 
-    var windowTitle = "Orange Buzz";
+    var windowTitle = "OrangeBuzz";
     var newlyAddedPostCount = 0;
     var noOfPostsWhenLeavingWindow = 0;
     var isWindowFocussed = true;

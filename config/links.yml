@@ -1,5 +1,5 @@
 buzz:
-  name: Orange Buzz
+  name: OrangeBuzz
   url: 'buzz/viewBuzz'
   plugin: orangehrmBuzzPlugin
   target: '_blank'
