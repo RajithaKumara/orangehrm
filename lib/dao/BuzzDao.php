@@ -213,7 +213,7 @@ class BuzzDao extends BaseDao {
      */
     public function getEmployeesHavingBdaysBetweenTwoDates($fromDate, $toDate) {
         try {
-            $whereClause = "WHERE MONTH(emp_birthday) = :month AND "
+            $whereClause = "WHERE deleted_at IS NULL AND MONTH(emp_birthday) = :month AND "
                     . " DAY(emp_birthday) >= :date";
             $params = array(':month' => date('m', strtotime($fromDate)), ':date' => date('d', strtotime($fromDate)));
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
@@ -235,7 +235,7 @@ class BuzzDao extends BaseDao {
      */
     public function getEmployeesHavingAnniversaryOnMonth($date) {
         try {
-            $whereClause = "WHERE MONTH(joined_date) = :joinedMonth AND "
+            $whereClause = "WHERE deleted_at IS NULL AND MONTH(joined_date) = :joinedMonth AND "
                     . " DAY(joined_date) >= :joinedDate";
             $params = array(':joinedMonth' => date('m', strtotime($date)), ':joinedDate' => date('d', strtotime($date)));
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
