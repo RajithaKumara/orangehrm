@@ -207,10 +207,10 @@ abstract class PluginShare extends BaseShare {
         foreach ($likes as $like) {
 
             if ($like->getEmployeeNumber() == $userId) {
-                return 'Like';
+                return 'Unlike';
             }
         }
-        return 'Unlike';
+        return 'Like';
 
 //        if ($userId != "") {
 //
