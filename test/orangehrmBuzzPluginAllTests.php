@@ -16,11 +16,19 @@ class orangehrmBuzzPluginAllTests {
        $suite->addTestFile(dirname(__FILE__) . '/model/service/BuzzConfigServiceTest.php');
        $suite->addTestFile(dirname(__FILE__) . '/model/service/BuzzTextParserServiceTest.php');
        $suite->addTestFile(dirname(__FILE__) . '/model/service/BuzzCookieServiceTest.php');
+<<<<<<< .working
        
        // utility test cases
        $suite->addTestFile(dirname(__FILE__) . '/model/utility/BuzzWebServiceHelperTest.php');
        $suite->addTestFile(dirname(__FILE__) . '/model/utility/BuzzObjectBuilderTest.php');
        
+=======
+       
+       // utility service test
+       $suite->addTestFile(dirname(__FILE__) . '/model/utility/BuzzWebServiceHelperTest.php');
+       $suite->addTestFile(dirname(__FILE__) . '/model/utility/BuzzObjectBuilderTest.php');
+       
+>>>>>>> .merge-right.r63046
         return $suite;
     }
 

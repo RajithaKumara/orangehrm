@@ -203,15 +203,15 @@ abstract class PluginShare extends BaseShare {
     public function isLike($id) {
         $likes = $this->getLike();
         $userId = $id;
-        
+
         foreach ($likes as $like) {
 
-                if ($like->getEmployeeNumber() == $userId) {
-                    return 'Unlike';
-                }
+            if ($like->getEmployeeNumber() == $userId) {
+                return 'Like';
             }
-            return 'Like';
-        
+        }
+        return 'Unlike';
+
 //        if ($userId != "") {
 //
 //            foreach ($likes as $like) {
@@ -271,5 +271,126 @@ abstract class PluginShare extends BaseShare {
         }
         return $sharedEmpArray;
     }
+
+    /**
+     * Returns the list of emloyees who liked the share [WEB SERVICES].
+     * @return Employee Collection
+     */
+    public function getShareLikedEmployeeList() {       
+        $arrayOfEmployees = array();
+        foreach ($this->getLike() as $value) {
+            $employee = array();            
+            $empId = $value->getEmployeeNumber();
+            $empName = $value->getEmployeeLike()->getFirstAndLastNames();
+            $jobTitle = $value->getEmployeeLike()->getJobTitleName();
+
+            if ($empId == null) {
+                $empName = "Admin";
+                $jobTitle = "Administrator";                  
+            }
+            $employee['employee_name'] = $empName;
+            $employee['employee_number'] = $empId;
+            $employee['employee_job_title'] = $jobTitle;   
+            $arrayOfEmployees[] = $employee;
+        }
+        return $arrayOfEmployees;
+    }
+    
+     /**
+     * Returns the list of emloyees who disliked the share [WEB SERVICES].
+     * @return Employee Collection
+     */
+    public function getShareDislikedEmployeeList() {       
+        $arrayOfEmployees = array();
+        foreach ($this->getUnlike() as $value) {
+            $employee = array();           
+            $empId = $value->getEmployeeNumber();
+            $empName = $value->getEmployeeUnLike()->getFirstAndLastNames();
+            $jobTitle = $value->getEmployeeUnLike()->getJobTitleName();
+
+            if ($empId == null) {
+                $empName = "Admin";
+                $jobTitle = "Administrator";                  
+            }
+            $employee['employee_name'] = $empName;
+            $employee['employee_number'] = $empId;
+            $employee['employee_job_title'] = $jobTitle;        
+            $arrayOfEmployees[] = $employee;
+        }
+        return $arrayOfEmployees;
+    }
+    
+      /**
+     * check loged In User Like this post
+     * @param int $id
+     * @return string
+     */
+    public function isShareLike($id) {
+        $likes = $this->getLike();
+        $userId = $id;
+
+//        foreach ($likes as $like) {
+//
+//            if ($like->getEmployeeNumber() == $userId) {
+//                return 'Like';
+//            }
+//        }
+//        return 'Unlike';
+
+        if ($userId != "") {
+
+            foreach ($likes as $like) {
+
+                if ($like->getEmployeeNumber() == $userId) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            foreach ($likes as $like) {
+                if ($like->getEmployeeNumber() == "") {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    
+     public function isShareUnLike($id) {
+        $likes = $this->getUnlike();
+        $userId = $id;
+
+//        foreach ($likes as $like) {
+//            if ($like->getEmployeeNumber() == $userId) {
+//
+//                return 'yes';
+//            }
+//        }
+//
+//        return 'no';
+
+        if ($userId != "") {
+
+            foreach ($likes as $like) {
+                if ($like->getEmployeeNumber() == $userId) {
+
+                    return true;
+                }
+            }
+
+            return false;
+        } else {
+
+            foreach ($likes as $like) {
+                if ($like->getEmployeeNumber() == "") {
+
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    
+    
 
 }

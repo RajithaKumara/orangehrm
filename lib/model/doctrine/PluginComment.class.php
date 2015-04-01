@@ -129,5 +129,94 @@ abstract class PluginComment extends BaseComment {
         }
         return 'no';
     }
+    
+    
+     /**
+     * Returns the list of emloyees who liked the comment [WEB SERVICES].
+     * @return Employee Collection
+     */
+    public function getCommentLikedEmployeeList() {       
+        $arrayOfEmployees = array();
+        foreach ($this->getLike() as $value) {
+            $employee = array();            
+            $empId = $value->getEmployeeNumber();
+            $empName = $value->getEmployeeFirstLastName();
+            $jobTitle = $value->getEmployeeLike()->getFirst()->getJobTitleName();
+
+            if ($empId == null) {
+                $empName = "Admin";
+                $jobTitle = "Administrator";                  
+            }
+            $employee['employee_name'] = $empName;
+            $employee['employee_number'] = $empId;
+            $employee['employee_job_title'] = $jobTitle;  
+            $arrayOfEmployees[] = $employee;
+        }
+        return $arrayOfEmployees;
+    }
+    
+     /**
+     * Returns the list of emloyees who disliked the comment [WEB SERVICES].
+     * @return Employee Collection
+     */
+    public function getCommentDislikedEmployeeList() {       
+        $arrayOfEmployees = array();
+        foreach ($this->getUnlike() as $value) {
+            $employee = array();           
+            $empId = $value->getEmployeeNumber();
+            $empName = $value->getEmployeeUnLike()->getFirst()->getFirstAndLastNames();
+            $jobTitle = $value->getEmployeeUnLike()->getFirst()->getJobTitleName();
+
+            if ($empId == null) {
+                $empName = "Admin";
+                $jobTitle = "Administrator";                  
+            }
+            $employee['employee_name'] = $empName;
+            $employee['employee_number'] = $empId;
+            $employee['employee_job_title'] = $jobTitle;        
+            $arrayOfEmployees[] = $employee;
+        }
+        return $arrayOfEmployees;
+    }
+    
+    
+     public function isCommentUnLike($id) {
+        $likes = $this->getUnlike();
+        $userId = $id;
+        if ($id) {
+            foreach ($likes as $like) {
+                if ($like->getEmployeeNumber() == $userId) {
+                    return true;
+                }
+            }
+        } else {
+            foreach ($likes as $like) {
+                if ($like->getEmployeeNumber() == null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+     public function isCommentLike($id) {
+        $likes = $this->getLike();
+        $userId = $id;
+        if ($userId) {
+            foreach ($likes as $like) {
+                if ($like->getEmployeeNumber() == $userId) {
+                    return true;
+                }
+            }
+        } else {
+            foreach ($likes as $like) {
+                if ($like->getEmployeeNumber() == null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
 
 }
