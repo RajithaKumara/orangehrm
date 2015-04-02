@@ -1,28 +1,45 @@
 methods:
-  getLoggedInEmployeeNumber:
-      wrapper: BuzzServiceWrapper
-      group: buzz
   getLatestBuzzShares:
       wrapper: BuzzServiceWrapper
       group: buzz
+      type: POST 
+  getBuzzShares:
+      wrapper: BuzzServiceWrapper
+      group: buzz
+      type: POST      
+  getMoreBuzzShares:
+      wrapper: BuzzServiceWrapper
+      group: buzz
+      type: POST
   getShareAndPostDetailsByShareId:
       wrapper: BuzzServiceWrapper
       group: buzz
+      type: POST 
   postContentOnFeed:
       wrapper: BuzzServiceWrapper
       group: buzz
+      type: POST 
   commentOnShare:
       wrapper: BuzzServiceWrapper
       group: buzz
+      type: POST 
   likeOnShare:
       wrapper: BuzzServiceWrapper
       group: buzz
+      type: POST 
   disLikeOnShare:
       wrapper: BuzzServiceWrapper
       group: buzz
+      type: POST 
   likeOnComment:
       wrapper: BuzzServiceWrapper
       group: buzz
+      type: POST 
   dislikeOnComment:
       wrapper: BuzzServiceWrapper
       group: buzz
+      type: POST 
+  getLoggedInEmployee:
+      wrapper: BuzzServiceWrapper
+      group: buzz
+      type: POST 

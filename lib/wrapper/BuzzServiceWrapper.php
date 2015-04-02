@@ -31,16 +31,46 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     public function getLoggedInEmployeeNumber($options) {
         return sfContext::getInstance()->getUser()->getAttribute("auth.empNumber");
     }
+    
+    /**
+     * Get Current Logged in Employee
+     * @param type $options
+     */
+    public function getLoggedInEmployee($options) {
+        return $this->getServiceInstance()->getLoggedInEmployee();
+    }
 
     /**
-     * Get latest shares default number of shares are 10
+     * Get latest shares from a given share Id
      * 
      * @param type $options
      * @return type
      */
     public function getLatestBuzzShares($options) {
-        return $this->getServiceInstance()->getLatestBuzzShares($options['limit']);
+        return $this->getServiceInstance()->getLatestBuzzShares($options['recentShareId']);
     }
+    
+     /**
+     * Get recent [at first load] shares default number of shares are 10
+     * 
+     * @param type $options
+     * @return type
+     */
+    public function getBuzzShares($options) {
+        return $this->getServiceInstance()->getBuzzShares($options['limit']);
+    }
+    
+    
+     /**
+     * Get shares older than a given share Id
+     * 
+     * @param type $options
+     * @return type
+     */
+    public function getMoreBuzzShares($options) {
+        return $this->getServiceInstance()->getMoreBuzzShares($options['lastShareId'],$options['limit']);
+    }
+    
 
     /**
      * Get share and post details by share id, this will retun post details, comment and like details, etc
@@ -62,7 +92,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
         if (is_null($options['contentText'])) {
             throw new Exception("Valid parameters are not provided");
         } else {
-            return $this->getServiceInstance()->postContentOnFeed($options['loggedInEmployeeNumber'], $options['contentText'], date("Y-m-d H:i:s"), $extraPostOptions);
+            $empNumber = $this->getLoggedInEmployeeNumber($options);
+            return $this->getServiceInstance()->postContentOnFeed($empNumber, $options['contentText'], date("Y-m-d H:i:s"), $extraPostOptions);
         }
     }
     
@@ -74,7 +105,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
         if (is_null($options['shareId'] && $options['contentText'])) {
             throw new Exception("Valid parameters are not provided");
         } else {
-            return $this->getServiceInstance()->commentOnShare($options['shareId'], $options['loggedInEmployeeNumber'], $options['contentText'], date("Y-m-d H:i:s"));
+            $empNumber = $this->getLoggedInEmployeeNumber($options);
+            return $this->getServiceInstance()->commentOnShare($options['shareId'], $empNumber, $options['contentText'], date("Y-m-d H:i:s"));
         }
     }
     
@@ -86,7 +118,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
         if (is_null($options['shareId'])) {
             throw new Exception("Valid parameters are not provided");
         } else {
-            return $this->getServiceInstance()->likeOnShare($options['shareId'], $options['loggedInEmployeeNumber'], date("Y-m-d H:i:s"));
+            $empNumber = $this->getLoggedInEmployeeNumber($options);
+            return $this->getServiceInstance()->likeOnShare($options['shareId'], $empNumber, date("Y-m-d H:i:s"));
         }
     }
     
@@ -98,7 +131,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
         if (is_null($options['shareId'])) {
             throw new Exception("Valid parameters are not provided");
         } else {
-            return $this->getServiceInstance()->dislikeOnShare($options['shareId'], $options['loggedInEmployeeNumber'], date("Y-m-d H:i:s"));
+            $empNumber = $this->getLoggedInEmployeeNumber($options);
+            return $this->getServiceInstance()->dislikeOnShare($options['shareId'],$empNumber,  date("Y-m-d H:i:s"));
         }
     }
     
@@ -110,7 +144,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
         if (is_null($options['commentId'])) {
             throw new Exception("Valid parameters are not provided");
         } else {
-            return $this->getServiceInstance()->likeOnComment($options['commentId'], $options['loggedInEmployeeNumber'], date("Y-m-d H:i:s"));
+            $empNumber = $this->getLoggedInEmployeeNumber($options);
+            return $this->getServiceInstance()->likeOnComment($options['commentId'], $empNumber, date("Y-m-d H:i:s"));
         }
     }
     
@@ -122,7 +157,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
         if (is_null($options['commentId'])) {
             throw new Exception("Valid parameters are not provided");
         } else {
-            return $this->getServiceInstance()->dislikeOnComment($options['commentId'], $options['loggedInEmployeeNumber'], date("Y-m-d H:i:s"));
+            $empNumber = $this->getLoggedInEmployeeNumber($options);
+            return $this->getServiceInstance()->dislikeOnComment($options['commentId'], $empNumber, date("Y-m-d H:i:s"));
         }
     }
 

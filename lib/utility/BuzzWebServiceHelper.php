@@ -10,6 +10,7 @@
  * Description of BuzzWebServiceHelperUtility
  *
  * @author nirmal
+ * Modified: ridwan [17th March 2015]
  */
 class BuzzWebServiceHelper {
 
@@ -57,18 +58,63 @@ class BuzzWebServiceHelper {
     }
 
     /**
-     * Get Latest shares of Buzz
+     * Get Latest shares from a given Share Id
+     * 
+     * @param type $recentShareId
+     * @return array
+     */
+    public function getLatestBuzzShares($recentShareId = null) {    
+        $loggedInUserEmpNum =  sfContext::getInstance()->getUser()->getAttribute("auth.empNumber"); 
+        $latestShares = $this->getBuzzService()->getSharesUptoId($recentShareId);
+         $postPhotosArray = array();
+        foreach ($latestShares as $share){
+            $post = $share->getPostShared();
+            $postPhotos = $this->getBuzzService()->getPostPhotos($post->getId());
+            $postPhotosArray[$post->getId()] = $postPhotos;
+        }
+        return $this->getBuzzObjectBuilder()->getShareCollectionArray($latestShares,$postPhotosArray,$loggedInUserEmpNum);
+    }
+    
+     /**
+     * Get recent shares of Buzz
      * 
      * @param type $limit
-     * @return type
+     * @return array
      */
-    public function getLatestBuzzShares($limit = null) {
+    public function getBuzzShares($limit = null) {
+        $loggedInUserEmpNum =  sfContext::getInstance()->getUser()->getAttribute("auth.empNumber"); 
+        if (!$limit) {
+            $limit = self::DEFAULT_SHARE_LIMIT;
+        }   
+        $latestShares = $this->getBuzzService()->getShares($limit);
+        $postPhotosArray = array();
+        foreach ($latestShares as $share){
+            $post = $share->getPostShared();
+            $postPhotos = $this->getBuzzService()->getPostPhotos($post->getId());
+            $postPhotosArray[$post->getId()] = $postPhotos;
+        }
+        return $this->getBuzzObjectBuilder()->getShareCollectionArray($latestShares,$postPhotosArray,$loggedInUserEmpNum);
+    }
+    
+     /**
+     * Get more shares of Buzz
+     * 
+     * @param type $limit
+     * @return array
+     */
+    public function getMoreBuzzShares($lastShareId,$limit) {
+        $loggedInUserEmpNum =  sfContext::getInstance()->getUser()->getAttribute("auth.empNumber"); 
         if (!$limit) {
             $limit = self::DEFAULT_SHARE_LIMIT;
         }
-
-        $latestShares = $this->getBuzzService()->getShares($limit);
-        return $this->getBuzzObjectBuilder()->getShareCollectionArray($latestShares);
+        $latestShares = $this->getBuzzService()->getMoreShares($limit,$lastShareId);
+         $postPhotosArray = array();
+        foreach ($latestShares as $share){
+            $post = $share->getPostShared();
+            $postPhotos = $this->getBuzzService()->getPostPhotos($post->getId());
+            $postPhotosArray[$post->getId()] = $postPhotos;
+        }
+        return $this->getBuzzObjectBuilder()->getShareCollectionArray($latestShares,$postPhotosArray,$loggedInUserEmpNum);
     }
 
     /**
@@ -133,11 +179,11 @@ class BuzzWebServiceHelper {
 
         $share = $this->getBuzzService()->getShareById($shareId);
 
-        if ($share->isUnLikeUser($loggedInEmployeeNumber) == 'yes') {
+        if ($share->isShareUnLike($loggedInEmployeeNumber)) {
             $this->getBuzzService()->deleteUnLikeForShare($dislikeOnShare);
         }
 
-        if ($share->isLike($loggedInEmployeeNumber) == 'Like') {
+        if (!$share->isShareLike($loggedInEmployeeNumber)) {
             $this->getBuzzService()->saveLikeForShare($likeOnShare);
         }
         $shareSaved = $this->getBuzzService()->getShareById($shareId);
@@ -157,11 +203,11 @@ class BuzzWebServiceHelper {
 
         $share = $this->getBuzzService()->getShareById($shareId);
 
-        if ($share->isLike($loggedInEmployeeNumber) == 'Unlike') {
+        if ($share->isShareLike($loggedInEmployeeNumber)) {
             $this->getBuzzService()->deleteLikeForShare($likeOnShare);
         }
 
-        if ($share->isUnLike($loggedInEmployeeNumber) == 'no') {
+        if (!$share->isShareUnLike($loggedInEmployeeNumber)) {
             $this->getBuzzService()->saveUnLikeForShare($dislikeOnShare);
         }
 
@@ -182,11 +228,11 @@ class BuzzWebServiceHelper {
 
         $comment = $this->getBuzzService()->getCommentById($commentId);
 
-        if ($comment->isUnLike($loggedInEmployeeNumber) == 'yes') {
+        if ($comment->isCommentUnLike($loggedInEmployeeNumber)) {
             $this->getBuzzService()->deleteUnLikeForComment($dislikeOnComment);
         }
 
-        if ($comment->isLike($loggedInEmployeeNumber) == 'Like') {
+        if (!$comment->isCommentLike($loggedInEmployeeNumber)) {
             $this->getBuzzService()->saveLikeForComment($likeOnComment);
         }
 
@@ -207,11 +253,11 @@ class BuzzWebServiceHelper {
 
         $comment = $this->getBuzzService()->getCommentById($commentId);
 
-        if ($comment->isLike($loggedInEmployeeNumber) == 'Unlike') {
+        if ($comment->isCommentLike($loggedInEmployeeNumber)) {
             $this->getBuzzService()->deleteLikeForComment($likeOnComment);
         }
 
-        if ($comment->isUnLike($loggedInEmployeeNumber) == 'no') {
+        if (!$comment->isCommentUnLike($loggedInEmployeeNumber)) {
             $this->getBuzzService()->saveUnLikeForComment($dislikeOnComment);
         }
 
@@ -219,5 +265,22 @@ class BuzzWebServiceHelper {
 
         return $commentSaved;
     }
+    
+    /**
+     * get logged in employee object
+     * @return Doctrine
+     */
+    
+    public function getLoggedInEmployee(){
+        $loggedInUserEmpNum =  sfContext::getInstance()->getUser()->getAttribute("auth.empNumber");  
+        $employeeService = new EmployeeService();
+        $employeeService->setEmployeeDao(new EmployeeDao());        
+        $loggedUser = $employeeService->getEmployee($loggedInUserEmpNum);
+        $jobTitle = $loggedUser->getJobTitleName();
+        $loggedUser->setCustom1($jobTitle);
+        return $loggedUser;
+    }
+    
+    
 
 }

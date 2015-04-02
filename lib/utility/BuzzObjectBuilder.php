@@ -23,7 +23,7 @@ class BuzzObjectBuilder {
     const KEY_SHARE_DETAILS = 'share_details';
     const KEY_SHARED_EMPLOYEE_DETAILS = 'shared_employee_details';
     const KEY_EMPLOYEE_NAME = 'employee_name';
-    const KEY_EMPLOYEE_PHOTO_URL = 'employee_photo_url';
+    const KEY_EMPLOYEE_NUMBER = 'employee_number';
     const KEY_POST_DETAILS = 'post_details';
     const KEY_POSTED_EMPLOYEE_DETAILS = 'posted_employee_details';
     const KEY_POST_PHOTO_DETAILS = 'posted_photo_details';
@@ -36,6 +36,8 @@ class BuzzObjectBuilder {
     const KEY_IMAGE_TYPE = 'image_type';
     const KEY_IMAGE_STRING_ENCODED = 'image_string_encoded';
     const KEY_DISLIKES_FOR_COMMENT = 'dislikes_for_comment';
+    const KEY_IS_LIKE = "is_like";
+    const KEY_IS_DISLIKE = "is_dislike";
     const BUZZ_VIEW_EMPLOYEE_PHOTO_BASE_URL = 'buzz/viewPhoto?empNumber=';
     const BUZZ_VIEW_PHOTO_BASE_URL = 'buzz/viewBuzzImage?imageId=';
     const DEFAULT_START_NUMBER = 0;
@@ -88,19 +90,26 @@ class BuzzObjectBuilder {
      * @param Doctrine_Collection $shares
      * @return array
      */
-    public function getShareCollectionArray($shares) {
-        try {
-            $returnShareArray = array();
-            foreach ($shares as $share) {
+    public function getShareCollectionArray($shares,$postPhotosArray,$loggedEmployeeNumber) {
+
+        $returnShareArray = array();
+        foreach ($shares as $share) {
+            try {
+                if (!($share instanceof Share)){
+                    throw new Exception("Invalid Type");
+                }
                 $singleShareAndPostDetailsArray[self::KEY_SHARE] = $this->createShareDetailsArray($share);
                 $post = $share->getPostShared();
                 $singleShareAndPostDetailsArray[self::KEY_POST] = $this->createPostDetailsArray($post);
+                $singleShareAndPostDetailsArray[self::KEY_IS_LIKE] = $share->isShareLike($loggedEmployeeNumber);
+                $singleShareAndPostDetailsArray[self::KEY_IS_DISLIKE]= $share->isShareUnlike($loggedEmployeeNumber);
+                $singleShareAndPostDetailsArray[self::KEY_POST][self::KEY_PHOTOS] = $this->createPostPhotoDetailsArray($postPhotosArray[$post->getId()]);
                 $returnShareArray[] = $singleShareAndPostDetailsArray;
+            } catch (Exception $ex) {
+                throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
             }
-            return $returnShareArray;
-        } catch (Exception $ex) {
-            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
         }
+        return $returnShareArray;
     }
 
     /**
@@ -108,12 +117,12 @@ class BuzzObjectBuilder {
      * @param Share $share
      * @return array
      */
-    public function createShareDetailsArray(Share $share) {
+    public function createShareDetailsArray(Share $share) {        
         $shareDetailsArray = array();
         $shareDetailsArray[self::KEY_SHARE_DETAILS] = $share->toArray();
         $shareDetailsArray[self::KEY_SHARE_DETAILS][self::KEY_SHARES_FOR_SHARE] = "" . $share->calShareCount();
         $shareDetailsArray[self::KEY_SHARED_EMPLOYEE_DETAILS][self::KEY_EMPLOYEE_NAME] = $share->getEmployeeFirstLastName();
-        $shareDetailsArray[self::KEY_SHARED_EMPLOYEE_DETAILS][self::KEY_EMPLOYEE_PHOTO_URL] = url_for(self::BUZZ_VIEW_EMPLOYEE_PHOTO_BASE_URL . $share->getEmployeeNumber());
+        $shareDetailsArray[self::KEY_SHARED_EMPLOYEE_DETAILS][self::KEY_EMPLOYEE_NUMBER] = $share->getEmployeeNumber();
 
         return $shareDetailsArray;
     }
@@ -127,7 +136,7 @@ class BuzzObjectBuilder {
         $postDetailsArray = array();
         $postDetailsArray[self::KEY_POST_DETAILS] = $post->toArray();
         $postDetailsArray[self::KEY_POSTED_EMPLOYEE_DETAILS][self::KEY_EMPLOYEE_NAME] = $post->getEmployeeFirstLastName();
-        $postDetailsArray[self::KEY_POSTED_EMPLOYEE_DETAILS][self::KEY_EMPLOYEE_PHOTO_URL] = url_for(self::BUZZ_VIEW_EMPLOYEE_PHOTO_BASE_URL . $post->getEmployeeNumber());
+        $postDetailsArray[self::KEY_POSTED_EMPLOYEE_DETAILS][self::KEY_EMPLOYEE_NUMBER] = $post->getEmployeeNumber();
 
         return $postDetailsArray;
     }
@@ -165,13 +174,13 @@ class BuzzObjectBuilder {
                 $commentDetailsArray = array();
                 $commentDetailsArray[self::KEY_COMMENT_DETAILS] = $comment->toArray();
                 $commentDetailsArray[self::KEY_COMMENTED_EMPLOYEE_DETAILS][self::KEY_EMPLOYEE_NAME] = $comment->getEmployeeFirstLastName();
-                $commentDetailsArray[self::KEY_COMMENTED_EMPLOYEE_DETAILS][self::KEY_EMPLOYEE_PHOTO_URL] = url_for(self::BUZZ_VIEW_EMPLOYEE_PHOTO_BASE_URL . $comment->getEmployeeNumber());
+                $commentDetailsArray[self::KEY_COMMENTED_EMPLOYEE_DETAILS][self::KEY_EMPLOYEE_NUMBER] = $comment->getEmployeeNumber();
 
-                $likesForComment = $comment->getLike();
-                $commentDetailsArray[self::KEY_LIKES_FOR_COMMENT] = $likesForComment->toArray();
+                $likesForComment = $comment->getCommentLikedEmployeeList();
+                $commentDetailsArray[self::KEY_LIKES_FOR_COMMENT] = $likesForComment;
 
-                $dislikesForComment = $comment->getUnlike();
-                $commentDetailsArray[self::KEY_DISLIKES_FOR_COMMENT] = $dislikesForComment->toArray();
+                $dislikesForComment = $comment->getCommentDislikedEmployeeList();
+                $commentDetailsArray[self::KEY_DISLIKES_FOR_COMMENT] = $dislikesForComment;
                 $commentsArray[] = $commentDetailsArray;
             }
 
@@ -196,8 +205,8 @@ class BuzzObjectBuilder {
             $returnShareAndPostDetails[self::KEY_SHARE] = $this->createShareDetailsArray($share);
             $returnShareAndPostDetails[self::KEY_POST] = $this->createPostDetailsArray($post);
             $returnShareAndPostDetails[self::KEY_POST][self::KEY_PHOTOS] = $this->createPostPhotoDetailsArray($postPhotos);
-            $returnShareAndPostDetails[self::KEY_LIKES_FOR_SHARE] = $share->getLike()->toArray();
-            $returnShareAndPostDetails[self::KEY_DISLIKES_FOR_SHARE] = $share->getUnlike()->toArray();
+            $returnShareAndPostDetails[self::KEY_LIKES_FOR_SHARE] = $share->getShareLikedEmployeeList();
+            $returnShareAndPostDetails[self::KEY_DISLIKES_FOR_SHARE] = $share->getShareDislikedEmployeeList();
             $returnShareAndPostDetails[self::KEY_COMMENTS] = $this->createCommentDetailsArray($share->getComment());
 
             return $returnShareAndPostDetails;
@@ -364,6 +373,8 @@ class BuzzObjectBuilder {
                         $photo = $this->createPhoto($image, $postId);
                         $imagesArray[] = $photo;
                     }
+                }else{
+                    throw new Exception("invalid json");
                 }
             }
             return $imagesArray;
@@ -384,9 +395,10 @@ class BuzzObjectBuilder {
             $imageDataDecoded = base64_decode($imageDataEncoded);
             $imageName = $imageDetailsArray[self::KEY_IMAGE_NAME];
             $imageType = $imageDetailsArray[self::KEY_IMAGE_TYPE];
-
-            $imageWithAndHeight = getimagesizefromstring($imageDataDecoded);
-
+            $fileName = microtime();
+            file_put_contents($fileName, $imageDataDecoded);
+            $imageWithAndHeight = getimagesize($fileName);
+            unlink($fileName);
             $imageWidth = $imageWithAndHeight[self::IMAGE_WIDTH_INDEX];
             $imageHeight = $imageWithAndHeight[self::IMAGE_HEIGHT_INDEX];
 
@@ -399,7 +411,6 @@ class BuzzObjectBuilder {
                 $photo->setWidth($imageHeight);
                 $photo->setSize(strlen($imageDataDecoded));
                 $photo->setPostId($postId);
-
                 return $photo;
             } else {
                 return 0;
