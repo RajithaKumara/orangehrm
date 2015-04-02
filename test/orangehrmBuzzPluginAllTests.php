@@ -18,8 +18,8 @@ class orangehrmBuzzPluginAllTests {
         $suite->addTestFile(dirname(__FILE__) . '/model/service/BuzzCookieServiceTest.php');
            
         // utility test cases
-        $suite->addTestFile(dirname(__FILE__) . '/model/utility/BuzzWebServiceHelperTest.php');
-        $suite->addTestFile(dirname(__FILE__) . '/model/utility/BuzzObjectBuilderTest.php');
+        //$suite->addTestFile(dirname(__FILE__) . '/model/utility/BuzzWebServiceHelperTest.php');
+        //$suite->addTestFile(dirname(__FILE__) . '/model/utility/BuzzObjectBuilderTest.php');
 
         return $suite;
     }
