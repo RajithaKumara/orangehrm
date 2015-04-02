@@ -2,19 +2,19 @@ methods:
   getLatestBuzzShares:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: POST 
+      type: GET 
   getBuzzShares:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: POST      
+      type: GET      
   getMoreBuzzShares:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: POST
+      type: GET
   getShareAndPostDetailsByShareId:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: POST 
+      type: GET 
   postContentOnFeed:
       wrapper: BuzzServiceWrapper
       group: buzz
@@ -42,4 +42,4 @@ methods:
   getLoggedInEmployee:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: POST 
+      type: GET 
