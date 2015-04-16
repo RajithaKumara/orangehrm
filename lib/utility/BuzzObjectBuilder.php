@@ -366,7 +366,7 @@ class BuzzObjectBuilder {
             $imagesArray = array();
 
             if ($extraPostOptions[self::KEY_IMAGE_DATA]) {
-                $allImages = json_decode($extraPostOptions[self::KEY_IMAGE_DATA], true);
+                $allImages = json_decode($extraPostOptions, true);
 
                 if (is_array($allImages)) {
                     foreach ($allImages as $image) {

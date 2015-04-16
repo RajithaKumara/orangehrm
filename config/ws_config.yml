@@ -2,43 +2,53 @@ methods:
   getLatestBuzzShares:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: GET 
+      type: GET
+      params: ['recentShareId']
   getBuzzShares:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: GET      
+      type: GET
+      params: ['limit']
   getMoreBuzzShares:
       wrapper: BuzzServiceWrapper
       group: buzz
       type: GET
+      params: ['lastShareId', 'limit']
   getShareAndPostDetailsByShareId:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: GET 
+      type: GET
+      params: ['shareId']
   postContentOnFeed:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: POST 
+      type: POST
+      params: ['contentText', 'image_data']
   commentOnShare:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: POST 
+      type: POST
+      params: ['shareId', 'contentText']
   likeOnShare:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: POST 
+      type: POST
+      params: ['shareId']
   disLikeOnShare:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: POST 
+      type: POST
+      params: ['shareId']
   likeOnComment:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: POST 
+      type: POST
+      params: ['commentId']
   dislikeOnComment:
       wrapper: BuzzServiceWrapper
       group: buzz
-      type: POST 
+      type: POST
+      params: ['commentId']
   getLoggedInEmployee:
       wrapper: BuzzServiceWrapper
       group: buzz

@@ -150,7 +150,7 @@ class BuzzWebServiceHelper {
                 $this->getBuzzService()->savePhoto($image);
             }
         }
-        return $share;
+        return $share->toArray();
     }
 
     /**
@@ -163,7 +163,8 @@ class BuzzWebServiceHelper {
      */
     public function commentOnShare($shareId, $loggedInEmployeeNumber, $commentText, $postedDateTime) {
         $comment = $this->getBuzzObjectBuilder()->createCommentOnShare($shareId, $loggedInEmployeeNumber, $commentText, $postedDateTime);
-        return $this->getBuzzService()->saveCommentShare($comment);
+        $result = $this->getBuzzService()->saveCommentShare($comment);
+        return $result->toArray();
     }
 
    /**
@@ -187,7 +188,7 @@ class BuzzWebServiceHelper {
             $this->getBuzzService()->saveLikeForShare($likeOnShare);
         }
         $shareSaved = $this->getBuzzService()->getShareById($shareId);
-        return $shareSaved;
+        return $shareSaved->toArray();
     }
 
     /**
@@ -212,7 +213,7 @@ class BuzzWebServiceHelper {
         }
 
         $shareSaved = $this->getBuzzService()->getShareById($shareId);
-        return $shareSaved;
+        return $shareSaved->toArray();
     }
 
     /**
@@ -237,7 +238,7 @@ class BuzzWebServiceHelper {
         }
 
         $commentSaved = $this->getBuzzService()->getCommentById($commentId);
-        return $commentSaved;
+        return $commentSaved->toArray();
     }
 
     /**
@@ -263,7 +264,7 @@ class BuzzWebServiceHelper {
 
         $commentSaved = $this->getBuzzService()->getCommentById($commentId);
 
-        return $commentSaved;
+        return $commentSaved->toArray();
     }
     
     /**
@@ -278,7 +279,7 @@ class BuzzWebServiceHelper {
         $loggedUser = $employeeService->getEmployee($loggedInUserEmpNum);
         $jobTitle = $loggedUser->getJobTitleName();
         $loggedUser->setCustom1($jobTitle);
-        return $loggedUser;
+        return $loggedUser->toArray();
     }
     
     
