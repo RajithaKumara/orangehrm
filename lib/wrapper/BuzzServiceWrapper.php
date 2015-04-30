@@ -33,40 +33,49 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
     
     /**
-     * Get Current Logged in Employee
-     * @param type $options
+     * @api {get} /getLoggedInEmployee Get LoggedIn Employee
+     * @apiDescription Get LoggedIn Employee
+     * @apiVersion 0.1.0
+     * @apiName getLoggedInEmployee
+     * @apiGroup BUZZ
+     * @apiSuccess {Array} Employee Logged in employee
      */
     public function getLoggedInEmployee() {
         return $this->getServiceInstance()->getLoggedInEmployee();
     }
 
     /**
-     * Get latest shares from a given share Id
-     * 
-     * @param integer $recentShareId
-     * @return Doctrine_Collection
+     * @api {get} /getLatestBuzzShares/recentShareId/:recentShareId Get Latest Buzz Shares
+     * @apiDescription Get Latest Buzz Shares
+     * @apiVersion 0.1.0
+     * @apiName getLatestBuzzShares
+     * @apiGroup BUZZ
+     * @apiSuccess {Array} Shares Get latest shares
      */
     public function getLatestBuzzShares($recentShareId) {
         return $this->getServiceInstance()->getLatestBuzzShares($recentShareId);
     }
     
-     /**
-     * Get recent [at first load] shares default number of shares are 10
-     * 
-     * @param Integer $limit
-     * @return type
+    /**
+     * @api {get} /getBuzzShares/limit/:limit Get shares
+     * @apiDescription Get shares
+     * @apiVersion 0.1.0
+     * @apiName getBuzzShares
+     * @apiGroup BUZZ
+     * @apiSuccess {Array} Shares Get recent [at first load] shares default number of shares are 10
      */
     public function getBuzzShares($limit) {
         return $this->getServiceInstance()->getBuzzShares($limit);
     }
     
     
-     /**
-     * Get shares older than a given share Id
-     * 
-     * @param integer $lastShareId
-     * @param integer $limit
-     * @return type
+    /**
+     * @api {get} /getMoreBuzzShares/lastShareId/:lastShareId/limit/:limit Get More shares
+     * @apiDescription Get More shares
+     * @apiVersion 0.1.0
+     * @apiName getMoreBuzzShares
+     * @apiGroup BUZZ
+     * @apiSuccess {Array} Shares Get shares older than a given share Id
      */
     public function getMoreBuzzShares($lastShareId, $limit) {
         return $this->getServiceInstance()->getMoreBuzzShares($lastShareId, $limit);
@@ -74,8 +83,13 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     
 
     /**
-     * Get share and post details by share id, this will retun post details, comment and like details, etc
-     * @param integer $shareId
+     * @api {get} /getShareAndPostDetailsByShareId/shareId/:shareId Get share by share id
+     * @apiDescription Get share by share id
+     * @apiVersion 0.1.0
+     * @apiName getShareAndPostDetailsByShareId
+     * @apiGroup BUZZ
+     * @apiError shareIdIsNotValid Valid parameters are not provided
+     * @apiSuccess {Array} Shares Get share and post details by share id, this will retun post details, comment and like details, etc
      */
     public function getShareAndPostDetailsByShareId($shareId) {
         if (is_null($shareId)) {
@@ -86,8 +100,13 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * Post content on news feed
-     * @param type $options
+     * @api {get} /postContentOnFeed/contentText/:contentText/image_data/:image_data Post content on news feed
+     * @apiDescription Post content on news feed
+     * @apiVersion 0.1.0
+     * @apiName postContentOnFeed
+     * @apiGroup BUZZ
+     * @apiError contentTextAndimage_dataIsNull Valid parameters are not provided
+     * @apiSuccess {Array} Share Share
      */
     public function postContentOnFeed($contentText, $image_data) {
         if (is_null($contentText)) {
@@ -98,10 +117,14 @@ class BuzzServiceWrapper implements WebServiceWrapper {
         }
     }
     
-     /**
-     * Post content on news feed
-     * @param Integer $shareId
-     * @param String $contentText
+    /**
+     * @api {get} /commentOnShare/shareId/:shareId/contentText/:contentText Comment On Share
+     * @apiDescription Comment On Share
+     * @apiVersion 0.1.0
+     * @apiName commentOnShare
+     * @apiGroup BUZZ
+     * @apiError shareIdAndcontentTextIsNull Valid parameters are not provided
+     * @apiSuccess {Array} Comment Comment added to the share
      */
     public function commentOnShare($shareId, $contentText) {
         if (is_null($shareId && $contentText)) {
@@ -113,8 +136,13 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
     
     /**
-     * Like on a share / post
-     * @param Integer $shareId
+     * @api {get} /likeOnShare/shareId/:shareId Like On Share
+     * @apiDescription Like on a share / post
+     * @apiVersion 0.1.0
+     * @apiName likeOnShare
+     * @apiGroup BUZZ
+     * @apiError shareIdIsNull Valid parameters are not provided
+     * @apiSuccess {Array} Share Share that is liked
      */
     public function likeOnShare($shareId){
         if (is_null($shareId)) {
@@ -126,8 +154,13 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
     
     /**
-     * Dislike on a share / post
-     * @param Integer $shareId
+     * @api {get} /disLikeOnShare/shareId/:shareId Dislike On Share
+     * @apiDescription Dislike on a share / post
+     * @apiVersion 0.1.0
+     * @apiName disLikeOnShare
+     * @apiGroup BUZZ
+     * @apiError shareIdIsNull Valid parameters are not provided
+     * @apiSuccess {Array} Share Share that is disliked
      */
     public function disLikeOnShare($shareId){
         if (is_null($shareId)) {
@@ -139,8 +172,13 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
     
     /**
-     * Like on a comment
-     * @param Integer $commentId
+     * @api {get} /likeOnComment/commentId/:commentId Like on a comment
+     * @apiDescription Like on a comment
+     * @apiVersion 0.1.0
+     * @apiName likeOnComment
+     * @apiGroup BUZZ
+     * @apiError commentIdIsNull Valid parameters are not provided
+     * @apiSuccess {Array} Comment Comment that is liked
      */
     public function likeOnComment($commentId){
         if (is_null($commentId)) {
@@ -152,8 +190,13 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
     
     /**
-     * Dislike on a comment
-     * @param Integer $commentId
+     * @api {get} /dislikeOnComment/commentId/:commentId Dislike on a comment
+     * @apiDescription Dislike on a comment
+     * @apiVersion 0.1.0
+     * @apiName dislikeOnComment
+     * @apiGroup BUZZ
+     * @apiError commentIdIsNull Valid parameters are not provided
+     * @apiSuccess {Array} Comment Comment that is disliked
      */
     public function dislikeOnComment($commentId){
         if (is_null($commentId)) {
