@@ -247,3 +247,19 @@ ALTER TABLE `ohrm_buzz_unlike_on_share`
     REFERENCES `hs_hr_employee` (`emp_number`) ON DELETE CASCADE ON UPDATE NO ACTION,
   ADD CONSTRAINT `buzzUNLikeOnshare` FOREIGN KEY (`share_id`) 
     REFERENCES `ohrm_buzz_share` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- changes with 5.1.1
+
+ALTER TABLE `ohrm_buzz_post` ADD `employee_name` VARCHAR( 255 ) NULL AFTER `employee_number` ;
+
+ALTER TABLE `ohrm_buzz_share` ADD `employee_name` VARCHAR( 255 ) NULL AFTER `employee_number` ;
+
+ALTER TABLE `ohrm_buzz_comment` ADD `employee_name` VARCHAR( 255 ) NULL AFTER `employee_number` ;
+
+ALTER TABLE `ohrm_buzz_like_on_comment` ADD `employee_name` VARCHAR( 255 ) NULL AFTER `employee_number` ;
+
+ALTER TABLE `ohrm_buzz_like_on_share` ADD `employee_name` VARCHAR( 255 ) NULL AFTER `employee_number` ;
+
+ALTER TABLE `ohrm_buzz_unlike_on_comment` ADD `employee_name` VARCHAR( 255 ) NULL AFTER `employee_number` ;
+
+ALTER TABLE `ohrm_buzz_unlike_on_share` ADD `employee_name` VARCHAR( 255 ) NULL AFTER `employee_number` ;

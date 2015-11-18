@@ -17,6 +17,13 @@ abstract class BaseBuzzAction extends sfAction {
     protected $buzzConfigService;
     protected $buzzCookieService;
     protected $ohrmCookieManager;
+    protected $employeeService;
+
+    const EMP_DELETED = 'empDeleted';
+    const EMP_NUMBER = 'empNumber';
+    const EMP_NAME = 'empName';
+    const EMP_JOB_TITLE = 'jobTitle';
+    const LABEL_EMPLOYEE_DELETED = 'Deleted';
 
     /**
      * 
@@ -27,6 +34,17 @@ abstract class BaseBuzzAction extends sfAction {
             $this->buzzService = new BuzzService();
         }
         return $this->buzzService;
+    }
+
+    /**
+     * Get Employee Service
+     * @return EmployeeService
+     */
+    protected function getEmployeeService() {
+        if (!$this->employeeService instanceof EmployeeService) {
+            $this->employeeService = new EmployeeService();
+        }
+        return $this->employeeService;
     }
 
     /**
@@ -50,7 +68,7 @@ abstract class BaseBuzzAction extends sfAction {
         }
         return $this->buzzCookieService;
     }
-    
+
     /**
      * 
      * @return CookieManager

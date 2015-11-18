@@ -28,13 +28,43 @@ class viewLikedEmployeesAction extends BaseBuzzAction {
             $this->actions = $request->getParameter('actions');
             $this->error = 'no';
             if ($this->actions == 'post') {
-                $this->employeeList = $this->getBuzzService()->getShareById($this->id)->getLikedEmployeeList();
+                $share = $this->getBuzzService()->getShareById($this->id);
+                $likes = $share->getLike();
+                $this->employeeList = $this->extractEmployeeInformation($likes);
             } else {
-                $this->employeeList = $this->getBuzzService()->getCommentById($this->id)->getLikedEmployeeList();
+                $comment = $this->getBuzzService()->getCommentById($this->id);
+                $likes = $comment->getLike();
+                $this->employeeList = $this->extractEmployeeInformation($likes, false);
             }
         } catch (Exception $ex) {
             $this->error = 'yes';
         }
+    }
+    
+    public function extractEmployeeInformation($likes, $isPost = true){
+        $likedEmployeeDetailsList = array();
+
+        foreach ($likes as $like) {
+             if ($like->getEmployeeNumber() == null) {
+                $empName = 'Admin';
+            } else {
+                if($isPost){
+                    $employee = $like->getEmployeeLike();
+                }else{
+                    $employee = $like->getEmployeeLike()->getFirst();
+                }
+                $empName = $employee->getFirstAndLastNames();
+                $jobTitle = $employee->getJobTitleName();
+
+                if ($empName == ' ' && $like->getEmployeeName() != null) {
+                    $empName = $like->getEmployeeName() . ' (' . __(self::LABEL_EMPLOYEE_DELETED) . ')';
+                    $employeeDeleted = true;
+                }
+            }
+            $employeeDetails = array(self::EMP_DELETED => $employeeDeleted, self::EMP_NUMBER => $like->getEmployeeNumber(), self::EMP_NAME => $empName, self::EMP_JOB_TITLE => $jobTitle);
+            $likedEmployeeDetailsList[$like->getEmployeeNumber()] = $employeeDetails;
+        }
+        return $likedEmployeeDetailsList;
     }
 
 }

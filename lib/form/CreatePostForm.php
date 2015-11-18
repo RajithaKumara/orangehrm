@@ -103,8 +103,8 @@ class CreatePostForm extends sfForm {
      * @param int $logeInUserId
      * @return Share
      */
-    public function save($logeInUserId) {
-        $post = $this->savePost($logeInUserId);
+    public function save($logeInUserId, $employee) {
+        $post = $this->savePost($logeInUserId, $employee);
         $share = $this->saveShare($post);
         if (strlen($this->getValue('linkAddress')) > 0) {
             $link = $this->setLink($share);
@@ -117,9 +117,12 @@ class CreatePostForm extends sfForm {
      * save post to the database
      * @return Post
      */
-    public function savePost($userId) {
+    public function savePost($userId, $employee) {
         $post = new Post();
         $post->setEmployeeNumber($userId);
+        if($employee instanceof Employee){
+            $post->setEmployeeName($employee->getFirstAndLastNames());
+        }
         $post->setText($this->getValue('content'));
         $post->setPostTime(date("Y-m-d H:i:s"));
 
@@ -147,6 +150,7 @@ class CreatePostForm extends sfForm {
         $share->setPostShared($post);
         $share->setPostId($post->getId());
         $share->setEmployeeNumber($post->getEmployeeNumber());
+        $share->setEmployeeName($post->getEmployeeName());
         $share->setNumberOfComments(0);
         $share->setNumberOfLikes(0);
         $share->setNumberOfUnlikes(0);

@@ -71,12 +71,16 @@ class addNewPostAction extends BaseBuzzAction {
 
         $this->form = $this->getPostForm();
         $this->loggedInUser = $this->getLogedInEmployeeNumber();
+        
+        if($this->loggedInUser){
+            $loggedInEmployee = $this->getEmployeeService()->getEmployee($this->loggedInUser );
+        }
 
         $this->isSuccessfullyAddedPost = false;
         if ($request->isMethod('post')) {
             $this->form->bind($request->getParameter($this->form->getName()));
             if ($this->form->isValid()) {
-                $this->postSaved = $this->form->save($this->loggedInUser);
+                $this->postSaved = $this->form->save($this->loggedInUser, $loggedInEmployee);
                 $this->isSuccessfullyAddedPost = true;
             } else {
                 

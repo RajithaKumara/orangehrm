@@ -62,6 +62,9 @@ class likeOnShareAction extends BaseBuzzAction {
     public function execute($request) {
 
         $this->loggedInUser = $this->getLogedInEmployeeNumber();
+        if ($this->loggedInUser) {
+            $loggedInEmployee = $this->getEmployeeService()->getEmployee($this->loggedInUser);
+        }
         $this->shareId = $request->getParameter('shareId');
         $this->likeAction = $request->getParameter('likeAction');
         $csrfToken = $request->getParameter('CSRFToken');
@@ -74,9 +77,9 @@ class likeOnShareAction extends BaseBuzzAction {
             $this->share = $this->getBuzzService()->getShareById($this->shareId);
 
             if ($this->likeAction == 'unlike') {
-                $this->unlikeOnShare();
+                $this->unlikeOnShare($this->loggedInUser, $loggedInEmployee);
             } else {
-                $this->likeOnShare();
+                $this->likeOnShare($this->loggedInUser, $loggedInEmployee);
             }
         }
         throw new Exception($csrfToken . 'ddddd');
@@ -86,9 +89,9 @@ class likeOnShareAction extends BaseBuzzAction {
      * save like on share to database
      * @return LikeOnshare
      */
-    public function likeOnShare() {
-        $like = $this->setLike();
-        $unlike = $this->setUnLike();
+    public function likeOnShare($loggedInEmployeeNumber, $employee) {
+        $like = $this->setLike($loggedInEmployeeNumber, $employee);
+        $unlike = $this->setUnLike($loggedInEmployeeNumber, $employee);
 
         $state = 'Liked';
         $delete = 'no';
@@ -110,9 +113,9 @@ class likeOnShareAction extends BaseBuzzAction {
         die();
     }
 
-    public function unlikeOnShare() {
-        $like = $this->setLike();
-        $unlike = $this->setUnLike();
+    public function unlikeOnShare($loggedInEmployeeNumber, $employee) {
+        $like = $this->setLike($loggedInEmployeeNumber, $employee);
+        $unlike = $this->setUnLike($loggedInEmployeeNumber, $employee);
         $delete = 'no';
         $state = 'Like';
         if ($this->share->isLike($this->loggedInUser) == 'Unlike') {
@@ -140,18 +143,24 @@ class likeOnShareAction extends BaseBuzzAction {
      * set like on share Data
      * @return \LikeOnShare
      */
-    public function setLike() {
+    public function setLike($loggedInEmployeeNumber, $employee) {
         $like = New LikeOnShare();
         $like->setLikeTime(date("Y-m-d H:i:s"));
         $like->setEmployeeNumber($this->getLogedInEmployeeNumber());
+        if ($employee instanceof Employee) {
+            $like->setEmployeeName($employee->getFirstAndLastNames());
+        }
         $like->setShareId($this->shareId);
         return $like;
     }
 
-    public function setUnLike() {
+    public function setUnLike($loggedInEmployeeNumber, $employee) {
         $like = New UnLikeOnShare();
         $like->setLikeTime(date("Y-m-d H:i:s"));
         $like->setEmployeeNumber($this->getLogedInEmployeeNumber());
+        if ($employee instanceof Employee) {
+            $like->setEmployeeName($employee->getFirstAndLastNames());
+        }
         $like->setShareId($this->shareId);
         return $like;
     }

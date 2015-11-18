@@ -13,21 +13,7 @@
  */
 class viewProfileAction extends BaseBuzzAction {
 
-    private $employeeService;
-
     const TERMINATED = "TERMINATED";
-
-    /**
-     * Get EmployeeService
-     * @returns EmployeeService
-     */
-    public function getEmployeeService() {
-        if (is_null($this->employeeService)) {
-            $this->employeeService = new EmployeeService();
-            $this->employeeService->setEmployeeDao(new EmployeeDao());
-        }
-        return $this->employeeService;
-    }
 
     /**
      * get employee search form

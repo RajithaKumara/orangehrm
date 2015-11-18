@@ -13,6 +13,10 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
             $commentPostId = $comment->getShareId();
             $commentContent = $comment->getCommentText();
             $commentEmployeeName = $comment->getEmployeeFirstLastName();
+            if ($commentEmployeeName == ' ') {
+                $commentEmployeeName = $comment->getEmployeeName() . ' (' . __('Deleted') . ')';
+                $commenterDeleted = true;
+            }
             $commentEmployeeJobTitle = $comment->getEmployeeComment()->getJobTitleName();
             $commentEmployeeId = $comment->getEmployeeNumber();
             $commentNoOfLikes = $comment->getNumberOfLikes();
@@ -74,15 +78,27 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                         </div>
                         <div class="cmnt_prev_commentColTwo" id="commentColumnTwo">
                             <div id="commentEmployeeName">
-                                <a class="name" href="javascript:void(0);" title="<?php echo $commentEmployeeName; ?>">
-                                    <?php
-                                    if (strlen($commentEmployeeName) > 26) {
-                                        echo substr($commentEmployeeName, 0, 26) . '...';
-                                    } else {
-                                        echo $commentEmployeeName;
-                                    }
-                                    ?>
-                                </a>
+                                <?php if ($commenterDeleted) { ?>
+                                    <label class="name">
+                                        <?php
+                                        if (strlen($commentEmployeeName) > 26) {
+                                            echo substr($commentEmployeeName, 0, 26) . '...';
+                                        } else {
+                                            echo $commentEmployeeName;
+                                        }
+                                        ?>
+                                    </label>
+                                <?php } else { ?>
+                                    <a class="name" href="javascript:void(0);" title="<?php echo $commentEmployeeName; ?>">
+                                        <?php
+                                        if (strlen($commentEmployeeName) > 26) {
+                                            echo substr($commentEmployeeName, 0, 26) . '...';
+                                        } else {
+                                            echo $commentEmployeeName;
+                                        }
+                                        ?>
+                                    </a> 
+                                <?php } ?>
                             </div>
                             <div id="commentEmployeeJobTitle">
                                 <?php echo $commentEmployeeJobTitle; ?>
@@ -100,11 +116,11 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                         <?php // if ($commentEmployeeId == $loggedInUser) { ?>
                                                         <div id="commentOptionWidget">
                                                             <div class="dropdown cmnt_prev_drop_down">
-                                                                <a class="account" id=<?php // echo 'c' . $commentId  ?>></a>
-                                                                <div class="submenu" id=<?php // echo 'submenuc' . $commentId  ?>>
+                                                                <a class="account" id=<?php // echo 'c' . $commentId     ?>></a>
+                                                                <div class="submenu" id=<?php // echo 'submenuc' . $commentId     ?>>
                                                                     <ul class = "root">
-                                                                        <li ><a href = "javascript:void(0)" class="editComment" id=<?php // echo 'editComment_' . $commentId  ?> ><?php // echo __("Edit");  ?></a></li>
-                                                                        <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php // echo 'deleteComment_' . $commentId  ?>><?php // echo __("Delete");  ?></a></li>
+                                                                        <li ><a href = "javascript:void(0)" class="editComment" id=<?php // echo 'editComment_' . $commentId     ?> ><?php // echo __("Edit");     ?></a></li>
+                                                                        <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php // echo 'deleteComment_' . $commentId     ?>><?php // echo __("Delete");     ?></a></li>
                                                                     </ul>
                                                                 </div>
                                                             </div>

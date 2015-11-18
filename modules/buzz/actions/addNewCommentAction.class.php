@@ -51,6 +51,9 @@ class addNewCommentAction extends BaseBuzzAction {
     public function execute($request) {
         try {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            if ($this->loggedInUser) {
+                $loggedInEmployee = $this->getEmployeeService()->getEmployee($this->loggedInUser);
+            }
             $this->loggedInEmployeeUserRole = $this->getLoggedInEmployeeUserRole();
             $this->commentForm = $this->getCommentForm();
             $this->editForm = $this->getEditForm();
@@ -59,7 +62,7 @@ class addNewCommentAction extends BaseBuzzAction {
                 $this->commentForm->bind($request->getParameter($this->commentForm->getName()));
                 if ($this->commentForm->isValid()) {
                     if ($this->getBuzzService()->getShareById($this->commentForm->getValue('shareId')) != null) {
-                        $commentSaved = $this->commentForm->saveComment($this->loggedInUser);
+                        $commentSaved = $this->commentForm->saveComment($this->loggedInUser, $loggedInEmployee);
                         $this->setCommentVariablesForView($commentSaved);
                         $this->isSuccessfullyAddedComment = true;
                     } else {

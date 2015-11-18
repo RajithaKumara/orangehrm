@@ -65,10 +65,14 @@ class shareAPostAction extends BaseBuzzAction {
         $this->postId = $request->getParameter('postId');
         $this->error = 'no';
 
+        if ($this->loggedInUser) {
+            $loggedInEmployee = $this->getEmployeeService()->getEmployee($this->loggedInUser);
+        }
+
         try {
             $this->post = $this->getBuzzService()->getPostById($this->postId);
             $this->shareText = $request->getParameter('textShare');
-            $this->share = $this->sharePost();
+            $this->share = $this->sharePost($loggedInEmployee);
             $this->logeInUser = $this->getLogedInEmployeeNumber();
             $this->commentForm = $this->getCommentForm();
             $this->editForm = $this->getEditForm();
@@ -82,8 +86,8 @@ class shareAPostAction extends BaseBuzzAction {
      * save share in database
      * @return Share
      */
-    public function sharePost() {
-        $share = $this->setShare($this->postId);
+    public function sharePost($loggedInEmployee) {
+        $share = $this->setShare($this->postId, $loggedInEmployee);
         return $this->getBuzzService()->saveShare($share);
     }
 
@@ -92,10 +96,13 @@ class shareAPostAction extends BaseBuzzAction {
      * @param int $postId
      * @return \Share
      */
-    public function setShare($postId) {
+    public function setShare($postId, $employee) {
         $share = new Share();
         $share->setPostId($postId);
         $share->setEmployeeNumber($this->getLogedInEmployeeNumber());
+        if ($employee instanceof Employee) {
+            $share->setEmployeeName($employee->getFirstAndLastNames());
+        }
         $share->setNumberOfComments(0);
         $share->setNumberOfLikes(0);
         $share->setNumberOfUnlikes(0);

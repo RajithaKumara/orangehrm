@@ -28,27 +28,31 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                 <img class="profPic" id="profPic_<?php echo $postId; ?>" alt="<?php echo __("Employee Photo"); ?>"src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic"/></a>
             </div>  
             <div class="birthdayUserName" id="birthdayUserName_<?php echo $postId; ?>">
-                <?php echo $employee['emp_firstname'] . " " . $postEmployeeName; ?>
+                <?php if ($postSharerDeleted) { ?>
+                    <?php echo $postEmployeeName; ?>
+                <?php } else { ?>
+                    <?php echo $employee['emp_firstname'] . " " . $postEmployeeName; ?>
+                <?php } ?>
             </div>  <br> 
             <?php
-                $photos = $sf_data->getRaw('originalPost')->getPhotos();
-                $imgCount = 1;
-                if (count($photos) == 1) {
-                    ?>
-                    <div class="photoPreviewOne">
-                        <img id="<?php echo $imgCount . "_" . $postId; ?>" class="" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
-                    </div>
-                    <?php
-                } else if (count($photos) > 1) {
-
-                    foreach ($photos as $photo) {
-                        ?>
-                        <img id="<?php echo $imgCount . "_" . $postId; ?>" class="" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
-                        <?php
-                        break;
-                    }
-                }
+            $photos = $sf_data->getRaw('originalPost')->getPhotos();
+            $imgCount = 1;
+            if (count($photos) == 1) {
                 ?>
+                <div class="photoPreviewOne">
+                    <img id="<?php echo $imgCount . "_" . $postId; ?>" class="" src="data:image/jpeg;base64,<?php echo base64_encode($photos[0]->getPhoto()); ?>"/>
+                </div>
+                <?php
+            } else if (count($photos) > 1) {
+
+                foreach ($photos as $photo) {
+                    ?>
+                    <img id="<?php echo $imgCount . "_" . $postId; ?>" class="" width="100px" src="data:image/jpeg;base64,<?php echo base64_encode($photo->getPhoto()); ?>"/>
+                    <?php
+                    break;
+                }
+            }
+            ?>
             <div class="post_prev_content" id="post_prev_content_<?php echo $postId; ?>">
                 <div id="postBodySecondRow_<?php echo $postId; ?>" class="previewSecondRow">
                     <div class="postContent" id='<?php echo 'postContent_' . $postId ?>'>
@@ -65,9 +69,13 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                                     </div>
                                     <div id="postFirstRowColumnTwo">
                                         <div id="postEmployeeName" >
-                                            <a class="originalPostView" href="javascript:void(0);" id='<?php echo 'postView_' . $postId . '_' . $originalPostId ?>' >
+                                            <?php if ($originalPostSharerDeleted) { ?>
                                                 <?php echo $originalPostSharerName; ?>
-                                            </a>
+                                            <?php } else { ?>
+                                                <a class="originalPostView" href="javascript:void(0);" id='<?php echo 'postView_' . $postId . '_' . $originalPostId ?>' >
+                                                    <?php echo $originalPostSharerName; ?>
+                                                </a>
+                                            <?php } ?>
                                         </div>                       
                                     </div>
                                 </div>

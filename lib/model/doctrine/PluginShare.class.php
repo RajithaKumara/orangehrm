@@ -137,6 +137,19 @@ abstract class PluginShare extends BaseShare {
         }
         return $arrayOfEmployees;
     }
+    
+    /**
+     * Get Liked Employee List as an array of array
+     * @return type
+     */
+    public function getLikedEmployeeListAsArray() {
+        $arrayOfEmployees = array();
+        foreach ($this->getLike() as $value) {
+
+            $arrayOfEmployees[] = $value->getEmployeeLike();
+        }
+        return $arrayOfEmployees;
+    }
 
     /**
      * 

@@ -40,6 +40,9 @@ class likeOnCommentAction extends BaseBuzzAction {
     public function execute($request) {
         try {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            if ($this->loggedInUser) {
+                $loggedInEmployee = $this->getEmployeeService()->getEmployee($this->loggedInUser);
+            }
             $this->commentId = $request->getParameter('commentId');
             $this->likeAction = $request->getParameter('likeAction');
             $this->comment = $this->getBuzzService()->getCommentById($this->commentId);
@@ -48,9 +51,9 @@ class likeOnCommentAction extends BaseBuzzAction {
 
             if ($csrfToken == $validateForm->getCSRFToken()) {
                 if ($this->likeAction == 'unlike') {
-                    $this->unlikeOnComment();
+                    $this->unlikeOnComment($this->loggedInUser, $loggedInEmployee);
                 } else {
-                    $this->likeOnComment();
+                    $this->likeOnComment($this->loggedInUser, $loggedInEmployee);
                 }
             }
         } catch (Exception $ex) {
@@ -62,9 +65,9 @@ class likeOnCommentAction extends BaseBuzzAction {
      * save like on comment
      * @return LikeOnComment
      */
-    public function likeOnComment() {
-        $like = $this->setLike();
-        $unlike = $this->setUnLike();
+    public function likeOnComment($loggedInEmployeeNumber, $employee) {
+        $like = $this->setLike($loggedInEmployeeNumber, $employee);
+        $unlike = $this->setUnLike($loggedInEmployeeNumber, $employee);
         $delete = 'no';
         $state = 'Like';
         if ($this->comment->isUnLike($this->loggedInUser) == 'yes') {
@@ -83,9 +86,9 @@ class likeOnCommentAction extends BaseBuzzAction {
         die();
     }
 
-    private function unlikeOnComment() {
-        $like = $this->setLike();
-        $unlike = $this->setUnLike();
+    private function unlikeOnComment($loggedInEmployeeNumber, $employee) {
+        $like = $this->setLike($loggedInEmployeeNumber, $employee);
+        $unlike = $this->setUnLike($loggedInEmployeeNumber, $employee);
         $delete = 'no';
         $state = 'Like';
         if ($this->comment->isLike($this->loggedInUser) == 'Unlike') {
@@ -110,18 +113,24 @@ class likeOnCommentAction extends BaseBuzzAction {
      * set like on comment data
      * @return \LikeOnComment
      */
-    public function setLike() {
+    public function setLike($loggedInEmployeeNumber, $employee) {
         $like = New LikeOnComment();
         $like->setLikeTime(date("Y-m-d H:i:s"));
-        $like->setEmployeeNumber($this->getLogedInEmployeeNumber());
+        $like->setEmployeeNumber($loggedInEmployeeNumber);
+        if ($employee instanceof Employee) {
+            $like->setEmployeeName($employee->getFirstAndLastNames());
+        }
         $like->setCommentId($this->commentId);
         return $like;
     }
 
-    public function setUnLike() {
+    public function setUnLike($loggedInEmployeeNumber, $employee) {
         $like = New UnLikeOnComment();
         $like->setLikeTime(date("Y-m-d H:i:s"));
-        $like->setEmployeeNumber($this->getLogedInEmployeeNumber());
+        $like->setEmployeeNumber($loggedInEmployeeNumber);
+        if($employee instanceof Employee){
+            $like->setEmployeeName($employee->getFirstAndLastNames());
+        }
         $like->setCommentId($this->commentId);
         return $like;
     }

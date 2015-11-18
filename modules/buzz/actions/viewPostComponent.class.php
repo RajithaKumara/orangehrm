@@ -28,7 +28,7 @@ class viewPostComponent extends sfComponent {
         }
         return $this->buzzCookieService;
     }
-    
+
     /**
      * 
      * @return CookieManager
@@ -146,6 +146,10 @@ class viewPostComponent extends sfComponent {
         $this->employeeID = $post->getEmployeeNumber();
         $this->commentList = $post->getComment();
         $this->postEmployeeName = $post->getEmployeeFirstLastName($this->postEmployee);
+        if ($this->postEmployeeName == ' ' && $post->getEmployeeName() != null) {
+            $this->postEmployeeName = $post->getEmployeeName() . ' (' . __(BaseBuzzAction::LABEL_EMPLOYEE_DELETED) . ')';
+            $this->postSharerDeleted = true;
+        }
         $this->isLike = $post->isLike($this->loggedInUser);
         $this->isUnlike = $post->isUnLike($this->loggedInUser);
         $this->originalPost = $post->getPostShared();
@@ -154,6 +158,10 @@ class viewPostComponent extends sfComponent {
         $this->originalPostId = $this->originalPost->getId();
         $this->originalPostEmpNumber = $this->originalPost->getEmployeeNumber();
         $this->originalPostSharerName = $this->originalPost->getEmployeeFirstLastName();
+        if ($this->originalPostSharerName == ' ' && $this->originalPost->getEmployeeName() != null) {
+            $this->originalPostSharerName = $this->originalPost->getEmployeeName() . ' (' . __(BaseBuzzAction::LABEL_EMPLOYEE_DELETED) . ')';
+            $this->originalPostSharerDeleted = true;
+        }
         $this->originalPostDate = $this->originalPost->getDate();
         $this->originalPostTime = $this->originalPost->getTime();
         $this->originalPostContent = $this->originalPost->getText();
@@ -173,7 +181,7 @@ class viewPostComponent extends sfComponent {
         //$this->refeshTime = $buzzConfigService->getRefreshTime();
         $this->postLenth = $buzzConfigService->getBuzzPostTextLenth();
         $this->postLines = $buzzConfigService->getBuzzPostTextLines();
-        
+
 //        $this->initialcommentCount = $this->getUser()->getAttribute("initial_comment_count");
 //        $this->viewMoreComment = $this->getUser()->getAttribute("view_more_comment");
 //        $this->likeCount = $this->getUser()->getAttribute("like_count");

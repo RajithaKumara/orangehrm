@@ -35,9 +35,15 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                 </div>
                 <div id="postFirstRowColumnTwo">
                     <div id="postEmployeeName" >
-                        <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
-                            <?php echo $postEmployeeName; ?>
-                        </a>
+                        <?php if ($postSharerDeleted) { ?>
+                            <label class="name">
+                                <?php echo $postEmployeeName; ?>
+                            </label>
+                        <?php } else { ?>
+                            <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
+                                <?php echo $postEmployeeName; ?>
+                            </a>
+                        <?php } ?>
                     </div>
                     <div id="postEmloyeeJobTitle" style="margin-bottom: 0px;margin-top: 0px">
                         <?php echo $postEmployeeJobTitle; ?>
@@ -85,9 +91,15 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                                 </div>
                                 <div id="postFirstRowColumnTwo">
                                     <div id="postEmployeeName" >
-                                        <a class="originalPostView" href="javascript:void(0);" id='<?php echo 'postView_' . $postId . '_' . $originalPostId ?>' >
-                                            <?php echo $originalPostSharerName; ?>
-                                        </a>
+                                        <?php if ($originalPostSharerDeleted) { ?>
+                                            <label class="originalPostView">
+                                                <?php echo $originalPostSharerName; ?>
+                                            </label>
+                                        <?php } else { ?>
+                                            <a class="originalPostView" href="javascript:void(0);" id='<?php echo 'postView_' . $postId . '_' . $originalPostId ?>' >
+                                                <?php echo $originalPostSharerName; ?>
+                                            </a>
+                                        <?php } ?>
                                     </div>
                                     <div id="postDateTime">
                                         <div id="postDate">
@@ -213,9 +225,15 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                         </div>
                         <div id="postFirstRowColumnTwo">
                             <div id="postEmployeeName" >
-                                <a class="name" href="javascript:void(0);">
-                                    <?php echo $originalPostSharerName; ?>
-                                </a>
+                                <?php if ($originalPostSharerDeleted) { ?>
+                                    <label class="name">
+                                        <?php echo $originalPostSharerName; ?>
+                                    </label>
+                                <?php } else { ?>
+                                    <a class="name" href="javascript:void(0);">
+                                        <?php echo $originalPostSharerName; ?>
+                                    </a>
+                                <?php } ?>
                             </div>
                             <div id="postDateTime">
                                 <div id="postDate">
@@ -289,9 +307,15 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
             </div>
             <div id="postFirstRowColumnTwo" >
                 <div id="postEmployeeName" >
-                    <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
-                        <?php echo $postEmployeeName; ?>
-                    </a>
+                    <?php if ($postSharerDeleted) { ?>
+                        <label class="name">
+                            <?php echo $postEmployeeName; ?>
+                        </label>
+                    <?php } else { ?>
+                        <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
+                            <?php echo $postEmployeeName; ?>
+                        </a>
+                    <?php } ?>
                 </div>
                 <div id="postEmloyeeJobTitle" style="margin-bottom: 0px;margin-top: 0px">
                     <?php echo $postEmployeeJobTitle; ?>

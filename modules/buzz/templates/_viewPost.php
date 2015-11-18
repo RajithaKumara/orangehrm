@@ -12,18 +12,28 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/messageBoxStyles'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 ?>
 <li class="singlePost" id=<?php echo "postInList" . $postId; ?>>
-<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime();              ?></div>-->
+<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime();                     ?></div>-->
     <div id="postBody">
 
         <div id="postBodyFirstRow">
             <div id="postFirstRowColumnOne">
-                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" /></a>
+                <?php if ($postSharerDeleted) { ?>
+                    <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
+                <?php } else { ?>
+                    <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" /></a>
+                <?php } ?>
             </div>
             <div id="postFirstRowColumnTwo">
                 <div id="postEmployeeName" >
-                    <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
-                        <?php echo $postEmployeeName; ?>
-                    </a>
+                    <?php if ($postSharerDeleted) { ?>
+                        <label class="name">
+                            <?php echo $postEmployeeName; ?>
+                        </label>
+                    <?php } else { ?>
+                        <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
+                            <?php echo $postEmployeeName; ?>
+                        </a>
+                    <?php } ?>
                 </div>
                 <div id="postEmloyeeJobTitle">
                     <?php echo $postEmployeeJobTitle; ?>
@@ -167,13 +177,23 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
                         <div id="postBodyFirstRow">
                             <div id="postFirstRowColumnOne">
-                                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $originalPostEmpNumber); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic"/></a>
+                                <?php if ($originalPostSharerDeleted) { ?>
+                                    <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic"/>
+                                <?php } else { ?>
+                                    <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $originalPostEmpNumber); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $originalPostEmpNumber); ?>" border="0" id="empPic"/></a>
+                                <?php } ?>
                             </div>
                             <div id="postFirstRowColumnTwo">
                                 <div id="postEmployeeName" >
-                                    <a class="originalPostView" href="javascript:void(0);" id='<?php echo 'postView_' . $postId . '_' . $originalPostId ?>' >
-                                        <?php echo $originalPostSharerName; ?>
-                                    </a>
+                                    <?php if ($originalPostSharerDeleted) { ?>
+                                        <label class="originalPostView">
+                                            <?php echo $originalPostSharerName; ?>
+                                        </label>
+                                    <?php } else { ?>
+                                        <a class="originalPostView" href="javascript:void(0);" id='<?php echo 'postView_' . $postId . '_' . $originalPostId ?>' >
+                                            <?php echo $originalPostSharerName; ?>
+                                        </a>
+                                    <?php } ?>
                                 </div>
                                 <div id="postDateTime">
                                     <div id="postDate">
@@ -298,17 +318,20 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 </div>
                 <div id="photoPageComment" >
                     <div id="postBodyFirstRow photo" class="photoViewEmp">
-
-
-
                         <div id="postFirstRowColumnOne"  style="width: 70px;height: 70px;overflow: hidden; margin-top: -5px; border-radius: 5px;">
                             <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $employeeID); ?>" border="0" id="empPic" />
                         </div>
                         <div id="postFirstRowColumnTwo">
                             <div id="postEmployeeName" >
-                                <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
-                                    <?php echo $postEmployeeName; ?>
-                                </a>
+                                <?php if ($postSharerDeleted) { ?>
+                                    <label class="name">
+                                        <?php echo $postEmployeeName; ?>
+                                    </label>
+                                <?php } else { ?>
+                                    <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $employeeID); ?>' >
+                                        <?php echo $postEmployeeName; ?>
+                                    </a>
+                                <?php } ?>
                             </div>
                             <div>
                                 <?php echo $postEmployeeJobTitle; ?>
@@ -687,6 +710,10 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                 $commentPostId = $comment->getShareId();
                 $commentContent = $comment->getCommentText();
                 $commentEmployeeName = $comment->getEmployeeFirstLastName();
+                if ($commentEmployeeName == ' ') {
+                    $commentEmployeeName = $comment->getEmployeeName() . ' (' . __('Deleted') . ')';
+                    $commenterDeleted = true;
+                }
                 $commentEmployeeId = $comment->getEmployeeNumber();
                 $commentNoOfLikes = $comment->getNumberOfLikes();
                 $commentNoOfUnLikes = $comment->getNumberOfUnlikes();
@@ -743,11 +770,19 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                     <div id="commentBody">
                         <div id="commentRowOne">
                             <div id="commentColumnOne">
-                                <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $commentEmployeeId); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/></a>
+                                <?php if ($commenterDeleted) { ?>
+                                    <img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/>
+                                <?php } else { ?>
+                                    <a href="<?php echo url_for("buzz/viewProfile?empNumber=" . $commentEmployeeId); ?>"><img alt="<?php echo __("Employee Photo"); ?>" src="<?php echo url_for("buzz/viewPhoto?empNumber=" . $commentEmployeeId); ?>" border="0" id="empPic"/></a>
+                                <?php } ?>
                             </div>
                             <div id="commentColumnTwo">
                                 <div id="commentEmployeeName">
-                                    <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $commentEmployeeId); ?>' ><?php echo $commentEmployeeName; ?></a>
+                                    <?php if ($commenterDeleted) { ?>
+                                        <label class="name"><?php echo $commentEmployeeName; ?></label>
+                                    <?php } else { ?>
+                                        <a class="name" href= '<?php echo url_for("buzz/viewProfile?empNumber=" . $commentEmployeeId); ?>' ><?php echo $commentEmployeeName; ?></a>
+                                    <?php } ?>
                                 </div>
                                 <div id="commentEmployeeJobTitle">
                                     <?php echo $commentEmployeeJobTitle; ?>

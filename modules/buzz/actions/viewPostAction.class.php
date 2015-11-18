@@ -99,12 +99,20 @@ class viewPostAction extends BaseBuzzAction {
         $this->employeeID = $post->getEmployeeNumber();
         $this->commentList = $post->getComment();
         $this->postEmployeeName = $post->getEmployeeFirstLastName();
+        if ($this->postEmployeeName == ' ' && $post->getEmployeeName() != null) {
+            $this->postEmployeeName = $post->getEmployeeName() . ' (' . __(self::LABEL_EMPLOYEE_DELETED) . ')';
+            $this->postSharerDeleted = true;
+        }
         $this->isLike = $post->isLike($this->loggedInUser);
         $this->isUnlike = $post->isUnLike($this->loggedInUser);
         $this->originalPost = $post->getPostShared();
         $this->originalPostId = $this->originalPost->getId();
         $this->originalPostEmpNumber = $this->originalPost->getEmployeeNumber();
         $this->originalPostSharerName = $this->originalPost->getEmployeeFirstLastName();
+        if ($this->originalPostSharerName == ' ' && $this->originalPost->getEmployeeName() != null) {
+            $this->originalPostSharerName = $this->originalPost->getEmployeeName() . ' (' . __(self::LABEL_EMPLOYEE_DELETED) . ')';
+            $this->originalPostSharerDeleted = true;
+        }
         $this->originalPostDate = $this->originalPost->getDate();
         $this->originalPostTime = $this->originalPost->getTime();
         $this->originalPostContent = $this->originalPost->getText();

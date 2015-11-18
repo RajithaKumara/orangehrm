@@ -33,8 +33,8 @@ class getSharedEmployeeListAction extends BaseBuzzAction {
             $this->buzzService = $this->getBuzzService();
             $this->loggedInEmployeeId = $this->getLogedInEmployeeNumber();
             $this->post = $this->buzzService->getShareById($this->id)->getPostShared();
-            $this->sharedEmpNameList = $this->getPostSharedEmployeeNameList($this->post);
-            $this->sharedEmpList = $this->getPostSharedEmployeeList($this->post);
+            $this->sharedEmployeeDetailsList = $this->getPostSharedEmployeeNameList($this->post);
+            //  $this->sharedEmpList = $this->getPostSharedEmployeeList($this->post);
 
             if ($request->getParameter('event') === "click") {
                 
@@ -95,7 +95,7 @@ class getSharedEmployeeListAction extends BaseBuzzAction {
      * @return array employee name list
      */
     private function getPostSharedEmployeeNameList($post) {
-        $sharedEmployeeNameList = array();
+        $sharedEmployeeDetailsList = array();
         foreach ($post->getShare() as $share) {
 
             if ($share->getEmployeeNumber() == null) {
@@ -103,11 +103,18 @@ class getSharedEmployeeListAction extends BaseBuzzAction {
             } else {
                 $employee = $share->getEmployeePostShared();
                 $empName = $employee->getFirstAndLastNames();
+                $jobTitle = $employee->getJobTitleName();
+
+                if ($empName == ' ' && $share->getEmployeeName() != null) {
+                    $empName = $share->getEmployeeName() . ' (' . __(self::LABEL_EMPLOYEE_DELETED) . ')';
+                    $employeeDeleted = true;
+                }
             }
 
-            array_push($sharedEmployeeNameList, $empName);
+            $employeeDetails = array(self::EMP_DELETED => $employeeDeleted, self::EMP_NUMBER => $share->getEmployeeNumber(), self::EMP_NAME => $empName, self::EMP_JOB_TITLE => $jobTitle);
+            $sharedEmployeeDetailsList[$share->getEmployeeNumber()] = $employeeDetails;
         }
-        return array_unique($sharedEmployeeNameList);
+        return $sharedEmployeeDetailsList;
     }
 
 }

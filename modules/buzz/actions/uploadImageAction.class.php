@@ -31,9 +31,12 @@ class uploadImageAction extends BaseBuzzAction {
     public function execute($request) {
         try {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
+            if ($this->loggedInUser) {
+                $loggedInEmployee = $this->getEmployeeService()->getEmployee($this->loggedInUser);
+            }
             $this->files = $request->getFiles();
             $postContent = $request->getParameter('postContent');
-            $this->savePost($postContent);
+            $this->savePost($postContent, $loggedInEmployee);
             foreach ($this->files as $file) {
                 $photo = $this->getPhoto($file);
                 $this->savePhoto($photo);
@@ -41,8 +44,8 @@ class uploadImageAction extends BaseBuzzAction {
             $this->saveShare();
         } catch (Exception $ex) {
             $logger = Logger::getLogger('buzz');
-            $logger->error('Exception when uploading image: ' . $ex);            
-            
+            $logger->error('Exception when uploading image: ' . $ex);
+
             $response = $this->getResponse();
             $response->setStatusCode(500, __('Error uploading image'));
             return sfView::NONE;
@@ -68,10 +71,10 @@ class uploadImageAction extends BaseBuzzAction {
 
         $buzzConfigService = $this->getBuzzConfigService();
         $maxDimension = $buzzConfigService->getMaxImageDimension();
-            
+
         $imageUtility = new ImageResizeUtility();
-        $imageData = $imageUtility->convertUploadedImage($file['tmp_name'], $maxDimension, $maxDimension);               
-        
+        $imageData = $imageUtility->convertUploadedImage($file['tmp_name'], $maxDimension, $maxDimension);
+
         $photo->photo = $imageData['image'];
         $photo->filename = $file['name'];
         $photo->file_type = $file['type'];
@@ -86,9 +89,12 @@ class uploadImageAction extends BaseBuzzAction {
      * save post to datebase
      * @param type $postContent
      */
-    private function savePost($postContent) {
+    private function savePost($postContent, $employee) {
         $post = new Post();
         $post->setEmployeeNumber($this->getLogedInEmployeeNumber());
+        if ($employee instanceof Employee) {
+            $post->setEmployeeName($employee->getFirstAndLastNames());
+        }
         $post->setText($postContent);
         $post->setPostTime(date("Y-m-d H:i:s"));
         $service = $this->getBuzzService();
@@ -102,6 +108,7 @@ class uploadImageAction extends BaseBuzzAction {
     private function saveShare() {
         $share = new Share();
         $share->setEmployeeNumber($this->getLogedInEmployeeNumber());
+        $share->setEmployeeName($this->post->getEmployeeName());
         $share->setShareTime(date("Y-m-d H:i:s"));
         $share->setType(0);
         $share->setNumberOfComments(0);

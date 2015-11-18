@@ -670,7 +670,7 @@ $(document).ready(function () {
                 $("#successBodyShare").hide();
                 $("#successBodyEdit").hide();
                 $("#successDataModal").modal();
-                setTimeout(hideSuccessModal, 3000);
+                setTimeout(hideSuccessModal, 2000);
                 setTimeout(refresh, 10000);
             }
         });
