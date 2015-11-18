@@ -87,8 +87,7 @@ class addNewVideoAction extends BaseBuzzAction {
      */
     private function getVideoFeedLinkFromUrl($url) {
         $isValidUrl = true;
-        $allowedDomains = array("www.youtube.com", "www.vimeo.com", "www.yahoo.com", "www.dailymotion.com", "www.vube.com",
-            "www.metacafe.com", "www.ustream.tv");
+        $allowedDomains = array("www.youtube.com", "www.vimeo.com", "vimeo.com", "www.yahoo.com", "www.dailymotion.com", "www.metacafe.com", "www.ustream.tv");
         $parsed = parse_url($url);
 
         if ($parsed['scheme'] != 'http' && $parsed['scheme'] != 'https') {
@@ -98,7 +97,7 @@ class addNewVideoAction extends BaseBuzzAction {
         if (!in_array($parsed['host'], $allowedDomains)) {
             $isValidUrl = false;
         }
-        
+
         if (!$isValidUrl) {
             return 'not';
         }
@@ -112,8 +111,10 @@ class addNewVideoAction extends BaseBuzzAction {
 
         $temp2 = split("v=", $url);
         if (count($temp2) > 1) {
-            $headers = get_headers('http://gdata.youtube.com/feeds/api/videos/' . $temp2[1]);
-            if (!strpos($headers[0], '200')) {
+            $videoJson = "https://www.youtube.com/oembed?url=$url&format=json";
+            $headers = get_headers($videoJson);
+            $responeCode = substr($headers[0], 9, 3);
+            if ($responeCode != "200") {
                 return 'not';
             }
             $embededUrl = "http://www.youtube.com/embed/" . $temp2[1] . "?rel=0";
@@ -122,7 +123,9 @@ class addNewVideoAction extends BaseBuzzAction {
 
         $temp3 = split("//vimeo.com/", $url);
         if (count($temp3) > 1) {
-            $embededUrl = "//player.vimeo.com/video/" . $temp3[1];
+            $urlParts = explode("/", parse_url($temp3[1], PHP_URL_PATH));
+            $videoId = (int) $urlParts[count($urlParts) - 1];
+            $embededUrl = "http://player.vimeo.com/video/" . $videoId;
             return $embededUrl;
         }
 
