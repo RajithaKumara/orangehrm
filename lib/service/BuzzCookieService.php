@@ -99,8 +99,9 @@ class BuzzCookieService extends BaseService {
      * destroy cookie valuves saved
      */
     public function destroyCokkies() {
-        $this->getCookieManager()->destroyCookie(self::COOKIE_NAME_USER_ROLE, "/");
-        $this->getCookieManager()->destroyCookie(self::COOKIE_NAME_EMPLOYE_NUMBER, "/");
+        $webRoot = sfContext::getInstance()->getRequest()->getRelativeUrlRoot();
+        $this->getCookieManager()->destroyCookie(self::COOKIE_NAME_USER_ROLE, $webRoot);
+        $this->getCookieManager()->destroyCookie(self::COOKIE_NAME_EMPLOYE_NUMBER, $webRoot);
         return true;
     }
 
