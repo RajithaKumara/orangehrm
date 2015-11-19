@@ -12,7 +12,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/messageBoxStyles'));
 use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 ?>
 <li class="singlePost" id=<?php echo "postInList" . $postId; ?>>
-<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime();                     ?></div>-->
+<!--<div class="debugDiv"><?php // $user = new myUser(new sfEventDispatcher(), new sfSessionStorage()); echo $user->getLastRequestTime();                       ?></div>-->
     <div id="postBody">
 
         <div id="postBodyFirstRow">
@@ -894,7 +894,24 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                         <div id="commentRowTwo">
                             <div  id="commentColumnTwo">
                                 <div class="commentContent"id='<?php echo 'commentContentNew_' . $commentId ?>'>
-                                    <?php echo BuzzTextParserService::parseText($commentContent); ?>
+                                    <?php $fullComment = BuzzTextParserService::parseText($commentContent); ?>
+                                    <div class="commentBasic" id="<?php echo 'commentBasic_' . $commentId; ?>">
+                                        <?php
+                                        if (strlen($commentContent) > $commentLength) {
+                                            $subContent = substr($commentContent, 0, $commentLength);
+                                            echo BuzzTextParserService::parseText($subContent . '...');
+                                            ?><a  class="viewMoreComment"  id='<?php echo 'viewMoreComment_' . $commentId ?>'
+                                                ><?php echo _('Read More'); ?></a>
+
+                                            <?php
+                                        } else {
+                                            echo $fullComment;
+                                        }
+                                        ?>
+                                    </div>
+                                    <div class="commentFull" id="<?php echo 'commentFull_' . $commentId; ?>" style="display: none">
+                                        <?php echo $fullComment; ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -181,6 +181,7 @@ class viewPostComponent extends sfComponent {
         //$this->refeshTime = $buzzConfigService->getRefreshTime();
         $this->postLenth = $buzzConfigService->getBuzzPostTextLenth();
         $this->postLines = $buzzConfigService->getBuzzPostTextLines();
+        $this->commentLength = $buzzConfigService->getBuzzCommentTextLenth();
 
 //        $this->initialcommentCount = $this->getUser()->getAttribute("initial_comment_count");
 //        $this->viewMoreComment = $this->getUser()->getAttribute("view_more_comment");

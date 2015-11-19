@@ -145,7 +145,7 @@ Comment:
     number_of_unlikes:
       type: integer(6)
     comment_text:
-      type: string(600)
+      type: string
     comment_time:
       type: timestamp
       notnull: true   

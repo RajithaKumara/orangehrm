@@ -263,3 +263,5 @@ ALTER TABLE `ohrm_buzz_like_on_share` ADD `employee_name` VARCHAR( 255 ) NULL AF
 ALTER TABLE `ohrm_buzz_unlike_on_comment` ADD `employee_name` VARCHAR( 255 ) NULL AFTER `employee_number` ;
 
 ALTER TABLE `ohrm_buzz_unlike_on_share` ADD `employee_name` VARCHAR( 255 ) NULL AFTER `employee_number` ;
+
+INSERT INTO `ohrm_config`(`property`, `value`) VALUES ('buzz_comment_text_lenth','250');

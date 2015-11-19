@@ -112,21 +112,6 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                                 </div>
                             </div>
                         </div>
-                        <!--                        <div id="commentColumnThree">
-                        <?php // if ($commentEmployeeId == $loggedInUser) { ?>
-                                                        <div id="commentOptionWidget">
-                                                            <div class="dropdown cmnt_prev_drop_down">
-                                                                <a class="account" id=<?php // echo 'c' . $commentId     ?>></a>
-                                                                <div class="submenu" id=<?php // echo 'submenuc' . $commentId     ?>>
-                                                                    <ul class = "root">
-                                                                        <li ><a href = "javascript:void(0)" class="editComment" id=<?php // echo 'editComment_' . $commentId     ?> ><?php // echo __("Edit");     ?></a></li>
-                                                                        <li ><a href = "javascript:void(0)" class="deleteComment" id=<?php // echo 'deleteComment_' . $commentId     ?>><?php // echo __("Delete");     ?></a></li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                        <?php // } ?>
-                                                </div>-->
                     </div>
                     <div  id="commentBodyThirdRowNew">
                         <div class="likeCommentnewPop"  id="<?php echo 'commentLikebody_' . $commentId ?>" >

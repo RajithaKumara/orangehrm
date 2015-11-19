@@ -893,6 +893,7 @@ $(document).ready(function () {
 
 
     });
+    
     $(".viewMoreShare").live("click", function (e) {
         var idValue = e.target.id;
         var shareId = idValue.split("_")[1];
@@ -912,6 +913,13 @@ $(document).ready(function () {
                 $('#shareViewMoreMod1_' + shareId).modal();
             }
         });
+    });
+    
+     $(".viewMoreComment").live("click", function (e) {
+        var idValue = e.target.id;
+        var commentId = idValue.split("_")[1];
+        $('#commentBasic_' + commentId).hide();
+        $('#commentFull_' + commentId).show();
     });
 
     /**

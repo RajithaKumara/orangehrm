@@ -237,7 +237,12 @@
     background: #ccc;
     border: 5px solid white;
 }
+
 .viewMoreShare:hover{
+    cursor: pointer;
+}
+
+.viewMoreComment:hover{
     cursor: pointer;
 }
 

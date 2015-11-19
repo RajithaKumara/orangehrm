@@ -32,6 +32,7 @@ class BuzzConfigService extends ConfigService {
     const KEY_MOST_LIKE_POSTS = 'buzz_most_like_posts';
     const KEY_MOST_LIKE_SHARES = 'buzz_most_like_shares';
     const KEY_POST_LENTH = 'buzz_post_text_lenth';
+    const KEY_COMMENT_LENTH = 'buzz_comment_text_lenth';
     const KEY_POST_TEXT_HEIGHT = 'buzz_post_text_lines';
     const KEY_BUZZ_POST_SHARE_COUNT = 'buzz_post_share_count';
     const KEY_BUZZ_COOKIE_VALID_TIME = 'buzz_cookie_valid_time';
@@ -81,6 +82,14 @@ class BuzzConfigService extends ConfigService {
      */
     public function getBuzzPostTextLenth() {
         return $this->buzzConfigValues[BuzzConfigService::KEY_POST_LENTH];
+    }
+    
+    /**
+     * get comment lenth to show
+     * @return int
+     */
+    public function getBuzzCommentTextLenth() {
+        return $this->buzzConfigValues[BuzzConfigService::KEY_COMMENT_LENTH];
     }
 
     /**
