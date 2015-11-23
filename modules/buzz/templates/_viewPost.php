@@ -591,7 +591,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                       <?php
                                       $editForm->setDefault('comment', $postContent);
                                       echo $editForm['comment']->render(array('id' => "editshareBox_" . $postId,
-                                          'class' => 'shareBox', 'style' => 'width: 100%', 'rows' => '2'));
+                                          'class' => 'shareBox popupEdit', 'style' => 'width: 100%', 'rows' => '5'));
                                       ?>
 
                             </form>
@@ -601,7 +601,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                       <?php
                                       $editForm->setDefault('comment', $originalPostContent);
                                       echo $editForm['comment']->render(array('id' => "editshareBox_" . $postId,
-                                          'class' => 'shareBox', 'style' => 'width: 100%', 'rows' => '2'));
+                                          'class' => 'shareBox popupEdit', 'style' => 'width: 100%', 'rows' => '5'));
                                       ?>
 
                             </form>
@@ -752,7 +752,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                                           <?php
                                           $editForm->setDefault('comment', $commentContent);
                                           echo $editForm['comment']->render(array('id' => "editcommentBoxNew2_" . $commentId,
-                                              'class' => 'commentBox', 'style' => 'width: 100%', 'rows' => '2'));
+                                              'class' => 'commentBox popupEdit', 'style' => 'width: 100%', 'rows' => '3'));
                                           ?>
 
                                 </form>

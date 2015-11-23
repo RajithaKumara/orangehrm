@@ -43,7 +43,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                                   <?php
                                   $editForm->setDefault('comment', $commentContent);
                                   echo $editForm['comment']->render(array('id' => "editcommentBoxNew_" . $commentId,
-                                      'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '2'));
+                                      'class' => 'commentBox popupEdit', 'style' => 'width: 95%', 'rows' => '3'));
                                   ?>
 
                         </form>

@@ -1032,3 +1032,6 @@ img.imgThumbnailView {
     display: none;
 }
 
+.popupEdit{
+    overflow-y: scroll;
+}

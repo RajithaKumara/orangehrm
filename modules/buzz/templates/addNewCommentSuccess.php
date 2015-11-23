@@ -44,7 +44,7 @@
                                   <?php
                                   $editForm->setDefault('comment', $commentContent);
                                   echo $editForm['comment']->render(array('id' => "editcommentBoxNew2_" . $commentId,
-                                      'class' => 'commentBox', 'style' => 'width: 100%', 'rows' => '2'));
+                                      'class' => 'commentBox popupEdit', 'style' => 'width: 100%', 'rows' => '3'));
                                   ?>
 
                         </form>

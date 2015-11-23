@@ -2,7 +2,7 @@ var modalVisible = false;
 var fileInput = $("#photofile");
 
 $(document).ready(function () {
-   
+
     /**
      * Submitting a new post
      */
@@ -30,12 +30,12 @@ $(document).ready(function () {
         }
     });
 
-    function getResizedImage(image) {       
+    function getResizedImage(image) {
         var sourceWidth = image.naturalWidth;
         var sourceHeight = image.naturalHeight;
         var destImageWidth;
         var destImageHeight;
-            
+
         var sourceAspectRatio = sourceWidth / sourceHeight;
         var destAspectRatio = imageMaxWidth / imageMaxHeight;
         if (sourceWidth <= imageMaxWidth && sourceHeight <= imageMaxHeight) {
@@ -48,18 +48,18 @@ $(document).ready(function () {
             destImageWidth = imageMaxWidth;
             destImageHeight = Math.floor(imageMaxWidth / sourceAspectRatio);
         }
-        
+
 
         var canvas = document.createElement("canvas");
         canvas.width = destImageWidth;
         canvas.height = destImageHeight;
 
         var ctx = canvas.getContext("2d");
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);  
-        
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
         return canvas.toDataURL("image/jpeg");
     }
-    
+
     function convertDataURI2Blob(uri) {
         var byteString = atob(uri.split(',')[1]);
 
@@ -75,29 +75,29 @@ $(document).ready(function () {
         var bb = new Blob([ab], {"type": mimeString});
         return bb;
     }
-    
+
     var formData = new FormData();
     var imageList = {};
-    
+
     function readURL(file, thumbnailDivId) {
         var deferredObject = $.Deferred();
-        
+
         var reader = new FileReader();
         reader.readAsDataURL(file);
         imageList[thumbnailDivId] = file;
-        reader.onload = function (e) {  
+        reader.onload = function (e) {
 
             var image = new Image();
-            image.onload = function() {
-                var x = '<td><a class="img_del" id="img_del_' + thumbnailDivId + '"></a>' + 
-                        '<img height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' + 
+            image.onload = function () {
+                var x = '<td><a class="img_del" id="img_del_' + thumbnailDivId + '"></a>' +
+                        '<img height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' +
                         getResizedImage(image) + '" alt="your image" /></td>';
                 $("#imageThumbnails").append(x);
                 deferredObject.resolve();
             };
-            image.src = e.target.result;                
+            image.src = e.target.result;
         };
-        
+
         return deferredObject.promise();
     }
 
@@ -134,19 +134,19 @@ $(document).ready(function () {
             } else {
                 var file = files[i - 1];
                 var promises = [];
-                
+
                 // Disable upload button
                 $('#image-upload-button').prop('disabled', true);
-                
+
                 if (file) {
                     promises.push(readURL(file, noOfPhotosPreviewed));
                     noOfPhotosPreviewed++;
                     noOfPhotosStacked++;
                 }
-                
+
                 // Enable upload/publish button when all images have loaded.
-                $.when.apply($, promises).then(function() {
-                    $('#image-upload-button').prop('disabled', false);                    
+                $.when.apply($, promises).then(function () {
+                    $('#image-upload-button').prop('disabled', false);
                 });
             }
         }
@@ -187,9 +187,9 @@ $(document).ready(function () {
             $('.postLoadingBox').show();
 
             for (var key in imageList) {
-                
+
                 if (imageList.hasOwnProperty(key)) {
-                    
+
                     // Get thumbnail src and file name
                     var blob = convertDataURI2Blob($("#thumb" + key).attr('src'));
                     formData.append(key, blob, imageList[key].name);
@@ -209,13 +209,13 @@ $(document).ready(function () {
                     $('#buzz').prepend(data);
                     clearImageUpload();
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
+                error: function (jqXHR, textStatus, errorThrown) {
                     clearImageUpload();
-                } 
+                }
             });
         }
     });
-    
+
     function clearImageUpload() {
         $('#imageThumbnails').html('');
         $('.postLoadingBox').hide();
@@ -224,7 +224,7 @@ $(document).ready(function () {
         $("#photofile").replaceWith($("#photofile").val('').clone(true));
         $(".img_del").hide();
         imageList = {};
-        formData = new FormData();        
+        formData = new FormData();
     }
 
     $("#gotoProfile").click(function () {
@@ -266,17 +266,17 @@ $(document).ready(function () {
                 var result = $(data);
                 var newTimestamp = result.find('#new_timestamp').text();
                 $('#buzzLastTimestamp').text(newTimestamp);
-                
-                result.find('#changed_shares li.singlePost').each(function() {
+
+                result.find('#changed_shares li.singlePost').each(function () {
                     var id = $(this).prop('id');
-                    var existing = $('#'+id);
+                    var existing = $('#' + id);
                     if (existing.length) {
                         existing.replaceWith($(this).html());
                     } else {
                         $('#buzz').prepend($(this).html());
                     }
                 });
-                
+
                 var noOfPostsNow = $('.singlePost').length;
                 if (!isWindowFocussed) {
                     newlyAddedPostCount = noOfPostsNow - noOfPostsWhenLeavingWindow;
@@ -449,26 +449,26 @@ $(document).ready(function () {
 
         var elementId = "#" + e.target.id;
         var value = $(elementId).val();
-        
+
         var value;
         var formName;
         var loadingSpinner;
         var commentId;
         var elementSplitted = elementId.split("_");
-                
-        if(elementSplitted[1] == 'popShareId'){
+
+        if (elementSplitted[1] == 'popShareId') {
             var element = '#commentBoxnew_txt_popShareId_' + elementSplitted[2];
             value = $(element).val();
             formName = '#formCreateComment_' + elementSplitted[1] + elementSplitted[2];
             loadingSpinner = '#commentLoadingBoxpopPhotoId21';
             commentId = elementSplitted[2];
-        }else{
+        } else {
             value = $(elementId).val();
             formName = '#formCreateComment_' + elementId.split("_")[1];
             loadingSpinner = '#commentLoadingBox' + elementId.split("_")[1];
             commentId = elementId.split("Id")[1];
         }
-        
+
         $("#commentListContainer_" + elementId.split("Id")[1]).css("display", "block");
         if (trim(value).length > 0) {
             $('#commentLoadingBox' + elementId.split("_")[1]).show();
@@ -810,7 +810,7 @@ $(document).ready(function () {
 
 
     });
-    
+
     $(".viewMoreShare").live("click", function (e) {
         var idValue = e.target.id;
         var shareId = idValue.split("_")[1];
@@ -831,8 +831,8 @@ $(document).ready(function () {
             }
         });
     });
-    
-     $(".viewMoreComment").live("click", function (e) {
+
+    $(".viewMoreComment").live("click", function (e) {
         var idValue = e.target.id;
         var commentId = idValue.split("_")[1];
         $('#commentBasic_' + commentId).hide();
@@ -868,6 +868,13 @@ $(document).ready(function () {
 
     $(".editComment").live("click", function (e) {
         var commentId = e.target.id.split("_")[1];
+        var contentOfTheCommentBox = $("#editcommentBoxNew2_" + commentId).val();
+        if (contentOfTheCommentBox.length == 0) {
+            var content = $.trim($("#commentContentNew_" + commentId).text());
+            if (content.length != 0) {
+                $("#editcommentBoxNew2_" + commentId).val(content);
+            }
+        }
         $("#editcommenthideNew2_" + commentId).modal();
     });
     $(".btnEditCommentNew").live("click", function (e) {
@@ -1000,32 +1007,32 @@ $(document).ready(function () {
         var idValue = e.target.className;
         $("#commentBoxNew_listId" + idValue).focus();
     });
-    
-    var refreshTime = trim($("#refreshTime").text());    
+
+    var refreshTime = trim($("#refreshTime").text());
     var lastActivityTime = new Date().getTime();
-    
+
     $(document.body).bind("mousemove keypress", function (e) {
         lastActivityTime = new Date().getTime();
     });
-    
+
     window.setTimeout(function () {
         refresh(this);
-    }, refreshTime);     
-    
+    }, refreshTime);
+
     function refresh() {
         $(document).prop('title', windowTitle);
-        
+
         if (new Date().getTime() - lastActivityTime >= refreshTime) {
             if (!$('.modal').is(":visible")) {
                 reload();
             }
-        }  
-        
-        window.setTimeout(function() {
+        }
+
+        window.setTimeout(function () {
             refresh(this);
         }, refreshTime);
     }
-        
+
     var loggedInEmpNum = -1;
     function isAccess() {
 
