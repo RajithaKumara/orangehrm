@@ -213,12 +213,14 @@ class BuzzDao extends BaseDao {
      */
     public function getEmployeesHavingBdaysBetweenTwoDates($fromDate, $toDate) {
         try {
-            $whereClause = "WHERE deleted_at IS NULL AND MONTH(emp_birthday) = :month AND "
-                    . " DAY(emp_birthday) >= :date";
-            $params = array(':month' => date('m', strtotime($fromDate)), ':date' => date('d', strtotime($fromDate)));
+            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND datediff( MAKEDATE(YEAR(:date) , DAYOFYEAR(emp_birthday)) , :date) " . 
+                                       " BETWEEN 1 AND 30 ".
+                                       " OR datediff( MAKEDATE(YEAR(:date)+1 , DAYOFYEAR(emp_birthday)) , :date) " .
+                                       " BETWEEN 1 AND 30 ";
+            $params = array(':date' => $fromDate);
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
-            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY DAY(emp_birthday) ASC", $params);
-
+            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY MONTH(joined_date) ASC, DAY(joined_date) ASC", $params);
+            
             return $result->fetchAll();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -235,11 +237,14 @@ class BuzzDao extends BaseDao {
      */
     public function getEmployeesHavingAnniversaryOnMonth($date) {
         try {
-            $whereClause = "WHERE deleted_at IS NULL AND MONTH(joined_date) = :joinedMonth AND "
-                    . " DAY(joined_date) >= :joinedDate";
-            $params = array(':joinedMonth' => date('m', strtotime($date)), ':joinedDate' => date('d', strtotime($date)));
+            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND datediff( MAKEDATE(YEAR(:date) , DAYOFYEAR(joined_date)) , :date) " . 
+                                       " BETWEEN 1 AND 30 ".
+                                       " OR datediff( MAKEDATE(YEAR(:date)+1 , DAYOFYEAR(joined_date)) , :date) " .
+                                       " BETWEEN 1 AND 30 ";
+            $params = array(':date' => $date);
+            
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
-            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY DAY(joined_date) ASC", $params);
+            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY MONTH(joined_date) ASC, DAY(joined_date) ASC", $params);
             return $result->fetchAll();
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {

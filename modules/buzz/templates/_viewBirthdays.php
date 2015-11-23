@@ -29,14 +29,13 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBirthdays'));
     </div>
 
     <div class ="rightBarBody">
-        <div class="toggling" id="upcomingBdaysMonth"><?php echo __(date('M')).' '.date('Y'); ?></div>
         <ul class="toggling" id="upcomingBdaysList">    
             <?php if (count($employeeList) == 0) { ?>
                 <li id="birthdayPostNull">
                     <div id="birthdayUserName">
-                        <a href="#" class="name" id="name2">
-                            <?php echo __("No Birthdays For This Month"); ?>
-                        </a>
+                        <label href="#" class="name" id="name2">
+                            <?php echo __("No Upcoming Birthdays For Next 30 Days"); ?>
+                        </label>
                     </div>        
                 </li>
             <?php } ?>

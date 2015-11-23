@@ -28,14 +28,13 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewAnniversaries'));
              height="30px" width="30px"/>
     </div>
     <div class ="rightBarBody">
-        <div class="toggling" style="display:none;" id="upcomingAnnivMonth"><?php echo __(date('M')).' '.date('Y'); ?></div>
         <ul class="toggling" style="display:none;" id="upcomingAnnivList">    
             <?php if (count($anniversaryEmpList) == 0) { ?>
                 <li id="anniversaryPostNull">
                     <div id="anniversaryUserName">
-                        <a href="#" class="name" id="name2">
-                            <?php echo __("No Anniversaries For This Month"); ?>
-                        </a>
+                        <label href="#" class="name" id="name2">
+                            <?php echo __("No Upcoming Anniversaries For Next 30 Days"); ?>
+                        </label>
                     </div>
                 </li>
             <?php } ?>
