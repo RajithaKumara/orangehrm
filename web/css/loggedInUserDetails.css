@@ -81,7 +81,7 @@
 }
 
 #ddd input{
-    width: 525px;
+    width: 450px;
     border-radius: 5px 0 0 5px;
     border: none;
     padding: 7px 7px 6px 7px;
@@ -115,6 +115,12 @@
     padding: 2px 5px;
 
     border-radius: 5px;
+}
+
+#buzzSearchForm{
+    margin-left: 0px; 
+    right: 0px; 
+    left: 20%;
 }
 
 
