@@ -172,7 +172,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
               enctype="multipart/form-data">
                   <?php
                   $placeholder = __("Add your comment");
-                  echo $commentForm['comment']->render(array('id' => "commentBoxnew_" . $commentBoxId . $postId,
+                  echo $commentForm['comment']->render(array('id' => "commentBoxnew_txt_" . $commentBoxId . '_' . $postId,
                       'class' => 'commentBox', 'style' => 'width: 95%', 'rows' => '1', 'placeholder' => $placeholder));
                   $commentForm->setDefault('shareId', $postId);
                   ?>
@@ -183,7 +183,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
             echo $commentForm['_csrf_token']->render();
             ?>
             <div id="commentSubmitBtnInModal">
-                <input type="button" value="<?php echo __attr("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn">
+                <input type="button" value="<?php echo __attr("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $commentBoxId  . '_' . $postId; ?>' class="commentSubmitBtn submitBtn">
             </div>
             <button type="button" id='<?php echo 'commentBoxNew_' . $commentBoxId . $postId; ?>' class="commentSubmitBtn submitBtn commentSubmitBtnForIe">
                 <?php echo __("Comment"); ?>
