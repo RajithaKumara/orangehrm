@@ -89,7 +89,7 @@ $(document).ready(function () {
 
             var image = new Image();
             image.onload = function () {
-                var x = '<td><a class="img_del" id="img_del_' + thumbnailDivId + '"></a>' +
+                var x = '<td class="imageDefinition"><a class="img_del" id="img_del_' + thumbnailDivId + '"></a>' +
                         '<img height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' +
                         getResizedImage(image) + '" alt="your image" /></td>';
                 $("#imageThumbnails").append(x);
@@ -117,7 +117,9 @@ $(document).ready(function () {
 
         var files = $("#photofile")[0].files;
         var imagesChoosed = $("#photofile")[0].files.length;
-        if (imagesChoosed > 5) {
+        var currentNumberOfPhotosInTheStack = noOfPhotosStacked - 1;
+        var allImagesCount = currentNumberOfPhotosInTheStack + imagesChoosed;
+        if (imagesChoosed > 5 || allImagesCount > 5) {
             $("#imageUploadError").modal();
             $("#maxImageErrorBody").show();
             $("#invalidTypeImageErrorBody").hide();

@@ -777,6 +777,7 @@ input[type="button"]{
 
 img.imgThumbnailView {
     border-radius: 5px;    
+    margin-left: 20px;
 }
 
 .closeFeed{
@@ -792,6 +793,12 @@ img.imgThumbnailView {
 #imageThumbnails{
     display:inline-block; 
     margin-top: 20px;
+    width: 640px;
+    overflow-x: auto;
+}
+
+.imageDefinition{
+    padding-top: 15px;
 }
 
 #imageThumbnails li{
