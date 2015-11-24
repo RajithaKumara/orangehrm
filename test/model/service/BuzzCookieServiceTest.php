@@ -132,15 +132,16 @@ class BuzzCookieServiceTest extends PHPUnit_Framework_TestCase {
      * this is function to test get Employee Number
      */
     public function testDestroyCookie() {
+        $webRoot = sfContext::getInstance()->getRequest()->getRelativeUrlRoot();
         $cookieManager = $this->getMock('CookieManager', array('destroyCookie'));
 
         $cookieManager->expects($this->at(0))
                 ->method('destroyCookie')
-                ->with(self::COOKIE_NAME_USER_ROLE, "/usr/bin/phpunit")
+                ->with(self::COOKIE_NAME_USER_ROLE, $webRoot)
                 ->will($this->returnValue(null));
         $cookieManager->expects($this->at(1))
                 ->method('destroyCookie')
-                ->with(self::COOKIE_NAME_EMPLOYE_NUMBER, "/usr/bin/phpunit")
+                ->with(self::COOKIE_NAME_EMPLOYE_NUMBER, $webRoot)
                 ->will($this->returnValue(null));
         $this->buzzCookieService->setCookieManager($cookieManager);
 
