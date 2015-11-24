@@ -46,7 +46,7 @@ ini_set("memory_limit", '-1');
             <?php include_component('buzz', 'messageBox', array('messageType' => 'delete')); ?>
         </div>
     </div>
-    
+
     <div class="modal hide" id="successDataModal" >
 
         <div class="modal-body" >
@@ -135,6 +135,40 @@ ini_set("memory_limit", '-1');
                 </div>
             </div>
             <!--end loading window pop up window-->
+
+            <!-- start like window popup window-->
+            <div class="modal hide modal-on-preview" id='<?php echo 'postsharehide' ?>'>
+                <div id="modalHeader" >
+                    <?php echo __("People who shared this post"); ?>
+                </div>
+                <div class="modal-body originalPostModal-body" >
+                    <div class="hideModalPopUp" id='<?php echo 'postsharehide' ?>'
+                         ><img 
+                            class="hideModalPopUp" id='<?php echo 'postsharehide' ?>' 
+                            src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                            /></div>
+                    <div class=""  id='<?php echo 'postsharehidebody' ?>'></div>
+
+                </div>
+            </div>
+            <!-- end like window pop up window-->
+
+            <!-- start like window popup window-->
+            <div class="modal hide modal-on-preview" id='<?php echo 'postlikehide' ?>'>
+                <div id="modalHeader" >
+                    <?php echo __("People who like this post"); ?>
+                </div>
+                <div class="modal-body originalPostModal-body" >
+                    <div class="hideModalPopUp" id='<?php echo 'postlikehide' ?>'
+                         ><img 
+                            class="hideModalPopUp" id='<?php echo 'postlikehide' ?>' 
+                            src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/close.png"); ?>" height="20" width="20"
+                            /></div>
+                    <div class=""  id='<?php echo 'postlikehidebody' ?>'></div>
+
+                </div>
+            </div>
+            <!-- end like window pop up window-->
 
             <div style="display:none;" id="loadMorePosts">
                 <a href="javascript:void(0)" class="loadMorePostsLink" id=<?php echo $postId ?>><?php echo __("Load more posts"); ?></a>
