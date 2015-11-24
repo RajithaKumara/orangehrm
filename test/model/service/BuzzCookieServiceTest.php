@@ -136,11 +136,11 @@ class BuzzCookieServiceTest extends PHPUnit_Framework_TestCase {
 
         $cookieManager->expects($this->at(0))
                 ->method('destroyCookie')
-                ->with(self::COOKIE_NAME_USER_ROLE, "/")
+                ->with(self::COOKIE_NAME_USER_ROLE, "/usr/bin/phpunit")
                 ->will($this->returnValue(null));
         $cookieManager->expects($this->at(1))
                 ->method('destroyCookie')
-                ->with(self::COOKIE_NAME_EMPLOYE_NUMBER, "/")
+                ->with(self::COOKIE_NAME_EMPLOYE_NUMBER, "/usr/bin/phpunit")
                 ->will($this->returnValue(null));
         $this->buzzCookieService->setCookieManager($cookieManager);
 
