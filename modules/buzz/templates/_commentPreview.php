@@ -89,7 +89,7 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
                                         ?>
                                     </label>
                                 <?php } else { ?>
-                                    <a class="name" href="javascript:void(0);" title="<?php echo $commentEmployeeName; ?>">
+                                    <a class="name" href="<?php echo url_for("buzz/viewProfile?empNumber=" . $commentEmployeeId); ?>" title="<?php echo $commentEmployeeName; ?>">
                                         <?php
                                         if (strlen($commentEmployeeName) > 26) {
                                             echo substr($commentEmployeeName, 0, 26) . '...';

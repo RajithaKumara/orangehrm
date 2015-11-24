@@ -462,7 +462,12 @@ $(document).ready(function () {
             formName = '#formCreateComment_' + elementSplitted[1] + elementSplitted[2];
             loadingSpinner = '#commentLoadingBoxpopPhotoId21';
             commentId = elementSplitted[2];
-        } else {
+        } else if(elementSplitted[1] == 'popPhotoId'){
+            var element = '#commentBoxnew_txt_popPhotoId_' + elementSplitted[2];
+            value = $(element).val();
+            formName = '#formCreateComment_' + elementSplitted[1] + elementSplitted[2];
+            commentId = elementSplitted[2];
+        }else {
             value = $(elementId).val();
             formName = '#formCreateComment_' + elementId.split("_")[1];
             loadingSpinner = '#commentLoadingBox' + elementId.split("_")[1];
