@@ -51,7 +51,7 @@ ini_set("memory_limit", '-1');
 
         <div class="modal-body" >
             <div class="mb-heading">
-                <?php echo __("Success!"); ?>
+                <?php echo __("Success")."!"; ?>
             </div>
             <!--<div id="successHeader" style="width: 100%;height: 20px;background-color: green;">Success</div>-->
             <div id="successBodyEdit" >
@@ -110,28 +110,6 @@ ini_set("memory_limit", '-1');
                         <img id="img-spinner-loading"   src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/vload.gif"); ?>" 
                              height="12"  />
                     </div>
-                </div>
-            </div>
-            <!--end loading window pop up window-->
-
-            <!--start Success popup window-->
-            <div class="modal hide" id="successDataModal" >
-
-                <div class="modal-body" >
-                    <div class="mb-heading">
-                        <?php echo __("Success!"); ?>
-                    </div>
-                    <!--<div id="successHeader" style="width: 100%;height: 20px;background-color: green;">Success</div>-->
-                    <div id="successBodyEdit" >
-                        <?php echo __("Successfully Saved"); ?>
-                    </div>
-                    <div id="successBodyShare" >
-                        <?php echo __("Successfully Shared"); ?>
-                    </div>
-                    <div id="successBodyDelete" >
-                        <?php echo __("Successfully Deleted"); ?>
-                    </div>
-
                 </div>
             </div>
             <!--end loading window pop up window-->

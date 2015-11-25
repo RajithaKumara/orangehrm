@@ -141,11 +141,15 @@ $(document).ready(function () {
         });
     });
 
+    function hideSuccessModal() {
+        $("#successDataModal").modal('hide');
+    }
 
     /**
      * share post save 
      */
     $(".btnShare").live("click", function (e) {
+        $("#loadingDataModal").modal();
         var idValue = e.target.id;
         $("#posthide_" + idValue.split("_")[1]).modal('hide');
 
@@ -155,15 +159,18 @@ $(document).ready(function () {
             success: function (data) {
                 $('#buzz').prepend(data);
                 reload();
+                $("#loadingDataModal").modal('hide');
+                $("#successDataModal").modal();
+                $("#successBodyShare").show();
+                $("#successBodyEdit").hide();
+                $("#successBodyDelete").hide();
+                $("#successDataModal").modal();
+                setTimeout(hideSuccessModal, 3000);
                 setTimeout(refresh, 10000);
             }
         });
 
-
-
-
     });
-
 
 }
 );

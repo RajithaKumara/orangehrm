@@ -464,12 +464,12 @@ $(document).ready(function () {
             formName = '#formCreateComment_' + elementSplitted[1] + elementSplitted[2];
             loadingSpinner = '#commentLoadingBoxpopPhotoId21';
             commentId = elementSplitted[2];
-        } else if(elementSplitted[1] == 'popPhotoId'){
+        } else if (elementSplitted[1] == 'popPhotoId') {
             var element = '#commentBoxnew_txt_popPhotoId_' + elementSplitted[2];
             value = $(element).val();
             formName = '#formCreateComment_' + elementSplitted[1] + elementSplitted[2];
             commentId = elementSplitted[2];
-        }else {
+        } else {
             value = $(elementId).val();
             formName = '#formCreateComment_' + elementId.split("_")[1];
             loadingSpinner = '#commentLoadingBox' + elementId.split("_")[1];
@@ -748,37 +748,44 @@ $(document).ready(function () {
      * share post save 
      */
     $(".btnShare").live("click", function (e) {
-        var idValue = e.target.id;
-        $("#posthide_" + idValue.split("_")[1]).modal('hide');
-        $(".modal").modal('hide');
-        $("#loadingDataModal").modal();
-        var shareId = idValue.split("_")[1];
-//        var share = $("#shareBox_" + idValue.split("_")[1]).val();
-        var share = $("[id=shareBox_" + idValue.split("_")[1] + ']').val();
-        var data = {
-            'postId': idValue.split("_")[2],
-            'textShare': share
-        };
-        $.ajax({
-            url: shareShareURL,
-            type: 'POST',
-            data: data,
-            success: function (data) {
-                $("#posthide_" + shareId).modal("hide");
-                $("#posthidePopup_" + shareId).modal("hide");
-                $('#buzz').prepend(data);
-                $("#loadingDataModal").modal('hide');
-                $("#successBodyShare").show();
-                $("#successBodyEdit").hide();
-                $("#successBodyDelete").hide();
-                $("#successDataModal").modal();
-                setTimeout(hideSuccessModal, 3000);
-            }
-        });
+        var fromProfile = false;
+        if (window.location.href.indexOf("viewProfile") > -1) {
+            fromProfile = true;
+        }
 
+        if (!fromProfile) {
+            var idValue = e.target.id;
+            $("#posthide_" + idValue.split("_")[1]).modal('hide');
+            $(".modal").modal('hide');
+            $("#loadingDataModal").modal();
+            
+            var postId = idValue.split("_")[2];
 
-
-
+            var shareId = idValue.split("_")[1];
+            var share = $("[id=shareBox_" + idValue.split("_")[1] + ']').val();
+            var data = {
+                'postId': postId,
+                'textShare': share
+            };
+            $.ajax({
+                url: shareShareURL,
+                type: 'POST',
+                data: data,
+                success: function (data) {
+                    $("#posthide_" + shareId).modal("hide");
+                    $("#posthidePopup_" + shareId).modal("hide");
+                    $('#buzz').prepend(data);
+                    $("#loadingDataModal").modal('hide');
+                    $("#successBodyShare").show();
+                    $("#successBodyEdit").hide();
+                    $("#successBodyDelete").hide();
+                    $("#successDataModal").modal();
+                    $('#postShareno_' + shareId).hide();
+                    $('#postShareyes_' + shareId).show();
+                    setTimeout(hideSuccessModal, 3000);
+                }
+            });
+        }
     });
 
     /**
