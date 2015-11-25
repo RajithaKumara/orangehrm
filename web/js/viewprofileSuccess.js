@@ -152,11 +152,13 @@ $(document).ready(function () {
         $("#loadingDataModal").modal();
         var idValue = e.target.id;
         $("#posthide_" + idValue.split("_")[1]).modal('hide');
-
+        var shareId = idValue.split("_")[1];
         var share = $("#shareBox_" + idValue.split("_")[1]).val();
         $.ajax({
             url: shareShareURL + "?postId=" + idValue.split("_")[2] + "&textShare=" + share,
             success: function (data) {
+                $("#shareViewMoreMod1_" + shareId).modal("hide");
+                $("#posthidePopup_" + shareId).modal("hide");
                 $('#buzz').prepend(data);
                 reload();
                 $("#loadingDataModal").modal('hide');
