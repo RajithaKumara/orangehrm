@@ -23,7 +23,7 @@ abstract class BaseBuzzAction extends sfAction {
     const EMP_NUMBER = 'empNumber';
     const EMP_NAME = 'empName';
     const EMP_JOB_TITLE = 'jobTitle';
-    const LABEL_EMPLOYEE_DELETED = 'Deleted';
+    const LABEL_EMPLOYEE_DELETED = 'Deleted Employee';
 
     /**
      * 

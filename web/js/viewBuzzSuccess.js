@@ -89,9 +89,9 @@ $(document).ready(function () {
 
             var image = new Image();
             image.onload = function () {
-                var x = '<td class="imageDefinition"><a class="img_del" id="img_del_' + thumbnailDivId + '"></a>' +
+                var x = '<div class="imageDefinition"><a class="img_del" id="img_del_' + thumbnailDivId + '"></a>' +
                         '<img height="70px" class="imgThumbnailView" id="thumb' + thumbnailDivId + '" src="' +
-                        getResizedImage(image) + '" alt="your image" /></td>';
+                        getResizedImage(image) + '" alt="your image" /></div>';
                 $("#imageThumbnails").append(x);
                 deferredObject.resolve();
             };
@@ -384,8 +384,6 @@ $(document).ready(function () {
             isAccess();
             var idValue = e.target.id;
             var shareId = idValue.split("_")[1];
-//        alert(shareId);
-//        return;
             var data = {
                 'id': shareId,
                 'type': 'post',
