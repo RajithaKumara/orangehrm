@@ -1048,7 +1048,7 @@ $(document).ready(function () {
     var loggedInEmpNum = -1;
     function isAccess() {
 
-        $.getJSON(getAccessUrl, {get_param: 'value'}, function (data) {
+        $.getJSON(getAccessUrl, {}, function (data) {
             if (loggedInEmpNum == -1) {
                 loggedInEmpNum = data.empNum;
             } else if (loggedInEmpNum != data.empNum) {
