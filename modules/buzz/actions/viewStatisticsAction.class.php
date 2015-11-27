@@ -74,6 +74,8 @@ class viewStatisticsAction extends BaseBuzzAction {
     }
 
     public function execute($request) {
+        $this->loggedInUser = $this->getLogedInEmployeeNumber();
+        
         $this->buzzService = $this->getBuzzService();
         $this->profileUserId = $request->getParameter('profileUserId');
         $this->noOfShares = $this->getNoOfSharesBy($this->profileUserId);
