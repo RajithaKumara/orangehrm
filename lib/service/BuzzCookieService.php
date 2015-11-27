@@ -40,6 +40,15 @@ class BuzzCookieService extends BaseService {
         }
         return $this->buzzConfigService;
     }
+    
+    /**
+     * set config service
+     * @param BuzzConfigService $buzzConfigService
+     */
+    public function setBuzzConfigService(BuzzConfigService $buzzConfigService) {
+        $this->buzzConfigService = $buzzConfigService;
+    }
+
 
     /**
      * set cookie manager

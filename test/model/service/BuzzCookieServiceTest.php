@@ -43,11 +43,20 @@ class BuzzCookieServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testSaveUserRole() {
         $cookieManager = $this->getMock('CookieManager', array('setCookie'));
+        $buzzConfigService = $this->getMock('BuzzConfigService', array('getCookieValidTime'));
+        
         $cookieManager->expects($this->once())
                 ->method('setCookie')
                 ->with(self::COOKIE_NAME_USER_ROLE)
                 ->will($this->returnValue(1));
+        
+        $buzzConfigService->expects($this->once())
+                ->method('getCookieValidTime')
+                ->with()
+                ->will($this->returnValue(500098));
+        
         $this->buzzCookieService->setCookieManager($cookieManager);
+        $this->buzzCookieService->setBuzzConfigService($buzzConfigService);
 
         $result = $this->buzzCookieService->saveUserRole('Admin');
         $this->assertEquals('Admin', $result);
@@ -58,11 +67,20 @@ class BuzzCookieServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testSaveEmployeeNumber() {
         $cookieManager = $this->getMock('CookieManager', array('setCookie'));
+        $buzzConfigService = $this->getMock('BuzzConfigService', array('getCookieValidTime'));
+        
         $cookieManager->expects($this->once())
                 ->method('setCookie')
                 ->with(self::COOKIE_NAME_EMPLOYE_NUMBER)
                 ->will($this->returnValue(1));
+        
+        $buzzConfigService->expects($this->once())
+                ->method('getCookieValidTime')
+                ->with()
+                ->will($this->returnValue(500098));
+        
         $this->buzzCookieService->setCookieManager($cookieManager);
+        $this->buzzCookieService->setBuzzConfigService($buzzConfigService);
 
         $result = $this->buzzCookieService->saveEmployeeNumber(1);
         $this->assertEquals(1, $result);
@@ -73,12 +91,21 @@ class BuzzCookieServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testSaveAdminEmployeeNumber() {
         $cookieManager = $this->getMock('CookieManager', array('setCookie'));
+        $buzzConfigService = $this->getMock('BuzzConfigService', array('getCookieValidTime'));
+        
         $cookieManager->expects($this->once())
                 ->method('setCookie')
                 ->with(self::COOKIE_NAME_EMPLOYE_NUMBER)
                 ->will($this->returnValue(1));
+        
+        $buzzConfigService->expects($this->once())
+                ->method('getCookieValidTime')
+                ->with()
+                ->will($this->returnValue(500098));
+        
         $this->buzzCookieService->setCookieManager($cookieManager);
-
+        $this->buzzCookieService->setBuzzConfigService($buzzConfigService);
+        
         $result = $this->buzzCookieService->saveEmployeeNumber(null);
         $this->assertEquals(null, $result);
     }
@@ -154,12 +181,13 @@ class BuzzCookieServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testIsSavedCookies() {
         $cookieManager = $this->getMock('CookieManager', array('isCookieSet'));
+        
         $cookieManager->expects($this->once())
                 ->method('isCookieSet')
                 ->with(self::COOKIE_NAME_USER_ROLE)
                 ->will($this->returnValue(true));
+        
         $this->buzzCookieService->setCookieManager($cookieManager);
-
         $result = $this->buzzCookieService->isSavedCookies();
         $this->assertTrue($result);
     }
@@ -169,6 +197,8 @@ class BuzzCookieServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testSaveCookieValuves() {
         $cookieManager = $this->getMock('CookieManager', array('setCookie'));
+        $buzzConfigService = $this->getMock('BuzzConfigService', array('getCookieValidTime'));
+        
         $userRole='Admin';
         $employeeNumber=1;
 
@@ -180,7 +210,14 @@ class BuzzCookieServiceTest extends PHPUnit_Framework_TestCase {
                 ->method('setCookie')
                 ->with(self::COOKIE_NAME_EMPLOYE_NUMBER,$employeeNumber)
                 ->will($this->returnValue(null));
+        
+        $buzzConfigService->expects($this->once())
+                ->method('getCookieValidTime')
+                ->with()
+                ->will($this->returnValue(500098));
+        
         $this->buzzCookieService->setCookieManager($cookieManager);
+        $this->buzzCookieService->setBuzzConfigService($buzzConfigService);
 
         $result = $this->buzzCookieService->saveCookieValuves($employeeNumber,$userRole);
         $this->assertTrue($result);
