@@ -178,7 +178,6 @@ $(document).ready(function () {
         noOfPhotosPreviewed = 1;
         noOfPhotosStacked = 1;
         e.preventDefault();
-//        var imageFiles = 2;
         var photoText = $("#phototext").val();
         if (true) {
             activateTab('page1');
@@ -189,18 +188,17 @@ $(document).ready(function () {
             $('.postLoadingBox').show();
 
             for (var key in imageList) {
-
                 if (imageList.hasOwnProperty(key)) {
-
                     // Get thumbnail src and file name
                     var blob = convertDataURI2Blob($("#thumb" + key).attr('src'));
                     formData.append(key, blob, imageList[key].name);
                 }
             }
             formData.append('postContent', photoText);
-
-
-
+            
+            var csrfToken = $('#imageUploadForm__csrf_token').val();
+            formData.append('csrfToken', csrfToken);
+            
             $.ajax({
                 url: uploadImageURL,
                 type: "POST",
@@ -294,14 +292,14 @@ $(document).ready(function () {
 
     function refreshStatComponent() {
         isAccess();
-        var profileUserId = {
-            'profileUserId': $('#profileUserId').html()
-        };
+
+        $('#refreshStatusForm_profileUserId').val($('#profileUserId').html());
         $.ajax({
             url: refreshStatsURL,
             type: "POST",
-            data: profileUserId,
+            data: $('#refreshStatsForm').serialize(),
             success: function (data) {
+                $('#refreshStatusForm_profileUserId').val();
                 $('#statTable').replaceWith(data);
             }
         });
@@ -309,14 +307,15 @@ $(document).ready(function () {
 
     $(".loadMorePostsLink").live("click", function (e) {
         isAccess();
-        var lastPostId = {
-            'lastPostId': $('#buzz .lastLoadedPost').last().attr('id')
-        };
+
+        $('#loadMorePostsForm_lastPostId').val($('#buzz .lastLoadedPost').last().attr('id'));
+
         $.ajax({
             url: loadNextSharesURL,
             type: "POST",
-            data: lastPostId,
+            data: $('#loadMorePostsForm').serialize(),
             success: function (data) {
+                $('#loadMorePostsForm_lastPostId').val('');
                 $('#buzz').append(data);
             }
         });
@@ -364,36 +363,42 @@ $(document).ready(function () {
             isAccess();
             var idValue = e.target.id;
             var shareId = idValue.split("_")[1];
-            var data = {
-                'id': shareId,
-                'type': 'post'
-            };
+
+            $('#likedOrSharedEmployeeForm_id').val(shareId);
+            $('#likedOrSharedEmployeeForm_type').val('post');
+
             $.ajax({
                 url: getLikedEmployeeListURL,
                 type: "POST",
-                data: data,
+                data: $('#likedOrSharedEmployeeForm').serialize(),
                 success: function (data) {
+                    $('#likedOrSharedEmployeeForm_id').val('');
+                    $('#likedOrSharedEmployeeForm_type').val('');
                     $('#' + idValue).attr('title', '');
                     $('#' + idValue).attr('title', data);
                 }
             });
         }
     });
+
     $(".postNoofSharesTooltip").live("hover", function (e) {
         if (e.type == 'mouseenter') {
             isAccess();
             var idValue = e.target.id;
             var shareId = idValue.split("_")[1];
-            var data = {
-                'id': shareId,
-                'type': 'post',
-                'event': 'hover'
-            };
+
+            $('#likedOrSharedEmployeeForm_id').val(shareId);
+            $('#likedOrSharedEmployeeForm_type').val('post');
+            $('#likedOrSharedEmployeeForm_event').val('hover');
+
             $.ajax({
                 url: getSharedEmployeeListURL,
                 type: "POST",
-                data: data,
+                data: $('#likedOrSharedEmployeeForm').serialize(),
                 success: function (data) {
+                    $('#likedOrSharedEmployeeForm_id').val('');
+                    $('#likedOrSharedEmployeeForm_type').val('');
+                    $('#likedOrSharedEmployeeForm_event').val('');
                     $('#' + idValue).attr('title', '');
                     $('#' + idValue).attr('title', data);
                 }
@@ -405,17 +410,20 @@ $(document).ready(function () {
         isAccess();
         var idValue = e.target.id;
         var shareId = idValue.split("_")[1];
-        var data = {
-            'id': shareId,
-            'type': 'post',
-            'event': 'click'
-        };
+
+        $('#likedOrSharedEmployeeForm_id').val(shareId);
+        $('#likedOrSharedEmployeeForm_type').val('post');
+        $('#likedOrSharedEmployeeForm_event').val('click');
+
         $("#postsharehidebody").html("");
         $.ajax({
             url: getSharedEmployeeListURL,
             type: "POST",
-            data: data,
+            data: $('#likedOrSharedEmployeeForm').serialize(),
             success: function (data) {
+                $('#likedOrSharedEmployeeForm_id').val('');
+                $('#likedOrSharedEmployeeForm_type').val('');
+                $('#likedOrSharedEmployeeForm_event').val('');
                 $("#postsharehidebody").html(data);
             }
         });
@@ -427,15 +435,17 @@ $(document).ready(function () {
             isAccess();
             var idValue = e.target.id;
             var commentId = idValue.split("_")[1];
-            var data = {
-                'id': commentId,
-                'type': 'comment'
-            };
+
+            $('#likedOrSharedEmployeeForm_id').val(commentId);
+            $('#likedOrSharedEmployeeForm_type').val('comment');
+
             $.ajax({
                 url: getLikedEmployeeListURL,
                 type: "POST",
-                data: data,
+                data: $('#likedOrSharedEmployeeForm').serialize(),
                 success: function (data) {
+                    $('#likedOrSharedEmployeeForm_id').val('');
+                    $('#likedOrSharedEmployeeForm_type').val('');
                     $('#' + idValue).attr('title', '');
                     $('#' + idValue).attr('title', data);
                 }
@@ -576,14 +586,15 @@ $(document).ready(function () {
     $("#delete_confirm").live("click", function () {
         $(".delete-share-message-box").modal('hide');
         $("#loadingDataModal").modal();
-        var data = {
-            'shareId': idOfThePostToDelete,
-        };
+
+        $('#deleteOrEditShareForm_shareId').val(idOfThePostToDelete);
+
         $.ajax({
             url: shareDeleteURL,
             type: "POST",
-            data: data,
+            data: $('#deleteOrEditShareForm').serialize(),
             success: function (data) {
+                $('#deleteShareForm_shareId').val('');
                 $("#postInList" + idOfThePostToDelete).hide(1000);
                 $("#loadingDataModal").modal('hide');
                 idOfThePostToDelete = -1;
@@ -692,17 +703,17 @@ $(document).ready(function () {
         var content = $("#editshareBox_" + shareId).val();
         $("#editposthide_" + shareId).modal('hide');
         $("#loadingDataModal").modal();
-        var data = {
-            'shareId': shareId,
-            'textShare': content
-        };
+
+        $('#deleteOrEditShareForm_shareId').val(shareId);
+        $('#deleteOrEditShareForm_textShare').val(content);
 
         $.ajax({
             url: shareEditURL,
             type: "POST",
-            data: data,
+            data: $('#deleteOrEditShareForm').serialize(),
             success: function (data) {
-
+                $('#deleteOrEditShareForm_shareId').val('');
+                $('#deleteOrEditShareForm_textShare').val('');
                 $("#postContent_" + shareId).replaceWith(data);
                 reload();
                 $("#loadingDataModal").modal('hide');
@@ -727,14 +738,14 @@ $(document).ready(function () {
         var commentId = e.target.id.split("_")[1];
         $("#loadingDataModal").modal();
 
-        var data = {
-            'commentId': commentId,
-        };
+        $('#deleteOrEditCommentForm_commentId').val(commentId);
+
         $.ajax({
             url: commentDeleteURL,
             type: "POST",
-            data: data,
+            data: $('#deleteOrEditCommentForm').serialize(),
             success: function (data) {
+                $('#deleteOrEditCommentForm_commentId').val('');
                 $("[id=commentInPost_" + commentId + ']').hide(1000);
                 $("[id=commentInPost_" + commentId + ']').remove();
                 $("#loadingDataModal").modal('hide');
@@ -756,20 +767,22 @@ $(document).ready(function () {
             $("#posthide_" + idValue.split("_")[1]).modal('hide');
             $(".modal").modal('hide');
             $("#loadingDataModal").modal();
-            
+
             var postId = idValue.split("_")[2];
 
             var shareId = idValue.split("_")[1];
             var share = $("[id=shareBox_" + idValue.split("_")[1] + ']').val();
-            var data = {
-                'postId': postId,
-                'textShare': share
-            };
+
+            $('#deleteOrEditShareForm_shareId').val(postId);
+            $('#deleteOrEditShareForm_textShare').val(share);
+
             $.ajax({
                 url: shareShareURL,
                 type: 'POST',
-                data: data,
+                data: $('#deleteOrEditShareForm').serialize(),
                 success: function (data) {
+                    $('#deleteOrEditShareForm_shareId').val('');
+                    $('#deleteOrEditShareForm_textShare').val('');
                     $("#posthide_" + shareId).modal("hide");
                     $("#posthidePopup_" + shareId).modal("hide");
                     $('#buzz').prepend(data);
@@ -795,17 +808,20 @@ $(document).ready(function () {
         $(".modal").hide();
         $("#loadingDataModal").modal();
         var shareId = idValue.split("_")[1];
-//        var share = $("#shareBox_" + idValue.split("_")[1]).val();
         var share = $("[id=share1Box_" + idValue.split("_")[1] + ']').val();
-        var data = {
-            'postId': idValue.split("_")[2],
-            'textShare': share
-        };
+
+        var postId = idValue.split("_")[2];
+
+        $('#deleteOrEditShareForm_shareId').val(postId);
+        $('#deleteOrEditShareForm_textShare').val(share);
+
         $.ajax({
             url: shareShareURL,
             type: 'POST',
-            data: data,
+            data: $('#deleteOrEditShareForm').serialize(),
             success: function (data) {
+                $('#deleteOrEditShareForm_shareId').val('');
+                $('#deleteOrEditShareForm_textShare').val('');
                 $("#posthide_" + shareId).modal("hide");
                 $("#posthidePopup_" + shareId).modal("hide");
                 $('#buzz').prepend(data);
@@ -827,15 +843,15 @@ $(document).ready(function () {
         var idValue = e.target.id;
         var shareId = idValue.split("_")[1];
         $("#loadingDataModal").modal();
-        var data = {
-            'shareId': shareId,
-        };
+
+        $('#deleteOrEditShareForm_shareId').val(shareId);
+
         $.ajax({
             url: viewMoreShare,
             type: "POST",
-            data: data,
+            data: $('#deleteOrEditShareForm').serialize(),
             success: function (data) {
-
+                $('#deleteOrEditShareForm_shareId').val('');
                 $('#shareViewContent1_' + shareId).replaceWith(data);
 
                 $("#loadingDataModal").modal('hide');
@@ -896,15 +912,16 @@ $(document).ready(function () {
         $("#editcommenthideNew2_" + commentId).modal('hide');
         $("#loadingDataModal").modal();
 
-        var data = {
-            'commentId': commentId,
-            'textComment': content
-        };
+        $('#deleteOrEditCommentForm_commentId').val(commentId);
+        $('#deleteOrEditCommentForm_textComment').val(content);
+
         $.ajax({
             url: commentEditURL,
             type: 'POST',
-            data: data,
+            data: $('#deleteOrEditCommentForm').serialize(),
             success: function (data) {
+                $('#deleteOrEditCommentForm_commentId').val('');
+                $('#deleteOrEditCommentForm_textComment').val('');
                 $("[id=commentContentNew_" + commentId + ']').replaceWith(data);
                 $("#loadingDataModal").modal('hide');
 
@@ -925,19 +942,20 @@ $(document).ready(function () {
         if (existingLikes > 0) {
             var action = "post";
 
-            var data = {
-                'id': shareId,
-                'actions': action
-            };
+            $('#likedOrSharedEmployeeForm_id').val(shareId);
+            $('#likedOrSharedEmployeeForm_type').val(action);
+
             $.ajax({
                 url: viewLikedEmployees,
                 type: 'POST',
-                data: data,
+                data: $('#likedOrSharedEmployeeForm').serialize(),
                 success: function (data) {
+                    $('#likedOrSharedEmployeeForm_id').val('');
+                    $('#likedOrSharedEmployeeForm_type').val('');
+                    ;
                     $("#postlikehidebody").html(data);
                 }
             });
-
 
             $("#postlikehide").modal();
         }
@@ -962,16 +980,17 @@ $(document).ready(function () {
 
         if (existingLikes > 0) {
             var action = "comment";
-            var data = {
-                'id': commentId,
-                'actions': action
-            };
+
+            $('#likedOrSharedEmployeeForm_id').val(commentId);
+            $('#likedOrSharedEmployeeForm_type').val(action);
+
             $.ajax({
                 url: viewLikedEmployees,
                 type: 'POST',
-                data: data,
+                data: $('#likedOrSharedEmployeeForm').serialize(),
                 success: function (data) {
-//                    alert(data);
+                    $('#likedOrSharedEmployeeForm_id').val('');
+                    $('#likedOrSharedEmployeeForm_type').val('');
                     $("#postlikehidebody_" + commentId).replaceWith(data);
                 }
             });
@@ -999,15 +1018,15 @@ $(document).ready(function () {
         var postId = idValue.split("_")[2];
 
         $("#loadingDataModal").modal();
-        var data = {
-            'postId': postId,
-        };
+
+        $('#deleteOrEditShareForm_shareId').val(postId);
+
         $.ajax({
             url: viewOriginalPost,
             type: "POST",
-            data: data,
+            data: $('#deleteOrEditShareForm').serialize(),
             success: function (data) {
-
+                $('#deleteOrEditShareForm_shareId').val('');
                 $('#postViewContent_' + shareId).replaceWith(data);
                 $("#loadingDataModal").modal('hide');
                 $('#postViewOriginal_' + shareId).modal();
@@ -1081,15 +1100,15 @@ $(document).ready(function () {
     $(".likeRaw").live("click", function (e) {
         var id = e.target.id;
         var postId = id.split("_")[1];
-        var data = {
-            'shareId': postId
-        };
+
+        $('#deleteOrEditShareForm_shareId').val(postId);
+
         $.ajax({
             url: viewMoreShare,
             type: "POST",
-            data: data,
+            data: $('#deleteOrEditShareForm').serialize(),
             success: function (data) {
-//        alert(postId);
+                $('#deleteOrEditShareForm_shareId').val('');
                 $('#shareViewContent3_').html(data);
                 $('#shareViewMoreMod3_').modal();
             }
@@ -1108,10 +1127,8 @@ $(document).ready(function () {
     $(window).scroll(function ()
     {
 
-//        alert($(document).height() + " ----- " + $(window).height());
         if ($(window).scrollTop() + viewport().height >= $(document).height())
         {
-//            $(window).unbind('scroll');
             var sharesLoadedCount = parseInt($('#buzzSharesLoadedCount').html());
             var allSharesCount = parseInt($('#buzzAllSharesCount').html());
             var sharesInceasingCount = parseInt($('#buzzSharesInceasingCount').html());
@@ -1122,14 +1139,16 @@ $(document).ready(function () {
                     $('#buzzSharesLoadedCount').html(sharesLoadedCount);
 
                     $('.loadMoreBox').show();
-                    var lastPostId = {
-                        'lastPostId': $('#buzz .lastLoadedPost').last().attr('id')
-                    };
+                    
+                    var lastPostId = $('#buzz .lastLoadedPost').last().attr('id');
+                    $('#loadMorePostsForm_lastPostId').val(lastPostId);
+                    
                     $.ajax({
                         url: loadNextSharesURL,
                         type: "POST",
-                        data: lastPostId,
+                        data: $('#loadMorePostsForm').serialize(),
                         success: function (data) {
+                            $('#loadMorePostsForm_lastPostId').val('');
                             $('.loadMoreBox').hide();
                             $('#buzz').append(data);
                         }

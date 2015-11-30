@@ -28,20 +28,36 @@ class uploadImageAction extends BaseBuzzAction {
 
     protected $photos = array();
 
+    /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            if ($this->loggedInUser) {
-                $loggedInEmployee = $this->getEmployeeService()->getEmployee($this->loggedInUser);
+
+            $token = $request->getParameter('csrfToken');
+            $this->setForm(new ImageUploadForm());
+            if ($this->form->getCSRFToken() == $token) {
+                $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                if ($this->loggedInUser) {
+                    $loggedInEmployee = $this->getEmployeeService()->getEmployee($this->loggedInUser);
+                }
+
+                $this->files = $request->getFiles();
+                $postContent = $request->getParameter('postContent');
+                $this->savePost($postContent, $loggedInEmployee);
+                foreach ($this->files as $file) {
+                    $photo = $this->getPhoto($file);
+                    $this->savePhoto($photo);
+                }
+                $this->saveShare();
             }
-            $this->files = $request->getFiles();
-            $postContent = $request->getParameter('postContent');
-            $this->savePost($postContent, $loggedInEmployee);
-            foreach ($this->files as $file) {
-                $photo = $this->getPhoto($file);
-                $this->savePhoto($photo);
-            }
-            $this->saveShare();
         } catch (Exception $ex) {
             $logger = Logger::getLogger('buzz');
             $logger->error('Exception when uploading image: ' . $ex);

@@ -73,16 +73,33 @@ class viewStatisticsAction extends BaseBuzzAction {
         return $this->buzzService->getNoOfCommentsForEmployeeByEmployeeNumber($userId);
     }
 
-    public function execute($request) {
-        $this->loggedInUser = $this->getLogedInEmployeeNumber();
-        
-        $this->buzzService = $this->getBuzzService();
-        $this->profileUserId = $request->getParameter('profileUserId');
-        $this->noOfShares = $this->getNoOfSharesBy($this->profileUserId);
-        $this->noOfComments = $this->getNoOfCommentsBy($this->profileUserId);
-        $this->noOfShareLikesRecieved = $this->getNoOfShareLikesFor($this->profileUserId);
-        $this->noOfCommentLikesRecieved = $this->getNoOfCommentLikesFor($this->profileUserId);
-        $this->noOfCommentsRecieved = $this->getNoOfCommentsFor($this->profileUserId);
+    /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
     }
 
+    public function execute($request) {
+        $this->loggedInUser = $this->getLogedInEmployeeNumber();
+
+        $this->setForm(new RefreshStatsForm());
+
+        if ($request->isMethod('post')) {
+            $this->form->bind($request->getParameter($this->form->getName()));
+            if ($this->form->isValid()) {
+                $this->buzzService = $this->getBuzzService();
+                $formValues = $this->form->getValues();
+                $this->profileUserId = $formValues['profileUserId'];
+                $this->noOfShares = $this->getNoOfSharesBy($this->profileUserId);
+                $this->noOfComments = $this->getNoOfCommentsBy($this->profileUserId);
+                $this->noOfShareLikesRecieved = $this->getNoOfShareLikesFor($this->profileUserId);
+                $this->noOfCommentLikesRecieved = $this->getNoOfCommentLikesFor($this->profileUserId);
+                $this->noOfCommentsRecieved = $this->getNoOfCommentsFor($this->profileUserId);
+            }
+        }
+    }
 }

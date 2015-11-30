@@ -27,22 +27,42 @@
 class editCommentAction extends BaseBuzzAction {
 
     /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
+    /**
      * main function  
      * @param type $request
      */
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->commentId = $request->getParameter('commentId');
-            $this->editedContend = $request->getParameter('textComment');
-            $this->error = 'no';
 
-            $comment = $this->getBuzzService()->getCommentById($this->commentId);
-            If ($comment != null) {
-                $this->comment = $this->editComment($comment);
-            } else {
-                $this->error = 'yes';
-                $this->getUser()->setFlash('error', __("This comment has been deleted or you do not have permission to perform this action"));
+            $this->setForm(new DeleteOrEditCommentForm());
+
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->commentId = $formValues['commentId'];
+                    $this->editedContend = $formValues['textComment'];
+                    $this->error = 'no';
+
+                    $comment = $this->getBuzzService()->getCommentById($this->commentId);
+                    If ($comment != null) {
+                        $this->comment = $this->editComment($comment);
+                    } else {
+                        $this->error = 'yes';
+                        $this->getUser()->setFlash('error', __("This comment has been deleted or you do not have permission to perform this action"));
+                    }
+                }
             }
         } catch (Exception $ex) {
             $this->redirect('auth/login');

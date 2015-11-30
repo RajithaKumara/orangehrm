@@ -22,6 +22,16 @@
 class viewPostAction extends BaseBuzzAction {
 
     /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
+    /**
      * 
      * @param AddTaskForm $form
      */
@@ -54,20 +64,29 @@ class viewPostAction extends BaseBuzzAction {
     public function execute($request) {
 
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->postId = $request->getParameter('postId');
-            $post = $this->getPost();
+            $this->setForm(new DeleteOrEditShareForm());
 
-            $this->post = $post;
-            $shares = $post->getShare();
-            foreach ($shares as $share) {
-                if ($share->getTypeName() == 'post') {
-                    $this->share = $share;
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->postId = $formValues['shareId'];
+                    $post = $this->getPost();
+
+                    $this->post = $post;
+                    $shares = $post->getShare();
+                    foreach ($shares as $share) {
+                        if ($share->getTypeName() == 'post') {
+                            $this->share = $share;
+                        }
+                    }
+                    $this->setShare($this->share);
+                    $this->commentForm = $this->getCommentForm();
+                    $this->editForm = $this->getEditForm();
                 }
             }
-            $this->setShare($this->share);
-            $this->commentForm = $this->getCommentForm();
-            $this->editForm = $this->getEditForm();
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }

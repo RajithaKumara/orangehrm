@@ -27,6 +27,16 @@
 class deleteCommentAction extends BaseBuzzAction {
 
     /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
+    /**
      * get Comment By It Id
      * @param type $commentId
      * @return type
@@ -37,12 +47,22 @@ class deleteCommentAction extends BaseBuzzAction {
 
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->commentId = $request->getParameter('commentId');
-            $comment = $this->getComment($this->commentId);
-            $commentedEmployeeNumber = $comment->getEmployeeNumber();
-            if ($commentedEmployeeNumber == $this->loggedInUser || $this->getLoggedInEmployeeUserRole() == 'Admin') {
-                $this->deleteComment($comment);
+
+            $this->setForm(new DeleteOrEditCommentForm());
+
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->commentId = $formValues['commentId'];
+                    $comment = $this->getComment($this->commentId);
+                    $commentedEmployeeNumber = $comment->getEmployeeNumber();
+                    if ($commentedEmployeeNumber == $this->loggedInUser || $this->getLoggedInEmployeeUserRole() == 'Admin') {
+                        $this->deleteComment($comment);
+                    }
+                }
             }
         } catch (Exception $ex) {
             $this->redirect('auth/login');

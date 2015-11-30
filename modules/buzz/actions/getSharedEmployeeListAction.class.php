@@ -26,25 +26,44 @@
  */
 class getSharedEmployeeListAction extends BaseBuzzAction {
 
+    /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->id = $request->getParameter('id');
-            $this->buzzService = $this->getBuzzService();
-            $this->loggedInEmployeeId = $this->getLogedInEmployeeNumber();
-            $this->post = $this->buzzService->getShareById($this->id)->getPostShared();
-            $this->sharedEmployeeDetailsList = $this->getPostSharedEmployeeNameList($this->post);
-            //  $this->sharedEmpList = $this->getPostSharedEmployeeList($this->post);
 
-            if ($request->getParameter('event') === "click") {
-                
-            } else {
-                foreach ($this->sharedEmpNameList as $value) {
-                    echo $value;
-                    echo "\n";
+            $this->setForm(new LikedOrSharedEmployeeForm());
+
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+                    $this->id = $formValues['id'];
+                    $this->event = $formValues['event'];
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->buzzService = $this->getBuzzService();
+                    $this->loggedInEmployeeId = $this->getLogedInEmployeeNumber();
+                    $this->post = $this->buzzService->getShareById($this->id)->getPostShared();
+                    $this->sharedEmployeeDetailsList = $this->getPostSharedEmployeeNameList($this->post);
+
+                    if ($this->event === "click") {
+                        
+                    } else {
+                        foreach ($this->sharedEmpNameList as $value) {
+                            echo $value;
+                            echo "\n";
+                        }
+                        sfView::NONE;
+                        die;
+                    }
                 }
-                sfView::NONE;
-                die;
             }
         } catch (Exception $ex) {
             $this->redirect('auth/login');

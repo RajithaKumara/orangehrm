@@ -27,6 +27,16 @@
 class loadNextSharesAction extends BaseBuzzAction {
 
     /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
+    /**
      * 
      * @param PostForm $form
      */
@@ -77,13 +87,22 @@ class loadNextSharesAction extends BaseBuzzAction {
 
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->lastPostId = $request->getParameter('lastPostId');
-            $this->buzzService = $this->getBuzzService();
+            $this->setForm(new LoadMorePostsForm());
 
-            $this->nextSharesList = $this->buzzService->getMoreShares($this->getShareCount(), $this->lastPostId);
-            $this->editForm = $this->getEditForm();
-            $this->commentForm = $this->getCommentForm();
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->lastPostId = $formValues['lastPostId'];
+                    $this->buzzService = $this->getBuzzService();
+
+                    $this->nextSharesList = $this->buzzService->getMoreShares($this->getShareCount(), $this->lastPostId);
+                    $this->editForm = $this->getEditForm();
+                    $this->commentForm = $this->getCommentForm();
+                }
+            }
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }

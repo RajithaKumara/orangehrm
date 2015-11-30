@@ -21,36 +21,56 @@
 
 class viewLikedEmployeesAction extends BaseBuzzAction {
 
+    /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->id = $request->getParameter('id');
-            $this->actions = $request->getParameter('actions');
-            $this->error = 'no';
-            if ($this->actions == 'post') {
-                $share = $this->getBuzzService()->getShareById($this->id);
-                $likes = $share->getLike();
-                $this->employeeList = $this->extractEmployeeInformation($likes);
-            } else {
-                $comment = $this->getBuzzService()->getCommentById($this->id);
-                $likes = $comment->getLike();
-                $this->employeeList = $this->extractEmployeeInformation($likes, false);
+
+            $this->setForm(new LikedOrSharedEmployeeForm());
+
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    
+                    $formValues = $this->form->getValues();
+                    $this->id = $formValues['id'];
+                    $this->actions = $formValues['type'];
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->error = 'no';
+                    if ($this->actions == 'post') {
+                        $share = $this->getBuzzService()->getShareById($this->id);
+                        $likes = $share->getLike();
+                        $this->employeeList = $this->extractEmployeeInformation($likes);
+                    } else {
+                        $comment = $this->getBuzzService()->getCommentById($this->id);
+                        $likes = $comment->getLike();
+                        $this->employeeList = $this->extractEmployeeInformation($likes, false);
+                    }
+                }
             }
         } catch (Exception $ex) {
             $this->error = 'yes';
         }
     }
-    
-    public function extractEmployeeInformation($likes, $isPost = true){
+
+    public function extractEmployeeInformation($likes, $isPost = true) {
         $likedEmployeeDetailsList = array();
 
         foreach ($likes as $like) {
-             if ($like->getEmployeeNumber() == null) {
+            if ($like->getEmployeeNumber() == null) {
                 $empName = 'Admin';
             } else {
-                if($isPost){
+                if ($isPost) {
                     $employee = $like->getEmployeeLike();
-                }else{
+                } else {
                     $employee = $like->getEmployeeLike()->getFirst();
                 }
                 $empName = $employee->getFirstAndLastNames();

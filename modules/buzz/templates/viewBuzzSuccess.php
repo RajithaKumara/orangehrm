@@ -40,7 +40,7 @@ ini_set("memory_limit", '-1');
 
         <div class="modal-body" >
             <div class="mb-heading">
-                <?php echo __("Success")."!"; ?>
+                <?php echo __("Success") . "!"; ?>
             </div>
             <!--<div id="successHeader" style="width: 100%;height: 20px;background-color: green;">Success</div>-->
             <div id="successBodyEdit" >
@@ -324,6 +324,31 @@ ini_set("memory_limit", '-1');
             </fieldset>
 
         </form>
+
+        <form id="refreshStatsForm" method="POST" action="" >
+            <?php echo $refreshStatsForm->render(); ?>
+        </form>
+
+        <form id="likedOrSharedEmployeeForm" method="POST" action="" >
+            <?php echo $likedOrSharedEmployeeForm->render(); ?>
+        </form>
+
+        <form id="loadMorePostsForm" method="POST" action="" >
+            <?php echo $loadMorePostsForm->render(); ?>
+        </form>
+
+        <form id="deleteOrEditShareForm" method="POST" action="" >
+            <?php echo $deleteOrEditShareForm->render(); ?>
+        </form>
+
+        <form id="deleteOrEditCommentForm" method="POST" action="" >
+            <?php echo $deleteOrEditCommentForm->render(); ?>
+        </form>
+
+        <form id="imageUploadForm" method="POST" action="" >
+            <?php echo $imageUploadForm->render(); ?>
+        </form>
+
         <div style="display:none;" id="buzzLastTimestamp" ><?php echo $timestamp; ?></div>
         <div style="display:none;" id="buzzAllSharesCount" ><?php echo $allShareCount; ?></div>
         <div style="display:none;" id="buzzSharesLoadedCount"><?php echo $shareCount; ?></div>
@@ -359,7 +384,7 @@ ini_set("memory_limit", '-1');
             var logoutActionURL = '<?php echo url_for('auth/logout'); ?>';
             var imageMaxWidth = <?php echo $imageMaxDimension; ?>;
             var imageMaxHeight = <?php echo $imageMaxDimension; ?>;
-            var writeYourComment = "<?php echo __js('Write your comment...');?>";
+            var writeYourComment = "<?php echo __js('Write your comment...'); ?>";
         </script>
         <style type="text/css">
             .homeLink{

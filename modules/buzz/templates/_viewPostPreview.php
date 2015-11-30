@@ -72,7 +72,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
                                             <?php if ($originalPostSharerDeleted) { ?>
                                                 <?php echo $originalPostSharerName; ?>
                                             <?php } else { ?>
-                                                <a class="originalPostView" href="javascript:void(0);" id='<?php echo 'postView_' . $postId . '_' . $originalPostId ?>' >
+                                                <a class="originalPostView" href="<?php echo url_for("buzz/viewProfile?empNumber=" . $originalPostEmpNumber); ?>" id="<?php echo 'postView_' . $postId . '_' . $originalPostId ?>">
                                                     <?php echo $originalPostSharerName; ?>
                                                 </a>
                                             <?php } ?>

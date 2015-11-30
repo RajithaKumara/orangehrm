@@ -22,6 +22,16 @@
 class viewShareAction extends BaseBuzzAction {
 
     /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
+    /**
      * get share By Share Id
      * @return Share
      */
@@ -62,14 +72,23 @@ class viewShareAction extends BaseBuzzAction {
     public function execute($request) {
 
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->shareId = $request->getParameter('shareId');
-            $share = $this->getShare($this->shareId);
-            $this->userId = $this->getLogedInEmployeeNumber();
-            $this->commentForm = $this->getCommentForm();
+            $this->setForm(new DeleteOrEditShareForm());
 
-            $this->setShare($share);
-            $this->editForm = $this->getEditForm();
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->shareId = $formValues['shareId'];
+                    $share = $this->getShare($this->shareId);
+                    $this->userId = $this->getLogedInEmployeeNumber();
+                    $this->commentForm = $this->getCommentForm();
+
+                    $this->setShare($share);
+                    $this->editForm = $this->getEditForm();
+                }
+            }
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }

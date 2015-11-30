@@ -16,6 +16,16 @@ class loadMoreProfileAction extends BaseBuzzAction {
     protected $buzzService;
 
     /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
+    /**
      * 
      * @param AddTaskForm $form
      */
@@ -52,7 +62,7 @@ class loadMoreProfileAction extends BaseBuzzAction {
         }
         return $this->commentForm;
     }
-    
+
     /**
      * get share count 
      * @return Int
@@ -64,17 +74,25 @@ class loadMoreProfileAction extends BaseBuzzAction {
 
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->lastPostId = $request->getParameter('lastPostId');
-            $this->profileUserId = $request->getParameter('profileUserId');
-            $this->buzzService = $this->getBuzzService();
+            $this->setForm(new LoadMorePostsForm());
 
-            $this->nextSharesList = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber($this->getShareCount(), $this->lastPostId, $this->profileUserId);
-            $this->editForm = new CommentForm();
-            $this->commentForm = $this->getCommentForm();
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->lastPostId = $formValues['lastPostId'];
+                    $this->profileUserId = $formValues['profileUserId'];
+                    $this->buzzService = $this->getBuzzService();
+
+                    $this->nextSharesList = $this->buzzService->getMoreEmployeeSharesByEmployeeNumber($this->getShareCount(), $this->lastPostId, $this->profileUserId);
+                    $this->editForm = new CommentForm();
+                    $this->commentForm = $this->getCommentForm();
+                }
+            }
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
     }
 
-    }
+}

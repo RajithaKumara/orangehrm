@@ -96,7 +96,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/tooltip_js/jquery.qtip
                                                 <?php echo $originalPostSharerName; ?>
                                             </label>
                                         <?php } else { ?>
-                                            <a class="originalPostView" href="javascript:void(0);" id='<?php echo 'postView_' . $postId . '_' . $originalPostId ?>' >
+                                            <a class="originalPostView" href="<?php echo url_for("buzz/viewProfile?empNumber=" . $originalPostEmpNumber); ?>" id='<?php echo 'postView_' . $postId . '_' . $originalPostId ?>' >
                                                 <?php echo $originalPostSharerName; ?>
                                             </a>
                                         <?php } ?>

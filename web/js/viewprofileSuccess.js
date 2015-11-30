@@ -45,15 +45,16 @@ $(document).ready(function () {
 
     function reload() {
 
-        var lastPostId = {
-            'lastPostId': $('#profileBuzz .lastLoadedPost').last().attr('id'),
-            'profileUserId': trim($('#profileUserId').html())
-        };
+        $('#loadMorePostsForm_lastPostId').val($('#profileBuzz .lastLoadedPost').last().attr('id'));
+        $('#loadMorePostsForm_profileUserId').val(trim($('#profileUserId').html()));
+
         $.ajax({
             url: refreshPageURL,
             type: "POST",
-            data: lastPostId,
+            data: $('#loadMorePostsForm').serialize(),
             success: function (data) {
+                $('#loadMorePostsForm_lastPostId').val('');
+                $('#loadMorePostsForm_profileUserId').val('');
                 $('#profileBuzz').replaceWith(data);
             }
         });
@@ -61,15 +62,16 @@ $(document).ready(function () {
 
     $(".loadMorePostsLink").live("click", function (e) {
 
-        var lastPostId = {
-            'lastPostId': $('#profileBuzz .lastLoadedPost').last().attr('id'),
-            'profileUserId': trim($('#profileUserId').html())
-        };
+        $('#loadMorePostsForm_lastPostId').val($('#profileBuzz .lastLoadedPost').last().attr('id'));
+        $('#loadMorePostsForm_profileUserId').val(trim($('#profileUserId').html()));
+
         $.ajax({
             url: loadNextSharesURL,
             type: "POST",
-            data: lastPostId,
+            data: $('#loadMorePostsForm').serialize(),
             success: function (data) {
+                $('#loadMorePostsForm_lastPostId').val('');
+                $('#loadMorePostsForm_profileUserId').val('');
                 $('#profileBuzz').append(data);
             }
         });
@@ -108,15 +110,16 @@ $(document).ready(function () {
     $(".postNoofLikesTooltip").live("hover", function (e) {
         var idValue = e.target.id;
         var shareId = idValue.split("_")[1];
-        var data = {
-            'id': shareId,
-            'type': 'post'
-        };
+        $('#likedOrSharedEmployeeForm_id').val(shareId);
+        $('#likedOrSharedEmployeeForm_type').val('post');
+
         $.ajax({
             url: getLikedEmployeeListURL,
             type: "POST",
-            data: data,
+            data: $('#likedOrSharedEmployeeForm').serialize(),
             success: function (data) {
+                $('#likedOrSharedEmployeeForm_id').val('');
+                $('#likedOrSharedEmployeeForm_type').val('');
                 $('#' + idValue).attr('title', '');
                 $('#' + idValue).attr('title', data);
             }
@@ -126,15 +129,17 @@ $(document).ready(function () {
     $(".commentNoofLikesTooltip").live("hover", function (e) {
         var idValue = e.target.id;
         var commentId = idValue.split("_")[1];
-        var data = {
-            'id': commentId,
-            'type': 'comment'
-        };
+
+        $('#likedOrSharedEmployeeForm_id').val(commentId);
+        $('#likedOrSharedEmployeeForm_type').val('comment');
+
         $.ajax({
             url: getLikedEmployeeListURL,
             type: "POST",
-            data: data,
+            data: $('#likedOrSharedEmployeeForm').serialize(),
             success: function (data) {
+                $('#likedOrSharedEmployeeForm_id').val('');
+                $('#likedOrSharedEmployeeForm_type').val('');
                 $('#' + idValue).attr('title', '');
                 $('#' + idValue).attr('title', data);
             }
@@ -192,16 +197,17 @@ $(window).scroll(function ()
                 $('#buzzProfileSharesLoadedCount').html(sharesLoadedCount);
 
                 $('.loadMoreBox').show();
-                var lastPostId = {
-                    'lastPostId': $('#profileBuzz .lastLoadedPost').last().attr('id'),
-                    'profileUserId': trim($('#profileUserId').html())
-                };
+
+                $('#loadMorePostsForm_lastPostId').val($('#profileBuzz .lastLoadedPost').last().attr('id'));
+                $('#loadMorePostsForm_profileUserId').val(trim($('#profileUserId').html()));
 
                 $.ajax({
                     url: loadNextSharesURL,
                     type: "POST",
-                    data: lastPostId,
+                    data: $('#loadMorePostsForm').serialize(),
                     success: function (data) {
+                        $('#loadMorePostsForm_lastPostId').val('');
+                        $('#loadMorePostsForm_profileUserId').val('');
                         $('#profileBuzz').append(data);
                         $('.loadMoreBox').hide();
                     }

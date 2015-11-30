@@ -27,6 +27,16 @@
 class shareAPostAction extends BaseBuzzAction {
 
     /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
+    /**
      * this is reurn form to edit comment
      * @return CommentEditForm
      */
@@ -62,20 +72,30 @@ class shareAPostAction extends BaseBuzzAction {
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
-        $this->postId = $request->getParameter('postId');
-        $this->error = 'no';
-
-        if ($this->loggedInUser) {
-            $loggedInEmployee = $this->getEmployeeService()->getEmployee($this->loggedInUser);
-        }
 
         try {
-            $this->post = $this->getBuzzService()->getPostById($this->postId);
-            $this->shareText = $request->getParameter('textShare');
-            $this->share = $this->sharePost($loggedInEmployee);
-            $this->logeInUser = $this->getLogedInEmployeeNumber();
-            $this->commentForm = $this->getCommentForm();
-            $this->editForm = $this->getEditForm();
+
+            $this->setForm(new DeleteOrEditShareForm());
+
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+
+                    if ($this->loggedInUser) {
+                        $loggedInEmployee = $this->getEmployeeService()->getEmployee($this->loggedInUser);
+                    }
+                    $this->error = 'no';
+                    $this->postId = $formValues['shareId'];
+                    $this->shareText = $formValues['textShare'];
+                    
+                    $this->post = $this->getBuzzService()->getPostById($this->postId);
+                    $this->share = $this->sharePost($loggedInEmployee);
+                    $this->logeInUser = $this->getLogedInEmployeeNumber();
+                    $this->commentForm = $this->getCommentForm();
+                    $this->editForm = $this->getEditForm();
+                }
+            }
         } catch (Exception $ex) {
             $this->error = 'yes';
             $this->getUser()->setFlash('error', __("This post has been deleted or you do not have permission to perform this action"));

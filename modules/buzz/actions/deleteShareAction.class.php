@@ -27,6 +27,16 @@
 class deleteShareAction extends BaseBuzzAction {
 
     /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
+    /**
      * get share by Id and return it
      * @param type $shareId
      * @return Share
@@ -60,13 +70,23 @@ class deleteShareAction extends BaseBuzzAction {
 
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->shareId = $request->getParameter('shareId');
-            $share = $this->getShare($this->shareId);
-            if ($share->getType() == 0) {
-                $this->deletePost($share);
-            } else {
-                $this->deleteShare($share);
+            $this->setForm(new DeleteOrEditShareForm());
+
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->shareId = $formValues['shareId'];
+                    
+                    $share = $this->getShare($this->shareId);
+                    if ($share->getType() == 0) {
+                        $this->deletePost($share);
+                    } else {
+                        $this->deleteShare($share);
+                    }
+                }
             }
         } catch (Exception $ex) {
             $this->redirect('auth/login');

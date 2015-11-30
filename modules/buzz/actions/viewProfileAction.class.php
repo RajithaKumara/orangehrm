@@ -42,6 +42,7 @@ class viewProfileAction extends BaseBuzzAction {
         $this->setLayout($template . '/chatter');
         $this->searchForm = $this->getSearchForm();
         $this->actionValidateForm = $this->getActionValidateForm();
+
         try {
             $this->loggedInUser = $this->getLogedInEmployeeNumber();
             $this->profileUserId = $request->getParameter('empNumber');
@@ -53,9 +54,35 @@ class viewProfileAction extends BaseBuzzAction {
             }
             $this->intializeConfigValuves();
             $this->initializePostList();
+
+            $this->refreshStatsForm = $this->getRefreshStatsForm();
+            $this->likedOrSharedEmployeeForm = $this->getLikedOrSharedEmployeeForm();
+            $this->loadMorePostsForm = $this->getLoadMorePostsForm();
+            $this->deleteOrEditShareForm = $this->getDeleteOrEditShareForm();
+            $this->deleteOrEditCommentForm = $this->getDeleteOrEditCommentForm();
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
+    }
+
+    protected function getRefreshStatsForm() {
+        return new RefreshStatsForm();
+    }
+
+    protected function getLikedOrSharedEmployeeForm() {
+        return new LikedOrSharedEmployeeForm();
+    }
+
+    protected function getLoadMorePostsForm() {
+        return new LoadMorePostsForm();
+    }
+
+    protected function getDeleteOrEditShareForm() {
+        return new DeleteOrEditShareForm();
+    }
+
+    protected function getDeleteOrEditCommentForm() {
+        return new DeleteOrEditCommentForm();
     }
 
     /**

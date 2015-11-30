@@ -27,6 +27,16 @@
 class refreshProfileAction extends BaseBuzzAction {
 
     /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
+    /**
      * this is reurn form to edit comment
      * @return CommentEditForm
      */
@@ -58,14 +68,25 @@ class refreshProfileAction extends BaseBuzzAction {
 
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->lastPostId = $request->getParameter('lastPostId');
-            $this->profileUserId = $request->getParameter('profileUserId');
-            $this->buzzService = $this->getBuzzService();
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->fullSharesList = $this->buzzService->getEmployeeSharesUptoShareId($this->lastPostId, $this->profileUserId);
-            $this->commentForm = $this->getCommentForm();
-            $this->editForm = $this->getEditForm();
+
+            $this->setForm(new LoadMorePostsForm());
+
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+                    
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->lastPostId = $formValues['lastPostId'];
+                    $this->profileUserId = $formValues['profileUserId'];
+                    
+                    $this->buzzService = $this->getBuzzService();
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->fullSharesList = $this->buzzService->getEmployeeSharesUptoShareId($this->lastPostId, $this->profileUserId);
+                    $this->commentForm = $this->getCommentForm();
+                    $this->editForm = $this->getEditForm();
+                }
+            }
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }

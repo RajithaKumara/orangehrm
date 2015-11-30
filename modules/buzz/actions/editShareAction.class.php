@@ -26,21 +26,39 @@
  */
 class editShareAction extends BaseBuzzAction {
 
+    /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $this->shareId = $request->getParameter('shareId');
-            $this->editedContent = $request->getParameter('textShare');
-            $this->type = 'post';
-            $this->error = 'no';
+            $this->setForm(new DeleteOrEditShareForm());
 
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+                    $this->shareId = $formValues['shareId'];
+                    $this->editedContent = $formValues['textShare'];
 
-            $share = $this->getBuzzService()->getShareById($this->shareId);
-            if ($share != null) {      
-                $this->post = $this->saveEditedContent($share);
-            } else {
-                $this->error = 'yes';
-                $this->getUser()->setFlash('error', __("This share has been deleted or you do not have permission to perform this action"));
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $this->type = 'post';
+                    $this->error = 'no';
+
+                    $share = $this->getBuzzService()->getShareById($this->shareId);
+                    if ($share != null) {
+                        $this->post = $this->saveEditedContent($share);
+                    } else {
+                        $this->error = 'yes';
+                        $this->getUser()->setFlash('error', __("This share has been deleted or you do not have permission to perform this action"));
+                    }
+                }
             }
         } catch (Exception $ex) {
             $this->redirect('auth/login');
@@ -52,18 +70,17 @@ class editShareAction extends BaseBuzzAction {
      * @return Post
      */
     public function saveEditedContent($share) {
-        
+
         if ($share->getEmployeeNumber() == $this->getLogedInEmployeeNumber()) {
             if ($share->getType() == 1) {
                 $this->type = 'share';
-                $share= $this->saveShare($share);
+                $share = $this->saveShare($share);
             } else {
-                
-                $share= $this->savePost($share->getPostShared());    
+
+                $share = $this->savePost($share->getPostShared());
             }
         }
         return $share;
-        
     }
 
     /**

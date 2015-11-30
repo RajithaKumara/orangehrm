@@ -27,22 +27,42 @@
 class getLikedEmployeeListAction extends BaseBuzzAction {
 
     /**
+     * @param sfForm $form
+     * @return
+     */
+    protected function setForm(sfForm $form) {
+        if (is_null($this->form)) {
+            $this->form = $form;
+        }
+    }
+
+    /**
      * return employee list
      * @param type $request
      */
     public function execute($request) {
         try {
-            $this->loggedInUser = $this->getLogedInEmployeeNumber();
-            $id = $request->getParameter('id');
-            $type = $request->getParameter('type');
-            $this->buzzService = new BuzzService();
-            $this->loggedInEmployeeId = $this->getLogedInEmployeeNumber();
-            if ($type == 'post') {
-                $this->share = $this->buzzService->getShareById($id);
-                $this->likedEmployeeList = $this->share->getLikedEmployees($this->loggedInEmployeeId);
-            } else {
-                $this->comment = $this->buzzService->getCommentById($id);
-                $this->likedEmployeeList = $this->comment->getLikedEmployees($this->loggedInEmployeeId);
+
+            $this->setForm(new LikedOrSharedEmployeeForm());
+
+            if ($request->isMethod('post')) {
+                $this->form->bind($request->getParameter($this->form->getName()));
+                if ($this->form->isValid()) {
+                    $formValues = $this->form->getValues();
+
+                    $this->loggedInUser = $this->getLogedInEmployeeNumber();
+                    $id = $formValues['id'];
+                    $type = $formValues['type'];
+                    $this->buzzService = new BuzzService();
+                    $this->loggedInEmployeeId = $this->getLogedInEmployeeNumber();
+                    if ($type == 'post') {
+                        $this->share = $this->buzzService->getShareById($id);
+                        $this->likedEmployeeList = $this->share->getLikedEmployees($this->loggedInEmployeeId);
+                    } else {
+                        $this->comment = $this->buzzService->getCommentById($id);
+                        $this->likedEmployeeList = $this->comment->getLikedEmployees($this->loggedInEmployeeId);
+                    }
+                }
             }
         } catch (Exception $ex) {
             $this->redirect('auth/login');

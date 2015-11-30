@@ -130,11 +130,37 @@ class viewBuzzAction extends BaseBuzzAction {
             $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
             $this->timestamp = time();
             $this->imageMaxDimension = $buzzConfigService->getMaxImageDimension();
+            
+            $this->refreshStatsForm = $this->getRefreshStatsForm();
+            $this->likedOrSharedEmployeeForm =  $this->getLikedOrSharedEmployeeForm();
+            $this->loadMorePostsForm = $this->getLoadMorePostsForm();
+            $this->deleteOrEditShareForm =  $this->getDeleteOrEditShareForm();
+            $this->deleteOrEditCommentForm =  $this->getDeleteOrEditCommentForm();
+            $this->imageUploadForm = new ImageUploadForm();
         
-//            $this->anniversaryEmpList = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("Y-m-d"));
         } catch (Exception $ex) {
-            //$this->forward('auth', 'login');
+            $this->forward('auth', 'login');
         }
+    }
+    
+    protected function getRefreshStatsForm() {
+        return new RefreshStatsForm();
+    }
+
+    protected function getLikedOrSharedEmployeeForm() {
+        return new LikedOrSharedEmployeeForm();
+    }
+
+    protected function getLoadMorePostsForm() {
+        return new LoadMorePostsForm();
+    }
+
+    protected function getDeleteOrEditShareForm() {
+        return new DeleteOrEditShareForm();
+    }
+
+    protected function getDeleteOrEditCommentForm() {
+        return new DeleteOrEditCommentForm();
     }
 
     /**
