@@ -158,10 +158,20 @@ $(document).ready(function () {
         var idValue = e.target.id;
         $("#posthide_" + idValue.split("_")[1]).modal('hide');
         var shareId = idValue.split("_")[1];
+
+        var postId = idValue.split("_")[2];
         var share = $("#shareBox_" + idValue.split("_")[1]).val();
+
+        $('#deleteOrEditShareForm_shareId').val(postId);
+        $('#deleteOrEditShareForm_textShare').val(share);
+
         $.ajax({
-            url: shareShareURL + "?postId=" + idValue.split("_")[2] + "&textShare=" + share,
+            url: shareShareURL,
+            type: 'POST',
+            data: $('#deleteOrEditShareForm').serialize(),
             success: function (data) {
+                $('#deleteOrEditShareForm_shareId').val('');
+                $('#deleteOrEditShareForm_textShare').val('');
                 $("#shareViewMoreMod1_" + shareId).modal("hide");
                 $("#posthidePopup_" + shareId).modal("hide");
                 $('#buzz').prepend(data);
