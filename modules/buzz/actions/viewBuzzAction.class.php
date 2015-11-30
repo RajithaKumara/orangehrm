@@ -136,7 +136,7 @@ class viewBuzzAction extends BaseBuzzAction {
             $this->loadMorePostsForm = $this->getLoadMorePostsForm();
             $this->deleteOrEditShareForm =  $this->getDeleteOrEditShareForm();
             $this->deleteOrEditCommentForm =  $this->getDeleteOrEditCommentForm();
-            $this->imageUploadForm = new ImageUploadForm();
+            $this->imageUploadForm = $this->getImageUploadForm();
         
         } catch (Exception $ex) {
             $this->forward('auth', 'login');
@@ -161,6 +161,10 @@ class viewBuzzAction extends BaseBuzzAction {
 
     protected function getDeleteOrEditCommentForm() {
         return new DeleteOrEditCommentForm();
+    }
+    
+    protected function getImageUploadForm(){
+        return new ImageUploadForm();
     }
 
     /**

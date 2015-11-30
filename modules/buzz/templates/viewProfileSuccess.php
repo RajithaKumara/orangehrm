@@ -181,11 +181,10 @@ ini_set("memory_limit", '-1');
             <form id="deleteOrEditCommentForm" method="POST" action="" >
                 <?php echo $deleteOrEditCommentForm->render(); ?>
             </form>
-            
+
             <form id="imageUploadForm" method="POST" action="" >
                 <?php echo $imageUploadForm->render(); ?>
             </form>
-
 
             <div style="display:none;" id="buzzProfileAllSharesCount" ><?php echo $allShareCount; ?></div>
             <div style="display:none;" id="buzzProfileSharesLoadedCount"><?php echo $shareCount; ?></div>

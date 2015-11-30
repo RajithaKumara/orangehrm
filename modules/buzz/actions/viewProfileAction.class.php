@@ -60,6 +60,8 @@ class viewProfileAction extends BaseBuzzAction {
             $this->loadMorePostsForm = $this->getLoadMorePostsForm();
             $this->deleteOrEditShareForm = $this->getDeleteOrEditShareForm();
             $this->deleteOrEditCommentForm = $this->getDeleteOrEditCommentForm();
+            $this->imageUploadForm = $this->getImageUploadForm();
+            
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
@@ -83,6 +85,10 @@ class viewProfileAction extends BaseBuzzAction {
 
     protected function getDeleteOrEditCommentForm() {
         return new DeleteOrEditCommentForm();
+    }
+    
+    protected function getImageUploadForm(){
+        return new ImageUploadForm();
     }
 
     /**
