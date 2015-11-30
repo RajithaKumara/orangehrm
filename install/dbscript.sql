@@ -14,7 +14,7 @@ INSERT INTO `ohrm_config`(`property`, `value`) VALUES ('buzz_refresh_time','6000
 --
 -- Inserting News feed Module to The Database
 --
-INSERT INTO `ohrm_module`( `name`, `status`) VALUES ('buzz','0');
+INSERT INTO `ohrm_module`( `name`, `status`) VALUES ('buzz','1');
 INSERT INTO `ohrm_data_group` (`name`, `description`, `can_read`, `can_create`, `can_update`, `can_delete`) VALUES
 ('buzz_link', 'buzz link permition ', 1, 1, 1, 0);
 
@@ -31,23 +31,6 @@ SET @buzz_link_admin_data_group_id := (SELECT id FROM `ohrm_data_group` WHERE `n
 
 INSERT INTO `ohrm_user_role_data_group` (`user_role_id`, `data_group_id`, `can_read`, `can_create`, `can_update`, `can_delete`, `self`) VALUES
 (1, @buzz_link_admin_data_group_id, 1, 1, 1, 0, 0);
--- SET @buzz_module_id := (SELECT `id` FROM `ohrm_module` WHERE `name` = 'buzz');
-
--- INSERT INTO `ohrm_screen`(`name`, `module_id`, `action_url`) VALUES 
--- ('buzz',@buzz_module_id,'viewBuzz');
-
--- SET @buzz_screen_id := (SELECT `id` FROM ohrm_screen WHERE `name` = 'buzz');
--- SET @ess_user_role_id :=(SELECT `id` FROM `ohrm_user_role` WHERE `name`='ESS');
--- SET @admin_user_role_id :=(SELECT `id` FROM `ohrm_user_role` WHERE `name`='Admin');
--- SET @supervisor_user_role_id :=(SELECT `id` FROM `ohrm_user_role` WHERE `name`='Supervisor');
-
--- INSERT INTO ohrm_user_role_screen (user_role_id, screen_id, can_read, can_create, can_update, can_delete)
---  VALUES    (@admin_user_role_id, @buzz_screen_id, 1, 1, 1, 0),
---            (@supervisor_user_role_id, @buzz_screen_id, 1, 1, 1, 0),
---             (@ess_user_role_id, @buzz_screen_id, 1, 1, 1, 0);
-
--- INSERT INTO `ohrm_menu_item`( `menu_title`, `screen_id`, `level`, `order_hint`) VALUES 
---                 ('News Feed',@buzz_screen_id,'1','100');
 
 --
 -- Table structure for table `ohrm_buzz_post`
@@ -248,7 +231,7 @@ ALTER TABLE `ohrm_buzz_unlike_on_share`
   ADD CONSTRAINT `buzzUNLikeOnshare` FOREIGN KEY (`share_id`) 
     REFERENCES `ohrm_buzz_share` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
--- changes with 5.1.1
+-- changes with 5.2
 
 ALTER TABLE `ohrm_buzz_post` ADD `employee_name` VARCHAR( 255 ) NULL AFTER `employee_number` ;
 
