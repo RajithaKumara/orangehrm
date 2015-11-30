@@ -17,9 +17,7 @@
  * Please refer http://www.orangehrm.com/Files/OrangeHRM_Commercial_License.pdf for the license which includes terms and conditions on using this software.
  *
  */
-//use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
-////use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewBuzzSuccess'));
-//use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/buzzNew'));
+
 ?>
 
 <?php if ($isSuccessfullyAddedComment) { ?>
@@ -145,17 +143,17 @@
                     <?php if ($isLikeComment == 'Unlike') { ?>
                         <a style="display:none;" href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?> tiptip" title="<?php echo __('Like')?>" id='<?php echo 'commentLikeno_' . $commentId ?>'> 
                             <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
-                                  class="<?php echo $isLikeComment . ' commentLike'; ?>" height="20" width="20"/></a>
+                                  class="<?php echo $isLikeComment . ''; ?>" height="20" width="20"/></a>
                         <a href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?> tiptip" title="<?php echo __('Like')?>" id='<?php echo 'commentLikeyes_' . $commentId ?>'> 
                             <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
-                                  class="<?php echo $isLikeComment . ' commentLike'; ?>" height="20" width="20"/></a>
+                                  class="<?php echo $isLikeComment . ''; ?>" height="20" width="20"/></a>
                         <?php } else { ?>
                         <a href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?> tiptip" title="<?php echo __('Like')?>" id='<?php echo 'commentLikeno_' . $commentId ?>'> 
                             <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/like.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
-                                  class="<?php echo $isLikeComment . ' commentLike'; ?>" height="22" width="22"/></a>
+                                  class="<?php echo $isLikeComment . ''; ?>" height="22" width="22"/></a>
                         <a style="display:none;" href="javascript:void(0)" class="<?php echo $isLikeComment . ' commentLike'; ?> tiptip" title="<?php echo __('Like')?>"  id='<?php echo 'commentLikeyes_' . $commentId ?>'> 
                             <img  src="<?php echo plugin_web_path("orangehrmBuzzPlugin", "images/like/icons.png"); ?>" border="0" id='<?php echo 'commentLike_' . $commentId ?>'
-                                  class="<?php echo $isLikeComment . ' commentLike'; ?>" height="22" width="22"/></a>
+                                  class="<?php echo $isLikeComment . ''; ?>" height="22" width="22"/></a>
                         <?php } ?>
 
                     <div class="textTopOfImageComment" id='<?php echo 'commentNoOfLiketext_' . $commentId ?>'><?php echo $commentNoOfLikes ?></div>

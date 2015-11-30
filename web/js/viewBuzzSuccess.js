@@ -1012,27 +1012,27 @@ $(document).ready(function () {
     /**
      * original post view
      */
-    $(".originalPostView").live("click", function (e) {
-        var idValue = e.target.id;
-        var shareId = idValue.split("_")[1];
-        var postId = idValue.split("_")[2];
-
-        $("#loadingDataModal").modal();
-
-        $('#deleteOrEditShareForm_shareId').val(postId);
-
-        $.ajax({
-            url: viewOriginalPost,
-            type: "POST",
-            data: $('#deleteOrEditShareForm').serialize(),
-            success: function (data) {
-                $('#deleteOrEditShareForm_shareId').val('');
-                $('#postViewContent_' + shareId).replaceWith(data);
-                $("#loadingDataModal").modal('hide');
-                $('#postViewOriginal_' + shareId).modal();
-            }
-        });
-    });
+//    $(".originalPostView").live("click", function (e) {
+//        var idValue = e.target.id;
+//        var shareId = idValue.split("_")[1];
+//        var postId = idValue.split("_")[2];
+//
+//        $("#loadingDataModal").modal();
+//
+//        $('#deleteOrEditShareForm_shareId').val(postId);
+//
+//        $.ajax({
+//            url: viewOriginalPost,
+//            type: "POST",
+//            data: $('#deleteOrEditShareForm').serialize(),
+//            success: function (data) {
+//                $('#deleteOrEditShareForm_shareId').val('');
+//                $('#postViewContent_' + shareId).replaceWith(data);
+//                $("#loadingDataModal").modal('hide');
+//                $('#postViewOriginal_' + shareId).modal();
+//            }
+//        });
+//    });
 
     $(".postCommentBox").live('click', function (e) {
         var idValue = e.target.className;

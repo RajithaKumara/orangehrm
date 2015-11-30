@@ -254,6 +254,7 @@ $(document).ready(function () {
             });
         }
     });
+    
     $(".commentLike").live("click", function (e) {
         isAccess();
         var idValue = e.target.id;
@@ -286,6 +287,7 @@ $(document).ready(function () {
             }
         }, "json");
     });
+    
     $(".commentUnlike2").live("click", function (e) {
 
         isAccess();
@@ -327,7 +329,7 @@ $(document).ready(function () {
         $("#postLinkState").html('no');
     });
     function isAccess() {
-        $.getJSON(getAccessUrl, {get_param: 'value'}, function (data) {
+        $.getJSON(getAccessUrl, {}, function (data) {
 
             if (data.state === 'loged') {
 
