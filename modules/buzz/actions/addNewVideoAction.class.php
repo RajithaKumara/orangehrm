@@ -105,7 +105,7 @@ class addNewVideoAction extends BaseBuzzAction {
         $temp = split("youtu.be/", $url);
 
         if (count($temp) > 1) {
-            $embededUrl = "http://www.youtube.com/embed/" . $temp[1] . "?rel=0";
+            $embededUrl = "https://www.youtube.com/embed/" . $temp[1] . "?rel=0";
             return $embededUrl;
         }
 
@@ -117,7 +117,7 @@ class addNewVideoAction extends BaseBuzzAction {
             if ($responeCode != "200") {
                 return 'not';
             }
-            $embededUrl = "http://www.youtube.com/embed/" . $temp2[1] . "?rel=0";
+            $embededUrl = "https://www.youtube.com/embed/" . $temp2[1] . "?rel=0";
             return $embededUrl;
         }
 
