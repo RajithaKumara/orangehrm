@@ -30,7 +30,14 @@ class viewBirthdaysComponent extends sfComponent {
 
     public function execute($request) {
         $this->setBuzzService(new BuzzService());
-        $this->employeeList = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
+        $employeeBirthdaysForNext30Days = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates(date("Y-m-d"), date('Y-m-t'));
+
+        if (date("m") == 12) {
+            $employeeBirthdaysForNextYearFirstMonth = $this->buzzService->getEmployeesHavingBdaysOnNextYear(date("Y-m-d"));
+        }
+
+        $this->employeeList = array_merge($employeeBirthdaysForNext30Days, $employeeBirthdaysForNextYearFirstMonth);
+
         $this->employeeService = new EmployeeService();
         $this->employeesHavingBirthday = array();
         foreach ($this->employeeList as $employee) {

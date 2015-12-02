@@ -213,13 +213,34 @@ class BuzzDao extends BaseDao {
      */
     public function getEmployeesHavingBdaysBetweenTwoDates($fromDate, $toDate) {
         try {
-            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND (datediff( MAKEDATE(YEAR(:date) , DAYOFYEAR(emp_birthday)) , :date) " . 
-                                       " BETWEEN 1 AND 30 ".
-                                       " OR datediff( MAKEDATE(YEAR(:date)+1 , DAYOFYEAR(emp_birthday)) , :date) " .
-                                       " BETWEEN 1 AND 30) ";
+            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND datediff( MAKEDATE(YEAR(:date) , DAYOFYEAR(emp_birthday)) , :date) " . 
+                                       " BETWEEN 0 AND 30 ";
             $params = array(':date' => $fromDate);
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
-            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY MONTH(joined_date) ASC, DAY(joined_date) ASC", $params);
+            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY MONTH(emp_birthday) ASC, DAY(emp_birthday) ASC", $params);
+            
+            return $result->fetchAll();
+            // @codeCoverageIgnoreStart
+        } catch (Exception $e) {
+            throw new DaoException($e->getMessage(), $e->getCode(), $e);
+        }
+        // @codeCoverageIgnoreEnd
+    }
+    
+    /**
+     * Get employee having birthdays next year
+     * @param type $date
+     * @return type
+     * @throws DaoException
+     */
+    Public function getEmployeesHavingBdaysOnNextYear($date){
+        try {
+            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND  datediff( MAKEDATE(YEAR(:date)+1 , DAYOFYEAR(emp_birthday)) , :date) " .
+                                       " BETWEEN 0 AND 30 ";
+            
+            $params = array(':date' => $date);
+            $q = Doctrine_Manager::getInstance()->getCurrentConnection();
+            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY MONTH(emp_birthday) ASC, DAY(emp_birthday) ASC", $params);
             
             return $result->fetchAll();
             // @codeCoverageIgnoreStart
@@ -237,10 +258,33 @@ class BuzzDao extends BaseDao {
      */
     public function getEmployeesHavingAnniversaryOnMonth($date) {
         try {
-            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND (datediff( MAKEDATE(YEAR(:date) , DAYOFYEAR(joined_date)) , :date) " . 
-                                       " BETWEEN 1 AND 30 ".
-                                       " OR datediff( MAKEDATE(YEAR(:date)+1 , DAYOFYEAR(joined_date)) , :date) " .
-                                       " BETWEEN 1 AND 30) ";
+            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND datediff( MAKEDATE(YEAR(:date) , DAYOFYEAR(joined_date)) , :date) " . 
+                                       " BETWEEN 0 AND 30 ";
+            
+            $params = array(':date' => $date);
+            
+            $q = Doctrine_Manager::getInstance()->getCurrentConnection();
+            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY MONTH(joined_date) ASC, DAY(joined_date) ASC", $params);
+            return $result->fetchAll();
+            // @codeCoverageIgnoreStart
+        } catch (Exception $e) {
+            throw new DaoException($e->getMessage(), $e->getCode(), $e);
+        }
+        // @codeCoverageIgnoreEnd
+    }
+    
+    
+    /**
+     * 
+     * @param type $date
+     * @return type
+     * @throws DaoException
+     */
+    public function getEmployeesHavingAnniversariesNextYear($date) {
+        try {
+            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND ".
+                                       " datediff( MAKEDATE(YEAR(:date)+1 , DAYOFYEAR(joined_date)) , :date) " .
+                                       " BETWEEN 0 AND 30 ";
             $params = array(':date' => $date);
             
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();

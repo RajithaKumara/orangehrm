@@ -781,6 +781,29 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $resultEmployees = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates($fromDate, $todate);
         $this->assertTrue(is_array($resultEmployees));
     }
+    
+    /**
+     * test get Employees Having Bdays On Next Year
+     */
+    public function testGetEmployeesHavingBdaysOnNextYear() {
+        $date = '2015-12-12';
+        $buzzDao = $this->getMock('buzzDao', array('getEmployeesHavingBdaysOnNextYear'));
+
+        $employeeArray = array(
+            new Employee(),
+            new Employee(),
+            new Employee()
+        );
+        $buzzDao->expects($this->once())
+                ->method('getEmployeesHavingBdaysOnNextYear')
+                ->with($date)
+                ->will($this->returnValue($employeeArray));
+
+        $this->buzzService->setBuzzDao($buzzDao);
+        $resultEmployees = $this->buzzService->getEmployeesHavingBdaysOnNextYear($date);
+        $this->assertTrue(is_array($resultEmployees));
+    }
+
 
     /**
      * test get employee anivesary
@@ -801,6 +824,28 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
 
         $this->buzzService->setBuzzDao($buzzDao);
         $resultEmployees = $this->buzzService->getEmployeesHavingAnniversaryOnMonth($date);
+        $this->assertTrue(is_array($resultEmployees));
+    }
+    
+    /**
+     * test get Employees Having Anniversaries Next Year
+     */
+    public function testGetEmployeesHavingAnniversariesNextYear() {
+        $date = '2012-05-15';
+        $buzzDao = $this->getMock('buzzDao', array('getEmployeesHavingAnniversariesNextYear'));
+
+        $employeeArray = array(
+            new Employee(),
+            new Employee(),
+            new Employee()
+        );
+        $buzzDao->expects($this->once())
+                ->method('getEmployeesHavingAnniversariesNextYear')
+                ->with($date)
+                ->will($this->returnValue($employeeArray));
+
+        $this->buzzService->setBuzzDao($buzzDao);
+        $resultEmployees = $this->buzzService->getEmployeesHavingAnniversariesNextYear($date);
         $this->assertTrue(is_array($resultEmployees));
     }
 

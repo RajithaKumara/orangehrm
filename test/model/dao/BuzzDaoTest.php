@@ -39,11 +39,11 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
      * test save post to the database
      */
     public function testGetSharesCount() {
-        
+
         $resultShareCount = $this->buzzDao->getSharesCount();
         $this->assertEquals(4, $resultShareCount);
     }
-    
+
     /**
      * test save post to the database
      */
@@ -68,7 +68,7 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $link->setPostId(2);
         $link->setDescription('description');
         $resultLink = $this->buzzDao->saveLink($link);
-        
+
         $this->assertTrue($resultLink instanceof Link);
         $this->assertTrue($resultLink->getId() != null);
     }
@@ -401,6 +401,30 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $todate = '2015-05-30';
         $expectedEmployeeNumber = 1;
         $resultEmployees = $this->buzzDao->getEmployeesHavingBdaysBetweenTwoDates($fromDate, $todate);
+
+        $this->assertEquals(1, count($resultEmployees));
+        $this->assertEquals($expectedEmployeeNumber, $resultEmployees[0]['emp_number']);
+    }
+
+    /**
+     * BuzzDao::getEmployeesHavingBdaysOnNextYear
+     */
+    public function testGetEmployeesHavingBdaysOnNextYear() {
+        $date = '2015-12-15';
+        $expectedEmployeeNumber = 4;
+        $resultEmployees = $this->buzzDao->getEmployeesHavingBdaysOnNextYear($date);
+
+        $this->assertEquals(1, count($resultEmployees));
+        $this->assertEquals($expectedEmployeeNumber, $resultEmployees[0]['emp_number']);
+    }
+
+    /**
+     * BuzzDao::getEmployeesHavingAnniversariesNextYear
+     */
+    public function testGetEmployeesHavingAnniversariesNextYear() {
+        $date = '2015-12-15';
+        $expectedEmployeeNumber = 4;
+        $resultEmployees = $this->buzzDao->getEmployeesHavingAnniversariesNextYear($date);
 
         $this->assertEquals(1, count($resultEmployees));
         $this->assertEquals($expectedEmployeeNumber, $resultEmployees[0]['emp_number']);
@@ -894,57 +918,57 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(0, Count($resultShares));
     }
-    
+
     public function testGetPhotoValidId() {
         $photoId = 1;
         $photo = $this->buzzDao->getPhoto($photoId);
-        
+
         $this->assertInstanceOf('Photo', $photo);
         $this->assertEquals($photoId, $photo->getId());
-        $this->assertEquals(1, $photo->getPostId());        
+        $this->assertEquals(1, $photo->getPostId());
         $this->assertEquals('test.jpg', $photo->getFilename());
-        $this->assertEquals('jpg', $photo->getFileType());     
+        $this->assertEquals('jpg', $photo->getFileType());
     }
-    
+
     public function testGetPhotoNonExistingId() {
         $photoId = 11;
-        $photo = $this->buzzDao->getPhoto($photoId);        
-        $this->assertFalse($photo);  
+        $photo = $this->buzzDao->getPhoto($photoId);
+        $this->assertFalse($photo);
     }
-    
+
     public function testGetPostPhotosPostWithOnePhoto() {
         $postId = 1;
         $photos = $this->buzzDao->getPostPhotos($postId);
-        
+
         $this->assertEquals(1, count($photos));
         $this->assertInstanceOf('Photo', $photos[0]);
         $this->assertEquals(1, $photos[0]->getId());
-        $this->assertEquals(1, $photos[0]->getPostId());        
+        $this->assertEquals(1, $photos[0]->getPostId());
         $this->assertEquals('test.jpg', $photos[0]->getFilename());
-        $this->assertEquals('jpg', $photos[0]->getFileType());     
-    }    
-    
+        $this->assertEquals('jpg', $photos[0]->getFileType());
+    }
+
     public function testGetPostPhotosPostWithPhotos() {
         $postId = 4;
         $photos = $this->buzzDao->getPostPhotos($postId);
-        
+
         $allPhotos = TestDataService::loadObjectList('Photo', $this->fixture, 'Photo');
         $expected = array($allPhotos[2], $allPhotos[3], $allPhotos[4]);
-        
-        $this->assertEquals(count($expected), count($photos)); 
+
+        $this->assertEquals(count($expected), count($photos));
         for ($i = 0; $i < count($expected); $i++) {
             $this->assertEquals($expected[$i]->getId(), $photos[$i]->getId());
-            $this->assertEquals($expected[$i]->getPostId(), $photos[$i]->getPostId());        
+            $this->assertEquals($expected[$i]->getPostId(), $photos[$i]->getPostId());
             $this->assertEquals($expected[$i]->getFilename(), $photos[$i]->getFilename());
-            $this->assertEquals($expected[$i]->getFileType(), $photos[$i]->getFileType());                 
-        }                
-    }    
-    
+            $this->assertEquals($expected[$i]->getFileType(), $photos[$i]->getFileType());
+        }
+    }
+
     public function testGetPostPhotosPostWithoutPhoto() {
         $postId = 3;
         $photos = $this->buzzDao->getPostPhotos($postId);
-        
-        $this->assertEquals(0, count($photos));   
-    }    
+
+        $this->assertEquals(0, count($photos));
+    }
 
 }

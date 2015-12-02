@@ -102,7 +102,7 @@ ini_set("memory_limit", '-1');
 
         <!--Start anniversary Component-->
         <div id="anniversaryComponent">
-            <?php include_component('buzz', 'viewAnniversaries', array('anniversaryEmpList' => $anniversaryEmpList)); ?>
+            <?php include_component('buzz', 'viewAnniversaries', array()); ?>
         </div>
         <!--End anniversary Component-->
         <!--Start Stat Component-->

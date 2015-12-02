@@ -2,6 +2,7 @@ Employee:
   0: {emp_number:1, employee_id:'001', emp_lastname:'tebel', emp_birthday:'2015-05-07', joined_date:'2010-05-07'}
   1: {emp_number:2, employee_id:'002', emp_lastname:'tebel2' emp_birthday:'2010-06-07', joined_date:'2010-06-07'}
   2: {emp_number:3, employee_id:'003', emp_lastname:'tebel3' emp_birthday:'2014-06-07', joined_date:'2010-05-10'}
+  3: {emp_number:4, employee_id:'003', emp_lastname:'tebel3' emp_birthday:'2000-01-01', joined_date:'2010-01-01'}  
   
 EmpPicture:
   0: {emp_number: '1', epic_filename: 'test_file.jpg', epic_type: 'test/type'}
