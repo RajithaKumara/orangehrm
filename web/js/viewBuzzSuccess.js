@@ -465,12 +465,11 @@ $(document).ready(function () {
         var loadingSpinner;
         var commentId;
         var elementSplitted = elementId.split("_");
-
+        
         if (elementSplitted[1] == 'popShareId') {
             var element = '#commentBoxnew_txt_popShareId_' + elementSplitted[2];
             value = $(element).val();
             formName = '#formCreateComment_' + elementSplitted[1] + elementSplitted[2];
-            loadingSpinner = '#commentLoadingBoxpopPhotoId21';
             commentId = elementSplitted[2];
         } else if (elementSplitted[1] == 'popPhotoId') {
             var element = '#commentBoxnew_txt_popPhotoId_' + elementSplitted[2];
@@ -483,7 +482,7 @@ $(document).ready(function () {
             loadingSpinner = '#commentLoadingBox' + elementId.split("_")[1];
             commentId = elementId.split("Id")[1];
         }
-
+        
         $("#commentListContainer_" + elementId.split("Id")[1]).css("display", "block");
         if (trim(value).length > 0) {
             $('#commentLoadingBox' + elementId.split("_")[1]).show();

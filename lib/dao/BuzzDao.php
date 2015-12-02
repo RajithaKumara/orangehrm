@@ -213,10 +213,10 @@ class BuzzDao extends BaseDao {
      */
     public function getEmployeesHavingBdaysBetweenTwoDates($fromDate, $toDate) {
         try {
-            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND datediff( MAKEDATE(YEAR(:date) , DAYOFYEAR(emp_birthday)) , :date) " . 
+            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND (datediff( MAKEDATE(YEAR(:date) , DAYOFYEAR(emp_birthday)) , :date) " . 
                                        " BETWEEN 1 AND 30 ".
                                        " OR datediff( MAKEDATE(YEAR(:date)+1 , DAYOFYEAR(emp_birthday)) , :date) " .
-                                       " BETWEEN 1 AND 30 ";
+                                       " BETWEEN 1 AND 30) ";
             $params = array(':date' => $fromDate);
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
             $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY MONTH(joined_date) ASC, DAY(joined_date) ASC", $params);
@@ -237,10 +237,10 @@ class BuzzDao extends BaseDao {
      */
     public function getEmployeesHavingAnniversaryOnMonth($date) {
         try {
-            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND datediff( MAKEDATE(YEAR(:date) , DAYOFYEAR(joined_date)) , :date) " . 
+            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND (datediff( MAKEDATE(YEAR(:date) , DAYOFYEAR(joined_date)) , :date) " . 
                                        " BETWEEN 1 AND 30 ".
                                        " OR datediff( MAKEDATE(YEAR(:date)+1 , DAYOFYEAR(joined_date)) , :date) " .
-                                       " BETWEEN 1 AND 30 ";
+                                       " BETWEEN 1 AND 30) ";
             $params = array(':date' => $date);
             
             $q = Doctrine_Manager::getInstance()->getCurrentConnection();
