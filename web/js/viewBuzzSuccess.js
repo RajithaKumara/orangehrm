@@ -506,6 +506,7 @@ $(document).ready(function () {
                     $("#commentListNew_popPhotoId" + commentId + " li .addNewCommentBody " + "#modatLikeWindow").replaceWith(' ');
 
                     $("#commentListNew_listId" + commentId).append(data);
+                    $("#commentListContainer_" + commentId).css("display", "block");
                     $('.commentLoadingBox').hide();
                     $(".commentBox").val('');
                 }
