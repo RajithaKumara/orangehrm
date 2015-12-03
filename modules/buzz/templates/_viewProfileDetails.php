@@ -43,7 +43,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
         </div>
 
         <div class="inlineBlock">
-            <div id="panelfirst"><?php echo __("Locations"); ?></div>
+            <div id="panelfirst"><?php echo __("Location"); ?></div>
             <div id="panelsecond"> 
                 <?php
                 echo $locations;
