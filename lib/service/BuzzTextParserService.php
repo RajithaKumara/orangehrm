@@ -71,10 +71,10 @@ class BuzzTextParserService {
             echo 'true';
             die;
         }
-        if (BuzzTextParserService::isImage($text) === true) {
-
-            return "<img src=\"" . $text . "\" height=\"100px\" >";
-        }
+//        if (BuzzTextParserService::isImage($text) === true) {
+//
+//            return "<img src=\"" . $text . "\" height=\"100px\" >";
+//        }
         $reg_exUrl = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
 
         if (preg_match($reg_exUrl, $text, $url)) {
