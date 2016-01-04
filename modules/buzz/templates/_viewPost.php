@@ -415,18 +415,9 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
 
 
                     <?php if (strlen($originalPostContent) > 0) { ?>
-                        <div id="postBodySecondRow" class="postContent">
+                        <div id="postBodySecondRow" class="postContent photoBox">
                             <?php
-                            if (strlen($originalPostContent) > $postLenth) {
-                                $subContent = substr($originalPostContent, 0, $postLenth);
-                                echo BuzzTextParserService::parseText($subContent . '...');
-                                ?><a  class="viewMoreShare"  id='<?php echo 'shareViewMore_' . $postId ?>'
-                                    ><?php echo _('Read More'); ?></a>
-
-                                <?php
-                            } else {
                                 echo BuzzTextParserService::parseText($originalPostContent);
-                            }
                             ?>
                         </div>
                         <?php
@@ -464,7 +455,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                             </a>
                         </div>
                     </div>
-                    <div class="commentBoxContainer">
+                    <div class="commentBoxContainer photoPreviewComment">
                         <?php include_component('buzz', 'commentPreview', array('commentList' => $commentList, 'editForm' => $editForm, 'loggedInUser' => $loggedInUser, 'postId' => $postId, 'commentForm' => $commentForm, 'commentBoxId' => 'popPhotoId')); ?>
                     </div>
                 </div>
