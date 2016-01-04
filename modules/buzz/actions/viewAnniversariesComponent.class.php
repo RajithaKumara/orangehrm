@@ -32,6 +32,7 @@ class viewAnniversariesComponent extends sfComponent {
         $this->setBuzzService(new BuzzService());
 
         $employeeAnniversariesForNext30Days = $this->buzzService->getEmployeesHavingAnniversaryOnMonth(date("Y-m-d"));
+        $employeeAnniversariesForNextYearFirstMonth = array();
         if (date("m") == 12) {
             $employeeAnniversariesForNextYearFirstMonth = $this->buzzService->getEmployeesHavingAnniversariesNextYear(date("Y-m-d"));
         }
