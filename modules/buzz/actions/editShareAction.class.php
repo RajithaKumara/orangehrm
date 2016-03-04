@@ -91,7 +91,19 @@ class editShareAction extends BaseBuzzAction {
     public function savePost($post) {
 
         $post->setText($this->editedContent);
-
+        $links = $post->getLinks();
+        if($links->count() > 0){
+            $url =  $this->getBuzzService()->updateLinks($this->editedContent);
+            $urls = $this->getBuzzService()->getUrlsArray($url);
+            if($links->count() <= count($urls)){
+                $i = 0;
+                foreach($links as $link){
+                    $link->setLink($urls[$i]);
+                    $link->save();
+                    $i++;
+                }
+            }
+        }
         return $this->getBuzzService()->savePost($post);
     }
 

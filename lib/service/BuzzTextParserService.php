@@ -75,10 +75,19 @@ class BuzzTextParserService {
 //
 //            return "<img src=\"" . $text . "\" height=\"100px\" >";
 //        }
-        $reg_exUrl = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
+        $reg_exUrl = "#(www\.|https?://)?[a-z0-9]+\.[a-z0-9]{2,4}\S*#i";
 
-        if (preg_match($reg_exUrl, $text, $url)) {
-            $text = preg_replace($reg_exUrl, "<a href=\"{$url[0]}\" target=\"_blank\">{$url[0]}</a> ", $text);
+
+
+
+
+        if (preg_match_all($reg_exUrl, $text, $url,PREG_PATTERN_ORDER)) {
+            $machedUrl = array_flip ( $url[0]);
+
+            foreach( $machedUrl as $key => $aurl){
+                $machedUrl[$key] = "<a href=\"{$key}\" target=\"_blank\">{$key}</a> ";
+            }
+            $text =  str_replace(array_keys($machedUrl),$machedUrl,$text);
         }
         
         foreach (self::$smiles as $key => $img) {
