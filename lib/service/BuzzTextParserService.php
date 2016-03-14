@@ -87,7 +87,9 @@ class BuzzTextParserService {
             foreach( $machedUrl as $key => $aurl){
                 $machedUrl[$key] = "<a href=\"{$key}\" target=\"_blank\">{$key}</a> ";
             }
-            $text =  str_replace(array_keys($machedUrl),$machedUrl,$text);
+
+            $text = strtr($text,$machedUrl);
+
         }
         
         foreach (self::$smiles as $key => $img) {
