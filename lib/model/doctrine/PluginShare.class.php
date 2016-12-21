@@ -137,7 +137,7 @@ abstract class PluginShare extends BaseShare {
         }
         return $arrayOfEmployees;
     }
-    
+
     /**
      * Get Liked Employee List as an array of array
      * @return type
@@ -289,51 +289,75 @@ abstract class PluginShare extends BaseShare {
      * Returns the list of emloyees who liked the share [WEB SERVICES].
      * @return Employee Collection
      */
-    public function getShareLikedEmployeeList() {       
+    public function getShareLikedEmployeeList() {
         $arrayOfEmployees = array();
         foreach ($this->getLike() as $value) {
-            $employee = array();            
+            $employee = array();
             $empId = $value->getEmployeeNumber();
             $empName = $value->getEmployeeLike()->getFirstAndLastNames();
             $jobTitle = $value->getEmployeeLike()->getJobTitleName();
 
             if ($empId == null) {
                 $empName = "Admin";
-                $jobTitle = "Administrator";                  
+                $jobTitle = "Administrator";
             }
             $employee['employee_name'] = $empName;
             $employee['employee_number'] = $empId;
-            $employee['employee_job_title'] = $jobTitle;   
+            $employee['employee_job_title'] = $jobTitle;
             $arrayOfEmployees[] = $employee;
         }
         return $arrayOfEmployees;
     }
-    
-     /**
+
+    /**
      * Returns the list of emloyees who disliked the share [WEB SERVICES].
      * @return Employee Collection
      */
-    public function getShareDislikedEmployeeList() {       
+    public function getShareDislikedEmployeeList() {
         $arrayOfEmployees = array();
         foreach ($this->getUnlike() as $value) {
-            $employee = array();           
+            $employee = array();
             $empId = $value->getEmployeeNumber();
             $empName = $value->getEmployeeUnLike()->getFirstAndLastNames();
             $jobTitle = $value->getEmployeeUnLike()->getJobTitleName();
 
             if ($empId == null) {
                 $empName = "Admin";
-                $jobTitle = "Administrator";                  
+                $jobTitle = "Administrator";
             }
             $employee['employee_name'] = $empName;
             $employee['employee_number'] = $empId;
-            $employee['employee_job_title'] = $jobTitle;        
+            $employee['employee_job_title'] = $jobTitle;
             $arrayOfEmployees[] = $employee;
         }
         return $arrayOfEmployees;
     }
-    
-      /**
+
+    /**
+     * Returns the list of emloyees who shared the share [WEB SERVICES].
+     * @return Employee Collection
+     */
+    public function getSharePostSharedEmployeeList() {
+        $arrayOfEmployees = array();
+        foreach ($this->getUnlike() as $value) {
+            $employee = array();
+            $empId = $value->getEmployeeNumber();
+            $empName = $value->getEmployeeUnLike()->getFirstAndLastNames();
+            $jobTitle = $value->getEmployeeUnLike()->getJobTitleName();
+
+            if ($empId == null) {
+                $empName = "Admin";
+                $jobTitle = "Administrator";
+            }
+            $employee['employee_name'] = $empName;
+            $employee['employee_number'] = $empId;
+            $employee['employee_job_title'] = $jobTitle;
+            $arrayOfEmployees[] = $employee;
+        }
+        return $arrayOfEmployees;
+    }
+
+    /**
      * check loged In User Like this post
      * @param int $id
      * @return string
@@ -368,8 +392,8 @@ abstract class PluginShare extends BaseShare {
             return false;
         }
     }
-    
-     public function isShareUnLike($id) {
+
+    public function isShareUnLike($id) {
         $likes = $this->getUnlike();
         $userId = $id;
 
@@ -403,7 +427,5 @@ abstract class PluginShare extends BaseShare {
             return false;
         }
     }
-    
-    
 
 }

@@ -207,4 +207,22 @@ class BuzzServiceWrapper implements WebServiceWrapper {
         }
     }
 
+    /**
+     * @api {get} /sharePost/shareId/:shareId Share Post
+     * @apiDescription Sharing a share / post
+     * @apiVersion 0.1.0
+     * @apiName sharePost
+     * @apiGroup BUZZ
+     * @apiError shareIdIsNull Valid parameters are not provided
+     * @apiSuccess {Array} Share Shared Post
+     */
+    public function sharePost($postId, $newText){
+        if (is_null($postId) || is_null($newText)) {
+            throw new Exception("Valid parameters are not provided");
+        } else {
+            $empNumber = $this->getLoggedInEmployeeNumber();
+            return $this->getServiceInstance()->sharePost($postId, $empNumber, $newText);
+        }
+    }
+
 }

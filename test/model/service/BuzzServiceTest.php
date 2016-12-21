@@ -24,13 +24,14 @@
  */
 class BuzzServiceTest extends PHPUnit_Framework_TestCase {
 
-    private $buzzService;
+    private $buzzService, $employeeService;
 
     /**
      * Set up method
      */
     protected function setUp() {
         $this->buzzService = new BuzzService();
+        $this->employeeService = $this->buzzService->getEmployeeService();
     }
 
     public function testGetBuzzDao() {
@@ -51,7 +52,7 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $resultShareCount = $this->buzzService->getSharesCount();
         $this->assertEquals(4, $resultShareCount);
     }
-    
+
     /**
      * this is function to test saving post in the database
      */
@@ -781,7 +782,7 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $resultEmployees = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates($fromDate, $todate);
         $this->assertTrue(is_array($resultEmployees));
     }
-    
+
     /**
      * test get Employees Having Bdays On Next Year
      */
@@ -804,7 +805,6 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(is_array($resultEmployees));
     }
 
-
     /**
      * test get employee anivesary
      */
@@ -826,7 +826,7 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $resultEmployees = $this->buzzService->getEmployeesHavingAnniversaryOnMonth($date);
         $this->assertTrue(is_array($resultEmployees));
     }
-    
+
     /**
      * test get Employees Having Anniversaries Next Year
      */
@@ -865,12 +865,12 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $resultShares = $this->buzzService->saveShare($share);
         $this->assertTrue($resultShares instanceof Share);
     }
-    
+
     public function testGetPhoto() {
         $id = 3;
         $photo = new Photo();
         $photo->setId($id);
-        
+
         $buzzDao = $this->getMock('buzzDao', array('getPhoto'));
         $buzzDao->expects($this->once())
                 ->method('getPhoto')
@@ -880,17 +880,17 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $returnedPhoto = $this->buzzService->getPhoto($id);
 
         $this->assertEquals($photo, $returnedPhoto);
-    }    
-    
+    }
+
     public function testGetPostPhotos() {
         $postId = 31;
-        
+
         $photo1 = new Photo();
         $photo1->setId(11);
         $photo2 = new Photo();
         $photo2->setId(13);
         $postPhotos = array($photo1, $photo2);
-        
+
         $buzzDao = $this->getMock('buzzDao', array('getPostPhotos'));
         $buzzDao->expects($this->once())
                 ->method('getPostPhotos')
@@ -900,5 +900,237 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $returnedPhotos = $this->buzzService->getPostPhotos($postId);
 
         $this->assertEquals($postPhotos, $returnedPhotos);
-    }    
+    }
+
+    public function testGetSharePost() {
+        $postId = 4;
+        $loggedInEmployeeNumber = '1';
+        $newText = 'test Content';
+        $firstName = 'James';
+        $lastName = 'White';
+
+        $mockEmployee = new Employee();
+        $mockEmployee->setFirstName($firstName);
+        $mockEmployee->setLastName($lastName);
+        $mockEmployee->setEmployeeId($loggedInEmployeeNumber);
+
+        $mockEmployeeService = $this->getMock('employeeService', array('getEmployee'));
+        $mockEmployeeService->expects($this->once())
+                ->method('getEmployee')
+                ->with($loggedInEmployeeNumber)
+                ->will($this->returnValue($mockEmployee));
+
+        $this->buzzService->setEmployeeService($mockEmployeeService);
+//        $this->assertTrue($getEmployeeResult instanceof Employee);
+
+        $shareObject = $this->buzzService->getSharePost($postId, $loggedInEmployeeNumber, $newText);
+        $this->assertTrue($shareObject instanceof Share);
+        $this->assertEquals($postId, $shareObject->getPostId());
+        $this->assertEquals('0', $shareObject->getNumberOfComments());
+        $this->assertEquals('0', $shareObject->getNumberOfLikes());
+        $this->assertEquals('0', $shareObject->getNumberOfUnlikes());
+        $this->assertEquals($newText, $shareObject->getText());
+        $this->assertEquals('1', $shareObject->getType());
+        $this->assertEquals($firstName . ' ' . $lastName, $shareObject->getEmployeeName());
+    }
+
+    public function testGetSharePostDoneByAdmin() {
+        $postId = 4;
+        $loggedInEmployeeNumber = '';
+        $newText = 'test Content';
+        $firstName = 'James';
+        $lastName = 'White';
+
+        $mockEmployee = new Employee();
+        $mockEmployee->setFirstName($firstName);
+        $mockEmployee->setLastName($lastName);
+        $mockEmployee->setEmployeeId($loggedInEmployeeNumber);
+
+        $mockEmployeeService = $this->getMock('employeeService', array('getEmployee'));
+        $mockEmployeeService->expects($this->never())
+                ->method('getEmployee');
+        $this->buzzService->setEmployeeService($mockEmployeeService);
+//        $this->assertTrue($getEmployeeResult instanceof Employee);
+
+        $shareObject = $this->buzzService->getSharePost($postId, $loggedInEmployeeNumber, $newText);
+        $this->assertTrue($shareObject instanceof Share);
+        $this->assertEquals($postId, $shareObject->getPostId());
+        $this->assertEquals('0', $shareObject->getNumberOfComments());
+        $this->assertEquals('0', $shareObject->getNumberOfLikes());
+        $this->assertEquals('0', $shareObject->getNumberOfUnlikes());
+        $this->assertEquals($newText, $shareObject->getText());
+        $this->assertEquals('1', $shareObject->getType());
+        $this->assertEquals('', $shareObject->getEmployeeName());
+    }
+
+    public function testGetSharedEmployeeNamesForOnlyOriginalPost() {
+
+        $shareCollection = new Doctrine_Collection('Share');
+
+        $shareOne = new Share();
+        $shareOne->setType(0);
+        $shareCollection->add($shareOne);
+
+        $post = new Post();
+        $post->setShare($shareCollection);
+
+        $shareOne->setPostShared($post);
+
+        $sharedEmpArray = $this->buzzService->getSharedEmployeeNames($shareOne);
+        $this->assertTrue(is_array($sharedEmpArray));
+        $this->assertEquals(0, count($sharedEmpArray));
+    }
+
+    public function testGetSharedEmployeeNamesWhenSharedOnceByAdmin() {
+
+        $shareCollection = new Doctrine_Collection('Share');
+
+        $shareOne = new Share();
+        $shareOne->setType(0);
+        $shareCollection->add($shareOne);
+
+        $shareTwo = new Share();
+        $shareTwo->setType(1);
+        $shareCollection->add($shareTwo);
+
+        $post = new Post();
+        $post->setShare($shareCollection);
+
+        $shareOne->setPostShared($post);
+        $shareTwo->setPostShared($post);
+
+        $sharedEmpArray = $this->buzzService->getSharedEmployeeNames($shareTwo);
+        $this->assertTrue(is_array($sharedEmpArray));
+        $this->assertEquals(1, count($sharedEmpArray));
+        $this->assertEquals(null, $sharedEmpArray[0]['employee_number']);
+        $this->assertEquals("Admin", $sharedEmpArray[0]['employee_name']);
+        $this->assertEquals("Administrator", $sharedEmpArray[0]['employee_job_title']);
+    }
+    
+    public function testGetSharedEmployeeNamesWhenSharedByAdminAndEmployees() {
+
+        $empNumberOne = 1;
+        $firstNameOne = 'James';
+        $lastNameOne = 'White';
+        
+        $empNumberTwo = 2;
+        $firstNameTwo = 'Peter';
+        $lastNameTwo = 'Knowles';
+        
+        $shareCollection = new Doctrine_Collection('Share');
+        
+        $jobTitleOne = new JobTitle();
+        $jobTitleOne->setJobTitleName('CTO');
+        
+        $jobTitleTwo = new JobTitle();
+        $jobTitleTwo->setJobTitleName('SE');
+        
+        $employeeOne = new Employee();
+        $employeeOne->setEmpNumber($empNumberOne);
+        $employeeOne->setFirstName($firstNameOne);
+        $employeeOne->setLastName($lastNameOne);
+        $employeeOne->setJobTitle($jobTitleOne);
+        
+        $employeeTwo = new Employee();
+        $employeeTwo->setEmpNumber($empNumberTwo);
+        $employeeTwo->setFirstName($firstNameTwo);
+        $employeeTwo->setLastName($lastNameTwo);
+        $employeeTwo->setJobTitle($jobTitleTwo);
+
+        $shareOne = new Share();
+        $shareOne->setType(0);
+        $shareCollection->add($shareOne);
+
+        $shareTwo = new Share();
+        $shareTwo->setType(1);
+        $shareTwo->setEmployeePostShared($employeeOne);
+        $shareTwo->setEmployeeNumber(1);
+        $shareCollection->add($shareTwo);
+
+        $shareThree = new Share();
+        $shareThree->setType(1);
+        $shareThree->setEmployeePostShared($employeeTwo);
+        $shareThree->setEmployeeNumber(2);
+        $shareCollection->add($shareThree);
+        
+        $shareFour = new Share();
+        $shareFour->setType(1);
+        $shareCollection->add($shareFour);
+
+        $post = new Post();
+        $post->setShare($shareCollection);
+
+        $shareOne->setPostShared($post);
+        $shareTwo->setPostShared($post);
+        $shareThree->setPostShared($post);
+        $shareFour->setPostShared($post);
+
+        $sharedEmpArray = $this->buzzService->getSharedEmployeeNames($shareTwo);
+        $this->assertTrue(is_array($sharedEmpArray));
+        $this->assertEquals(3, count($sharedEmpArray));
+        
+        $this->assertEquals(null, $sharedEmpArray[0]['employee_number']);
+        $this->assertEquals("Admin", $sharedEmpArray[0]['employee_name']);
+        $this->assertEquals("Administrator", $sharedEmpArray[0]['employee_job_title']);
+        
+        $this->assertEquals($employeeOne->getEmpNumber(), intval($sharedEmpArray[1]['employee_number']));
+        $this->assertEquals($employeeOne->getFirstAndLastNames(), $sharedEmpArray[1]['employee_name']);
+        $this->assertEquals($employeeOne->getJobTitleName(), $sharedEmpArray[1]['employee_job_title']);
+
+        $this->assertEquals($employeeTwo->getEmpNumber(), intval($sharedEmpArray[2]['employee_number']));
+        $this->assertEquals($employeeTwo->getFirstAndLastNames(), $sharedEmpArray[2]['employee_name']);
+        $this->assertEquals($employeeTwo->getJobTitleName(), $sharedEmpArray[2]['employee_job_title']);
+    }
+    
+    public function testGetSharedEmployeeNamesWhenPostedByEmployeeSharedByAdminAndEmployee() {
+
+        $empIdOne = 1;
+        $firstNameOne = 'James';
+        $lastNameOne = 'White';
+        
+        $shareCollection = new Doctrine_Collection('Share');
+        
+        $jobTitleOne = new JobTitle();
+        $jobTitleOne->setJobTitleName('CTO');
+        
+        $employeeOne = new Employee();
+        $employeeOne->setEmpNumber($empIdOne);
+        $employeeOne->setFirstName($firstNameOne);
+        $employeeOne->setLastName($lastNameOne);
+        $employeeOne->setJobTitle($jobTitleOne);
+
+        $shareOne = new Share();
+        $shareOne->setType(0);
+        $shareCollection->add($shareOne);
+
+        $shareTwo = new Share();
+        $shareTwo->setType(1);
+        $shareTwo->setEmployeePostShared($employeeOne);
+        $shareCollection->add($shareTwo);
+        
+        $shareFour = new Share();
+        $shareFour->setType(1);
+        $shareCollection->add($shareFour);
+
+        $post = new Post();
+        $post->setEmployeePostAdded($employeeOne);
+        $post->setShare($shareCollection);
+
+        $shareOne->setPostShared($post);
+        $shareTwo->setPostShared($post);
+        $shareFour->setPostShared($post);
+
+        $sharedEmpArray = $this->buzzService->getSharedEmployeeNames($shareTwo);
+        $this->assertTrue(is_array($sharedEmpArray));
+        $this->assertEquals(2, count($sharedEmpArray));
+        
+        $this->assertEquals(null, $sharedEmpArray[0]['employee_number']);
+        $this->assertEquals("Admin", $sharedEmpArray[0]['employee_name']);
+        $this->assertEquals("Administrator", $sharedEmpArray[0]['employee_job_title']);
+        
+        $this->assertEquals($employeeOne->getEmpNumber(), intval($sharedEmpArray[1]['employee_number']));
+        $this->assertEquals($employeeOne->getFirstAndLastNames(), $sharedEmpArray[1]['employee_name']);
+        $this->assertEquals($employeeOne->getJobTitleName(), $sharedEmpArray[1]['employee_job_title']);
+    }
+
 }

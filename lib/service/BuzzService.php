@@ -673,4 +673,83 @@ class BuzzService extends BaseService {
         }
         return $machedUrl;
     }
+  
+    /**
+     * 
+     * @param type $share
+     * @return type
+     */
+    public function getSharePost($postId, $loggedInEmployeeNumber, $newText) {
+        $shareDetails = new Share();
+        $shareDetails->setPostId($postId);
+        $shareDetails->setEmployeeNumber($loggedInEmployeeNumber);
+        if($loggedInEmployeeNumber != "" && !is_null($loggedInEmployeeNumber)) {
+            $loggedInEmployee = $this->getEmployeeService()->getEmployee($loggedInEmployeeNumber);
+            if ($loggedInEmployee instanceof Employee) {
+                $shareDetails->setEmployeeName($loggedInEmployee->getFirstAndLastNames());
+            }
+        }
+        $shareDetails->setNumberOfComments(0);
+        $shareDetails->setNumberOfLikes(0);
+        $shareDetails->setNumberOfUnlikes(0);
+        $shareDetails->setText($newText);
+        $shareDetails->setShareTime(date("Y-m-d H:i:s"));
+        $shareDetails->setType('1');
+        return $shareDetails;
+    }
+
+    /**
+     * 
+     * @return EmployeeService
+     */
+    public function getEmployeeService() {
+        if(!isset($this->employeeService)) {
+            $this->employeeService = new EmployeeService();
+        }
+        return $this->employeeService;
+    }
+    
+    /**
+     * 
+     * @param type employeeService
+     */
+    public function setEmployeeService(EmployeeService $employeeService) {
+        $this->employeeService = $employeeService;
+    }
+    
+    public function getSharedEmployeeNames(Share $shared) {
+        $sharedEmpArray = array();
+        $post = $shared->getPostShared();
+        
+        $isOriginalPost = $shared->getType();
+        $isAdminShare = true;
+        $empIdList = array();
+        foreach ($post->getShare() as $share) {
+            $sharedEmployeeList = array();
+            if ($isOriginalPost != 0) {
+                $empId = $share->getEmployeeNumber();
+                if ($empId == null) {
+                    if ($isAdminShare) {
+                        $sharedEmployeeList['employee_number'] = null;
+                        $sharedEmployeeList['employee_name'] = "Admin";
+                        $sharedEmployeeList['employee_job_title'] = "Administrator";
+                        $sharedEmpArray[] = $sharedEmployeeList;
+                        $isAdminShare = false;
+                    }
+                } else {
+                    $employee = $share->getEmployeePostShared();
+                    if (!in_array($empId, $empIdList)) {
+                        $empName = $employee->getFirstAndLastNames();
+                        $jobTitle = $employee->getJobTitleName();
+                        array_push($empIdList, $empId);
+                        $sharedEmployeeList['employee_number'] = $empId;
+                        $sharedEmployeeList['employee_name'] = $empName;
+                        $sharedEmployeeList['employee_job_title'] = $jobTitle;
+                        $sharedEmpArray[] = $sharedEmployeeList;
+                    }
+                }
+            }
+        }
+        return $sharedEmpArray;
+    }
 }

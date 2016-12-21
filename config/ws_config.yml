@@ -53,3 +53,8 @@ methods:
       wrapper: BuzzServiceWrapper
       group: buzz
       type: GET 
+  sharePost:
+      wrapper: BuzzServiceWrapper
+      group: buzz
+      type: POST
+      params: ['postId', 'newText']

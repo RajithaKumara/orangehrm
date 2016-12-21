@@ -141,7 +141,11 @@ abstract class PluginComment extends BaseComment {
             $employee = array();            
             $empId = $value->getEmployeeNumber();
             $empName = $value->getEmployeeFirstLastName();
-            $jobTitle = $value->getEmployeeLike()->getFirst()->getJobTitleName();
+            if(!$value->getEmployeeLike()->getFirst()) {
+                $jobTitle = "Administrator";
+            } else {
+                $jobTitle = $value->getEmployeeLike()->getFirst()->getJobTitleName();
+            }
 
             if ($empId == null) {
                 $empName = "Admin";
@@ -164,12 +168,12 @@ abstract class PluginComment extends BaseComment {
         foreach ($this->getUnlike() as $value) {
             $employee = array();           
             $empId = $value->getEmployeeNumber();
-            $empName = $value->getEmployeeUnLike()->getFirst()->getFirstAndLastNames();
-            $jobTitle = $value->getEmployeeUnLike()->getFirst()->getJobTitleName();
-
-            if ($empId == null) {
+            if(!$value->getEmployeeUnLike()->getFirst() || $empId == null) {
                 $empName = "Admin";
-                $jobTitle = "Administrator";                  
+                $jobTitle = "Administrator";
+            } else {
+                $empName = $value->getEmployeeUnLike()->getFirst()->getFirstAndLastNames();
+                $jobTitle = $value->getEmployeeUnLike()->getFirst()->getJobTitleName();
             }
             $employee['employee_name'] = $empName;
             $employee['employee_number'] = $empId;

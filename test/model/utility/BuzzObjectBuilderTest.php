@@ -38,6 +38,14 @@ class BuzzObjectBuilderTest extends PHPUnit_Framework_TestCase {
         $buzzConfigService = $this->buzzObjectBuilder->getBuzzConfigService();
         $this->assertTrue($buzzConfigService instanceof BuzzConfigService);
     }
+    
+    /**
+     * @covers BuzzObjectBuilder::getBuzzService
+     */
+    public function testGetBuzzService() {
+        $buzzService = $this->buzzWebServiceHelper->getBuzzService();
+        $this->assertTrue($buzzService instanceof BuzzService);
+    }
 
     /**
      * @covers BuzzObjectBuilder::getShareCollectionArray

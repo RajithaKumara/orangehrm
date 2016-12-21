@@ -273,15 +273,47 @@ class BuzzWebServiceHelper {
      */
     
     public function getLoggedInEmployee(){
-        $loggedInUserEmpNum =  sfContext::getInstance()->getUser()->getAttribute("auth.empNumber");  
+        $loggedInUserEmpNum =  sfContext::getInstance()->getUser()->getAttribute("auth.empNumber");
         $employeeService = new EmployeeService();
-        $employeeService->setEmployeeDao(new EmployeeDao());        
-        $loggedUser = $employeeService->getEmployee($loggedInUserEmpNum);
-        $jobTitle = $loggedUser->getJobTitleName();
-        $loggedUser->setCustom1($jobTitle);
-        return $loggedUser->toArray();
+        $employeeService->setEmployeeDao(new EmployeeDao());
+        if($loggedInUserEmpNum != "" && !is_null($loggedInUserEmpNum)) {
+            $loggedUser = $employeeService->getEmployee($loggedInUserEmpNum);
+            $jobTitle = $loggedUser->getJobTitleName();
+            $loggedUser->setCustom1($jobTitle);
+            return $loggedUser->toArray();
+        } else {
+            $defaultAdmin  = array();
+            $defaultAdmin['empNumber'] = "0";
+            $defaultAdmin['firstName'] = "Admin";
+            $defaultAdmin['lastName'] = "";
+            $defaultAdmin['jobTitle'] = array(
+                'jobTitleName' => 'Administrator'
+            );
+            $defaultAdmin['custom1'] = "Administrator";
+            return $defaultAdmin;
+        }
+
     }
     
+    /**
+     * 
+     * @param type $postId
+     * @param type $loggedInEmployeeNumber
+     * @param type $newText
+     * @return type
+     */
+    public function sharePost($postId, $loggedInEmployeeNumber, $newText) {
+        $response =array();
+        $response["success"] = false;
+
+        $shareDetails = $this->getBuzzService()->getSharePost($postId, $loggedInEmployeeNumber, $newText);
+        $share = $this->getBuzzService()->saveShare($shareDetails);
+        if($share instanceof Share) {
+            $response["success"] = true;
+        }
+        $response["shareDetails"] = $share->toArray();
+        return $response;
+    }
     
 
 }
