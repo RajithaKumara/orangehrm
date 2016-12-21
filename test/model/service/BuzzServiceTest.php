@@ -921,7 +921,6 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($mockEmployee));
 
         $this->buzzService->setEmployeeService($mockEmployeeService);
-//        $this->assertTrue($getEmployeeResult instanceof Employee);
 
         $shareObject = $this->buzzService->getSharePost($postId, $loggedInEmployeeNumber, $newText);
         $this->assertTrue($shareObject instanceof Share);
@@ -950,7 +949,6 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $mockEmployeeService->expects($this->never())
                 ->method('getEmployee');
         $this->buzzService->setEmployeeService($mockEmployeeService);
-//        $this->assertTrue($getEmployeeResult instanceof Employee);
 
         $shareObject = $this->buzzService->getSharePost($postId, $loggedInEmployeeNumber, $newText);
         $this->assertTrue($shareObject instanceof Share);
