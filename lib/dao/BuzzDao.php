@@ -954,5 +954,32 @@ class BuzzDao extends BaseDao {
         }
         // @codeCoverageIgnoreEnd
     }
+    
+    /**
+     * Gets Shares for a given employee number
+     * If the employee number is zero, it will be considered as shares by Admin
+     * 
+     * @param type $empNum
+     * @return type
+     * @throws DaoException
+     */
+    public function getSharesFromEmployeeNumber($empNum) {
+        try {
+            $q = Doctrine_Query::create()
+                    ->select('*')
+                    ->from('Share');
+            if($empNum != 0) {
+                $q->where('employee_number = ?' , $empNum);
+            } else {
+                $q->where('employee_number IS NULL');
+            }
+            $q->orderBy('share_time DESC');
+            return $q->execute();
+            // @codeCoverageIgnoreStart
+        } catch (Exception $e) {
+            throw new DaoException($e->getMessage(), $e->getCode(), $e);
+        }
+        // @codeCoverageIgnoreEnd
+    }
 
 }

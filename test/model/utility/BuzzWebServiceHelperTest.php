@@ -63,14 +63,14 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->with($limit)
                 ->will($this->returnValue($shares));
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareCollectionArray')
                 ->with($shares)
                 ->will($this->returnValue($shareArray));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $resultSharesArray = $this->buzzWebServiceHelper->getBuzzShares($limit);
         $this->assertEquals(1, count($resultSharesArray));
@@ -95,20 +95,20 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->method('getShares')
                 ->will($this->returnValue($shares));
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareCollectionArray')
                 ->with($shares)
                 ->will($this->returnValue($shareArray));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $shareCollection = $this->buzzWebServiceHelper->getBuzzShares();
         $this->assertEquals(2, count($shareCollection));
     }
-    
-     /**
+
+    /**
      * @covers BuzzWebServiceHelper::getLatestBuzzShares
      */
     public function testGetLatestBuzzShares() {
@@ -123,27 +123,27 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         );
 
         $latestShareId = 1;
-        
+
         $buzzServiceMock = $this->getMock('BuzzService', array('getSharesUptoId'));
         $buzzServiceMock->expects($this->once())
                 ->method('getSharesUptoId')
                 ->will($this->returnValue($shares));
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareCollectionArray')
                 ->with($shares)
                 ->will($this->returnValue($shareArray));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $shareCollection = $this->buzzWebServiceHelper->getLatestBuzzShares($latestShareId);
         $this->assertEquals(2, count($shareCollection));
     }
+
     
-    
-     /**
+    /**
      * @covers BuzzWebServiceHelper::getMoreBuzzShares
      */
     public function testGetMoreBuzzSharesWithLimit() {
@@ -164,16 +164,16 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->with($limit)
                 ->will($this->returnValue($shares));
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareCollectionArray')
                 ->with($shares)
                 ->will($this->returnValue($shareArray));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
-        $resultSharesArray = $this->buzzWebServiceHelper->getMoreBuzzShares($lastShareId,$limit);
+        $resultSharesArray = $this->buzzWebServiceHelper->getMoreBuzzShares($lastShareId, $limit);
         $this->assertEquals(1, count($resultSharesArray));
     }
 
@@ -198,21 +198,18 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->method('getMoreShares')
                 ->will($this->returnValue($shares));
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareCollectionArray')
                 ->with($shares)
                 ->will($this->returnValue($shareArray));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $shareCollection = $this->buzzWebServiceHelper->getMoreBuzzShares($lastShareId, $limit);
         $this->assertEquals(2, count($shareCollection));
     }
-
-  
-
 
     /**
      * @covers BuzzWebServiceHelper::getShareAndPostDetailsByShareId
@@ -258,20 +255,20 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->with($postId)
                 ->will($this->returnValue($photos));
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareDetailsAsArray'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareDetailsAsArray'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareDetailsAsArray')
                 ->with($share, $post, $photos)
                 ->will($this->returnValue($shareDetailsArray));
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareDetailsAsArray'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareDetailsAsArray'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareDetailsAsArray')
                 ->with($share, $post, $photos)
                 ->will($this->returnValue($shareDetailsArray));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $shareWithPostDetails = $this->buzzWebServiceHelper->getShareAndPostDetailsByShareId($shareId);
         $this->assertEquals('2015-02-20 00:00:00', $shareWithPostDetails['share']['details']['share_time']);
@@ -301,12 +298,12 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $share->setEmployeeNumber($employeeNumber);
         $share->setShareTime($postAndShareDateTime);
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('createPost', 'createShare'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createPost', 'createShare'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createPost')
                 ->with($employeeNumber, $content, $postAndShareDateTime)
                 ->will($this->returnValue($post));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createShare')
                 ->with($post, $postAndShareDateTime)
                 ->will($this->returnValue($share));
@@ -317,7 +314,7 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($share));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $returnShare = $this->buzzWebServiceHelper->postContentOnFeed($employeeNumber, $content, $postAndShareDateTime);
         $this->assertEquals($postAndShareDateTime, $returnShare->getShareTime());
@@ -329,7 +326,7 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
     public function testPostContentOnFeedWithImages() {
         $shareId = 1;
         $postId = 1;
-        
+
         $imageDataArray = array(
             array(
                 BuzzObjectBuilder::KEY_IMAGE_STRING_ENCODED => null,
@@ -339,7 +336,7 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         );
 
         $extraPostOptions = array(
-            BuzzObjectBuilder::KEY_IMAGE_DATA =>  json_encode($imageDataArray)
+            BuzzObjectBuilder::KEY_IMAGE_DATA => json_encode($imageDataArray)
         );
 
         $photo = new Photo();
@@ -367,16 +364,16 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $share->setShareTime($postAndShareDateTime);
         $share->setPostId($postId);
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('createPost', 'createShare', 'extractImagesForPost'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createPost', 'createShare', 'extractImagesForPost'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createPost')
                 ->with($employeeNumber, $content, $postAndShareDateTime)
                 ->will($this->returnValue($post));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createShare')
                 ->with($post, $postAndShareDateTime)
                 ->will($this->returnValue($share));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('extractImagesForPost')
                 ->with($extraPostOptions, $share->getPostId())
                 ->will($this->returnValue($imagesArray));
@@ -391,7 +388,7 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($photo));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $returnShare = $this->buzzWebServiceHelper->postContentOnFeed($employeeNumber, $content, $postAndShareDateTime, $extraPostOptions);
         $this->assertEquals($postAndShareDateTime, $returnShare->getShareTime());
@@ -414,8 +411,8 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $comment->setNumberOfLikes(0);
         $comment->setNumberOfUnlikes(0);
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('createCommentOnShare'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createCommentOnShare'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createCommentOnShare')
                 ->with($shareId, $employeeNumber, $content, $postAndShareDateTime)
                 ->will($this->returnValue($comment));
@@ -426,7 +423,7 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($comment));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $returnComment = $this->buzzWebServiceHelper->commentOnShare($shareId, $employeeNumber, $content, $postAndShareDateTime);
         $this->assertEquals($postAndShareDateTime, $returnComment->getCommentTime());
@@ -467,12 +464,12 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $shareUpdated->setNumberOfUnlikes(0);
         $shareUpdated->setNumberOfLikes(1);
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnShare', 'createDislikeOnShare'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnShare', 'createDislikeOnShare'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createLikeOnShare')
                 ->with($shareId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($likeOnShare));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createDislikeOnShare')
                 ->with($shareId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($dislikeOnShare));
@@ -492,7 +489,7 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($likeOnShare));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $resultShare = $this->buzzWebServiceHelper->likeOnShare($shareId, $employeeNumber, $testDateTime);
         $this->assertTrue($resultShare instanceof Share);
@@ -534,12 +531,12 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $shareUpdated->setNumberOfUnlikes(1);
         $shareUpdated->setNumberOfLikes(0);
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnShare', 'createDislikeOnShare'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnShare', 'createDislikeOnShare'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createLikeOnShare')
                 ->with($shareId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($likeOnShare));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createDislikeOnShare')
                 ->with($shareId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($dislikeOnShare));
@@ -559,7 +556,7 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($dislikeOnShare));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $resultShare = $this->buzzWebServiceHelper->dislikeOnShare($shareId, $employeeNumber, $testDateTime);
         $this->assertTrue($resultShare instanceof Share);
@@ -601,12 +598,12 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $commentUpdated->setNumberOfUnlikes(0);
         $commentUpdated->setNumberOfLikes(1);
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnComment', 'createDislikeOnComment'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnComment', 'createDislikeOnComment'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createLikeOnComment')
                 ->with($commentId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($likeOnComment));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createDislikeOnComment')
                 ->with($commentId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($dislikeOnComment));
@@ -626,7 +623,7 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($likeOnComment));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $resultComment = $this->buzzWebServiceHelper->likeOnComment($commentId, $employeeNumber, $testDateTime);
         $this->assertTrue($resultComment instanceof Comment);
@@ -668,12 +665,12 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $commentUpdated->setNumberOfUnlikes(1);
         $commentUpdated->setNumberOfLikes(0);
 
-        $buzzObjetBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnComment', 'createDislikeOnComment'));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnComment', 'createDislikeOnComment'));
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createLikeOnComment')
                 ->with($commentId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($likeOnComment));
-        $buzzObjetBuilderMock->expects($this->once())
+        $buzzObjectBuilderMock->expects($this->once())
                 ->method('createDislikeOnComment')
                 ->with($commentId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($dislikeOnComment));
@@ -693,11 +690,167 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->will($this->returnValue($dislikeOnComment));
 
         $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
-        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjetBuilderMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
 
         $resultComment = $this->buzzWebServiceHelper->dislikeOnComment($commentId, $employeeNumber, $testDateTime);
         $this->assertTrue($resultComment instanceof Comment);
         $this->assertEquals(1, $resultComment->getNumberOfUnlikes());
+    }
+    
+    public function testGetBuzzForEmployee() {
+        $empNum = 1;
+                
+        $shareOne = new Share();
+        $shareOne->setId(1);
+        $shareOne->setEmployeeNumber($empNum);
+
+        $shareTwo = new Share();
+        $shareTwo->setId(2);
+        $shareTwo->setEmployeeNumber($empNum);
+        $shareArray = array($shareOne, $shareTwo);
+        
+        $buzzServiceMock = $this->getMock('BuzzService', array('getSharesFromEmployeeNumber'));
+        $buzzServiceMock->expects($this->once())
+                ->method('getSharesFromEmployeeNumber')
+                ->with($empNum)
+                ->will($this->returnValue($shareArray));
+
+        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock->expects($this->any())
+                ->method('getShareCollectionArray')
+                ->with($shareArray)
+                ->will($this->returnValue($shareArray));
+
+        $this->buzzWebServiceHelper->setBuzzService($buzzServiceMock);
+        $this->buzzWebServiceHelper->setBuzzObjectBuilder($buzzObjectBuilderMock);
+
+        $returnShareCollection = $this->buzzWebServiceHelper->getBuzzForEmployee($empNum, 1);
+        $this->assertEquals(2, count($returnShareCollection));
+        $this->assertTrue(is_array($returnShareCollection));
+    }
+
+    public function testDeleteShareWithExistingShareId() {
+        $shareId = 1;
+        $loggedInEmployeeNumber = 1;
+
+        $share = new Share();
+        $share->setId($shareId);
+        $share->setEmployeeNumber($loggedInEmployeeNumber);
+
+        $mockBuzzService = $this->getMock('buzzService', array('getShareById', 'deleteShare'));
+        $mockBuzzService->expects($this->once())
+                ->method('getShareById')
+                ->with($shareId)
+                ->will($this->returnValue($share));
+
+        $mockBuzzService->expects($this->once())
+                ->method('deleteShare')
+                ->with($shareId)
+                ->will($this->returnValue(1));
+        $this->buzzWebServiceHelper->setBuzzService($mockBuzzService);
+
+        $responseArray = $this->buzzWebServiceHelper->deleteShare($shareId, $loggedInEmployeeNumber);
+
+        $this->assertTrue(is_array($responseArray));
+        $this->assertTrue($responseArray['success']);
+    }
+
+    public function testDeleteShareWithNonExistingShareId() {
+        $shareId = 1;
+        $loggedInEmployeeNumber = 1;
+
+        $mockBuzzService = $this->getMock('buzzService', array('getShareById'));
+        $mockBuzzService->expects($this->once())
+                ->method('getShareById')
+                ->with($shareId)
+                ->will($this->returnValue(false));
+        $this->buzzWebServiceHelper->setBuzzService($mockBuzzService);
+
+        $responseArray = $this->buzzWebServiceHelper->deleteShare($shareId, $loggedInEmployeeNumber);
+        $this->assertTrue(is_array($responseArray));
+        $this->assertFalse($responseArray['success']);
+    }
+
+    public function testDeleteShareWithExistingShareIdThatDoNotBelongToCurrentEmployee() {
+        $shareId = 1;
+        $loggedInEmployeeNumber = 1;
+        $share = new Share();
+        $share->setId($shareId);
+        $share->setEmployeeNumber(12);
+
+        $mockBuzzService = $this->getMock('buzzService', array('getShareById'));
+        $mockBuzzService->expects($this->once())
+                ->method('getShareById')
+                ->with($shareId)
+                ->will($this->returnValue($share));
+        $this->buzzWebServiceHelper->setBuzzService($mockBuzzService);
+
+        $responseArray = $this->buzzWebServiceHelper->deleteShare($shareId, $loggedInEmployeeNumber);
+        $this->assertTrue(is_array($responseArray));
+        $this->assertFalse($responseArray['success']);
+    }
+
+    public function testDeleteCommentWithExistingCommentId() {
+        $commentId = 1;
+        $loggedInEmployeeNumber = 1;
+
+        $comment = new Comment();
+        $comment->setId($commentId);
+        $comment->setEmployeeNumber($loggedInEmployeeNumber);
+
+        $mockBuzzService = $this->getMock('buzzService', array('getCommentById', 'deleteCommentForShare'));
+        $mockBuzzService->expects($this->once())
+                ->method('getCommentById')
+                ->with($commentId)
+                ->will($this->returnValue($comment));
+
+        $mockBuzzService->expects($this->once())
+                ->method('deleteCommentForShare')
+                ->with($comment)
+                ->will($this->returnValue(1));
+        $this->buzzWebServiceHelper->setBuzzService($mockBuzzService);
+
+        $responseArray = $this->buzzWebServiceHelper->deleteCommentForShare($commentId, $loggedInEmployeeNumber);
+
+        $this->assertTrue(is_array($responseArray));
+        $this->assertTrue($responseArray['success']);
+    }
+
+    public function testDeleteCommentWithNonExistingComentId() {
+        $commentId = 1;
+        $loggedInEmployeeNumber = 1;
+
+        $mockBuzzService = $this->getMock('buzzService', array('getCommentById'));
+        $mockBuzzService->expects($this->once())
+                ->method('getCommentById')
+                ->with($commentId)
+                ->will($this->returnValue(false));
+        $this->buzzWebServiceHelper->setBuzzService($mockBuzzService);
+
+        $responseArray = $this->buzzWebServiceHelper->deleteCommentForShare($commentId, $loggedInEmployeeNumber);
+        $this->assertTrue(is_array($responseArray));
+        $this->assertFalse($responseArray['success']);
+    }
+
+    public function testDeleteCommentWithExistingComentIdThatDoNotBelongToCurrentEmployee() {
+        $commentId = 1;
+        $loggedInEmployeeNumber = 1;
+
+        $comment = new Comment();
+        $comment->setId($commentId);
+        $comment->setEmployeeNumber(14);
+
+        $mockBuzzService = $this->getMock('buzzService', array('getCommentById'));
+        $mockBuzzService->expects($this->once())
+                ->method('getCommentById')
+                ->with($commentId)
+                ->will($this->returnValue($comment));
+
+        $this->buzzWebServiceHelper->setBuzzService($mockBuzzService);
+
+        $responseArray = $this->buzzWebServiceHelper->deleteCommentForShare($commentId, $loggedInEmployeeNumber);
+        $this->assertTrue(is_array($responseArray));
+        $this->assertFalse($responseArray['success']);
     }
 
 }

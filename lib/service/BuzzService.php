@@ -436,12 +436,10 @@ class BuzzService extends BaseService {
      * @throws DaoException
      */
     public function deleteCommentForShare($comment) {
-
         $share = $comment->getShareComment();
         $numberOfComments = $share->getNumberOfComments() - 1;
         $share->setNumberOfComments($numberOfComments);
         $this->getBuzzDao()->saveShare($share);
-
         return $this->getBuzzDao()->deleteCommentForShare($comment);
     }
 
@@ -717,6 +715,11 @@ class BuzzService extends BaseService {
         $this->employeeService = $employeeService;
     }
     
+    /**
+     * 
+     * @param Share $shared
+     * @return type
+     */
     public function getSharedEmployeeNames(Share $shared) {
         $sharedEmpArray = array();
         $post = $shared->getPostShared();
@@ -751,5 +754,16 @@ class BuzzService extends BaseService {
             }
         }
         return $sharedEmpArray;
+    }
+    
+    /**
+     * Gets Shares for a given employee number
+     * If the employee number is zero, it will be considered as shares by Admin
+     * 
+     * @param type $empNum
+     * @return type
+     */
+    public function getSharesFromEmployeeNumber($empNum) {
+        return $this->getBuzzDao()->getSharesFromEmployeeNumber($empNum);
     }
 }

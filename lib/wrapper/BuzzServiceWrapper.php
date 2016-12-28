@@ -31,7 +31,7 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     public function getLoggedInEmployeeNumber() {
         return sfContext::getInstance()->getUser()->getAttribute("auth.empNumber");
     }
-    
+
     /**
      * @api {get} /getLoggedInEmployee Get LoggedIn Employee
      * @apiDescription Get LoggedIn Employee
@@ -55,7 +55,7 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     public function getLatestBuzzShares($recentShareId) {
         return $this->getServiceInstance()->getLatestBuzzShares($recentShareId);
     }
-    
+
     /**
      * @api {get} /getBuzzShares/limit/:limit Get shares
      * @apiDescription Get shares
@@ -67,8 +67,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     public function getBuzzShares($limit) {
         return $this->getServiceInstance()->getBuzzShares($limit);
     }
-    
-    
+
+
     /**
      * @api {get} /getMoreBuzzShares/lastShareId/:lastShareId/limit/:limit Get More shares
      * @apiDescription Get More shares
@@ -80,7 +80,7 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     public function getMoreBuzzShares($lastShareId, $limit) {
         return $this->getServiceInstance()->getMoreBuzzShares($lastShareId, $limit);
     }
-    
+
 
     /**
      * @api {get} /getShareAndPostDetailsByShareId/shareId/:shareId Get share by share id
@@ -116,7 +116,7 @@ class BuzzServiceWrapper implements WebServiceWrapper {
             return $this->getServiceInstance()->postContentOnFeed($empNumber, $contentText, date("Y-m-d H:i:s"), $image_data);
         }
     }
-    
+
     /**
      * @api {get} /commentOnShare/shareId/:shareId/contentText/:contentText Comment On Share
      * @apiDescription Comment On Share
@@ -134,7 +134,7 @@ class BuzzServiceWrapper implements WebServiceWrapper {
             return $this->getServiceInstance()->commentOnShare($shareId, $empNumber, $contentText, date("Y-m-d H:i:s"));
         }
     }
-    
+
     /**
      * @api {get} /likeOnShare/shareId/:shareId Like On Share
      * @apiDescription Like on a share / post
@@ -144,7 +144,7 @@ class BuzzServiceWrapper implements WebServiceWrapper {
      * @apiError shareIdIsNull Valid parameters are not provided
      * @apiSuccess {Array} Share Share that is liked
      */
-    public function likeOnShare($shareId){
+    public function likeOnShare($shareId) {
         if (is_null($shareId)) {
             throw new Exception("Valid parameters are not provided");
         } else {
@@ -152,7 +152,7 @@ class BuzzServiceWrapper implements WebServiceWrapper {
             return $this->getServiceInstance()->likeOnShare($shareId, $empNumber, date("Y-m-d H:i:s"));
         }
     }
-    
+
     /**
      * @api {get} /disLikeOnShare/shareId/:shareId Dislike On Share
      * @apiDescription Dislike on a share / post
@@ -162,15 +162,15 @@ class BuzzServiceWrapper implements WebServiceWrapper {
      * @apiError shareIdIsNull Valid parameters are not provided
      * @apiSuccess {Array} Share Share that is disliked
      */
-    public function disLikeOnShare($shareId){
+    public function disLikeOnShare($shareId) {
         if (is_null($shareId)) {
             throw new Exception("Valid parameters are not provided");
         } else {
             $empNumber = $this->getLoggedInEmployeeNumber();
-            return $this->getServiceInstance()->dislikeOnShare($shareId,$empNumber,  date("Y-m-d H:i:s"));
+            return $this->getServiceInstance()->dislikeOnShare($shareId, $empNumber, date("Y-m-d H:i:s"));
         }
     }
-    
+
     /**
      * @api {get} /likeOnComment/commentId/:commentId Like on a comment
      * @apiDescription Like on a comment
@@ -180,7 +180,7 @@ class BuzzServiceWrapper implements WebServiceWrapper {
      * @apiError commentIdIsNull Valid parameters are not provided
      * @apiSuccess {Array} Comment Comment that is liked
      */
-    public function likeOnComment($commentId){
+    public function likeOnComment($commentId) {
         if (is_null($commentId)) {
             throw new Exception("Valid parameters are not provided");
         } else {
@@ -188,7 +188,7 @@ class BuzzServiceWrapper implements WebServiceWrapper {
             return $this->getServiceInstance()->likeOnComment($commentId, $empNumber, date("Y-m-d H:i:s"));
         }
     }
-    
+
     /**
      * @api {get} /dislikeOnComment/commentId/:commentId Dislike on a comment
      * @apiDescription Dislike on a comment
@@ -198,7 +198,7 @@ class BuzzServiceWrapper implements WebServiceWrapper {
      * @apiError commentIdIsNull Valid parameters are not provided
      * @apiSuccess {Array} Comment Comment that is disliked
      */
-    public function dislikeOnComment($commentId){
+    public function dislikeOnComment($commentId) {
         if (is_null($commentId)) {
             throw new Exception("Valid parameters are not provided");
         } else {
@@ -217,11 +217,65 @@ class BuzzServiceWrapper implements WebServiceWrapper {
      * @apiSuccess {Array} Share Shared Post
      */
     public function sharePost($postId, $newText){
-        if (is_null($postId) || is_null($newText)) {
-            throw new Exception("Valid parameters are not provided");
-        } else {
+        if (!is_null($postId) || !is_null($newText)) {
             $empNumber = $this->getLoggedInEmployeeNumber();
             return $this->getServiceInstance()->sharePost($postId, $empNumber, $newText);
+        } else {
+            throw new Exception("Valid parameters are not provided");
+        }
+    }
+    
+    /**
+     * @api {get} /getBuzzForEmployee/:empNum Get buzz by employee
+     * @apiDescription Get buzz by employee number
+     * @apiVersion 0.1.0
+     * @apiName getBuzzForEmployee
+     * @apiGroup BUZZ
+     * @apiError empNum Is Null Valid parameters are not provided
+     * @apiSuccess {Array} Shares Get shares made by the Employee
+     */
+    public function getBuzzForEmployee($empNum) {
+        if (!is_null($empNum)) {
+            $loggedInEmpNumber = $this->getLoggedInEmployeeNumber();
+            return $this->getServiceInstance()->getBuzzForEmployee($empNum,$loggedInEmpNumber);
+        } else {
+            throw new Exception("Valid parameters are not provided");
+        }
+    }
+
+    /**
+     * @api {post} /deleteShare/:shareId Delete Post
+     * @apiDescription Delete a share
+     * @apiVersion 0.1.0
+     * @apiName deleteShare
+     * @apiGroup BUZZ
+     * @apiError shareId Is Null Valid parameters are not provided
+     * @apiSuccess {Array} Share delete success state
+     */
+    public function deleteShare($shareId) {
+        if (!is_null($shareId)) {
+            $loggedInEmployeeNumber = $this->getLoggedInEmployeeNumber();
+            return $this->getServiceInstance()->deleteShare($shareId, $loggedInEmployeeNumber);
+        } else {
+            throw new Exception("Valid parameters are not provided");
+        }
+    }
+
+    /**
+     * @api {post} /deleteComment/:commentId Delete Comment
+     * @apiDescription Delete a comment
+     * @apiVersion 0.1.0
+     * @apiName deleteComment
+     * @apiGroup BUZZ
+     * @apiError commentId Is Null Valid parameters are not provided
+     * @apiSuccess {Array} Share comment delete success state
+     */
+    public function deleteComment($commentId) {
+        if (!is_null($commentId)) {
+            $loggedInEmployeeNumber = $this->getLoggedInEmployeeNumber();
+            return $this->getServiceInstance()->deleteCommentForShare($commentId, $loggedInEmployeeNumber);
+        } else {
+            throw new Exception("Valid parameters are not provided");
         }
     }
 

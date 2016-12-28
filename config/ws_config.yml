@@ -58,3 +58,18 @@ methods:
       group: buzz
       type: POST
       params: ['postId', 'newText']
+  deleteShare:
+      wrapper: BuzzServiceWrapper
+      group: buzz
+      type: POST
+      params: ['shareId']
+  deleteComment:
+      wrapper: BuzzServiceWrapper
+      group: buzz
+      type: POST
+      params: ['commentId']
+  getBuzzForEmployee:
+      wrapper: BuzzServiceWrapper
+      group: buzz
+      type: GET
+      params: ['empNum']

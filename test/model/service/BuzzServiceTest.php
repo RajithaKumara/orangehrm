@@ -1004,31 +1004,31 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("Admin", $sharedEmpArray[0]['employee_name']);
         $this->assertEquals("Administrator", $sharedEmpArray[0]['employee_job_title']);
     }
-    
+
     public function testGetSharedEmployeeNamesWhenSharedByAdminAndEmployees() {
 
         $empNumberOne = 1;
         $firstNameOne = 'James';
         $lastNameOne = 'White';
-        
+
         $empNumberTwo = 2;
         $firstNameTwo = 'Peter';
         $lastNameTwo = 'Knowles';
-        
+
         $shareCollection = new Doctrine_Collection('Share');
-        
+
         $jobTitleOne = new JobTitle();
         $jobTitleOne->setJobTitleName('CTO');
-        
+
         $jobTitleTwo = new JobTitle();
         $jobTitleTwo->setJobTitleName('SE');
-        
+
         $employeeOne = new Employee();
         $employeeOne->setEmpNumber($empNumberOne);
         $employeeOne->setFirstName($firstNameOne);
         $employeeOne->setLastName($lastNameOne);
         $employeeOne->setJobTitle($jobTitleOne);
-        
+
         $employeeTwo = new Employee();
         $employeeTwo->setEmpNumber($empNumberTwo);
         $employeeTwo->setFirstName($firstNameTwo);
@@ -1050,7 +1050,7 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $shareThree->setEmployeePostShared($employeeTwo);
         $shareThree->setEmployeeNumber(2);
         $shareCollection->add($shareThree);
-        
+
         $shareFour = new Share();
         $shareFour->setType(1);
         $shareCollection->add($shareFour);
@@ -1066,11 +1066,11 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $sharedEmpArray = $this->buzzService->getSharedEmployeeNames($shareTwo);
         $this->assertTrue(is_array($sharedEmpArray));
         $this->assertEquals(3, count($sharedEmpArray));
-        
+
         $this->assertEquals(null, $sharedEmpArray[0]['employee_number']);
         $this->assertEquals("Admin", $sharedEmpArray[0]['employee_name']);
         $this->assertEquals("Administrator", $sharedEmpArray[0]['employee_job_title']);
-        
+
         $this->assertEquals($employeeOne->getEmpNumber(), intval($sharedEmpArray[1]['employee_number']));
         $this->assertEquals($employeeOne->getFirstAndLastNames(), $sharedEmpArray[1]['employee_name']);
         $this->assertEquals($employeeOne->getJobTitleName(), $sharedEmpArray[1]['employee_job_title']);
@@ -1079,18 +1079,18 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($employeeTwo->getFirstAndLastNames(), $sharedEmpArray[2]['employee_name']);
         $this->assertEquals($employeeTwo->getJobTitleName(), $sharedEmpArray[2]['employee_job_title']);
     }
-    
+
     public function testGetSharedEmployeeNamesWhenPostedByEmployeeSharedByAdminAndEmployee() {
 
         $empIdOne = 1;
         $firstNameOne = 'James';
         $lastNameOne = 'White';
-        
+
         $shareCollection = new Doctrine_Collection('Share');
-        
+
         $jobTitleOne = new JobTitle();
         $jobTitleOne->setJobTitleName('CTO');
-        
+
         $employeeOne = new Employee();
         $employeeOne->setEmpNumber($empIdOne);
         $employeeOne->setFirstName($firstNameOne);
@@ -1105,7 +1105,7 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $shareTwo->setType(1);
         $shareTwo->setEmployeePostShared($employeeOne);
         $shareCollection->add($shareTwo);
-        
+
         $shareFour = new Share();
         $shareFour->setType(1);
         $shareCollection->add($shareFour);
@@ -1121,14 +1121,62 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $sharedEmpArray = $this->buzzService->getSharedEmployeeNames($shareTwo);
         $this->assertTrue(is_array($sharedEmpArray));
         $this->assertEquals(2, count($sharedEmpArray));
-        
+
         $this->assertEquals(null, $sharedEmpArray[0]['employee_number']);
         $this->assertEquals("Admin", $sharedEmpArray[0]['employee_name']);
         $this->assertEquals("Administrator", $sharedEmpArray[0]['employee_job_title']);
-        
+
         $this->assertEquals($employeeOne->getEmpNumber(), intval($sharedEmpArray[1]['employee_number']));
         $this->assertEquals($employeeOne->getFirstAndLastNames(), $sharedEmpArray[1]['employee_name']);
         $this->assertEquals($employeeOne->getJobTitleName(), $sharedEmpArray[1]['employee_job_title']);
+    }
+
+    public function testGetSharesFromEmployeeNumber() {
+        $buzzDao = $this->getMock('buzzDao', array('getSharesFromEmployeeNumber'));
+
+        $shareOne = new Share();
+        $shareOne->setId(1);
+        $shareOne->setEmployeeNumber(1);
+
+        $shareTwo = new Share();
+        $shareTwo->setId(2);
+        $shareTwo->setEmployeeNumber(1);
+        $shareArray = array($shareOne, $shareTwo);
+        
+
+        $buzzDao->expects($this->once())
+                ->method('getSharesFromEmployeeNumber')
+                ->with(1)
+                ->will($this->returnValue($shareArray));
+
+        $this->buzzService->setBuzzDao($buzzDao);
+        $resultShares = $this->buzzService->getSharesFromEmployeeNumber(1);
+        $this->assertTrue(is_array($resultShares));
+        $this->assertEquals(2, count($resultShares));
+    }
+    
+    public function testGetSharesOfAdmin() {
+        $buzzDao = $this->getMock('buzzDao', array('getSharesFromEmployeeNumber'));
+
+        $shareOne = new Share();
+        $shareOne->setId(1);
+        $shareOne->setEmployeeNumber(0);
+
+        $shareTwo = new Share();
+        $shareTwo->setId(2);
+        $shareTwo->setEmployeeNumber(0);
+        
+        $shareArray = array($shareOne, $shareTwo);
+
+        $buzzDao->expects($this->once())
+                ->method('getSharesFromEmployeeNumber')
+                ->with(0)
+                ->will($this->returnValue($shareArray));
+
+        $this->buzzService->setBuzzDao($buzzDao);
+        $resultShares = $this->buzzService->getSharesFromEmployeeNumber(0);
+        $this->assertTrue(is_array($resultShares));
+        $this->assertEquals(2, count($resultShares));
     }
 
 }

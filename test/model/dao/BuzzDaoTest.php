@@ -971,4 +971,28 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, count($photos));
     }
 
+    public function testGetSharesFromEmployeeNumber() {
+        $employeeNumber = 2;
+        $shareCollection = $this->buzzDao->getSharesFromEmployeeNumber($employeeNumber);
+
+        $this->assertEquals(2, count($shareCollection));
+        $this->assertEquals(2, $shareCollection[1]['id']);
+        $this->assertEquals(3, $shareCollection[1]['post_id']);
+        $this->assertEquals('2015-01-01 00:00:00', $shareCollection[1]['share_time']);
+        
+        $this->assertEquals(3, $shareCollection[0]['id']);
+        $this->assertEquals(2, $shareCollection[0]['post_id']);
+        $this->assertEquals('2016-01-01 00:00:00', $shareCollection[0]['share_time']);
+    }
+    
+    public function testGetSharesForAdmin() {
+        $employeeNumber = 0;
+        $shareCollection = $this->buzzDao->getSharesFromEmployeeNumber($employeeNumber);
+
+        $this->assertEquals(1, count($shareCollection));
+        $this->assertEquals(4, $shareCollection[0]['id']);
+        $this->assertEquals(2, $shareCollection[0]['post_id']);
+        $this->assertEquals('admin share', $shareCollection[0]['text']);
+    }
+
 }
