@@ -271,7 +271,7 @@ $(document).ready(function () {
                     var id = $(this).prop('id');
                     var existing = $('#' + id);
                     if (existing.length) {
-                        existing.replaceWith($(this).html());
+                        existing.html($(this).html());
                     } else {
                         $('#buzz').prepend($(this).html());
                     }
@@ -922,7 +922,12 @@ $(document).ready(function () {
             success: function (data) {
                 $('#deleteOrEditCommentForm_commentId').val('');
                 $('#deleteOrEditCommentForm_textComment').val('');
-                $("[id=commentContentNew_" + commentId + ']').replaceWith(data);
+                var newDataId = $(data).attr('id');
+                if ($("[id=commentContentNew_" + commentId + ']').length) {
+                    $("[id=commentContentNew_" + commentId + ']').replaceWith(data);
+                } else if ($("#"+newDataId).length) {
+                    $("[id=" + newDataId + ']').replaceWith(data);
+                }
                 $("#loadingDataModal").modal('hide');
 
             }

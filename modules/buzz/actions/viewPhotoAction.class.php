@@ -55,7 +55,7 @@ class viewPhotoAction extends basePimAction {
             $fp = fopen($tmpName, 'r');
             $fileSize = filesize($tmpName);
             $contents = fread($fp, $fileSize);
-            $contentType = "image/gif";
+            $contentType = "image/png";
             fclose($fp);
         }
 

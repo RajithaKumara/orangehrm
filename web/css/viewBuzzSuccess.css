@@ -1054,3 +1054,7 @@ div.photoPreviewComment > div#commentListContainerforpev {
     max-height: 120px !important;
     overflow-y: auto !important;
 }
+
+#wrapper{
+    padding-top:30px;
+}

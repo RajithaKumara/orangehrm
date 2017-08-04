@@ -14,8 +14,6 @@
 class logOutAction extends BaseBuzzAction {
 
     public function execute($request) {
-        $this->logOut();
-
         $this->redirect('auth/logout');
     }
 

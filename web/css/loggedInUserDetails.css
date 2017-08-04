@@ -23,7 +23,6 @@
 #rightSide{
     width: 62px;
     height: 62px;
-    margin-top: -2px;
     overflow: hidden;
     border: 3px solid white;
     vertical-align: middle;
@@ -49,42 +48,30 @@
     border-radius: 5px;
 }
 
-#buzzSearchForm, #ddd, #gotoProfile{
-    float: left;
-}
-
-#buzzSearchForm{
-    margin-top: 18px;
-    position: fixed;
-    margin-left: -510px;
-}
-
 #gotoProfile{
     font-size: 12px;
-    margin-top: 7px;
     background-color: white;
-    margin-top: 6px; 
     border-radius: 0 5px 5px 0;
+    display: block;
+    float: left;
 }
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {  
     #gotoProfile{
-        font-size: 12px;
-        margin-top: 7px;
-        background-color: white;
-        margin-top: 0px; 
-        border-radius: 0 5px 5px 0;
     }
 }
+
 #gotoProfile:hover{
     cursor: pointer;
-
 }
 
-#ddd input{
-    width: 450px;
+#buzzSearchForm input{
+    width: 410px;
     border-radius: 5px 0 0 5px;
     border: none;
-    padding: 7px 7px 6px 7px;
+    padding: 7px 7px 7px 7px;
+    display: block;
+    float: left;
+    height: 30px;
 }
 
 .logoutLink:hover{
@@ -118,12 +105,23 @@
 }
 
 #buzzSearchForm{
-    margin-left: 0px; 
-    right: 0px; 
-    left: 20%;
+    float: left;
 }
 
+#profileDetails {
+    float: right;
+}
 
+#buzz-search-div,
+#buzz-logo {
+    display: block;
+    float: left;
+}
+
+#buzz-search-div {
+    margin-top: 15px;
+    margin-left: 30px;
+}
 /*@media all and (min-width: 900px) { #ddd input { width: 100%;  } }
 @media all and (min-width: 1000px) { #ddd input { width: 100%;  } }
 @media all and (min-width: 1100px) { #ddd input { width: 100%;  } }

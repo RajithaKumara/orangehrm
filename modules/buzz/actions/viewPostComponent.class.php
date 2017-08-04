@@ -15,18 +15,18 @@ class viewPostComponent extends sfComponent {
 
     protected $buzzService;
     protected $buzzConfigService;
-    protected $buzzCookieService;
+    protected $buzzUserService;
     protected $ohrmCookieManager;
 
     /**
      * 
-     * @return BuzzCookieService
+     * @return BuzzUserService
      */
-    protected function getBuzzCookieService() {
-        if (!$this->buzzCookieService instanceof BuzzCookieService) {
-            $this->buzzCookieService = new BuzzCookieService();
+    protected function getBuzzUserService() {
+        if (!$this->buzzUserService instanceof BuzzUserService) {
+            $this->buzzUserService = new BuzzUserService();
         }
-        return $this->buzzCookieService;
+        return $this->buzzUserService;
     }
 
     /**
@@ -196,21 +196,7 @@ class viewPostComponent extends sfComponent {
      * @return type
      */
     public function getLoggedInEmployeeUserRole() {
-        $employeeUserRole = null;
-        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
-            if ($this->getUser()->getAttribute('auth.isAdmin') == 'Yes') {
-                $employeeUserRole = 'Admin';
-            } else {
-                $employeeUserRole = 'Ess';
-            }
-            $employeeNumber = $this->getUser()->getAttribute('auth.empNumber');
-            if ($this->getBuzzCookieService()->getEmployeeNumber() != $employeeNumber) {
-                $this->getBuzzCookieService()->saveCookieValuves($employeeNumber, $employeeUserRole);
-            }
-        } else {
-            $employeeUserRole = $this->getBuzzCookieService()->getEmployeeUserRole();
-        }
-
+        $employeeUserRole = $this->getBuzzUserService()->getEmployeeUserRole();
         return $employeeUserRole;
     }
 

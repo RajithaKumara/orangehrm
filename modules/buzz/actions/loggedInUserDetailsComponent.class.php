@@ -27,17 +27,17 @@
 class loggedInUserDetailsComponent extends sfComponent {
 
     private $employeeService;
-    protected $buzzCookieService;
+    protected $buzzUserService;
 
     /**
      * 
-     * @return BuzzCookieService
+     * @return BuzzUserService
      */
-    protected function getBuzzCookieService() {
-        if (!$this->buzzCookieService instanceof BuzzCookieService) {
-            $this->buzzCookieService = new BuzzCookieService();
+    protected function getBuzzUserService() {
+        if (!$this->buzzUserService instanceof BuzzUserService) {
+            $this->buzzUserService = new BuzzUserService();
         }
-        return $this->buzzCookieService;
+        return $this->buzzUserService;
     }
 
     /**
@@ -57,7 +57,7 @@ class loggedInUserDetailsComponent extends sfComponent {
      * @return Int
      */
     public function getLogedInEmployeeNumber() {
-        $employeeNumber=$this->getBuzzCookieService()->getEmployeeNumber();
+        $employeeNumber=$this->getBuzzUserService()->getEmployeeNumber();
         if(UserRoleManagerFactory::getUserRoleManager()->getUser() != null){
             $employeeNumber = $this->getUser()->getAttribute('auth.empNumber');
         }

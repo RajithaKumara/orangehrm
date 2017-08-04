@@ -17,7 +17,6 @@
  * Please refer http://www.orangehrm.com/Files/OrangeHRM_Commercial_License.pdf for the license which includes terms and conditions on using this software.
  *
  */
-//use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccess'));
 ?>
 <style type="text/css">
 
@@ -26,30 +25,18 @@
         position: fixed; 
         width: 100%;  
         background-color: #F07C00;
-        padding: 10px; 
+        padding-top: 8.5px;
+        padding-bottom: 7px;
         z-index: 9999; 
         color: white;
-        height: 58.5px;
+        height: 68px;
     }
 
-    #logo{
-        float: left;
-    }
-
-    #logo{
-        width: 24%;
-
-        margin-left: -10px;
-    }
-
-    #buzzHeaderRight{
-        //position: absolute;
-        float: right;
-        top: 10%;
-    }
-    #dashBoardHeaderBuzz{
-        width: 960px;
+    #buzzDetailContainer {
+        width: 965px;
+        height: 68px;
         margin: 0 auto;
+        overflow: hidden;
     }
 
 </style>
@@ -58,18 +45,7 @@
 </head>
 <body>
     <div id="buzzHeader">
-        <div id="dashBoardHeaderBuzz">
-            <div id="logo">
-                <a href="<?php echo url_for("buzz/viewBuzz"); ?>">
-                    <img id="buzz-logo" height="60px" src="<?php echo plugin_web_path('orangehrmBuzzPlugin', 'images/buzz_logo_small.png'); ?>">
-                </a>
-            </div>
-            <div id="buzzHeaderRight">
-                <div id="buzzHeaderDetails">
-                    <?php include_component('buzz', 'loggedInUserDetails', array()); ?>
-                </div>
-            </div>
-        </div>
+        <?php include_component('buzz', 'loggedInUserDetails', array()); ?>
     </div>
 
     <div id="wrapper">
@@ -81,5 +57,4 @@
         </div> <!-- content -->
 
     </div> <!-- wrapper -->
-
-    <?php // require_once '_footer.php'; ?>
+</body>

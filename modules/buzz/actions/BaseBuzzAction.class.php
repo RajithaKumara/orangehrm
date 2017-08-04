@@ -15,7 +15,7 @@ abstract class BaseBuzzAction extends sfAction {
 
     protected $buzzService;
     protected $buzzConfigService;
-    protected $buzzCookieService;
+    protected $BuzzUserService;
     protected $ohrmCookieManager;
     protected $employeeService;
 
@@ -60,13 +60,13 @@ abstract class BaseBuzzAction extends sfAction {
 
     /**
      * 
-     * @return BuzzCookieService
+     * @return BuzzUserService
      */
-    protected function getBuzzCookieService() {
-        if (!$this->buzzCookieService instanceof BuzzCookieService) {
-            $this->buzzCookieService = new BuzzCookieService();
+    protected function getBuzzUserService() {
+        if (!$this->buzzUserService instanceof BuzzUserService) {
+            $this->buzzUserService = new BuzzUserService();
         }
-        return $this->buzzCookieService;
+        return $this->buzzUserService;
     }
 
     /**
@@ -86,32 +86,8 @@ abstract class BaseBuzzAction extends sfAction {
      * @throws Exception
      */
     public function getLogedInEmployeeNumber() {
-        $employeeNumber = null;
-        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
-            if ($this->getUser()->getAttribute('auth.isAdmin') == 'Yes') {
-                $userRole = 'Admin';
-                $isAdmin = true;
-            } else {
-                $userRole = 'Ess';
-            }
-            $employeeNumber = $this->getUser()->getAttribute('auth.empNumber');
-            if ($this->getBuzzCookieService()->getEmployeeNumber() != $employeeNumber || ($isAdmin && $employeeNumber == null)) {
-                $this->getBuzzCookieService()->saveCookieValuves($employeeNumber, $userRole);
-            }
-        } elseif ($this->getBuzzCookieService()->isSavedCookies()) {
-            $employeeNumber = $this->getBuzzCookieService()->getEmployeeNumber();
-        } else {
-            $this->redirect('auth/logout');
-        }
-
+        $employeeNumber = $this->getBuzzUserService()->getEmployeeNumber();
         return $employeeNumber;
-    }
-
-    /**
-     * function to delete cookies
-     */
-    public function logOut() {
-        $this->getBuzzCookieService()->destroyCokkies();
     }
 
     /**
@@ -119,23 +95,7 @@ abstract class BaseBuzzAction extends sfAction {
      * @return type
      */
     public function getLoggedInEmployeeUserRole() {
-        $employeeUserRole = null;
-        if (UserRoleManagerFactory::getUserRoleManager()->getUser() != null) {
-            if ($this->getUser()->getAttribute('auth.isAdmin') == 'Yes') {
-                $employeeUserRole = 'Admin';
-            } else {
-                $employeeUserRole = 'Ess';
-            }
-            $employeeNumber = $this->getUser()->getAttribute('auth.empNumber');
-            if ($this->getBuzzCookieService()->getEmployeeNumber() != $employeeNumber) {
-                $this->getBuzzCookieService()->saveCookieValuves($employeeNumber, $employeeUserRole);
-            }
-        } elseif ($this->getBuzzCookieService()->isSavedCookies()) {
-            $employeeUserRole = $this->getBuzzCookieService()->getEmployeeUserRole();
-        } else {
-            throw new Exception('User Didnot Have');
-        }
-
+        $employeeUserRole = $this->getBuzzUserService()->getEmployeeUserRole();
         return $employeeUserRole;
     }
 

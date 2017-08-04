@@ -28,17 +28,17 @@ class viewPostPreviewComponent extends sfComponent {
 
     protected $buzzService;
     protected $buzzConfigService;
-    protected $buzzCookieService;
+    protected $buzzUserService;
 
     /**
      * 
-     * @return BuzzCookieService
+     * @return BuzzUserService
      */
-    protected function getBuzzCookieService() {
-        if (!$this->buzzCookieService instanceof BuzzCookieService) {
-            $this->buzzCookieService = new BuzzCookieService();
+    protected function getBuzzUserService() {
+        if (!$this->buzzUserService instanceof BuzzUserService) {
+            $this->buzzUserService = new BuzzUserService();
         }
-        return $this->buzzCookieService;
+        return $this->buzzUserService;
     }
 
     /**
@@ -149,7 +149,7 @@ class viewPostPreviewComponent extends sfComponent {
      * @return Int
      */
     public function getLogedInEmployeeNumber() {
-        return $this->getBuzzCookieService()->getEmployeeNumber();
+        return $this->getBuzzUserService()->getEmployeeNumber();
     }
 
 }

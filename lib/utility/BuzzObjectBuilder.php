@@ -430,8 +430,8 @@ class BuzzObjectBuilder {
                 $photo->setPhoto($imageDataDecoded);
                 $photo->setFilename($imageName);
                 $photo->setFileType($imageType);
-                $photo->setHeight($imageWidth);
-                $photo->setWidth($imageHeight);
+                $photo->setHeight($imageHeight);
+                $photo->setWidth($imageWidth);
                 $photo->setSize(strlen($imageDataDecoded));
                 $photo->setPostId($postId);
                 return $photo;
