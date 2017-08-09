@@ -128,14 +128,14 @@ class addNewVideoAction extends BaseBuzzAction {
             return 'not';
         }
 
-        $temp = split("youtu.be/", $url);
+        $temp = explode("youtu.be/", $url);
 
         if (count($temp) > 1) {
             $embededUrl = "https://www.youtube.com/embed/" . $temp[1] . "?rel=0";
             return $embededUrl;
         }
 
-        $temp2 = split("v=", $url);
+        $temp2 = explode("v=", $url);
         if (count($temp2) > 1) {
             $videoJson = "https://www.youtube.com/oembed?url=$url&format=json";
             $headers = get_headers($videoJson);
@@ -147,7 +147,7 @@ class addNewVideoAction extends BaseBuzzAction {
             return $embededUrl;
         }
 
-        $temp3 = split("//vimeo.com/", $url);
+        $temp3 = explode("//vimeo.com/", $url);
         if (count($temp3) > 1) {
             $urlParts = explode("/", parse_url($temp3[1], PHP_URL_PATH));
             $videoId = (int) $urlParts[count($urlParts) - 1];
@@ -155,44 +155,44 @@ class addNewVideoAction extends BaseBuzzAction {
             return $embededUrl;
         }
 
-        $temp4 = split("yahoo.com/", $url);
+        $temp4 = explode("yahoo.com/", $url);
         if (count($temp4) > 1) {
-            $lstCode = split("/", $temp4[1]);
+            $lstCode = explode("/", $temp4[1]);
             $last = count($lstCode) - 1;
             $embededUrl = "https://screen.yahoo.com/" . $lstCode[$last] . "?format=embed";
             return $embededUrl;
         }
 
-        $temp5 = split("dailymotion.com/", $url);
+        $temp5 = explode("dailymotion.com/", $url);
         if (count($temp5) > 1) {
-            $lstCode = split("/", $temp5[1]);
+            $lstCode = explode("/", $temp5[1]);
             $last = count($lstCode) - 1;
-            $codeFirst = split("_", $lstCode[$last]);
+            $codeFirst = explode("_", $lstCode[$last]);
             $embededUrl = "//www.dailymotion.com/embed/video/" . $codeFirst[0];
             return $embededUrl;
         }
 
-        $temp6 = split("http://dai.ly/", $url);
+        $temp6 = explode("http://dai.ly/", $url);
         if (count($temp6) > 1) {
 
             $embededUrl = "//www.dailymotion.com/embed/video/" . $temp6[1];
             return $embededUrl;
         }
 
-        $temp7 = split("vube.com/", $url);
+        $temp7 = explode("vube.com/", $url);
         if (count($temp7) > 1) {
-            $lstCode = split("/", $temp7[1]);
+            $lstCode = explode("/", $temp7[1]);
 
             $last = count($lstCode) - 1;
-            $vube = split("t=s", $lstCode[$last]);
+            $vube = explode("t=s", $lstCode[$last]);
 
             $embededUrl = "http://vube.com/embed/video/" . $vube[0];
             return $embededUrl;
         }
 
-        $temp8 = split("http://www.metacafe.com/watch/", $url);
+        $temp8 = explode("http://www.metacafe.com/watch/", $url);
         if (count($temp8) > 1) {
-            $lstCode = split("/", $temp8[1]);
+            $lstCode = explode("/", $temp8[1]);
 
 
 
@@ -200,7 +200,7 @@ class addNewVideoAction extends BaseBuzzAction {
             return $embededUrl;
         }
 
-        $temp9 = split("www.ustream.tv/recorded/", $url);
+        $temp9 = explode("www.ustream.tv/recorded/", $url);
         if (count($temp9) > 1) {
             $embededUrl = "http://www.ustream.tv/embed/recorded/" . $temp9[1] . "?v=3&amp;wmode=direct";
             return $embededUrl;

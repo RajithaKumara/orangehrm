@@ -43,7 +43,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * this is function to test saving post in the database
      */
     public function testGetShareCount() {
-        $buzzDao = $this->getMock('buzzDao', array('getSharesCount'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getSharesCount'))
+			->getMock();
         $buzzDao->expects($this->once())
                 ->method('getSharesCount')
                 ->will($this->returnValue(4));
@@ -58,7 +60,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testSavePost() {
         $post = New Post();
-        $buzzDao = $this->getMock('buzzDao', array('savePost'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('savePost'))
+			->getMock();
         $buzzDao->expects($this->once())
                 ->method('savePost')
                 ->with($post)
@@ -74,7 +78,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testSaveLink() {
         $link = New Link();
-        $buzzDao = $this->getMock('buzzDao', array('saveLink'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('saveLink'))
+			->getMock();
         $buzzDao->expects($this->once())
                 ->method('saveLink')
                 ->with($link)
@@ -89,7 +95,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * this is function to test getting shares data from the database
      */
     public function testGetShares() {
-        $buzzDao = $this->getMock('buzzDao', array('getShares'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getShares'))
+			->getMock();
         $shareArray = array(
             new Share(),
             new Share(),
@@ -113,7 +121,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $post = new Post();
         $share = new Share();
         $share->setPostShared($post);
-        $buzzDao = $this->getMock('buzzDao', array('getShareById'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getShareById'))
+			->getMock();
         $buzzDao->expects($this->once())
                 ->method('getShareById')
                 ->with(1)
@@ -128,7 +138,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * this is function to test delete post
      */
     public function testDeletePost() {
-        $buzzDao = $this->getMock('buzzDao', array('deletePost'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('deletePost'))
+			->getMock();
         $buzzDao->expects($this->once())
                 ->method('deletePost')
                 ->with('1')
@@ -143,7 +155,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * this is function to test delete shares from the database
      */
     public function testDeleteShare() {
-        $buzzDao = $this->getMock('buzzDao', array('deleteShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('deleteShare'))
+			->getMock();
         $buzzDao->expects($this->once())
                 ->method('deleteShare')
                 ->with('1')
@@ -167,7 +181,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $share->setNumberOfLikes(1);
         $like->setShareLike($share);
 
-        $buzzDao = $this->getMock('buzzDao', array('saveLikeForShare', 'saveShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('saveLikeForShare', 'saveShare'))
+			->getMock();
         $buzzDao->expects($this->once())
                 ->method('saveLikeForShare')
                 ->with($like)
@@ -191,7 +207,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $share = new Share();
         $share->setNumberOfLikes(1);
         $like->setShareLike($share);
-        $buzzDao = $this->getMock('buzzDao', array('deleteLikeForShare', 'saveShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('deleteLikeForShare', 'saveShare'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('deleteLikeForShare')
@@ -219,7 +237,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $share->setNumberOfLikes(1);
         $comment->setShareComment($share);
 
-        $buzzDao = $this->getMock('buzzDao', array('saveCommentShare', 'saveShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('saveCommentShare', 'saveShare'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('saveCommentShare')
@@ -247,7 +267,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $share->setPostId(2);
         $share->setNumberOfLikes(1);
         $comment->setShareComment($share);
-        $buzzDao = $this->getMock('buzzDao', array('deleteCommentForShare', 'saveShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('deleteCommentForShare', 'saveShare'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('deleteCommentForShare')
@@ -272,7 +294,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $comment = new Comment();
         $comment->setNumberOfLikes(3);
         $like->setCommentLike($comment);
-        $buzzDao = $this->getMock('buzzDao', array('saveLikeForComment', 'saveCommentShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('saveLikeForComment', 'saveCommentShare'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('saveLikeForComment')
@@ -298,7 +322,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $comment = new Comment();
         $comment->setNumberOfLikes(3);
         $like->setCommentLike($comment);
-        $buzzDao = $this->getMock('buzzDao', array('deleteLikeForComment', 'saveCommentShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('deleteLikeForComment', 'saveCommentShare'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('deleteLikeForComment')
@@ -320,7 +346,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
 
         $share = new Share();
 
-        $buzzDao = $this->getMock('buzzDao', array('getShareById'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getShareById'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getShareById')
@@ -339,7 +367,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
     public function testGetPostById() {
         $post = new Post();
 
-        $buzzDao = $this->getMock('buzzDao', array('getPostById'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getPostById'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getPostById')
@@ -357,7 +387,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testGetCommentById() {
         $comment = new Comment();
-        $buzzDao = $this->getMock('buzzDao', array('getCommentById'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getCommentById'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getCommentById')
@@ -375,7 +407,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testGetLikeOnCommentById() {
         $like = New LikeOnComment();
-        $buzzDao = $this->getMock('buzzDao', array('getLikeOnCommentById'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getLikeOnCommentById'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getLikeOnCommentById')
@@ -394,7 +428,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testGetLikeOnshareById() {
         $like = New LikeOnShare();
-        $buzzDao = $this->getMock('buzzDao', array('getLikeOnShareById'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getLikeOnShareById'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getLikeOnShareById')
@@ -419,7 +455,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $share = new Share();
         $share->setNumberOfLikes(1);
         $unlikeOnShare->setShareUnLike($share);
-        $buzzDao = $this->getMock('buzzDao', array('saveUnLikeForShare', 'saveShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('saveUnLikeForShare', 'saveShare'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('saveUnLikeForShare')
@@ -447,7 +485,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $share = new Share();
         $share->setNumberOfLikes(1);
         $unlikeOnShare->setShareUnLike($share);
-        $buzzDao = $this->getMock('buzzDao', array('deleteUnLikeForShare', 'saveShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('deleteUnLikeForShare', 'saveShare'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('deleteUnLikeForShare')
@@ -475,7 +515,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $comment = new Comment();
         $comment->setNumberOfLikes(1);
         $like->setCommentUnLike($comment);
-        $buzzDao = $this->getMock('buzzDao', array('saveUnLikeForComment', 'saveCommentShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('saveUnLikeForComment', 'saveCommentShare'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('saveUnLikeForComment')
@@ -499,7 +541,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $comment = new Comment();
         $comment->setNumberOfLikes(1);
         $like->setCommentUnLike($comment);
-        $buzzDao = $this->getMock('buzzDao', array('deleteUnLikeForComment', 'saveCommentShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('deleteUnLikeForComment', 'saveCommentShare'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('deleteUnLikeForComment')
@@ -519,7 +563,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test get more shares 
      */
     public function testGetMoreShares() {
-        $buzzDao = $this->getMock('buzzDao', array('getMoreShares'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getMoreShares'))
+			->getMock();
 
         $shareArray = array(
             new Share(),
@@ -540,7 +586,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test test get more employee shares
      */
     public function testGetMoreEmployeeShares() {
-        $buzzDao = $this->getMock('buzzDao', array('getMoreEmployeeSharesByEmployeeNumber'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getMoreEmployeeSharesByEmployeeNumber'))
+			->getMock();
 
         $shareArray = array(
             new Share(),
@@ -561,7 +609,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test share by emplyee 
      */
     public function testgetSharesByEmployeeNumber() {
-        $buzzDao = $this->getMock('buzzDao', array('getSharesByEmployeeNumber'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getSharesByEmployeeNumber'))
+			->getMock();
 
         $shareArray = array(
             new Share(),
@@ -584,7 +634,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test employee shares up to share id
      */
     public function testgetEmployeeShareUptoShareId() {
-        $buzzDao = $this->getMock('buzzDao', array('getEmployeeSharesUptoShareId'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getEmployeeSharesUptoShareId'))
+			->getMock();
 
         $shareArray = array(
             new Share(),
@@ -605,7 +657,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test get shares upto share id
      */
     public function testgetShareUpToShareId() {
-        $buzzDao = $this->getMock('buzzDao', array('getSharesUptoId'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getSharesUptoId'))
+			->getMock();
 
         $shareArray = array(
             new Share(),
@@ -627,7 +681,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testSavingPhoto() {
         $photo = new Photo();
-        $buzzDao = $this->getMock('buzzDao', array('savePhoto'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('savePhoto'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('savePhoto')
@@ -644,7 +700,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test shares by user Id
      */
     public function testGetNoOfSharesBy() {
-        $buzzDao = $this->getMock('buzzDao', array('getNoOfSharesByEmployeeNumber'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getNoOfSharesByEmployeeNumber'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getNoOfSharesByEmployeeNumber')
@@ -661,7 +719,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test comment by user Id
      */
     public function testGetNoOfCommentBy() {
-        $buzzDao = $this->getMock('buzzDao', array('getNoOfCommentsByEmployeeNumber'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getNoOfCommentsByEmployeeNumber'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getNoOfCommentsByEmployeeNumber')
@@ -678,7 +738,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test comment by user Id
      */
     public function testGetNoOfCommentFor() {
-        $buzzDao = $this->getMock('buzzDao', array('getNoOfCommentsForEmployeeByEmployeeNumber'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getNoOfCommentsForEmployeeByEmployeeNumber'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getNoOfCommentsForEmployeeByEmployeeNumber')
@@ -695,7 +757,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test shares by user Id
      */
     public function testGetNoOfShareLikesForEmployeeByEmployeeNumber() {
-        $buzzDao = $this->getMock('buzzDao', array('getNoOfShareLikesForEmployeeByEmployeeNumber'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getNoOfShareLikesForEmployeeByEmployeeNumber'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getNoOfShareLikesForEmployeeByEmployeeNumber')
@@ -712,7 +776,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      * test comment by user Id
      */
     public function testGetNoOfCommentLikeBy() {
-        $buzzDao = $this->getMock('buzzDao', array('getNoOfCommentLikesForEmployeeByEmployeeNumber'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getNoOfCommentLikesForEmployeeByEmployeeNumber'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getNoOfCommentLikesForEmployeeByEmployeeNumber')
@@ -731,7 +797,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
     public function testMostLikeShares() {
         $shareIds = array(1, 2);
 
-        $buzzDao = $this->getMock('buzzDao', array('getMostLikedShares'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getMostLikedShares'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getMostLikedShares')
@@ -748,7 +816,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testMostCommentedShares() {
         $shareIds = array(1, 2);
-        $buzzDao = $this->getMock('buzzDao', array('getMostCommentedShares'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getMostCommentedShares'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('getMostCommentedShares')
@@ -766,7 +836,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
     public function testGetEmployeesHavingBdaysBetweenTwoDates() {
         $fromDate = '2015-06-03';
         $todate = '2015-06-07';
-        $buzzDao = $this->getMock('buzzDao', array('getEmployeesHavingBdaysBetweenTwoDates'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getEmployeesHavingBdaysBetweenTwoDates'))
+			->getMock();
 
         $employeeArray = array(
             new Employee(),
@@ -788,7 +860,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testGetEmployeesHavingBdaysOnNextYear() {
         $date = '2015-12-12';
-        $buzzDao = $this->getMock('buzzDao', array('getEmployeesHavingBdaysOnNextYear'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getEmployeesHavingBdaysOnNextYear'))
+			->getMock();
 
         $employeeArray = array(
             new Employee(),
@@ -810,7 +884,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testAnivesary() {
         $date = '2012-05-15';
-        $buzzDao = $this->getMock('buzzDao', array('getEmployeesHavingAnniversaryOnMonth'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getEmployeesHavingAnniversaryOnMonth'))
+			->getMock();
 
         $employeeArray = array(
             new Employee(),
@@ -832,7 +908,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testGetEmployeesHavingAnniversariesNextYear() {
         $date = '2012-05-15';
-        $buzzDao = $this->getMock('buzzDao', array('getEmployeesHavingAnniversariesNextYear'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getEmployeesHavingAnniversariesNextYear'))
+			->getMock();
 
         $employeeArray = array(
             new Employee(),
@@ -854,7 +932,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
      */
     public function testSaveShare() {
         $share = new Share();
-        $buzzDao = $this->getMock('buzzDao', array('saveShare'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('saveShare'))
+			->getMock();
 
         $buzzDao->expects($this->once())
                 ->method('saveShare')
@@ -871,7 +951,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $photo = new Photo();
         $photo->setId($id);
 
-        $buzzDao = $this->getMock('buzzDao', array('getPhoto'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getPhoto'))
+			->getMock();
         $buzzDao->expects($this->once())
                 ->method('getPhoto')
                 ->with($id)
@@ -891,7 +973,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $photo2->setId(13);
         $postPhotos = array($photo1, $photo2);
 
-        $buzzDao = $this->getMock('buzzDao', array('getPostPhotos'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getPostPhotos'))
+			->getMock();
         $buzzDao->expects($this->once())
                 ->method('getPostPhotos')
                 ->with($postId)
@@ -914,7 +998,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $mockEmployee->setLastName($lastName);
         $mockEmployee->setEmployeeId($loggedInEmployeeNumber);
 
-        $mockEmployeeService = $this->getMock('employeeService', array('getEmployee'));
+        $mockEmployeeService = $this->getMockBuilder('employeeService')
+			->setMethods( array('getEmployee'))
+			->getMock();
         $mockEmployeeService->expects($this->once())
                 ->method('getEmployee')
                 ->with($loggedInEmployeeNumber)
@@ -945,7 +1031,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $mockEmployee->setLastName($lastName);
         $mockEmployee->setEmployeeId($loggedInEmployeeNumber);
 
-        $mockEmployeeService = $this->getMock('employeeService', array('getEmployee'));
+        $mockEmployeeService = $this->getMockBuilder('employeeService')
+			->setMethods( array('getEmployee'))
+			->getMock();
         $mockEmployeeService->expects($this->never())
                 ->method('getEmployee');
         $this->buzzService->setEmployeeService($mockEmployeeService);
@@ -1132,7 +1220,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testGetSharesFromEmployeeNumber() {
-        $buzzDao = $this->getMock('buzzDao', array('getSharesFromEmployeeNumber'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getSharesFromEmployeeNumber'))
+			->getMock();
 
         $shareOne = new Share();
         $shareOne->setId(1);
@@ -1156,7 +1246,9 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testGetSharesOfAdmin() {
-        $buzzDao = $this->getMock('buzzDao', array('getSharesFromEmployeeNumber'));
+        $buzzDao = $this->getMockBuilder('buzzDao')
+			->setMethods( array('getSharesFromEmployeeNumber'))
+			->getMock();
 
         $shareOne = new Share();
         $shareOne->setId(1);

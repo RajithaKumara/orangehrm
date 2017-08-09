@@ -57,13 +57,17 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
 
         $limit = 1;
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('getShares'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('getShares'))
+			->getMock();
         $buzzServiceMock->expects($this->once())
                 ->method('getShares')
                 ->with($limit)
                 ->will($this->returnValue($shares));
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('getShareCollectionArray'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareCollectionArray')
                 ->with($shares)
@@ -90,12 +94,16 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
             array()
         );
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('getShares'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('getShares'))
+			->getMock();
         $buzzServiceMock->expects($this->once())
                 ->method('getShares')
                 ->will($this->returnValue($shares));
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('getShareCollectionArray'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareCollectionArray')
                 ->with($shares)
@@ -124,12 +132,16 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
 
         $latestShareId = 1;
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('getSharesUptoId'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('getSharesUptoId'))
+			->getMock();
         $buzzServiceMock->expects($this->once())
                 ->method('getSharesUptoId')
                 ->will($this->returnValue($shares));
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('getShareCollectionArray'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareCollectionArray')
                 ->with($shares)
@@ -158,13 +170,17 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $lastShareId = 1;
         $limit = 1;
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('getMoreShares'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('getMoreShares'))
+			->getMock();
         $buzzServiceMock->expects($this->once())
                 ->method('getMoreShares')
                 ->with($limit)
                 ->will($this->returnValue($shares));
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('getShareCollectionArray'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareCollectionArray')
                 ->with($shares)
@@ -193,12 +209,16 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $lastShareId = 1;
         $limit = 1;
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('getMoreShares'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('getMoreShares'))
+			->getMock();
         $buzzServiceMock->expects($this->once())
                 ->method('getMoreShares')
                 ->will($this->returnValue($shares));
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('getShareCollectionArray'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareCollectionArray')
                 ->with($shares)
@@ -245,7 +265,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
             'post' => array('details' => $post->toArray())
         );
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('getShareById', 'getPostPhotos'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('getShareById', 'getPostPhotos'))
+			->getMock();
         $buzzServiceMock->expects($this->once())
                 ->method('getShareById')
                 ->with($shareId)
@@ -255,13 +277,17 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->with($postId)
                 ->will($this->returnValue($photos));
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareDetailsAsArray'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('getShareDetailsAsArray'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareDetailsAsArray')
                 ->with($share, $post, $photos)
                 ->will($this->returnValue($shareDetailsArray));
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareDetailsAsArray'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('getShareDetailsAsArray'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('getShareDetailsAsArray')
                 ->with($share, $post, $photos)
@@ -298,7 +324,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $share->setEmployeeNumber($employeeNumber);
         $share->setShareTime($postAndShareDateTime);
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createPost', 'createShare'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('createPost', 'createShare'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('createPost')
                 ->with($employeeNumber, $content, $postAndShareDateTime)
@@ -308,7 +336,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->with($post, $postAndShareDateTime)
                 ->will($this->returnValue($share));
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('saveShare'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('saveShare'))
+			->getMock();
         $buzzServiceMock->expects($this->once())
                 ->method('saveShare')
                 ->will($this->returnValue($share));
@@ -364,7 +394,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $share->setShareTime($postAndShareDateTime);
         $share->setPostId($postId);
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createPost', 'createShare', 'extractImagesForPost'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('createPost', 'createShare', 'extractImagesForPost'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('createPost')
                 ->with($employeeNumber, $content, $postAndShareDateTime)
@@ -378,7 +410,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->with($extraPostOptions, $share->getPostId())
                 ->will($this->returnValue($imagesArray));
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('saveShare', 'savePhoto'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('saveShare', 'savePhoto'))
+			->getMock();
         $buzzServiceMock->expects($this->once())
                 ->method('saveShare')
                 ->will($this->returnValue($share));
@@ -411,13 +445,17 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $comment->setNumberOfLikes(0);
         $comment->setNumberOfUnlikes(0);
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createCommentOnShare'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('createCommentOnShare'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('createCommentOnShare')
                 ->with($shareId, $employeeNumber, $content, $postAndShareDateTime)
                 ->will($this->returnValue($comment));
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('saveCommentShare'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('saveCommentShare'))
+			->getMock();
         $buzzServiceMock->expects($this->once())
                 ->method('saveCommentShare')
                 ->will($this->returnValue($comment));
@@ -464,7 +502,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $shareUpdated->setNumberOfUnlikes(0);
         $shareUpdated->setNumberOfLikes(1);
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnShare', 'createDislikeOnShare'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('createLikeOnShare', 'createDislikeOnShare'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('createLikeOnShare')
                 ->with($shareId, $employeeNumber, $testDateTime)
@@ -474,7 +514,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->with($shareId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($dislikeOnShare));
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('getShareById', 'deleteUnLikeForShare', 'saveLikeForShare'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('getShareById', 'deleteUnLikeForShare', 'saveLikeForShare'))
+			->getMock();
         $buzzServiceMock->expects($this->any())
                 ->method('getShareById')
                 ->with($shareId)
@@ -531,7 +573,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $shareUpdated->setNumberOfUnlikes(1);
         $shareUpdated->setNumberOfLikes(0);
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnShare', 'createDislikeOnShare'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('createLikeOnShare', 'createDislikeOnShare'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('createLikeOnShare')
                 ->with($shareId, $employeeNumber, $testDateTime)
@@ -541,7 +585,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->with($shareId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($dislikeOnShare));
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('getShareById', 'deleteLikeForShare', 'saveUnLikeForShare'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('getShareById', 'deleteLikeForShare', 'saveUnLikeForShare'))
+			->getMock();
         $buzzServiceMock->expects($this->any())
                 ->method('getShareById')
                 ->with($shareId)
@@ -598,7 +644,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $commentUpdated->setNumberOfUnlikes(0);
         $commentUpdated->setNumberOfLikes(1);
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnComment', 'createDislikeOnComment'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('createLikeOnComment', 'createDislikeOnComment'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('createLikeOnComment')
                 ->with($commentId, $employeeNumber, $testDateTime)
@@ -608,7 +656,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->with($commentId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($dislikeOnComment));
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('getCommentById', 'deleteUnLikeForComment', 'saveLikeForComment'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('getCommentById', 'deleteUnLikeForComment', 'saveLikeForComment'))
+			->getMock();
         $buzzServiceMock->expects($this->any())
                 ->method('getCommentById')
                 ->with($commentId)
@@ -665,7 +715,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $commentUpdated->setNumberOfUnlikes(1);
         $commentUpdated->setNumberOfLikes(0);
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('createLikeOnComment', 'createDislikeOnComment'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('createLikeOnComment', 'createDislikeOnComment'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->once())
                 ->method('createLikeOnComment')
                 ->with($commentId, $employeeNumber, $testDateTime)
@@ -675,7 +727,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
                 ->with($commentId, $employeeNumber, $testDateTime)
                 ->will($this->returnValue($dislikeOnComment));
 
-        $buzzServiceMock = $this->getMock('BuzzService', array('getCommentById', 'deleteLikeForComment', 'saveUnLikeForComment'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('getCommentById', 'deleteLikeForComment', 'saveUnLikeForComment'))
+			->getMock();
         $buzzServiceMock->expects($this->any())
                 ->method('getCommentById')
                 ->with($commentId)
@@ -709,13 +763,17 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $shareTwo->setEmployeeNumber($empNum);
         $shareArray = array($shareOne, $shareTwo);
         
-        $buzzServiceMock = $this->getMock('BuzzService', array('getSharesFromEmployeeNumber'));
+        $buzzServiceMock = $this->getMockBuilder('BuzzService')
+			->setMethods( array('getSharesFromEmployeeNumber'))
+			->getMock();
         $buzzServiceMock->expects($this->once())
                 ->method('getSharesFromEmployeeNumber')
                 ->with($empNum)
                 ->will($this->returnValue($shareArray));
 
-        $buzzObjectBuilderMock = $this->getMock('BuzzObjectBuilder', array('getShareCollectionArray'));
+        $buzzObjectBuilderMock = $this->getMockBuilder('BuzzObjectBuilder')
+			->setMethods( array('getShareCollectionArray'))
+			->getMock();
         $buzzObjectBuilderMock->expects($this->any())
                 ->method('getShareCollectionArray')
                 ->with($shareArray)
@@ -737,7 +795,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $share->setId($shareId);
         $share->setEmployeeNumber($loggedInEmployeeNumber);
 
-        $mockBuzzService = $this->getMock('buzzService', array('getShareById', 'deleteShare'));
+        $mockBuzzService = $this->getMockBuilder('buzzService')
+			->setMethods( array('getShareById', 'deleteShare'))
+			->getMock();
         $mockBuzzService->expects($this->once())
                 ->method('getShareById')
                 ->with($shareId)
@@ -759,7 +819,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $shareId = 1;
         $loggedInEmployeeNumber = 1;
 
-        $mockBuzzService = $this->getMock('buzzService', array('getShareById'));
+        $mockBuzzService = $this->getMockBuilder('buzzService')
+			->setMethods( array('getShareById'))
+			->getMock();
         $mockBuzzService->expects($this->once())
                 ->method('getShareById')
                 ->with($shareId)
@@ -778,7 +840,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $share->setId($shareId);
         $share->setEmployeeNumber(12);
 
-        $mockBuzzService = $this->getMock('buzzService', array('getShareById'));
+        $mockBuzzService = $this->getMockBuilder('buzzService')
+			->setMethods( array('getShareById'))
+			->getMock();
         $mockBuzzService->expects($this->once())
                 ->method('getShareById')
                 ->with($shareId)
@@ -798,7 +862,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $comment->setId($commentId);
         $comment->setEmployeeNumber($loggedInEmployeeNumber);
 
-        $mockBuzzService = $this->getMock('buzzService', array('getCommentById', 'deleteCommentForShare'));
+        $mockBuzzService = $this->getMockBuilder('buzzService')
+			->setMethods( array('getCommentById', 'deleteCommentForShare'))
+			->getMock();
         $mockBuzzService->expects($this->once())
                 ->method('getCommentById')
                 ->with($commentId)
@@ -820,7 +886,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $commentId = 1;
         $loggedInEmployeeNumber = 1;
 
-        $mockBuzzService = $this->getMock('buzzService', array('getCommentById'));
+        $mockBuzzService = $this->getMockBuilder('buzzService')
+			->setMethods( array('getCommentById'))
+			->getMock();
         $mockBuzzService->expects($this->once())
                 ->method('getCommentById')
                 ->with($commentId)
@@ -840,7 +908,9 @@ class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
         $comment->setId($commentId);
         $comment->setEmployeeNumber(14);
 
-        $mockBuzzService = $this->getMock('buzzService', array('getCommentById'));
+        $mockBuzzService = $this->getMockBuilder('buzzService')
+			->setMethods( array('getCommentById'))
+			->getMock();
         $mockBuzzService->expects($this->once())
                 ->method('getCommentById')
                 ->with($commentId)
