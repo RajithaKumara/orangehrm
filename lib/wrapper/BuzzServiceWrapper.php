@@ -33,7 +33,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {get} /getLoggedInEmployee Get LoggedIn Employee
+     *
+	 * @api {get} /getLoggedInEmployee Get LoggedIn Employee
      * @apiDescription Get LoggedIn Employee
      * @apiVersion 0.1.0
      * @apiName getLoggedInEmployee
@@ -45,7 +46,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {get} /getLatestBuzzShares/recentShareId/:recentShareId Get Latest Buzz Shares
+     *
+	 * @api {get} /getLatestBuzzShares/recentShareId/:recentShareId Get Latest Buzz Shares
      * @apiDescription Get Latest Buzz Shares
      * @apiVersion 0.1.0
      * @apiName getLatestBuzzShares
@@ -57,7 +59,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {get} /getBuzzShares/limit/:limit Get shares
+     *
+	 * @api {get} /getBuzzShares/limit/:limit Get shares
      * @apiDescription Get shares
      * @apiVersion 0.1.0
      * @apiName getBuzzShares
@@ -70,7 +73,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
 
 
     /**
-     * @api {get} /getMoreBuzzShares/lastShareId/:lastShareId/limit/:limit Get More shares
+     *
+	 * @api {get} /getMoreBuzzShares/lastShareId/:lastShareId/limit/:limit Get More shares
      * @apiDescription Get More shares
      * @apiVersion 0.1.0
      * @apiName getMoreBuzzShares
@@ -83,7 +87,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
 
 
     /**
-     * @api {get} /getShareAndPostDetailsByShareId/shareId/:shareId Get share by share id
+     *
+	 * @api {get} /getShareAndPostDetailsByShareId/shareId/:shareId Get share by share id
      * @apiDescription Get share by share id
      * @apiVersion 0.1.0
      * @apiName getShareAndPostDetailsByShareId
@@ -100,7 +105,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {get} /postContentOnFeed/contentText/:contentText/image_data/:image_data Post content on news feed
+     *
+	 * @api {get} /postContentOnFeed/contentText/:contentText/image_data/:image_data Post content on news feed
      * @apiDescription Post content on news feed
      * @apiVersion 0.1.0
      * @apiName postContentOnFeed
@@ -118,7 +124,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {get} /commentOnShare/shareId/:shareId/contentText/:contentText Comment On Share
+     *
+	 * @api {get} /commentOnShare/shareId/:shareId/contentText/:contentText Comment On Share
      * @apiDescription Comment On Share
      * @apiVersion 0.1.0
      * @apiName commentOnShare
@@ -136,7 +143,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {get} /likeOnShare/shareId/:shareId Like On Share
+     *
+	 * @api {get} /likeOnShare/shareId/:shareId Like On Share
      * @apiDescription Like on a share / post
      * @apiVersion 0.1.0
      * @apiName likeOnShare
@@ -154,7 +162,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {get} /disLikeOnShare/shareId/:shareId Dislike On Share
+     *
+	 * @api {get} /disLikeOnShare/shareId/:shareId Dislike On Share
      * @apiDescription Dislike on a share / post
      * @apiVersion 0.1.0
      * @apiName disLikeOnShare
@@ -172,7 +181,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {get} /likeOnComment/commentId/:commentId Like on a comment
+     *
+	 * @api {get} /likeOnComment/commentId/:commentId Like on a comment
      * @apiDescription Like on a comment
      * @apiVersion 0.1.0
      * @apiName likeOnComment
@@ -190,7 +200,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {get} /dislikeOnComment/commentId/:commentId Dislike on a comment
+     *
+	 * @api {get} /dislikeOnComment/commentId/:commentId Dislike on a comment
      * @apiDescription Dislike on a comment
      * @apiVersion 0.1.0
      * @apiName dislikeOnComment
@@ -208,7 +219,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {get} /sharePost/shareId/:shareId Share Post
+     *
+	 * @api {get} /sharePost/shareId/:shareId Share Post
      * @apiDescription Sharing a share / post
      * @apiVersion 0.1.0
      * @apiName sharePost
@@ -226,7 +238,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
     
     /**
-     * @api {get} /getBuzzForEmployee/:empNum Get buzz by employee
+     *
+	 * @api {get} /getBuzzForEmployee/:empNum Get buzz by employee
      * @apiDescription Get buzz by employee number
      * @apiVersion 0.1.0
      * @apiName getBuzzForEmployee
@@ -244,7 +257,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {post} /deleteShare/:shareId Delete Post
+     *
+	 * @api {post} /deleteShare/:shareId Delete Post
      * @apiDescription Delete a share
      * @apiVersion 0.1.0
      * @apiName deleteShare
@@ -262,7 +276,8 @@ class BuzzServiceWrapper implements WebServiceWrapper {
     }
 
     /**
-     * @api {post} /deleteComment/:commentId Delete Comment
+     *
+	 * @api {post} /deleteComment/:commentId Delete Comment
      * @apiDescription Delete a comment
      * @apiVersion 0.1.0
      * @apiName deleteComment
