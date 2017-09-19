@@ -508,7 +508,7 @@ class BuzzService extends BaseService {
     /**
      * Get photo by id
      * @param int $id
-     * @return Photo
+     * @return Photo object
      */
     public function getPhoto($id) {
         return $this->getBuzzDao()->getPhoto($id);
