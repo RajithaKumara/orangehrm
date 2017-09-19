@@ -1271,4 +1271,143 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2, count($resultShares));
     }
 
+    /**
+     * @group xx
+     */
+    public function testGetImageResponseWithCachingNotHaveingImage() {
+
+        $request = $this->getMockBuilder('sfWebRequest')->disableOriginalConstructor()->getMock();
+
+        $response = $this->getMockBuilder('sfWebResponse')->disableOriginalConstructor()
+            ->setMethods(array('setStatusCode','getStatusCode'))
+            ->getMock();
+        $response->expects($this->once())
+            ->method('setStatusCode')
+            ->with('404')
+            ->will($this->returnValue(null));
+
+        $response->expects($this->once())
+            ->method('getStatusCode')
+            ->will($this->returnValue('404'));
+
+
+        $response = $this->buzzService->getImageResponseWithCaching(null, $request, $response);
+        $this->assertEquals("404",$response->getStatusCode());
+    }
+
+    /**
+     * @group xx
+     */
+    public function testGetImageResponseWithCachingHaveImageNotMatchingETag() {
+
+        $imagePath = __DIR__ ."/orangehrm.jpg";
+
+
+        $handle = fopen($imagePath, "r");
+        $imageContent = fread($handle, filesize($imagePath));
+        fclose($handle);
+
+        $buzzPhoto = new Photo();
+        $buzzPhoto->setPhoto($imageContent);
+        $buzzPhoto->setFileType("image/jpeg");
+        $buzzPhoto->setSize("7173");
+        $buzzPhoto->setWidth("200");
+        $buzzPhoto->setHeight("200");
+
+
+        $request = $this->getMockBuilder('sfWebRequest')->disableOriginalConstructor()->setMethods(array('getHttpHeader'))->getMock();
+        $request->expects($this->once())
+            ->method('getHttpHeader')
+            ->with('If-None-Match')
+            ->will($this->returnValue(md5($imageContent)."xx"));
+
+        $response = $this->getMockBuilder('sfWebResponse')->disableOriginalConstructor()
+                    ->setMethods(array('setStatusCode','getStatusCode','setContentType', 'getContentType'))
+                    ->getMock();
+        $response->expects($this->never())
+            ->method('setStatusCode')
+            ->will($this->returnValue(null));
+
+        $response->expects($this->once())
+            ->method('getStatusCode')
+            ->will($this->returnValue('200'));
+
+        $response->expects($this->once())
+            ->method('getContentType')
+            ->will($this->returnValue('image/jpeg'));
+
+        $response->expects($this->once())
+            ->method('setContentType')
+            ->with('image/jpeg')
+            ->will($this->returnValue(null));
+
+        $date = new DateTime();
+        $response = $this->buzzService->getImageResponseWithCaching($buzzPhoto, $request, $response);
+        $this->assertEquals("200", $response->getStatusCode());
+        $this->assertEquals("image/jpeg", $response->getContentType());
+        $this->assertEquals($imageContent, $response->getContent());
+        $this->assertEquals("Public", $response->getHttpHeader("Pragma"));
+        $this->assertEquals(md5($imageContent), $response->getHttpHeader("ETag"));
+        $date->modify('+1 Year');
+        $this->assertEquals(gmdate('D, d M Y H:i:s', $date->getTimestamp()) . ' GMT', $response->getHttpHeader("Expires"));
+        $this->assertEquals("public, max-age=31536000, must-revalidate", $response->getHttpHeader("Cache-Control"));
+
+    }
+
+
+    /**
+     * @group xx
+     */
+    public function testGetImageResponseWithCachingHaveImageMatchingETag() {
+
+        $imagePath = __DIR__ ."/orangehrm.jpg";
+
+
+        $handle = fopen($imagePath, "r");
+        $imageContent = fread($handle, filesize($imagePath));
+        fclose($handle);
+
+        $buzzPhoto = new Photo();
+        $buzzPhoto->setPhoto($imageContent);
+        $buzzPhoto->setFileType("image/jpeg");
+        $buzzPhoto->setSize("7173");
+        $buzzPhoto->setWidth("200");
+        $buzzPhoto->setHeight("200");
+
+
+        $request = $this->getMockBuilder('sfWebRequest')->disableOriginalConstructor()->setMethods(array('getHttpHeader'))->getMock();
+        $request->expects($this->once())
+            ->method('getHttpHeader')
+            ->with('If-None-Match')
+            ->will($this->returnValue(md5($imageContent)));
+
+        $response = $this->getMockBuilder('sfWebResponse')->disableOriginalConstructor()
+            ->setMethods(array('setStatusCode','getStatusCode','setContentType', 'getContentType'))
+            ->getMock();
+        $response->expects($this->once())
+            ->method('setStatusCode')
+            ->with("304")
+            ->will($this->returnValue(null));
+
+        $response->expects($this->once())
+            ->method('getStatusCode')
+            ->will($this->returnValue('304'));
+
+        $response->expects($this->once())
+            ->method('getContentType')
+            ->will($this->returnValue('text/html; charset=utf-8'));
+
+        $date = new DateTime();
+        $response = $this->buzzService->getImageResponseWithCaching($buzzPhoto, $request, $response);
+        $this->assertEquals("304", $response->getStatusCode());
+        $this->assertEquals("text/html; charset=utf-8", $response->getContentType());
+        $this->assertEquals("", $response->getContent());
+        $this->assertEquals("Public", $response->getHttpHeader("Pragma"));
+        $this->assertEquals(md5($imageContent), $response->getHttpHeader("ETag"));
+        $date->modify('+1 Year');
+        $this->assertEquals(gmdate('D, d M Y H:i:s', $date->getTimestamp()) . ' GMT', $response->getHttpHeader("Expires"));
+        $this->assertEquals("public, max-age=31536000, must-revalidate", $response->getHttpHeader("Cache-Control"));
+
+    }
+
 }

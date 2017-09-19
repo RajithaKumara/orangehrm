@@ -22,7 +22,8 @@
 class BuzzService extends BaseService {
 
     protected $buzzDao;
-    
+    const SECONDS_IN_YEAR = 31536000;
+
     /**
      * this is function to get buzzDao 
      * @return BuzzDao
@@ -507,7 +508,7 @@ class BuzzService extends BaseService {
     /**
      * Get photo by id
      * @param int $id
-     * @return Photo object
+     * @return Photo
      */
     public function getPhoto($id) {
         return $this->getBuzzDao()->getPhoto($id);
@@ -765,5 +766,43 @@ class BuzzService extends BaseService {
      */
     public function getSharesFromEmployeeNumber($empNum) {
         return $this->getBuzzDao()->getSharesFromEmployeeNumber($empNum);
+    }
+
+    /**
+     * Returns a image response with and eTag and cache headers or returns 304 not modified as a response
+     * if the eTags are matching
+     *
+     * @param Photo $photo
+     * @param sfRequest $request
+     * @param sfResponse $response
+     * @return sfResponse
+     */
+    public function getImageResponseWithCaching($photo, $request, $response) {
+        if (!empty($photo)) {
+            $contents = $photo->getPhoto();
+            $contentType = $photo->getFileType();
+        } else {
+            $response->setStatusCode('404');
+            return $response;
+        }
+
+        $checksum = md5($contents);
+
+        // Allow client side cache image unless image checksum changes.
+        $eTag = $request->getHttpHeader('If-None-Match');
+
+        if ($eTag == $checksum) {
+            $response->setStatusCode('304');
+        } else {
+            $response->setContentType($contentType);
+            $response->setContent($contents);
+        }
+        $response->setHttpHeader('Pragma', 'Public');
+        $response->setHttpHeader('ETag', $checksum);
+        $date = new DateTime();
+        $date->modify('+1 Year');
+        $response->setHttpHeader('Expires', gmdate('D, d M Y H:i:s', $date->getTimestamp()) . ' GMT');
+        $response->addCacheControlHttpHeader('public, max-age=' . self::SECONDS_IN_YEAR . ', must-revalidate');
+        return $response;
     }
 }

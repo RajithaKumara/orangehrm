@@ -374,6 +374,17 @@ class BuzzWebServiceHelper {
         }
         return $this->getBuzzObjectBuilder()->getShareCollectionArray($employeeShares, $postPhotosArray, $loggedInEmpNumber);
     }
+
+    /**
+     * Gets the buzz image from the Id
+     */
+    public function getBuzzImage($imageId) {
+        $request = sfContext::getInstance()->getRequest();
+        $photo = $this->getBuzzService()->getPhoto($imageId);
+        $response = sfContext::getInstance()->getResponse();
+        $response = $this->getBuzzService()->getImageResponseWithCaching($photo,$request,$response);
+        $response->send();
+    }
     
 
 }

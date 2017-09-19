@@ -123,6 +123,20 @@ class BuzzServiceWrapper implements WebServiceWrapper {
         }
     }
 
+
+    /**
+     *
+     * @api {get} /getBuzzImage/imageId/:imageId
+     * @apiDescription Gets the image from the id
+     * @apiVersion 0.1.0
+     * @apiName getBuzzImage
+     * @apiGroup BUZZ
+     * @apiSuccess Photo
+     **/
+    public function getBuzzImage($imageId) {
+        $this->getServiceInstance()->getBuzzImage($imageId);
+    }
+
     /**
      *
 	 * @api {get} /commentOnShare/shareId/:shareId/contentText/:contentText Comment On Share

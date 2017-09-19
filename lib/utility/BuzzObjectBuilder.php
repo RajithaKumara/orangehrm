@@ -418,10 +418,7 @@ class BuzzObjectBuilder {
             $imageDataDecoded = base64_decode($imageDataEncoded);
             $imageName = $imageDetailsArray[self::KEY_IMAGE_NAME];
             $imageType = $imageDetailsArray[self::KEY_IMAGE_TYPE];
-            $fileName = microtime();
-            file_put_contents($fileName, $imageDataDecoded);
-            $imageWithAndHeight = getimagesize($fileName);
-            unlink($fileName);
+            $imageWithAndHeight = getimagesizefromstring($imageDataDecoded);
             $imageWidth = $imageWithAndHeight[self::IMAGE_WIDTH_INDEX];
             $imageHeight = $imageWithAndHeight[self::IMAGE_HEIGHT_INDEX];
 
