@@ -139,6 +139,19 @@ class BuzzServiceWrapper implements WebServiceWrapper {
 
     /**
      *
+     * @api {get} /getEmployeeImage/empNumber/:empNumber
+     * @apiDescription Gets the image of employee from the empNumber
+     * @apiVersion 0.1.0
+     * @apiName getEmployeeImage
+     * @apiGroup BUZZ
+     * @apiSuccess Photo
+     */
+    public function getEmployeeImage($empNumber) {
+        $this->getServiceInstance()->getEmployeeImage($empNumber);
+    }
+
+    /**
+     *
 	 * @api {get} /commentOnShare/shareId/:shareId/contentText/:contentText Comment On Share
      * @apiDescription Comment On Share
      * @apiVersion 0.1.0

@@ -66,3 +66,4 @@ Config:
   10: {property: 'buzz_post_share_count', value: '5'}
   11: {property: 'buzz_cookie_valid_time', value: '500098'}
   12: {property: 'buzz_comment_text_lenth', value: '250'}
+  13: {property: 'themeName', value: 'default'}

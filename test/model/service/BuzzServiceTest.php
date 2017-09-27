@@ -1271,10 +1271,8 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2, count($resultShares));
     }
 
-    /**
-     * @group xx
-     */
-    public function testGetImageResponseWithCachingNotHaveingImage() {
+
+    public function testGetImageResponseWithCachingNotHavingImage() {
 
         $request = $this->getMockBuilder('sfWebRequest')->disableOriginalConstructor()->getMock();
 
@@ -1295,9 +1293,7 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("404",$response->getStatusCode());
     }
 
-    /**
-     * @group xx
-     */
+
     public function testGetImageResponseWithCachingHaveImageNotMatchingETag() {
 
         $imagePath = __DIR__ ."/orangehrm.jpg";
@@ -1355,9 +1351,6 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
     }
 
 
-    /**
-     * @group xx
-     */
     public function testGetImageResponseWithCachingHaveImageMatchingETag() {
 
         $imagePath = __DIR__ ."/orangehrm.jpg";
@@ -1407,6 +1400,239 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
         $date->modify('+1 Year');
         $this->assertEquals(gmdate('D, d M Y H:i:s', $date->getTimestamp()) . ' GMT', $response->getHttpHeader("Expires"));
         $this->assertEquals("public, max-age=31536000, must-revalidate", $response->getHttpHeader("Cache-Control"));
+
+    }
+
+    public function testGetEmployeeImageResponseWithCachingNotHavingImage() {
+
+        $this->fixture = sfConfig::get('sf_plugins_dir') . '/orangehrmBuzzPlugin/test/fixtures/OrangeBuzz.yml';
+        TestDataService::populate($this->fixture);
+
+        $request = $this->getMockBuilder('sfWebRequest')->disableOriginalConstructor()->getMock();
+
+        $response = $this->getMockBuilder('sfWebResponse')->disableOriginalConstructor()
+            ->setMethods(array('getContentType','setContentType'))
+            ->getMock();
+
+        $response->expects($this->once())
+            ->method('getContentType')
+            ->will($this->returnValue('image/png'));
+
+        $response->expects($this->once())
+            ->method('setContentType')
+            ->with('image/png')
+            ->will($this->returnValue(null));
+
+        $mockMyUser = $this->getMockBuilder('myUser')
+                    ->disableOriginalConstructor()
+                    ->setMethods(array('hasAttribute','getAttribute'))
+                    ->getMock();
+
+        $mockMyUser->expects($this->once())
+            ->method('hasAttribute')
+            ->with('meta.themeName')
+            ->will($this->returnValue(true));
+
+        $mockMyUser->expects($this->once())
+            ->method('getAttribute')
+            ->with('meta.themeName')
+            ->will($this->returnValue('default'));
+
+
+        $tmpName = ROOT_PATH . '/symfony/web/themes/default/images/default-photo.png';
+        $fp = fopen($tmpName, 'r');
+        $fileSize = filesize($tmpName);
+        $contents = fread($fp, $fileSize);
+        $contentType = "image/png";
+        fclose($fp);
+
+
+        $response = $this->buzzService->getEmployeeImageResponseWithCaching(null, $request, $response, $mockMyUser);
+        $this->assertEquals("200",$response->getStatusCode());
+        $this->assertEquals($contentType, $response->getContentType());
+        $this->assertEquals($contents, $response->getContent());
+        $this->assertEquals("Public", $response->getHttpHeader("Pragma"));
+        $this->assertEquals(md5($contents), $response->getHttpHeader("ETag"));
+        $this->assertEquals("public, max-age=0, must-revalidate", $response->getHttpHeader("Cache-Control"));
+
+    }
+
+    public function testGetEmployeeImageResponseWithCachingNotHavingImageThemeNotFetched() {
+
+        $this->fixture = sfConfig::get('sf_plugins_dir') . '/orangehrmBuzzPlugin/test/fixtures/OrangeBuzz.yml';
+        TestDataService::populate($this->fixture);
+
+        $request = $this->getMockBuilder('sfWebRequest')->disableOriginalConstructor()->getMock();
+
+        $response = $this->getMockBuilder('sfWebResponse')->disableOriginalConstructor()
+            ->setMethods(array('getContentType','setContentType'))
+            ->getMock();
+
+        $response->expects($this->once())
+            ->method('getContentType')
+            ->will($this->returnValue('image/png'));
+
+        $response->expects($this->once())
+            ->method('setContentType')
+            ->with('image/png')
+            ->will($this->returnValue(null));
+
+        $mockMyUser = $this->getMockBuilder('myUser')
+                    ->disableOriginalConstructor()
+                    ->setMethods(array('hasAttribute','setAttribute','getAttribute'))
+                    ->getMock();
+
+        $mockMyUser->expects($this->once())
+            ->method('hasAttribute')
+            ->with('meta.themeName')
+            ->will($this->returnValue(false));
+
+        $mockMyUser->expects($this->once())
+            ->method('setAttribute')
+            ->with('meta.themeName','default',null)
+            ->will($this->returnValue(null));
+
+        $mockMyUser->expects($this->once())
+            ->method('getAttribute')
+            ->with('meta.themeName')
+            ->will($this->returnValue('default'));
+
+
+        $tmpName = ROOT_PATH . '/symfony/web/themes/default/images/default-photo.png';
+        $fp = fopen($tmpName, 'r');
+        $fileSize = filesize($tmpName);
+        $contents = fread($fp, $fileSize);
+        $contentType = "image/png";
+        fclose($fp);
+
+
+        $response = $this->buzzService->getEmployeeImageResponseWithCaching(null, $request, $response, $mockMyUser);
+        $this->assertEquals("200",$response->getStatusCode());
+        $this->assertEquals($contentType, $response->getContentType());
+        $this->assertEquals($contents, $response->getContent());
+        $this->assertEquals("Public", $response->getHttpHeader("Pragma"));
+        $this->assertEquals(md5($contents), $response->getHttpHeader("ETag"));
+        $this->assertEquals("public, max-age=0, must-revalidate", $response->getHttpHeader("Cache-Control"));
+
+    }
+
+    public function testGetEmployeeImageResponseWithImageWrongEtag() {
+
+        $this->fixture = sfConfig::get('sf_plugins_dir') . '/orangehrmBuzzPlugin/test/fixtures/OrangeBuzz.yml';
+        TestDataService::populate($this->fixture);
+
+        $tmpName = ROOT_PATH . '/symfony/web/themes/default/images/default-photo.png';
+        $fp = fopen($tmpName, 'r');
+        $fileSize = filesize($tmpName);
+        $contents = fread($fp, $fileSize);
+        $contentType = "image/png";
+        fclose($fp);
+
+        $request = $this->getMockBuilder('sfWebRequest')->disableOriginalConstructor()->setMethods(array("getHttpHeader"))->getMock();
+        $request->expects($this->once())
+            ->method('getHttpHeader')
+            ->with('If-None-Match')
+            ->will($this->returnValue(md5($contents)."xx"));
+
+        $response = $this->getMockBuilder('sfWebResponse')->disableOriginalConstructor()
+            ->setMethods(array('getContentType','setContentType'))
+            ->getMock();
+
+        $response->expects($this->once())
+            ->method('getContentType')
+            ->will($this->returnValue('image/png'));
+
+        $response->expects($this->once())
+            ->method('setContentType')
+            ->with('image/png')
+            ->will($this->returnValue(null));
+
+        $mockMyUser = $this->getMockBuilder('myUser')
+                    ->disableOriginalConstructor()
+                    ->setMethods(array('hasAttribute','getAttribute'))
+                    ->getMock();
+
+        $mockMyUser->expects($this->never())
+            ->method('hasAttribute')
+            ->with('meta.themeName')
+            ->will($this->returnValue(true));
+
+        $mockMyUser->expects($this->never())
+            ->method('getAttribute')
+            ->with('meta.themeName')
+            ->will($this->returnValue('default'));
+
+
+        $empPicture = new EmpPicture();
+        $empPicture->setFileType($contentType);
+        $empPicture->setPicture($contents);
+
+        $response = $this->buzzService->getEmployeeImageResponseWithCaching($empPicture, $request, $response, $mockMyUser);
+        $this->assertEquals("200",$response->getStatusCode());
+        $this->assertEquals($contentType, $response->getContentType());
+        $this->assertEquals($contents, $response->getContent());
+        $this->assertEquals("Public", $response->getHttpHeader("Pragma"));
+        $this->assertEquals(md5($contents), $response->getHttpHeader("ETag"));
+        $this->assertEquals("public, max-age=0, must-revalidate", $response->getHttpHeader("Cache-Control"));
+
+    }
+
+
+
+    public function testGetEmployeeImageResponseWithImageSameEtag() {
+
+        $this->fixture = sfConfig::get('sf_plugins_dir') . '/orangehrmBuzzPlugin/test/fixtures/OrangeBuzz.yml';
+        TestDataService::populate($this->fixture);
+
+        $tmpName = ROOT_PATH . '/symfony/web/themes/default/images/default-photo.png';
+        $fp = fopen($tmpName, 'r');
+        $fileSize = filesize($tmpName);
+        $contents = fread($fp, $fileSize);
+        $contentType = "image/png";
+        fclose($fp);
+
+        $request = $this->getMockBuilder('sfWebRequest')->disableOriginalConstructor()->setMethods(array("getHttpHeader"))->getMock();
+        $request->expects($this->once())
+            ->method('getHttpHeader')
+            ->with('If-None-Match')
+            ->will($this->returnValue(md5($contents)));
+
+        $response = $this->getMockBuilder('sfWebResponse')->disableOriginalConstructor()
+            ->setMethods(array('setContentType'))
+            ->getMock();
+
+        $response->expects($this->never())
+            ->method('setContentType')
+            ->with('image/png')
+            ->will($this->returnValue(null));
+
+        $mockMyUser = $this->getMockBuilder('myUser')
+                    ->disableOriginalConstructor()
+                    ->setMethods(array('hasAttribute','getAttribute'))
+                    ->getMock();
+
+        $mockMyUser->expects($this->never())
+            ->method('hasAttribute')
+            ->with('meta.themeName')
+            ->will($this->returnValue(false));
+
+        $mockMyUser->expects($this->never())
+            ->method('getAttribute')
+            ->with('meta.themeName')
+            ->will($this->returnValue('default'));
+
+
+        $empPicture = new EmpPicture();
+        $empPicture->setFileType($contentType);
+        $empPicture->setPicture($contents);
+
+        $response = $this->buzzService->getEmployeeImageResponseWithCaching($empPicture, $request, $response, $mockMyUser);
+        $this->assertEquals("304",$response->getStatusCode());
+        $this->assertEquals(null, $response->getContentType());
+        $this->assertEquals("", $response->getContent());
+        $this->assertEquals("Public", $response->getHttpHeader("Pragma"));
+        $this->assertEquals(md5($contents), $response->getHttpHeader("ETag"));
+        $this->assertEquals("public, max-age=0, must-revalidate", $response->getHttpHeader("Cache-Control"));
 
     }
 

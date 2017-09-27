@@ -805,4 +805,52 @@ class BuzzService extends BaseService {
         $response->addCacheControlHttpHeader('public, max-age=' . self::SECONDS_IN_YEAR . ', must-revalidate');
         return $response;
     }
+
+    /**
+     * Returns employee image response with and eTag and cache headers or returns 304 not modified as a response
+     * if the eTags are matching
+     *
+     * @param EmpPicture $employeePicture
+     * @param sfRequest $request
+     * @param sfResponse $response
+     * @return sfResponse
+     */
+    public function getEmployeeImageResponseWithCaching($employeePicture, $request, $response, $sfUser) {
+        if ($employeePicture) {
+            $contents = $employeePicture->getPicture();
+            $contentType = $employeePicture->getFileType();
+        } else {
+            $tmpName = ROOT_PATH . '/symfony/web/themes/' . $this->_getThemeName($sfUser) . '/images/default-photo.png';
+            $fp = fopen($tmpName, 'r');
+            $fileSize = filesize($tmpName);
+            $contents = fread($fp, $fileSize);
+            $contentType = "image/png";
+            fclose($fp);
+        }
+
+        $checksum = md5($contents);
+
+        // Allow client side cache image unless image checksum changes.
+        $eTag = $request->getHttpHeader('If-None-Match');
+
+        if ($eTag == $checksum) {
+            $response->setStatusCode('304');
+        } else {
+            $response->setContentType($contentType);
+            $response->setContent($contents);
+        }
+        $response->setHttpHeader('Pragma', 'Public');
+        $response->setHttpHeader('ETag', $checksum);
+
+        $response->addCacheControlHttpHeader('public, max-age=0, must-revalidate');
+        return $response;
+    }
+
+    protected function _getThemeName($sfUser) {
+        if (!$sfUser->hasAttribute('meta.themeName')) {
+            $sfUser->setAttribute('meta.themeName', OrangeConfig::getInstance()->getAppConfValue(ConfigService::KEY_THEME_NAME));
+        }
+        return $sfUser->getAttribute('meta.themeName');
+    }
+
 }

@@ -385,6 +385,18 @@ class BuzzWebServiceHelper {
         $response = $this->getBuzzService()->getImageResponseWithCaching($photo,$request,$response);
         $response->send();
     }
+
+    /**
+     * Gets the image of employee from empNumber
+     */
+    public function getEmployeeImage($empNumber) {
+        $request = sfContext::getInstance()->getRequest();
+        $employeePicture = $this->getBuzzService()->getEmployeeService()->getEmployeePicture($empNumber);
+        $response = sfContext::getInstance()->getResponse();
+        $sfUser = sfContext::getInstance()->getUser();
+        $response = $this->getBuzzService()->getEmployeeImageResponseWithCaching($employeePicture,$request,$response,$sfUser);
+        $response->send();
+    }
     
 
 }

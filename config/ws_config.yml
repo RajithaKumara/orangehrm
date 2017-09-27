@@ -78,3 +78,8 @@ methods:
       group: buzz
       type: GET
       params: ['imageId']
+  getEmployeeImage:
+      wrapper: BuzzServiceWrapper
+      group: buzz
+      type: GET
+      params: ['empNumber']
