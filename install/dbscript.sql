@@ -260,5 +260,3 @@ INSERT INTO `ohrm_user_role_screen`(`user_role_id`, `screen_id`, `can_read`, `ca
 INSERT INTO `ohrm_user_role_screen`(`user_role_id`, `screen_id`, `can_read`, `can_create`, `can_update`, `can_delete`) VALUES (2,@screen_id,1,1,1,1);
 INSERT INTO `ohrm_user_role_screen`(`user_role_id`, `screen_id`, `can_read`, `can_create`, `can_update`, `can_delete`) VALUES (3,@screen_id,1,1,1,1);
 
-SET @ess_type_id = (SELECT `id` FROM `ohrm_user_role_type` WHERE `name`='ESS');
-INSERT INTO `ohrm_default_permitted_screen` (`user_role_type_id`, `screen_id`) VALUES (@ess_type_id, @screen_id);
