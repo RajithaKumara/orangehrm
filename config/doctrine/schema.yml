@@ -9,9 +9,13 @@ Post:
     employee_number:
       type: integer(7)
     employee_name:
-      type: string  
+      type: string
+      sensitivity:
+        maskingStrategy: SMART_ANONYMIZE
     text:
       type: string()
+      sensitivity:
+        maskingStrategy: CHANGE_TO_RANDOM_TEXT_IF_NOT_EMPTY
     post_time:
       type: timestamp
       notnull: true   
@@ -37,8 +41,14 @@ Photo:
     post_id:
       type: integer()
       notnull: true
-    photo: blob(2147483647)
-    filename: string(100)
+    photo:
+      type: blob(2147483647)
+      sensitivity:
+        maskingStrategy: CHANGE_TO_VALUE
+    filename:
+      type: string(100)
+      sensitivity:
+        maskingStrategy: SMART_ANONYMIZE
     file_type: string(50)
     size: string(20)
     width: string(20)
@@ -66,12 +76,18 @@ Link:
     link:
       type: string()
       notnull: true
+      sensitivity:
+        maskingStrategy: CHANGE_TO_VALUE
     type:
       type: integer()
     title:
       type: string()
+      sensitivity:
+        maskingStrategy: CHANGE_TO_RANDOM_TEXT_IF_NOT_EMPTY
     description:
       type: string()
+      sensitivity:
+        maskingStrategy: CHANGE_TO_RANDOM_TEXT_IF_NOT_EMPTY
   relations:
     LinkAttached:
       class: Post
@@ -95,6 +111,8 @@ Share:
       type: integer(7)
     employee_name:
       type: string
+      sensitivity:
+        maskingStrategy: SMART_ANONYMIZE
     number_of_likes:
       type: integer(6)
     number_of_unlikes:
@@ -108,6 +126,8 @@ Share:
       type: int(1)
     text:
       type: string(600)
+      sensitivity:
+        maskingStrategy: CHANGE_TO_RANDOM_TEXT_IF_NOT_EMPTY
     updated_at:
       type: timestamp   
   relations:
@@ -140,12 +160,16 @@ Comment:
       type: integer(7)
     employee_name:
       type: string
+      sensitivity:
+        maskingStrategy: SMART_ANONYMIZE
     number_of_likes:
       type: integer(6)
     number_of_unlikes:
       type: integer(6)
     comment_text:
       type: string
+      sensitivity:
+        maskingStrategy: CHANGE_TO_RANDOM_TEXT_IF_NOT_EMPTY
     comment_time:
       type: timestamp
       notnull: true   
@@ -183,6 +207,8 @@ LikeOnComment:
       type: integer(7)
     employee_name:
       type: string
+      sensitivity:
+        maskingStrategy: SMART_ANONYMIZE
     like_time:
       type: timestamp
       notnull: true   
@@ -216,6 +242,8 @@ LikeOnShare:
       type: integer(7)
     employee_name:
       type: string
+      sensitivity:
+        maskingStrategy: SMART_ANONYMIZE
     like_time:
       type: timestamp
       notnull: true   
@@ -251,6 +279,8 @@ UnLikeOnComment:
       type: integer(7)
     employee_name:
       type: string
+      sensitivity:
+        maskingStrategy: SMART_ANONYMIZE
     like_time:
       type: timestamp
       notnull: true   
@@ -284,6 +314,8 @@ UnLikeOnShare:
       type: integer(7)
     employee_name:
       type: string
+      sensitivity:
+        maskingStrategy: SMART_ANONYMIZE
     like_time:
       type: timestamp
       notnull: true   
