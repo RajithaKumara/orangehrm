@@ -251,7 +251,7 @@ INSERT INTO `ohrm_config`(`property`, `value`) VALUES ('buzz_comment_text_lenth'
 
 -- Add Buzz As A menu Item
 SET @buzz_module_id = (SELECT `id` FROM `ohrm_module` WHERE `name`='buzz');
-INSERT INTO `ohrm_screen`(`name`, `module_id`, `action_url`) VALUES ('Buzz',@buzz_module_id,'viewBuzz');
+INSERT INTO `ohrm_screen`(`name`, `module_id`, `action_url`, `route_name`) VALUES ('Buzz',@buzz_module_id,'viewBuzz', 'buzz_viewBuzz');
 SET @parent_screen_id=(SELECT `id` FROM `ohrm_menu_item` WHERE `menu_title`='More');
 SET @screen_id=(SELECT `id` FROM `ohrm_screen` WHERE `name`='Buzz');
 INSERT INTO `ohrm_menu_item`(`menu_title`, `screen_id`, `parent_id`, `level`, `order_hint`, `status`, `url_extras`) VALUES ('Buzz', @screen_id, @parent_screen_id, 2, 951, 1, 'open_in_new_window');
