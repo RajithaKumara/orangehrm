@@ -179,7 +179,7 @@ textarea{
 /*profile picture, name, date, time and the options widget is in this row */
 #postBodyFirstRow{
     background-color: white;
-    display: inline-blok;
+    display: inline-block;
     height: 64px;
     border-radius: 5px;
     padding: 4px;

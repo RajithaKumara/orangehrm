@@ -670,7 +670,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                           <?php
                           $placeholderd = __("Add your comment");
                           echo $commentForm['comment']->render(array('id' => "commentBoxNew_listId" . $postId,
-                              'class' => 'commentBox', 'rows' => '1', 'style' => 'font-size: 16px; font-family: "SourceSansProLight"; border-radius: 5px 5px 5px 5px; min-width: 99.5%; padding: 10px 0 10px 10px;', 'placeholder' => $placeholderd));
+                              'class' => 'commentBox', 'rows' => '1', 'style' => 'font-size: 16px; font-family: "SourceSansProLight"; border-radius: 5px 5px 5px 5px; min-width: 80%; padding: 10px 0 10px 10px;', 'placeholder' => $placeholderd));
                           $commentForm->setDefault('shareId', $postId);
                           ?>
                     <div style="display:none">
@@ -679,7 +679,7 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                     <?php
                     echo $commentForm['_csrf_token']->render();
                     ?>
-                    <input type="button" value="<?php echo __attr("Comment"); ?>"  id='<?php echo 'commentBoxNew_listId' . $postId; ?>' class="commentSubmitBtn submitBtn">
+                    <input type="button" value="<?php echo __attr("Comment"); ?>"  id='<?php echo 'commentBoxNew_listId' . $postId; ?>' class="commentSubmitBtn submitBtn" style="padding: 8px;margin-top: -40px">
                     <button type="button" id='<?php echo 'commentBoxNew_listId' . $postId; ?>' class="commentSubmitBtn submitBtn commentSubmitBtnForIe">
                         <?php echo __("Comment"); ?>
                     </button>
