@@ -677,9 +677,17 @@ input[type="button"]{
         /*width: 17%;*/
     }
 
-    .submitBtn{
+    .submitBtn {
         margin-top: -40px;
     }
+
+    .submitBtnnew {
+        margin-top: 5px !important;
+    }
+}
+
+.submitBtnnew {
+    margin-top: -55px;
 }
 
 .commentSubmitBtnForIe{

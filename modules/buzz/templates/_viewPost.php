@@ -673,16 +673,14 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewPostComponent'));
                               'class' => 'commentBox', 'rows' => '1', 'style' => 'font-size: 16px; font-family: "SourceSansProLight"; border-radius: 5px 5px 5px 5px; min-width: 80%; padding: 10px 0 10px 10px;', 'placeholder' => $placeholderd));
                           $commentForm->setDefault('shareId', $postId);
                           ?>
-                    <div style="display:none">
-                        <?php echo $commentForm['shareId']->render(); ?>
-                    </div>
+
                     <?php
                     echo $commentForm['_csrf_token']->render();
                     ?>
-                    <input type="button" value="<?php echo __attr("Comment"); ?>"  id='<?php echo 'commentBoxNew_listId' . $postId; ?>' class="commentSubmitBtn submitBtn" style="padding: 8px;margin-top: -40px">
-                    <button type="button" id='<?php echo 'commentBoxNew_listId' . $postId; ?>' class="commentSubmitBtn submitBtn commentSubmitBtnForIe">
-                        <?php echo __("Comment"); ?>
-                    </button>
+                    <input type="button" value="<?php echo __attr("Comment"); ?>"  id='<?php echo 'commentBoxNew_listId' . $postId; ?>' class="commentSubmitBtn submitBtn" style="padding: 8px">
+                    <div style="display:none">
+                        <?php echo $commentForm['shareId']->render(); ?>
+                    </div>
                 </form>
             </div>
         </div>
