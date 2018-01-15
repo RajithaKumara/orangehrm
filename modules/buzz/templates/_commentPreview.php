@@ -185,7 +185,9 @@ use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/viewBuzzSuccessCommen
             <div id="commentSubmitBtnInModal" style="float: right;display: inline">
                 <input  style="margin-left:8%;padding: 9px" type="button" value="<?php echo __attr("Comment"); ?>"  id='<?php echo 'commentBoxNew_' . $commentBoxId  . '_' . $postId; ?>' class="commentSubmitBtn submitBtnnew">
             </div>
-
+            <button style="margin-top: 10px"  type="button" id='<?php echo 'commentBoxNew_' . $commentBoxId . '_' . $postId; ?>' class="commentSubmitBtn submitBtn commentSubmitBtnForIe">
+                <?php echo __("Comment"); ?>
+            </button>
         </form>
     </div>
 </div>
