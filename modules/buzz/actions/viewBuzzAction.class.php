@@ -109,7 +109,10 @@ class viewBuzzAction extends BaseBuzzAction {
     }
 
     public function execute($request) {
-
+        if ($request->isMethod(sfWebRequest::POST)) {
+            $this->getResponse()->setStatusCode(HttpResponseCode::HTTP_BAD_REQUEST);
+            return sfView::NONE;
+        }
 
         $template = $this->getContext()->getConfiguration()->getTemplateDir('buzz', 'chatter.php');
         $this->setLayout($template . '/chatter');
