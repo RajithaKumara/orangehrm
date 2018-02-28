@@ -14,7 +14,13 @@ abstract class PluginLikeOnComment extends BaseLikeOnComment {
 
     public function getEmployeeFirstLastName() {
         if ($this->getEmployeeNumber() != '') {
-            return $this->getEmployeeLike()->getFirst()->getFirstAndLastNames();
+            $employee = $this->getEmployeeLike()->getFirst();
+            if($employee instanceof Employee) {
+                return $employee->getFirstAndLastNames();
+            } else {
+                return $this->getEmployeeName(). ' ('.__('Deleted Employee').')';
+            }
+
         } else {
             return 'Admin';
         }

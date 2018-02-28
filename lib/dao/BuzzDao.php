@@ -516,7 +516,7 @@ class BuzzDao extends BaseDao {
      */
     public function getShareById($id) {
         try {
-            $result = Doctrine::getTable('Share')->find($id);
+            $result = Doctrine_Core::getTable('Share')->find($id);
 
             return $result;
             // @codeCoverageIgnoreStart
@@ -534,7 +534,7 @@ class BuzzDao extends BaseDao {
      */
     public function getPostById($id) {
         try {
-            $result = Doctrine::getTable('Post')->find($id);
+            $result = Doctrine_Core::getTable('Post')->find($id);
 
             return $result;
             // @codeCoverageIgnoreStart
@@ -552,7 +552,7 @@ class BuzzDao extends BaseDao {
      */
     public function getCommentById($id) {
         try {
-            $result = Doctrine::getTable('Comment')->find($id);
+            $result = Doctrine_Core::getTable('Comment')->find($id);
             return $result;
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
@@ -569,7 +569,7 @@ class BuzzDao extends BaseDao {
      */
     public function getLikeOnShareById($id) {
         try {
-            $result = Doctrine::getTable('LikeOnShare')->find($id);
+            $result = Doctrine_Core::getTable('LikeOnShare')->find($id);
 
             return $result;
             // @codeCoverageIgnoreStart
@@ -588,7 +588,7 @@ class BuzzDao extends BaseDao {
     public function getLikeOnCommentById($id) {
         try {
 
-            return Doctrine::getTable('LikeOnComment')->find($id);
+            return Doctrine_Core::getTable('LikeOnComment')->find($id);
             // @codeCoverageIgnoreStart
         } catch (Exception $e) {
             throw new DaoException($e->getMessage(), $e->getCode(), $e);

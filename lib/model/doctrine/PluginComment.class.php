@@ -12,6 +12,7 @@
  */
 abstract class PluginComment extends BaseComment {
     protected $buzzConfigService;
+    protected $buzzTimeZoneUtility;
     /**
      * check loged In User Like this post
      * @param int $id
@@ -221,6 +222,27 @@ abstract class PluginComment extends BaseComment {
         }
         return false;
     }
-    
+
+    public function __call($method, $arguments) {
+        if ($method == 'getCommentTime') {
+            $offset = sfContext::getInstance()->getUser()->getUserTimeZoneOffset();
+            $getCommentTime = parent::__call($method, $arguments);
+            if($offset==0){
+                return $getCommentTime;
+            }
+            $date = gmdate('Y-m-d H:i:s',strtotime($getCommentTime));
+            $given = new DateTime($date,new DateTimeZone('+0:00'));
+            $given->setTimezone(new DateTimeZone($this->getBuzzTimezoneUtility()->getTimeZoneFromClientOffset($offset)));
+            return $given->format("Y-m-d H:i:s");
+        }
+        return parent::__call($method, $arguments);
+    }
+
+    public function getBuzzTimezoneUtility() {
+        if(!$this->buzzTimeZoneUtility instanceof BuzzTimezoneUtility) {
+            $this->buzzTimeZoneUtility = new BuzzTimezoneUtility();
+        }
+        return $this->buzzTimeZoneUtility;
+    }
 
 }

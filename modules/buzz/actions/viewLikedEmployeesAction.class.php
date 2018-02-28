@@ -73,8 +73,15 @@ class viewLikedEmployeesAction extends BaseBuzzAction {
                 } else {
                     $employee = $like->getEmployeeLike()->getFirst();
                 }
-                $empName = $employee->getFirstAndLastNames();
-                $jobTitle = $employee->getJobTitleName();
+                if($employee instanceof Employee) {
+                    $empName = $employee->getFirstAndLastNames();
+                    $jobTitle = $employee->getJobTitleName();
+                } else {
+                    $empName = $like->getEmployeeName() . ' (' . __(self::LABEL_EMPLOYEE_DELETED) . ')';
+                    $employeeDeleted = true;
+                    $jobTitle = '';
+                }
+
 
                 if ($empName == ' ' && $like->getEmployeeName() != null) {
                     $empName = $like->getEmployeeName() . ' (' . __(self::LABEL_EMPLOYEE_DELETED) . ')';

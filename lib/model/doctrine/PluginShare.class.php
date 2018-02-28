@@ -13,6 +13,7 @@
 abstract class PluginShare extends BaseShare {
 
     protected $buzzConfigService;
+    protected $buzzTimeZoneUtility;
 
     public function getEmployeeFirstLastName($employee = NULL) {
         $employeeName = "";
@@ -428,4 +429,25 @@ abstract class PluginShare extends BaseShare {
         }
     }
 
+    public function __call($method, $arguments) {
+        if ($method == 'getShareTime') {
+            $offset = sfContext::getInstance()->getUser()->getUserTimeZoneOffset();
+            $shareTime = parent::__call($method, $arguments);
+            if($offset==0){
+                return $shareTime;
+            }
+            $date = gmdate('Y-m-d H:i:s',strtotime($shareTime));
+            $given = new DateTime($date,new DateTimeZone('+0:00'));
+            $given->setTimezone(new DateTimeZone($this->getBuzzTimezoneUtility()->getTimeZoneFromClientOffset($offset)));
+            return $given->format("Y-m-d H:i:s");
+        }
+        return parent::__call($method, $arguments);
+    }
+
+    public function getBuzzTimezoneUtility() {
+        if(!$this->buzzTimeZoneUtility instanceof BuzzTimezoneUtility) {
+            $this->buzzTimeZoneUtility = new BuzzTimezoneUtility();
+        }
+        return $this->buzzTimeZoneUtility;
+    }
 }

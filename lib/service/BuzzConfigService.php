@@ -21,7 +21,7 @@
 
 class BuzzConfigService extends ConfigService {
 
-    protected $buzzConfigValues = "";
+    protected $buzzConfigValues = array();
 
     const KEY_NEWSFEED_SHARE_COUNT = "buzz_share_count";
     const KEY_NEWSFEED_INITIAL_COMMENT_COUNT = "buzz_initial_comments";
