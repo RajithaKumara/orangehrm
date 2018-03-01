@@ -225,9 +225,9 @@ abstract class PluginComment extends BaseComment {
 
     public function __call($method, $arguments) {
         if ($method == 'getCommentTime') {
-            $offset = sfContext::getInstance()->getUser()->getUserTimeZoneOffset();
+            $offset = sfContext::getInstance()->getUser()->getUserTimeZoneOffsetForBuzz();
             $getCommentTime = parent::__call($method, $arguments);
-            if($offset==0){
+            if(!isset($offset) || is_null($offset)){
                 return $getCommentTime;
             }
             $date = gmdate('Y-m-d H:i:s',strtotime($getCommentTime));

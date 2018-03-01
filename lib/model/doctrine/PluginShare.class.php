@@ -431,9 +431,9 @@ abstract class PluginShare extends BaseShare {
 
     public function __call($method, $arguments) {
         if ($method == 'getShareTime') {
-            $offset = sfContext::getInstance()->getUser()->getUserTimeZoneOffset();
+            $offset = sfContext::getInstance()->getUser()->getUserTimeZoneOffsetForBuzz();
             $shareTime = parent::__call($method, $arguments);
-            if($offset==0){
+            if(!isset($offset) || is_null($offset)){
                 return $shareTime;
             }
             $date = gmdate('Y-m-d H:i:s',strtotime($shareTime));
