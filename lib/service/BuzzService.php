@@ -853,4 +853,19 @@ class BuzzService extends BaseService {
         return $sfUser->getAttribute('meta.themeName');
     }
 
+    public function getLikesOnCommentsByEmpNumber($employeeNumber){
+        return $this->getBuzzDao()->getLikesOnCommentsByEmpNumber($employeeNumber);
+    }
+
+    public function getLikesOnSharesByEmpNumber($employeeNumber){
+        return $this->getBuzzDao()->getLikesOnSharesByEmpNumber($employeeNumber);
+    }
+
+    public function getUnlikesOnCommentsByEmpNumber($employeeNumber){
+        return $this->getBuzzDao()->getUnlikesOnCommentsByEmpNumber($employeeNumber);
+    }
+
+    public function getUnlikesOnSharesByEmpNumber($employeeNumber){
+        return $this->getBuzzDao()->getUnlikesOnSharesByEmpNumber($employeeNumber);
+    }
 }
