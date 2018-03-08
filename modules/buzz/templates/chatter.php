@@ -33,7 +33,7 @@
     }
 
     #buzzDetailContainer {
-        width: 975px;
+        width: 980px;
         height: 68px;
         margin: 0 auto;
         overflow: hidden;
