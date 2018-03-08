@@ -49,7 +49,7 @@ abstract class PluginComment extends BaseComment {
      * Returns the lits of emloyees who liked the comment.
      * @return Employee Collection
      */
-    public function getLikedEmployees($loggedInUserId) {
+    public function getLikedEmployees($loggedInUserId = null) {
         $count=  $this->getBuzzConfigService()->getBuzzLikeCount();
         $arrayOfEmployees = array();
        foreach ($this->getLike() as $value) {
