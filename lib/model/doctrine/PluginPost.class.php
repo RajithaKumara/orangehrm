@@ -13,6 +13,7 @@
 abstract class PluginPost extends BasePost {
 
     protected $buzzConfigService;
+    protected $buzzTimeZoneUtility;
 
     public function getEmployeeFirstLastName() {
         if ($this->getEmployeeNumber() != '') {
@@ -41,6 +42,29 @@ abstract class PluginPost extends BasePost {
     public function getTime() {
         $timeFormat = $this->getBuzzConfigService()->getTimeFormat();
         return date($timeFormat, strtotime($this->getPostTime()));
+    }
+
+    public function __call($method, $arguments) {
+        if ($method == 'getPostTime') {
+            $offset = sfContext::getInstance()->getUser()->getUserTimeZoneOffsetForBuzz();
+            $postTime = parent::__call($method, $arguments);
+            if(!isset($offset) || is_null($offset)){
+                return $postTime;
+            }
+            $date = gmdate('Y-m-d H:i:s',strtotime($postTime));
+            $given = new DateTime($date,new DateTimeZone('+0:00'));
+            $given->setTimezone(new DateTimeZone($this->getBuzzTimezoneUtility()->getTimeZoneFromClientOffset($offset)));
+            return $given->format("Y-m-d H:i:s");
+        }
+        return parent::__call($method, $arguments);
+    }
+
+
+    public function getBuzzTimezoneUtility() {
+        if(!$this->buzzTimeZoneUtility instanceof BuzzTimezoneUtility) {
+            $this->buzzTimeZoneUtility = new BuzzTimezoneUtility();
+        }
+        return $this->buzzTimeZoneUtility;
     }
 
 }
