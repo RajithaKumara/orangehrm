@@ -868,4 +868,8 @@ class BuzzService extends BaseService {
     public function getUnlikesOnSharesByEmpNumber($employeeNumber){
         return $this->getBuzzDao()->getUnlikesOnSharesByEmpNumber($employeeNumber);
     }
+
+    public function getCommentsByEmployeeNumber($employeeNumber){
+        return $this->getBuzzDao()->getCommentsByEmployeeNumber($employeeNumber);
+    }
 }

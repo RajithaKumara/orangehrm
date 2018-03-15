@@ -1037,4 +1037,18 @@ class BuzzDao extends BaseDao {
         }
         // @codeCoverageIgnoreEnd
     }
+
+    public function getCommentsByEmployeeNumber($employeeNumber) {
+        try {
+            $q = Doctrine_Query::create()
+                ->select()
+                ->from('Comment c')
+                ->where('c.employee_number = ?', $employeeNumber);
+            return $q->execute();
+            // @codeCoverageIgnoreStart
+        } catch (Exception $e) {
+            throw new DaoException($e->getMessage(), $e->getCode(), $e);
+        }
+        // @codeCoverageIgnoreEnd
+    }
 }
