@@ -1,6 +1,10 @@
 <?php
 use_stylesheet(plugin_web_path('orangehrmBuzzPlugin', 'css/photoTiling'));
-$photos = $sf_data->getRaw('originalPost')->getPhotos();
+$originalPost = $sf_data->getRaw('originalPost');
+$photos = null;
+if ($originalPost) {
+    $photos = $originalPost->getPhotos();
+}
 $imgCount = 1;
 ?>
 <?php

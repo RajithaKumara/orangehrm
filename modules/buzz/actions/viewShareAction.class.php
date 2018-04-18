@@ -73,7 +73,8 @@ class viewShareAction extends BaseBuzzAction {
 
         try {
             $this->setForm(new DeleteOrEditShareForm());
-
+            $this->commentForm = $this->getCommentForm();
+            $this->editForm = $this->getEditForm();
             if ($request->isMethod('post')) {
                 $this->form->bind($request->getParameter($this->form->getName()));
                 if ($this->form->isValid()) {
@@ -82,11 +83,9 @@ class viewShareAction extends BaseBuzzAction {
                     $this->loggedInUser = $this->getLogedInEmployeeNumber();
                     $this->shareId = $formValues['shareId'];
                     $share = $this->getShare($this->shareId);
-                    $this->userId = $this->getLogedInEmployeeNumber();
-                    $this->commentForm = $this->getCommentForm();
-
+                    $this->userId = $this->getLogedInEmployeeNumber(); 
                     $this->setShare($share);
-                    $this->editForm = $this->getEditForm();
+
                 }
             }
         } catch (Exception $ex) {
