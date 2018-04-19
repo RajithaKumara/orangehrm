@@ -61,7 +61,9 @@ class viewProfileAction extends BaseBuzzAction {
             $this->deleteOrEditShareForm = $this->getDeleteOrEditShareForm();
             $this->deleteOrEditCommentForm = $this->getDeleteOrEditCommentForm();
             $this->imageUploadForm = $this->getImageUploadForm();
-            
+            if (! $request->isMethod(sfWebRequest::GET)) {
+                $this->getResponse()->setStatusCode(HttpResponseCode::HTTP_BAD_REQUEST);
+            }
         } catch (Exception $ex) {
             $this->redirect('auth/login');
         }
