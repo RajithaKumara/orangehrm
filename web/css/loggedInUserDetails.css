@@ -1,6 +1,6 @@
 #leftSide, #rightSide{
     float: left;
-    margin-left: 110px;
+    width: 240px;
 }
 
 #links{
