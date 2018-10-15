@@ -1,6 +1,8 @@
 language: php
 php:
-  - '7.1'
+  - 7.1
+  - 5.6
+
 sudo: required
 dist: trusty
 
@@ -21,6 +23,10 @@ before_install:
   - sudo chmod 777 -R travis-config-files
   - ./travis-config-files/test/before_install.sh
 before_script: ./travis-config-files/test/before_script.sh
+
+script: ./travis-config-files/test/script.sh
+
+after_script: ./travis-config-files/test/after_script.sh
   
 after_failure: ./travis-config-files/test/after_failure.sh
 install: ./travis-config-files/test/install.sh
@@ -31,9 +37,6 @@ notifications:
   
 jobs:
   include:
-    - stage: test
-      script: ./travis-config-files/test/script.sh
-      after_script: ./travis-config-files/test/after_script.sh
     - stage: deploy
       env:
       before_install: skip
