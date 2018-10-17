@@ -2,7 +2,7 @@ language: php
 php:
   - 7.1
 #  - 7.0
-  - 7.2.5
+#  - 7.2.5
 #  - 5.6
 #os:
 #  - linux
@@ -17,9 +17,9 @@ branches:
     - develop
 env:
   - DB_IMAGE=mysql TAG=5.5
-  - DB_IMAGE=mysql TAG=5.6
+#  - DB_IMAGE=mysql TAG=5.6
   - DB_IMAGE=mysql TAG=5.7
-  - DB_IMAGE=mysql TAG=8.0
+#  - DB_IMAGE=mysql TAG=8.0
 #  - DB_IMAGE=mariadb TAG=10.2
 
 services:
