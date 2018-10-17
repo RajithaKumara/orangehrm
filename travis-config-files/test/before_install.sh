@@ -10,5 +10,7 @@ sudo chmod 777 -R symfony/log
 sudo /etc/init.d/mysql stop
 
 docker pull $DB_IMAGE:$TAG
-docker run --name mysql80 -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d $DB_IMAGE:$TAG
+docker run --name $DB_IMAGE -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -p 3306:3306 -d $DB_IMAGE:$TAG
+
+docker ps
 #echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
