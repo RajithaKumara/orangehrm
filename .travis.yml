@@ -18,11 +18,11 @@ branches:
 env:
   - DB_IMAGE=mysql TAG=5.5
   - DB_IMAGE=mysql TAG=5.6
-#  - DB_IMAGE=mysql TAG=5.7
+  - DB_IMAGE=mysql TAG=5.7
+  - DB_IMAGE=mysql TAG=8.0
 #  - DB_IMAGE=mariadb TAG=10.2
 
 services:
-#  - mysql
   - docker
 
 cache:
