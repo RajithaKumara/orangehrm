@@ -39,6 +39,29 @@
         overflow: hidden;
     }
 
+    .help_widget {
+        position: fixed;
+        top: 33%;
+        right: -6px;
+        max-width: 150px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        cursor: pointer;
+        overflow: hidden;
+        padding: 5px 10px 10px;
+        transform: rotate(-90deg);
+        transform-origin: bottom right;
+        border-radius: 6px 6px 0px 0px;
+        opacity: 0.9;
+        -webkit-tap-highlight-color: transparent;
+        color: #fff;
+        display: inline-block;
+    }
+
+    .help-button-global {
+        background-color: #f88400;
+    }
+
 </style>
 <?php include_partial('global/header'); ?>
 
@@ -53,7 +76,7 @@
         <div id="content">
 
             <?php echo $sf_content ?>
-
+            <?php include_partial('help/helpButton'); ?>
         </div> <!-- content -->
 
     </div> <!-- wrapper -->
