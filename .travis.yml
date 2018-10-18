@@ -11,10 +11,6 @@ php:
 sudo: required
 dist: trusty
 
-branches:
-  only:
-    - master
-    - develop
 env:
   - DB_IMAGE=mysql TAG=5.5
 #  - DB_IMAGE=mysql TAG=5.6
