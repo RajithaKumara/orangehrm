@@ -15,4 +15,4 @@ docker run --name $DB_IMAGE -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -p 3306:
 docker ps
 docker exec -it $DB_IMAGE bash | cat /etc/mysql/my.cnf
 
-mysqladmin -uroot --host=0.0.0.0 --port=3306 status
+sleep 15
