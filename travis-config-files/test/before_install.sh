@@ -13,6 +13,6 @@ docker pull $DB_IMAGE:$TAG
 docker run --name $DB_IMAGE -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -p 3306:3306 -d $DB_IMAGE:$TAG
 
 docker ps
-docker exec -it  $DB_IMAGE bash
-cat /etc/myaql/my.cnf
+docker exec -it dev_mariadb_102 bash | cat /etc/mysql/my.cnf
+
 mysqladmin -uroot --host=0.0.0.0 --port=3306 status
