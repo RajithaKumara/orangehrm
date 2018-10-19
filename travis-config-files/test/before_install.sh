@@ -11,3 +11,6 @@ sudo /etc/init.d/mysql stop
 
 docker pull $DB_IMAGE:$TAG
 docker run --name $DB_IMAGE -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -p 3306:3306 -d $DB_IMAGE:$TAG
+
+docker ps
+mysqladmin -uroot --host=0.0.0.0 --port=3306 status
