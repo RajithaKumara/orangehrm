@@ -466,6 +466,8 @@ function dbConfigurationCheck()
             );
 
             if (mysqli_connect_error()) {
+                print_r(mysqli_connect_errno());
+                print_r(mysqli_connect_error());
                 print_r($dbInfo);
             }
         }
