@@ -6,7 +6,7 @@ sudo chmod 777 -R symfony/log
 
 # Create MySQL Docker container
 docker pull $DB_IMAGE:$TAG
-docker run --name $DB_IMAGE -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -d $DB_IMAGE:$TAG --default-authentication-plugin=mysql_native_password
+docker run --name $DB_IMAGE -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -d $DB_IMAGE:$TAG
 
 # Edit config.ini
 containerIp=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $DB_IMAGE 2>&1)
