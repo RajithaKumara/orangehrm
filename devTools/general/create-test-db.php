@@ -29,9 +29,20 @@ $testDb = 'test_' . $c->dbname;
 $dbUser = $c->dbuser;
 $dbHost = $c->dbhost;
 $dbPort = $c->dbport;
+$userHost = $dbHost;
 
 $tempFile = tempnam(sys_get_temp_dir(), 'ohrmtestdb');
  
+$options = getopt(null, array("user::", "host::", "port::", "userHost::"));
+if ($options) {
+    $dbUser = is_null($options['user']) ? $dbUser : $options['user'];
+    $dbHost = is_null($options['host']) ? $dbHost : $options['host'];
+    $dbPort = is_null($options['port']) ? $dbPort : $options['port'];
+    $userHost = is_null($options['userHost']) ? $dbHost : $options['userHost'];
+
+    array_splice($argv, 1, sizeof($options));
+    $argc = sizeof($argv);
+}
 
 if ($argc > 1) {
 	$mysqlRootPwd = $argv[1];
@@ -42,7 +53,7 @@ if ($argc > 1) {
 
 
 $createdbStatement = "DROP DATABASE IF EXISTS `{$testDb}`; CREATE DATABASE `{$testDb}`;USE `{$testDb}`;" .
-                     "GRANT ALL on `{$testDb}`.* to \"{$dbUser}\"@\"{$dbHost}\";\n";
+                     "GRANT ALL on `{$testDb}`.* to \"{$dbUser}\"@\"{$userHost}\";\n";
 
 file_put_contents($tempFile, $createdbStatement);
 
