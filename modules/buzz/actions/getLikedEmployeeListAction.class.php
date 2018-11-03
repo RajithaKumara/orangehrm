@@ -38,7 +38,7 @@ class getLikedEmployeeListAction extends BaseBuzzAction {
 
     /**
      * return employee list
-     * @param type $request
+     * @param sfRequest $request
      */
     public function execute($request) {
         try {

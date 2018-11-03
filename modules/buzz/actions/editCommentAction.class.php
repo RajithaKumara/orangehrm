@@ -38,7 +38,7 @@ class editCommentAction extends BaseBuzzAction {
 
     /**
      * main function  
-     * @param type $request
+     * @param sfRequest $request
      */
     public function execute($request) {
         try {
