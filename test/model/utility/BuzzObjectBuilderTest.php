@@ -51,14 +51,7 @@ class BuzzObjectBuilderTest extends PHPUnit_Framework_TestCase {
         $buzzConfigService = $this->buzzObjectBuilder->getBuzzConfigService();
         $this->assertTrue($buzzConfigService instanceof BuzzConfigService);
     }
-    
-    /**
-     * @covers BuzzObjectBuilder::getBuzzService
-     */
-    public function testGetBuzzService() {
-        $buzzService = $this->buzzWebServiceHelper->getBuzzService();
-        $this->assertTrue($buzzService instanceof BuzzService);
-    }
+
 
     /**
      * @covers BuzzObjectBuilder::getShareCollectionArray
@@ -76,20 +69,9 @@ class BuzzObjectBuilderTest extends PHPUnit_Framework_TestCase {
             $share
         );
 
-        $arrayOfShares = $this->buzzObjectBuilder->getShareCollectionArray($shares);
+        $arrayOfShares = $this->buzzObjectBuilder->getShareCollectionArray($shares, array(1 => array(), 2 => array()), 1);
         $this->assertTrue(is_array($arrayOfShares));
         $this->assertEquals(1, count($arrayOfShares));
-    }
-
-    /**
-     * @covers BuzzObjectBuilder::getShareCollectionArray
-     * @expectedException Exception
-     */
-    public function testGetShareCollectionArrayWithWrongParameters() {
-        $shares = array(
-            new Post()
-        );
-        $arrayOfShares = $this->buzzObjectBuilder->getShareCollectionArray($shares);
     }
 
     /**
@@ -362,9 +344,7 @@ class BuzzObjectBuilderTest extends PHPUnit_Framework_TestCase {
             ),
         );
 
-        $extraPostOptions = array(
-            BuzzObjectBuilder::KEY_IMAGE_DATA => json_encode($imageDataArray)
-        );
+        $extraPostOptions = json_encode($imageDataArray);
 
         $photoArray = $this->buzzObjectBuilder->extractImagesForPost($extraPostOptions, $postId);
         $this->assertTrue(is_array($photoArray));
