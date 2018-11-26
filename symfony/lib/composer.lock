@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "35546da24dca9d6fca420136c378ba0d",
@@ -213,12 +213,12 @@
             "version": "v2.1.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/google/google-api-php-client.git",
+                "url": "https://github.com/googleapis/google-api-php-client.git",
                 "reference": "43996f09df274158fd04fce98e8a82effe5f3717"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/43996f09df274158fd04fce98e8a82effe5f3717",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client/zipball/43996f09df274158fd04fce98e8a82effe5f3717",
                 "reference": "43996f09df274158fd04fce98e8a82effe5f3717",
                 "shasum": ""
             },
@@ -272,12 +272,12 @@
             "version": "v0.11",
             "source": {
                 "type": "git",
-                "url": "https://github.com/google/google-api-php-client-services.git",
+                "url": "https://github.com/googleapis/google-api-php-client-services.git",
                 "reference": "48c554aee06f2fd5700d7bdfa4fa6b82d184eb52"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/48c554aee06f2fd5700d7bdfa4fa6b82d184eb52",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/48c554aee06f2fd5700d7bdfa4fa6b82d184eb52",
                 "reference": "48c554aee06f2fd5700d7bdfa4fa6b82d184eb52",
                 "shasum": ""
             },
@@ -309,12 +309,12 @@
             "version": "v0.11.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/google/google-auth-library-php.git",
+                "url": "https://github.com/googleapis/google-auth-library-php.git",
                 "reference": "a240674b08a09949fd5597f7590b3ed83663a12d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-auth-library-php/zipball/a240674b08a09949fd5597f7590b3ed83663a12d",
+                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/a240674b08a09949fd5597f7590b3ed83663a12d",
                 "reference": "a240674b08a09949fd5597f7590b3ed83663a12d",
                 "shasum": ""
             },
@@ -577,7 +577,7 @@
             "support": {
                 "source": "https://github.com/orangehrm/LightOpenID/tree/master"
             },
-            "time": "2017-04-18 10:54:52"
+            "time": "2017-04-18T10:54:52+00:00"
         },
         {
             "name": "lexpress/doctrine1",
@@ -625,7 +625,7 @@
             "support": {
                 "source": "https://github.com/orangehrm/doctrine1/tree/ohrm"
             },
-            "time": "2017-04-10 02:17:24"
+            "time": "2017-04-10T02:17:24+00:00"
         },
         {
             "name": "lexpress/symfony1",
@@ -633,12 +633,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/orangehrm/symfony1.git",
-                "reference": "eef09244d4d7b9a0e702eccb43421afbac632324"
+                "reference": "4ad7536c219794b4d951b1dcc2c597d9fefc3f07"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orangehrm/symfony1/zipball/eef09244d4d7b9a0e702eccb43421afbac632324",
-                "reference": "eef09244d4d7b9a0e702eccb43421afbac632324",
+                "url": "https://api.github.com/repos/orangehrm/symfony1/zipball/4ad7536c219794b4d951b1dcc2c597d9fefc3f07",
+                "reference": "4ad7536c219794b4d951b1dcc2c597d9fefc3f07",
                 "shasum": ""
             },
             "require": {
@@ -674,7 +674,7 @@
             "support": {
                 "source": "https://github.com/orangehrm/symfony1/tree/ohrm"
             },
-            "time": "2017-06-19 08:49:46"
+            "time": "2018-02-20T04:31:55+00:00"
         },
         {
             "name": "monolog/monolog",
