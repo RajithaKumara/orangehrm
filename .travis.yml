@@ -25,9 +25,9 @@ env:
 services:
   - docker
 
-cache:
-  directories:
-    - "symfony/lib/vendor"
+# cache:
+#   directories:
+#     - "symfony/lib/vendor"
 
 before_install: 
   - sudo chmod 777 -R travis-config-files
