@@ -6,6 +6,9 @@
         convertWarningsToExceptions = "true"
         strict = "true"
     >
+        <php>
+                <env name="PHPUnit_MAIN_METHOD" value="" />
+        </php>
 
     <filter>
         <whitelist>
