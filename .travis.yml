@@ -47,7 +47,7 @@ notifications:
   email: true
   
 jobs:
-	include:
+  include:
     - # require the branch name to be master (note for PRs this is the base branch name)
       if: type = cron
       env:
