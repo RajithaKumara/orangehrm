@@ -13,7 +13,7 @@ env:
     - MYSQL_ROOT_USER=root
     - MYSQL_ROOT_PASSWORD=root
     - MYSQL_PORT=3306
-  matrix:
+#  matrix:
 #    - DB_IMAGE=mysql TAG=5.5
 #    - DB_IMAGE=mysql TAG=5.6
 #    - DB_IMAGE=mysql TAG=5.7
@@ -21,7 +21,7 @@ env:
 #    - DB_IMAGE=mariadb TAG=10.0
 #    - DB_IMAGE=mariadb TAG=10.1
 #    - DB_IMAGE=mariadb TAG=10.2
-    - DB_IMAGE=mariadb TAG=10.3
+#    - DB_IMAGE=mariadb TAG=10.3
 
 services:
   - docker
@@ -47,6 +47,11 @@ notifications:
   email: true
   
 jobs:
+  include:
+    - test# require the branch name to be master (note for PRs this is the base branch name)
+      env:
+        matrix:
+          - DB_IMAGE=mariadb TAG=10.3
   include:
     - # require the branch name to be master (note for PRs this is the base branch name)
       if: type = cron
