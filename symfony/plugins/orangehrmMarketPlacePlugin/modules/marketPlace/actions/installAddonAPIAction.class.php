@@ -28,7 +28,7 @@ class installAddonAPIAction extends baseAddonAction
      */
     public function execute($request)
     {
-        try {
+        // try {
             $addonList = $this->getAddons();
             $data = $request->getParameterHolder()->getAll();
             $addonId = $data['installAddonID'];
@@ -44,13 +44,13 @@ class installAddonAPIAction extends baseAddonAction
             $result = $this->installAddon($addonFilePath, $addonDetail);
             echo json_encode($result);
             return sfView::NONE;
-        } catch (GuzzleHttp\Exception\ConnectException $e) {
-            echo json_encode(self::ERROR_CODE_NO_CONNECTION);
-            return sfView::NONE;
-        } catch (Exception $e) {
-            echo json_encode($e->getCode());
-            return sfView::NONE;
-        }
+        // } catch (GuzzleHttp\Exception\ConnectException $e) {
+        //     echo json_encode(self::ERROR_CODE_NO_CONNECTION);
+        //     return sfView::NONE;
+        // } catch (Exception $e) {
+        //     echo json_encode($e->getCode());
+        //     return sfView::NONE;
+        // }
     }
 
     /**
@@ -79,7 +79,7 @@ class installAddonAPIAction extends baseAddonAction
             $connection->beginTransaction();
             $pluginname = $this->getMarcketplaceService()->extractAddonFile($addonFilePath);
             $symfonyPath = sfConfig::get('sf_root_dir');
-            $pluginInstallFilePath = $symfonyPath . '/plugins/' . $pluginname . 'install/plugin_install.php';
+            $pluginInstallFilePath = $symfonyPath . DIRECTORY_SEPARATOR .'plugins'. DIRECTORY_SEPARATOR . $pluginname . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . 'plugin_install.php';
             chdir($symfonyPath);
             exec("php symfony cc", $symfonyCcResponse, $symfonyCcStatus);
             if ($symfonyCcStatus != 0) {
