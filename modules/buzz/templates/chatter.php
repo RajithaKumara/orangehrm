@@ -76,7 +76,7 @@
         <div id="content">
 
             <?php echo $sf_content ?>
-            <?php include_partial('help/helpButton'); ?>
+            <?php include_component('help','helpButton'); ?>
         </div> <!-- content -->
 
     </div> <!-- wrapper -->
