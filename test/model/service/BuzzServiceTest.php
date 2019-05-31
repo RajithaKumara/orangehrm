@@ -831,55 +831,6 @@ class BuzzServiceTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * test get employee birthdays
-     */
-    public function testGetEmployeesHavingBdaysBetweenTwoDates() {
-        $fromDate = '2015-06-03';
-        $todate = '2015-06-07';
-        $buzzDao = $this->getMockBuilder('buzzDao')
-			->setMethods( array('getEmployeesHavingBdaysBetweenTwoDates'))
-			->getMock();
-
-        $employeeArray = array(
-            new Employee(),
-            new Employee(),
-            new Employee()
-        );
-        $buzzDao->expects($this->once())
-                ->method('getEmployeesHavingBdaysBetweenTwoDates')
-                ->with($fromDate, $todate)
-                ->will($this->returnValue($employeeArray));
-
-        $this->buzzService->setBuzzDao($buzzDao);
-        $resultEmployees = $this->buzzService->getEmployeesHavingBdaysBetweenTwoDates($fromDate, $todate);
-        $this->assertTrue(is_array($resultEmployees));
-    }
-
-    /**
-     * test get Employees Having Bdays On Next Year
-     */
-    public function testGetEmployeesHavingBdaysOnNextYear() {
-        $date = '2015-12-12';
-        $buzzDao = $this->getMockBuilder('buzzDao')
-			->setMethods( array('getEmployeesHavingBdaysOnNextYear'))
-			->getMock();
-
-        $employeeArray = array(
-            new Employee(),
-            new Employee(),
-            new Employee()
-        );
-        $buzzDao->expects($this->once())
-                ->method('getEmployeesHavingBdaysOnNextYear')
-                ->with($date)
-                ->will($this->returnValue($employeeArray));
-
-        $this->buzzService->setBuzzDao($buzzDao);
-        $resultEmployees = $this->buzzService->getEmployeesHavingBdaysOnNextYear($date);
-        $this->assertTrue(is_array($resultEmployees));
-    }
-
-    /**
      * test get employee anivesary
      */
     public function testAnivesary() {

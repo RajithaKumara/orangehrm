@@ -1067,3 +1067,37 @@ div.photoPreviewComment > div#commentListContainerforpev {
 #wrapper{
     padding-top:30px;
 }
+
+#profilePicContainer {
+    width: 55px;
+    height: 55px;
+}
+
+#profilePicContainer img {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    border-radius: 5px;
+}
+
+#profilePicContainer {
+    float: left;
+    border: 2px solid white;
+    vertical-align: middle;
+    position: relative;
+    background-color: #EBEBEB;
+    margin-right: 8px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#date {
+    margin-top: 4px;
+    font-family: SourceSansProExtraLight;
+}
+
+#name2 {
+    font-size: 20px;
+}

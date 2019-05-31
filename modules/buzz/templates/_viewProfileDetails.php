@@ -46,16 +46,6 @@ use_javascript(plugin_web_path('orangehrmBuzzPlugin', 'js/viewProfileDetailsComp
     <div id="panelPersonal">
 
         <div class="inlineBlock">
-            <div id="panelfirst"><?php echo __("Gender"); ?></div>
-            <div id="panelsecond"> <?php echo $gender; ?></div>
-        </div>
-
-        <div class="inlineBlock">
-            <div id="panelfirst"><?php echo __("Birthday"); ?></div>
-            <div id="panelsecond"> <?php echo $birthDay; ?></div>
-        </div>
-
-        <div class="inlineBlock">
             <div id="panelfirst"><?php echo __("Location"); ?></div>
             <div id="panelsecond"> 
                 <?php

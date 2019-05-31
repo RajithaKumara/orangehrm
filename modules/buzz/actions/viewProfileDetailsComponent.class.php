@@ -1,5 +1,4 @@
 <?php
-
 /**
  * OrangeHRM Enterprise is a closed sourced comprehensive Human Resource Management (HRM)
  * System that captures all the essential functionalities required for any enterprise.
@@ -33,10 +32,6 @@ class viewProfileDetailsComponent extends sfComponent {
             $this->firstName = $this->employee->getFirstName();
             $this->fullName = $this->employee->getFirstName() . " " . $this->employee->getLastName();
             $this->jobtitle = $this->employee->getJobTitleName();
-            if ($this->employee->getEmpBirthday() != null) {
-                $this->birthDay = date('M-d', strtotime($this->employee->getEmpBirthday()));
-            }
-            $this->gender = $this->employee->getGenderAsString();
             $this->workEmail = $this->employee->getEmpWorkEmail();
             $this->workTel = $this->employee->getEmpWorkTelephone();
             $this->isTerminated = $this->employee->getState();

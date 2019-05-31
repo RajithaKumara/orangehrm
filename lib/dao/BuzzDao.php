@@ -206,51 +206,6 @@ class BuzzDao extends BaseDao {
     }
 
     /**
-     * get employees who having birhdays on month
-     * @param Date $fromDate
-     * @return array Employee
-     * @throws DaoException
-     */
-    public function getEmployeesHavingBdaysBetweenTwoDates($fromDate, $toDate) {
-        try {
-            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND datediff( MAKEDATE(YEAR(:date) , DAYOFYEAR(emp_birthday)) , :date) " .
-                " BETWEEN 0 AND 30 ";
-            $params = array(':date' => $fromDate);
-            $q = Doctrine_Manager::getInstance()->getCurrentConnection();
-            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY MONTH(emp_birthday) ASC, DAY(emp_birthday) ASC", $params);
-
-            return $result->fetchAll();
-            // @codeCoverageIgnoreStart
-        } catch (Exception $e) {
-            throw new DaoException($e->getMessage(), $e->getCode(), $e);
-        }
-        // @codeCoverageIgnoreEnd
-    }
-
-    /**
-     * Get employee having birthdays next year
-     * @param type $date
-     * @return type
-     * @throws DaoException
-     */
-    Public function getEmployeesHavingBdaysOnNextYear($date) {
-        try {
-            $whereClause = "WHERE deleted_at IS NULL AND joined_date <= :date AND  datediff( MAKEDATE(YEAR(:date)+1 , DAYOFYEAR(emp_birthday)) , :date) " .
-                " BETWEEN 0 AND 30 ";
-
-            $params = array(':date' => $date);
-            $q = Doctrine_Manager::getInstance()->getCurrentConnection();
-            $result = $q->execute("SELECT * FROM hs_hr_employee $whereClause ORDER BY MONTH(emp_birthday) ASC, DAY(emp_birthday) ASC", $params);
-
-            return $result->fetchAll();
-            // @codeCoverageIgnoreStart
-        } catch (Exception $e) {
-            throw new DaoException($e->getMessage(), $e->getCode(), $e);
-        }
-        // @codeCoverageIgnoreEnd
-    }
-
-    /**
      * get employees who having aniversary on month
      * @param INT Month
      * @return array Employee

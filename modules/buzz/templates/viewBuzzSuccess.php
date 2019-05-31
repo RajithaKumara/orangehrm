@@ -93,13 +93,6 @@ ini_set("memory_limit", '-1');
     </div>
 
     <div class="buzzRightBar">
-        <!--Start Birthdays Component-->
-        <div id="birthdayComponent">
-            <div class="Timer"></div>
-            <?php include_component('buzz', 'viewBirthdays', array()); ?>
-        </div>
-        <!--End Birthdays Component-->
-
         <!--Start anniversary Component-->
         <div id="anniversaryComponent">
             <?php include_component('buzz', 'viewAnniversaries', array()); ?>

@@ -394,31 +394,6 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * test comment by employee number
-     */
-    public function testGetEmployeesHavingBdaysBetweenTwoDatesGivingCorrectResult() {
-        $fromDate = '2015-05-03';
-        $todate = '2015-05-30';
-        $expectedEmployeeNumber = 1;
-        $resultEmployees = $this->buzzDao->getEmployeesHavingBdaysBetweenTwoDates($fromDate, $todate);
-
-        $this->assertEquals(1, count($resultEmployees));
-        $this->assertEquals($expectedEmployeeNumber, $resultEmployees[0]['emp_number']);
-    }
-
-    /**
-     * BuzzDao::getEmployeesHavingBdaysOnNextYear
-     */
-    public function testGetEmployeesHavingBdaysOnNextYear() {
-        $date = '2015-12-15';
-        $expectedEmployeeNumber = 4;
-        $resultEmployees = $this->buzzDao->getEmployeesHavingBdaysOnNextYear($date);
-
-        $this->assertEquals(1, count($resultEmployees));
-        $this->assertEquals($expectedEmployeeNumber, $resultEmployees[0]['emp_number']);
-    }
-
-    /**
      * BuzzDao::getEmployeesHavingAnniversariesNextYear
      */
     public function testGetEmployeesHavingAnniversariesNextYear() {
@@ -428,17 +403,6 @@ class BuzzDaoTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1, count($resultEmployees));
         $this->assertEquals($expectedEmployeeNumber, $resultEmployees[0]['emp_number']);
-    }
-
-    /**
-     * test get employees birthdays 
-     */
-    public function testGetEmployeesHavingBdaysBetweenTwoDatesGivingAllResults() {
-        $fromDate = '2015-06-03';
-        $todate = '2015-06-30';
-        $resultEmployees = $this->buzzDao->getEmployeesHavingBdaysBetweenTwoDates($fromDate, $todate);
-
-        $this->assertEquals(2, count($resultEmployees));
     }
 
     /**
