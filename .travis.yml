@@ -4,10 +4,6 @@ php:
 sudo: required
 dist: trusty
 
-branches:
-  only:
-    - master
-    - develop
 env:
   global:
   - TAGDEV=develop
