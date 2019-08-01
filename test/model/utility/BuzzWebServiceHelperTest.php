@@ -25,7 +25,7 @@
  * @author nirmal
  * @group buzz
  */
-class BuzzWebServiceHelperTest extends PHPUnit_Framework_TestCase {
+class BuzzWebServiceHelperTest extends PHPUnit\Framework\TestCase {
 
     private $buzzWebServiceHelper;
 

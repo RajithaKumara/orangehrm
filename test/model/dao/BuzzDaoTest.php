@@ -22,7 +22,7 @@
 /**
  * @group buzz
  */
-class BuzzDaoTest extends PHPUnit_Framework_TestCase {
+class BuzzDaoTest extends PHPUnit\Framework\TestCase {
 
     private $buzzDao;
 

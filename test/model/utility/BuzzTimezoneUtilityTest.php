@@ -25,7 +25,7 @@
  * @author amila
  * @group buzz
  */
-class BuzzTimezoneUtilityTest extends PHPUnit_Framework_TestCase {
+class BuzzTimezoneUtilityTest extends PHPUnit\Framework\TestCase {
 
     private $buzzTimezoneUtility;
 

@@ -25,7 +25,7 @@
  * @author nirmal
  * @group buzz
  */
-class BuzzObjectBuilderTest extends PHPUnit_Framework_TestCase {
+class BuzzObjectBuilderTest extends PHPUnit\Framework\TestCase {
 
     private $buzzObjectBuilder;
 

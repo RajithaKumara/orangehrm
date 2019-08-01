@@ -4,7 +4,7 @@ class orangehrmBuzzPluginAllTests {
 
     public static function suite() {
 
-        $suite = new PHPUnit_Framework_TestSuite('orangehrmBuzzPluginAllTest');
+        $suite = new PHPUnit\Framework\TestSuite('orangehrmBuzzPluginAllTest');
 
         // plugin class function test
         $suite->addTestFile(dirname(__FILE__) . '/model/dao/LikeOnCommentTest.php');

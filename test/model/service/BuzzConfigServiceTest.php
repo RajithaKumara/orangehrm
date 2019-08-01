@@ -22,7 +22,7 @@
 /**
  * @group buzz
  */
-class BuzzConfigServiceTest extends PHPUnit_Framework_TestCase {
+class BuzzConfigServiceTest extends PHPUnit\Framework\TestCase {
 
     private $buzzConfigService;
 

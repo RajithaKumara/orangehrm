@@ -22,7 +22,7 @@
 /**
  * @group buzzPlugin
  */
-class LikeOnCommentTest extends PHPUnit_Framework_TestCase {
+class LikeOnCommentTest extends PHPUnit\Framework\TestCase {
     /**
      * Set up method
      */
