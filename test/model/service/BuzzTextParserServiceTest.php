@@ -23,7 +23,7 @@
  * @group buzz
  */
 class BuzzTextParserServiceTest extends PHPUnit\Framework\TestCase{
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->buzzTextParserService = new BuzzTextParserService();
         

@@ -29,7 +29,7 @@ class BuzzDaoTest extends PHPUnit\Framework\TestCase {
     /**
      * Set up method
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->buzzDao = new BuzzDao();
         $this->fixture = sfConfig::get('sf_plugins_dir') . '/orangehrmBuzzPlugin/test/fixtures/OrangeBuzz.yml';
         TestDataService::populate($this->fixture);

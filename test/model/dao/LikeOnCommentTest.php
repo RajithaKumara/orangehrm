@@ -26,7 +26,7 @@ class LikeOnCommentTest extends PHPUnit\Framework\TestCase {
     /**
      * Set up method
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->buzzDao = new BuzzDao();
 
         $this->employeeService = new EmployeeService();

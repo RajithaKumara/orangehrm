@@ -32,7 +32,7 @@ class BuzzObjectBuilderTest extends PHPUnit\Framework\TestCase {
     /**
      * Set up method
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->buzzObjectBuilder = new BuzzObjectBuilder();
     }
 
@@ -110,9 +110,9 @@ class BuzzObjectBuilderTest extends PHPUnit\Framework\TestCase {
 
     /**
      * @covers BuzzObjectBuilder::createPostPhotoDetailsArray
-     * @expectedException Exception
      */
     public function testCreatePostPhotoDetailsArrayWithWrongCollcetion() {
+        $this->expectException('Exception');
         $postPhotos = array(
             new Employee()
         );
@@ -136,9 +136,9 @@ class BuzzObjectBuilderTest extends PHPUnit\Framework\TestCase {
 
     /**
      * @covers BuzzObjectBuilder::createCommentDetailsArray
-     * @expectedException Exception
      */
     public function testCreateCommentDetailsArrayWithWrongCollcetion() {
+        $this->expectException('Exception');
         $comments = array(
             new Employee()
         );
@@ -194,9 +194,9 @@ class BuzzObjectBuilderTest extends PHPUnit\Framework\TestCase {
 
     /**
      * @covers BuzzObjectBuilder::createShare
-     * @expectedException Exception
      */
     public function testCreateShareWithWrongParametersForPost() {
+        $this->expectException('Exception');
         $postedDateTime = date("Y-m-d H:i:s");
         $post = new Employee();
 
@@ -218,9 +218,9 @@ class BuzzObjectBuilderTest extends PHPUnit\Framework\TestCase {
 
     /**
      * @covers BuzzObjectBuilder::createCommentOnShare
-     * @expectedException Exception
      */
     public function testCreateCommentOnShareWithoutShareId() {
+        $this->expectException('Exception');
         $shareId = null;
         $loggedInEmployeeNumber = 1;
         $commentText = "test";
@@ -243,9 +243,9 @@ class BuzzObjectBuilderTest extends PHPUnit\Framework\TestCase {
 
     /**
      * @covers BuzzObjectBuilder::CreateLikeOnShare
-     * @expectedException Exception
      */
     public function testCreateLikeOnShareWithoutShareId() {
+        $this->expectException('Exception');
         $shareId = null;
         $loggedInEmployeeNumber = 1;
         $testDateTime = date("Y-m-d H:i:s");
@@ -267,9 +267,9 @@ class BuzzObjectBuilderTest extends PHPUnit\Framework\TestCase {
 
     /**
      * @covers BuzzObjectBuilder::createDislikeOnShare
-     * @expectedException Exception
      */
     public function testCreateDislikeOnShareWithoutShareId() {
+        $this->expectException('Exception');
         $shareId = null;
         $loggedInEmployeeNumber = 1;
         $testDateTime = date("Y-m-d H:i:s");
@@ -291,9 +291,9 @@ class BuzzObjectBuilderTest extends PHPUnit\Framework\TestCase {
 
     /**
      * @covers BuzzObjectBuilder::createLikeOnComment
-     * @expectedException Exception
      */
     public function testCreateLikeOnCommentWithoutCommentId() {
+        $this->expectException('Exception');
         $commentId = null;
         $loggedInEmployeeNumber = 1;
         $testDateTime = date("Y-m-d H:i:s");
@@ -315,9 +315,9 @@ class BuzzObjectBuilderTest extends PHPUnit\Framework\TestCase {
 
     /**
      * @covers BuzzObjectBuilder::createDislikeOnComment
-     * @expectedException Exception
      */
     public function testCreateDislikeOnCommentWithoutCommentId() {
+        $this->expectException('Exception');
         $commentId = null;
         $loggedInEmployeeNumber = 1;
         $testDateTime = date("Y-m-d H:i:s");
@@ -354,9 +354,9 @@ class BuzzObjectBuilderTest extends PHPUnit\Framework\TestCase {
 
     /**
      * @covers BuzzObjectBuilder::extractImagesForPost
-     * @expectedException Exception
      */
     public function testExtractImagesForPostWithIncorrectData() {
+        $this->expectException('Exception');
         $postId = 1;
 
         $imageDataArray = array(

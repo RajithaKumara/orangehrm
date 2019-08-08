@@ -32,13 +32,13 @@ class BuzzTimezoneUtilityTest extends PHPUnit\Framework\TestCase {
     /**
      * Set up method
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->buzzTimezoneUtility = new BuzzTimezoneUtility();
         $this->defualtUser = sfContext::getInstance()->getUser();
         $this->defualtServerTimeZone = date_default_timezone_get();
     }
 
-    public function tearDown(){
+    public function tearDown(): void{
         sfContext::getInstance()->set('user',$this->defualtUser);
         date_default_timezone_set($this->defualtServerTimeZone);
     }

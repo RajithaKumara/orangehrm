@@ -29,7 +29,7 @@ class BuzzConfigServiceTest extends PHPUnit\Framework\TestCase {
     /**
      * Set up method
      */
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->buzzConfigService = new BuzzConfigService();
         TestDataService::populate(sfConfig::get('sf_plugins_dir') . '/orangehrmBuzzPlugin/test/fixtures/OrangeBuzz.yml');

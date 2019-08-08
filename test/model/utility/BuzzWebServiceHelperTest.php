@@ -32,7 +32,7 @@ class BuzzWebServiceHelperTest extends PHPUnit\Framework\TestCase {
     /**
      * Set up method
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->buzzWebServiceHelper = new BuzzWebServiceHelper();
     }
 

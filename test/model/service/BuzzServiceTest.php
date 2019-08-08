@@ -29,7 +29,7 @@ class BuzzServiceTest extends PHPUnit\Framework\TestCase {
     /**
      * Set up method
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->buzzService = new BuzzService();
         $this->employeeService = $this->buzzService->getEmployeeService();
     }
