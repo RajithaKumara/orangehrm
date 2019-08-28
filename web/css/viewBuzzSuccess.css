@@ -1101,3 +1101,7 @@ div.photoPreviewComment > div#commentListContainerforpev {
 #name2 {
     font-size: 20px;
 }
+
+.ac_results {
+    width: 33.75em !important;
+}
