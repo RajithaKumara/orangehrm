@@ -50,7 +50,6 @@ jobs:
 
     - name: Install OrangeHRM
       run: ./installer/cli_install.sh
-      shell: bash
 
   test:
 
@@ -66,9 +65,7 @@ jobs:
 
     - name: Create test DB
       run: php devTools/general/create-test-db.php ${{ secrets.RootPassword }}
-      shell: bash
 
     - name: Unit tests
       run: ./symfony/lib/vendor/bin/phpunit --coverage-clover build/logs/clover.xml
-      shell: bash
 
