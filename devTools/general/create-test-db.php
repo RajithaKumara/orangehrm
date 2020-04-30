@@ -41,8 +41,7 @@ if ($argc > 1) {
 }
 
 
-$createdbStatement = "DROP DATABASE IF EXISTS `{$testDb}`; CREATE DATABASE `{$testDb}`;USE `{$testDb}`;" .
-                     "GRANT ALL on `{$testDb}`.* to \"{$dbUser}\"@%;\n";
+$createdbStatement = "DROP DATABASE IF EXISTS `{$testDb}`; CREATE DATABASE `{$testDb}`;USE `{$testDb}`;\n";
 
 file_put_contents($tempFile, $createdbStatement);
 
