@@ -25,7 +25,7 @@ jobs:
         container port: 3306
         character set server: 'utf8mb4'
         collation server: 'utf8mb4_general_ci'
-        mariadb version: '10.4.10'
+        mariadb version: '10.2.31'
         mysql database: 'orangehrm'
         mysql root password: ${{ secrets.RootPassword }}
         mysql user: 'developer'
@@ -38,9 +38,7 @@ jobs:
         extensions: xdebug-beta
 
     - name: Install OrangeHRM
-      run: |
-        sed -i "s/HostName.*/HostName = localhost/g" ./installer/config.ini
-        ./installer/cli_install.sh
+      run: ./installer/cli_install.sh
 
     - name: Create test DB
       run: php devTools/general/create-test-db.php ${{ secrets.RootPassword }}
