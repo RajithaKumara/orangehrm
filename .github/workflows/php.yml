@@ -1,0 +1,74 @@
+name: PHP Composer
+
+on: [push, pull_request]
+
+jobs:
+  deps:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate -d ./symfony/lib
+
+    - name: Install dependencies
+      run: composer install -d ./symfony/lib
+
+    - name: Dumps the autoloader
+      run: composer dump-autoload -o -d ./symfony/lib
+
+  db:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: getong/mariadb-action@v1.1
+      with:
+        host port: 3306
+        container port: 3306
+        character set server: 'utf8mb4'
+        collation server: 'utf8mb4_general_ci'
+        mariadb version: '10.4.10'
+        mysql database: 'orangehrm'
+        mysql root password: ${{ secrets.RootPassword }}
+        mysql user: 'developer'
+        mysql password: ${{ secrets.DatabasePassword }}
+
+  install:
+
+    runs-on: ubuntu-latest
+    needs: [deps, db]
+
+    steps:
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.1'
+        tools: pecl
+        extensions: xdebug-beta
+
+    - name: Install OrangeHRM
+      run: ./installer/cli_install.sh
+      shell: bash
+
+  test:
+
+    runs-on: ubuntu-latest
+    needs: install
+
+    steps:
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.1'
+        tools: pecl
+        extensions: xdebug-beta
+
+    - name: Create test DB
+      run: php devTools/general/create-test-db.php ${{ secrets.RootPassword }}
+      shell: bash
+
+    - name: Unit tests
+      run: ./symfony/lib/vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+      shell: bash
+
