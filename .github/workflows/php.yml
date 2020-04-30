@@ -49,7 +49,9 @@ jobs:
         extensions: xdebug-beta
 
     - name: Install OrangeHRM
-      run: ./installer/cli_install.sh
+      run: |
+        ls
+        ./installer/cli_install.sh
 
   test:
 
