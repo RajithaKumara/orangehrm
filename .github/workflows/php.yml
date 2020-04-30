@@ -39,7 +39,7 @@ jobs:
 
     - name: Install OrangeHRM
       run: |
-        ls
+        sed -i "s/HostName.*/HostName = localhost/g" ./installer/config.ini
         ./installer/cli_install.sh
 
     - name: Create test DB
