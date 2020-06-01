@@ -8125,8 +8125,20 @@
         <target>FR_Buzz is accessible for the user who is assigned with an employee.</target>
       </trans-unit>
       <trans-unit id="2034">
-        <source>File write permission required to `symfony/web` directory.</source>
-        <target>FR_File write permission required to `symfony/web` directory.</target>
+        <source>File write permission required to %dir% directory.</source>
+        <target>FR_File write permission required to %dir% directory.</target>
+      </trans-unit>
+      <trans-unit id="2035">
+        <source>File read permission required to %dir% directory.</source>
+        <target>FR_File read permission required to %dir% directory.</target>
+      </trans-unit>
+      <trans-unit id="2036">
+        <source>Prerequisites:- OrangeHRM requires below prerequisites in order for the add on to work successfully. Please install</source>
+        <target>FR_Prerequisites:- OrangeHRM requires below prerequisites in order for the add on to work successfully. Please install</target>
+      </trans-unit>
+      <trans-unit id="2036">
+        <source>Additional requirements:-</source>
+        <target>FR_Additional requirements:-</target>
       </trans-unit>
     </body>
   </file>

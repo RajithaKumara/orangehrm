@@ -29,9 +29,8 @@ class uninstallAddonAPIAction extends baseAddonAction
     public function execute($request)
     {
         try {
-            if (ini_get('max_execution_time') < 600) {
-                ini_set('max_execution_time', 600);
-            }
+            ini_set('max_execution_time', 0);
+
             $data = $request->getParameterHolder()->getAll();
             $result = $this->uninstallAddon($data['uninstallAddonID']);
             echo json_encode($result);
@@ -58,8 +57,8 @@ class uninstallAddonAPIAction extends baseAddonAction
         } else {
             throw new Exception('Selected plugin to uninstall is not tracked in database.', 2000);
         }
-        $symfonyPath = sfConfig::get('sf_root_dir');
-        $pluginInstallFilePath = $symfonyPath . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginName . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . 'plugin_uninstall.php';
+
+        $pluginInstallFilePath =sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR . $pluginName . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . 'plugin_uninstall.php';
         try {
             $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
             $connection->beginTransaction();
@@ -67,25 +66,17 @@ class uninstallAddonAPIAction extends baseAddonAction
             if (!$uninstall) {
                 throw new Exception('Uninstall file execution fails.', 2001);
             }
-            $deletingPlugin = $this->recursiveDeletePlugin($symfonyPath . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginName);
+            $deletingPlugin = $this->recursiveDeletePlugin(sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR . $pluginName);
             if (!$deletingPlugin) {
                 throw new Exception('Removing plugin folder fails.', 2002);
             }
-            chdir($symfonyPath);
-            exec("php symfony cc", $symfonyCcResponse, $symfonyCcStatus);
-            if ($symfonyCcStatus != 0) {
-                throw new Exception('Running php symfony cc fails.', 2003);
-            }
-            chdir($symfonyPath);
-            exec("php symfony o:publish-asset", $publishAssetResponse, $publishAssetStatus);
-            if ($publishAssetStatus != 0) {
-                throw new Exception('Running php symfony o:publish-asset fails.', 2004);
-            }
-            chdir($symfonyPath);
-            exec("php symfony d:build-model", $buildModelResponse, $buildModelStatus);
-            if ($buildModelStatus != 0) {
-                throw new Exception('Running php symfony d:build-model fails.', 2005);
-            }
+
+            $this->getSymfonyCacheClearService()->exec();
+
+            $this->getPublishAssetService()->exec();
+
+            $this->getDoctrineBuildModelService()->exec();
+
             $result = $this->getMarcketplaceService()->uninstallAddon($addonid);
             $connection->commit();
 
@@ -94,28 +85,16 @@ class uninstallAddonAPIAction extends baseAddonAction
             return $result;
         } catch (Exception $e) {
             $connection->rollback();
+            if ($e instanceof SymfonyCacheClearException){
+                throw new Exception('Running php symfony cc fails.', 2003);
+            }
+            if($e instanceof PublishAssetException){
+                throw new Exception('Running php symfony o:publish-asset fails.', 2004);
+            }
+            if($e instanceof DoctrineBuildModelException){
+                throw new Exception('Running php symfony d:build-model fails.', 2005);
+            }
             throw $e;
         }
-    }
-
-    /**
-     * @param $directory
-     * @return bool
-     */
-    public function recursiveDeletePlugin($directory)
-    {
-        $dir = opendir($directory);
-        while (false !== ($file = readdir($dir))) {
-            if (($file != '.') && ($file != '..')) {
-                $full = $directory . DIRECTORY_SEPARATOR . $file;
-                if (is_dir($full)) {
-                    $this->recursiveDeletePlugin($full);
-                } else {
-                    unlink($full);
-                }
-            }
-        }
-        closedir($dir);
-        return rmdir($directory);
     }
 }

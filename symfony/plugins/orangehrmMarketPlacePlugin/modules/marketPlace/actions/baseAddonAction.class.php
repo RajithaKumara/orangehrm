@@ -43,6 +43,10 @@ abstract class baseAddonAction extends sfAction
     private $apiManagerService = null;
     private $addonList = null;
 
+    protected $symfonyCacheClearService = null;
+    protected $publishAssetService = null;
+    protected $doctrineBuildModelService = null;
+
     /**
      * @return APIManagerService
      */
@@ -92,5 +96,112 @@ abstract class baseAddonAction extends sfAction
     public function getMarketPlaceLogger()
     {
         return Logger::getLogger("marketplace");
+    }
+
+    /**
+     * @param Exception $exception
+     */
+    public function logException($exception)
+    {
+        $this->getMarketPlaceLogger()->error($exception->getCode() . ' : ' . $exception->getMessage());
+        $this->getMarketPlaceLogger()->error($exception->getTraceAsString());
+    }
+
+    /**
+     * @return SymfonyCacheClearService|null
+     */
+    public function getSymfonyCacheClearService()
+    {
+        if (is_null($this->symfonyCacheClearService)) {
+            $this->symfonyCacheClearService = new SymfonyCacheClearService();
+        }
+        return $this->symfonyCacheClearService;
+    }
+
+    /**
+     * @return PublishAssetService|null
+     */
+    public function getPublishAssetService()
+    {
+        if (is_null($this->publishAssetService)) {
+            $this->publishAssetService = new PublishAssetService();
+        }
+        return $this->publishAssetService;
+    }
+
+    /**
+     * @return DoctrineBuildModelService|null
+     */
+    public function getDoctrineBuildModelService()
+    {
+        if (is_null($this->doctrineBuildModelService)) {
+            $this->doctrineBuildModelService = new DoctrineBuildModelService();
+        }
+        return $this->doctrineBuildModelService;
+    }
+
+    /**
+     * Return array of errors and status
+     * array("status"=>true,"errors"=>array("Error message"))
+     * @return array
+     */
+    public function getGeneralPrerequisites()
+    {
+        $result = array("status" => true, "errors" => array());
+        if (!is_writable(sfConfig::get('sf_plugins_dir'))) {
+            $result['status'] = false;
+            array_push($result['errors'], __("File write permission required to %dir% directory.", array('%dir%' => '`symfony/plugins`')));
+        }
+        return $result;
+    }
+
+    /**
+     * @param $directory
+     * @return bool
+     */
+    public function recursiveDeletePlugin($directory)
+    {
+        $dir = opendir($directory);
+        while (false !== ($file = readdir($dir))) {
+            if (($file != '.') && ($file != '..')) {
+                $full = $directory . DIRECTORY_SEPARATOR . $file;
+                if (is_dir($full)) {
+                    $this->recursiveDeletePlugin($full);
+                } else {
+                    unlink($full);
+                }
+            }
+        }
+        closedir($dir);
+        return rmdir($directory);
+    }
+
+    /**
+     * Check prerequisites to execute symfony cache clear, orangehrm publish assets, doctrine build model. Throw ExecServicePrerequisitesException if failed.
+     * @return bool
+     * @throws ExecServicePrerequisitesException
+     */
+    public function checkExecPrerequisites()
+    {
+        $symfonyCacheClearPrerequisites = $this->getSymfonyCacheClearService()->checkPrerequisites();
+        $publishAssetPrerequisites = $this->getPublishAssetService()->checkPrerequisites();
+        $doctrineBuildModelPrerequisites = $this->getDoctrineBuildModelService()->checkPrerequisites();
+        $generalPrerequisites = $this->getGeneralPrerequisites();
+
+        if (!$symfonyCacheClearPrerequisites['status'] ||
+            !$publishAssetPrerequisites['status'] ||
+            !$doctrineBuildModelPrerequisites['status'] ||
+            !$generalPrerequisites['status']) {
+
+            $errors = array_merge(
+                $symfonyCacheClearPrerequisites['errors'],
+                $publishAssetPrerequisites['errors'],
+                $doctrineBuildModelPrerequisites['errors'],
+                $generalPrerequisites['errors']
+            );
+            throw new ExecServicePrerequisitesException(implode("\n", $errors));
+        }
+
+        return true;
     }
 }

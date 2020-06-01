@@ -32,9 +32,10 @@ class installAddonAPIAction extends baseAddonAction
     public function execute($request)
     {
         try {
-            if (ini_get('max_execution_time') < 600) {
-                ini_set('max_execution_time', 600);
-            }
+            $this->checkExecPrerequisites();
+
+            ini_set('max_execution_time', 0);
+
             $addonList = $this->getAddons();
             $data = $request->getParameterHolder()->getAll();
             $addonId = $data['installAddonID'];
@@ -48,13 +49,12 @@ class installAddonAPIAction extends baseAddonAction
             }
             $addonFilePath = $this->getAddonFile($addonURL, $addonDetail);
             $this->pluginName = $this->getMarcketplaceService()->extractAddonFile($addonFilePath);
-            if ($addonDetail['type']=='paid') {
+            if ($addonDetail['type'] == 'paid') {
                 $addonLicenseContent = $this->getApiManagerService()->getAddonLicense($addonId);
                 if (is_string($addonLicenseContent) && strlen($addonLicenseContent) > 0) {
-                    file_put_contents(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $this->pluginName . DIRECTORY_SEPARATOR . 'ohrm.license.php', $addonLicenseContent);
+                    file_put_contents(sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR . $this->pluginName . DIRECTORY_SEPARATOR . 'ohrm.license.php', $addonLicenseContent);
                 } else {
-                    chdir(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'plugins');
-                    exec("rm -r " . $this->pluginName , $clearResponse, $clearStatus);
+                    $this->cleanPluginDir();
                     throw new Exception('Error when retrieving the license file', 1008);
                 }
             }
@@ -63,23 +63,28 @@ class installAddonAPIAction extends baseAddonAction
             echo json_encode($result);
             return sfView::NONE;
         } catch (GuzzleHttp\Exception\ConnectException $e) {
-            if ($this->pluginName && !$this->licenseDownloaded) {
-                chdir(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'plugins');
-                exec("rm -r " . $this->pluginName , $clearResponse, $clearStatus);
-            }
-            $this->getMarketPlaceLogger()->error($e->getCode() . ' : ' . $e->getMessage());
-            $this->getMarketPlaceLogger()->error($e->getTraceAsString());
+            $this->cleanPluginDir();
+            $this->logException($e);
             echo json_encode(self::ERROR_CODE_NO_CONNECTION);
             return sfView::NONE;
+        } catch (ExecServicePrerequisitesException $e) {
+            $this->cleanPluginDir();
+            $this->logException($e);
+            return $this->renderJson(array('message' => $e->getMessage()));
+
         } catch (Exception $e) {
-            if ($this->pluginName && !$this->licenseDownloaded) {
-                chdir(sfConfig::get('sf_root_dir') . DIRECTORY_SEPARATOR . 'plugins');
-                exec("rm -r " . $this->pluginName , $clearResponse, $clearStatus);
-            }
-            $this->getMarketPlaceLogger()->error($e->getCode() . ' : ' . $e->getMessage());
-            $this->getMarketPlaceLogger()->error($e->getTraceAsString());
+            $this->cleanPluginDir();
+            $this->logException($e);
             echo json_encode($e->getCode());
             return sfView::NONE;
+        }
+    }
+
+    private function cleanPluginDir()
+    {
+        if ($this->pluginName && !$this->licenseDownloaded) {
+            $pluginPath = sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR . $this->pluginName;
+            $this->recursiveDeletePlugin($pluginPath);
         }
     }
 
@@ -98,43 +103,41 @@ class installAddonAPIAction extends baseAddonAction
     /**
      * @param $addonFilePath
      * @param $addonDetail
+     * @param $pluginname
      * @return bool
      * @throws DaoException
+     * @throws DoctrineBuildModelException
+     * @throws Doctrine_Connection_Exception
      * @throws Doctrine_Transaction_Exception
+     * @throws Doctrine_Validator_Exception
+     * @throws PublishAssetException
+     * @throws SymfonyCacheClearException
      */
     protected function installAddon($addonFilePath, $addonDetail, $pluginname)
     {
         $connection = Doctrine_Manager::getInstance()->getCurrentConnection();
         $connection->beginTransaction();
-        $symfonyPath = sfConfig::get('sf_root_dir');
-        $pluginInstallFilePath = $symfonyPath . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $pluginname . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . 'plugin_install.php';
-        chdir($symfonyPath);
-        exec("php symfony cc", $symfonyCcResponse, $symfonyCcStatus);
-        if ($symfonyCcStatus != 0) {
-            throw new Exception('Running php symfony cc fails.', 1001);
-        }
+        $pluginInstallFilePath = sfConfig::get('sf_plugins_dir') . DIRECTORY_SEPARATOR . $pluginname . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . 'plugin_install.php';
+
+        $this->getSymfonyCacheClearService()->exec();
+
         try {
             $install = require_once($pluginInstallFilePath);
-            $connection->commit();
         } catch (Exception $e) {
             $connection->rollback();
-            $this->getMarketPlaceLogger()->error($e->getCode() . ' : ' . $e->getMessage());
-            $this->getMarketPlaceLogger()->error($e->getTraceAsString());
+            $this->logException($e);
             throw new Exception('installation query fails', 1002);
         }
         if (!$install) {
             throw new Exception('install file execution failed.', 1003);
         }
-        chdir($symfonyPath);
-        exec("php symfony o:publish-asset", $publishAssetResponse, $publishAssetStatus);
-        if ($publishAssetStatus != 0) {
-            throw new Exception('Running php symfony o:publish-asset fails.', 1004);
-        }
-        chdir($symfonyPath);
-        exec("php symfony d:build-model", $buildModelResponse, $buildModelStatus);
-        if ($buildModelStatus != 0) {
-            throw new Exception('Running php symfony d:build-model fails.', 1005);
-        }
+
+        $this->getPublishAssetService()->exec();
+
+        $this->getDoctrineBuildModelService()->exec();
+
+        // commit plugin installation queries only when symfony cache clear, orangehrm publish assets, doctrine build model finished
+        $connection->commit();
 
         if ($addonDetail['type'] != "paid") {
             $data = array(

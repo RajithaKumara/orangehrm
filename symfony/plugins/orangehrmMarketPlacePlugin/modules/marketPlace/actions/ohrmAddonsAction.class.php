@@ -37,9 +37,7 @@ class ohrmAddonsAction extends baseAddonAction
      */
     public function execute($request)
     {
-        if (ini_get('max_execution_time') < 600) {
-            ini_set('max_execution_time', 600);
-        }
+        ini_set('max_execution_time', 0);
 
         $this->paidAddonIds = $this->getMarcketplaceService()->getPaidAddonIds();
         $buyNowPendingAddons = $this->getMarcketplaceService()->getInstalationPendingAddonIds();

@@ -43,11 +43,30 @@ $(document).ready(function () {
             data: {addonID: installId},
             url: prerequisiteVerificationUrl,
             success: function (result) {
-                var notInstalledPrerequisites = JSON.parse(result);
-                if (notInstalledPrerequisites.length != 0) {
+                var notInstalledPrerequisites = result.notInstalledPrerequisites;
+                const execPrerequisites = result.execPrerequisites;
+
+                if ((Array.isArray(notInstalledPrerequisites) && notInstalledPrerequisites.length != 0) || (Array.isArray(execPrerequisites) && execPrerequisites.length != 0)) {
                     $('#prerequisitesNotMetModal').modal('toggle');
-                    $("#prerequisitesNotMet").text("Prerequisites:- OrangeHRM requires below prerequisites in order for the add on to work successfully. Please install " + notInstalledPrerequisites.toString());
+                    var prerequisitesMessage = '';
+                    if (notInstalledPrerequisites.length > 0) {
+                        prerequisitesMessage += prerequisitesMessagePrefix + " " + notInstalledPrerequisites.toString() + ".";
+                    }
+                    console.log(execPrerequisites);
+                    // console.log(execPrerequisites.length);
+                    if (execPrerequisites.length > 0) {
+                        if (prerequisitesMessage.length > 0) {
+                            prerequisitesMessage += "<br><br>";
+                        }
+                        prerequisitesMessage += additionalRequirementsMessage + "<ul>";
+                        execPrerequisites.forEach(function (requirement) {
+                            prerequisitesMessage += "<li>" + requirement + "</li>";
+                        });
+                        prerequisitesMessage += "</ul> ";
+                    }
+                    $("#prerequisitesNotMet").html(prerequisitesMessage);
                 } else {
+                    $("#prerequisitesNotMet").text("");
                     $('#installConfModal').modal('toggle');
                 }
             }
@@ -178,11 +197,11 @@ $(document).ready(function () {
             data: {addonID: buyNowId},
             url: prerequisiteVerificationUrl,
             success: function (result) {
-                var notInstalledPrerequisites = JSON.parse(result);
+                var notInstalledPrerequisites = result.notInstalledPrerequisites;
                 $('#buyNowModal').modal('toggle');
                 $("#prerequisites").text("");
                 if (notInstalledPrerequisites.length != 0) {
-                    $("#prerequisites").text("Prerequisites:- OrangeHRM requires below prerequisites in order for the add on to work successfully. Please install " + notInstalledPrerequisites.toString());
+                    $("#prerequisites").text(prerequisitesMessagePrefix + " " + notInstalledPrerequisites.toString());
                 }
             }
         });

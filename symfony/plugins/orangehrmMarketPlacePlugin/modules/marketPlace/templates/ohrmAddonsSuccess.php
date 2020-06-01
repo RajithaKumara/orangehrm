@@ -318,6 +318,8 @@ use_javascript(plugin_web_path('orangehrmMarketPlacePlugin', 'js/ohrmAddonSucces
     var buyNowReqFail = "<?php echo __js('Failed to proceed with the request, try again.'); ?>";
     var renewSuccess = "<?php echo __js('Successfully Renewed license.'); ?>";
     var renewFail = "<?php echo __js('Renew Failed.'); ?>";
+    var prerequisitesMessagePrefix = "<?php echo __js('Prerequisites:- OrangeHRM requires below prerequisites in order for the add on to work successfully. Please install'); ?>";
+    var additionalRequirementsMessage = "<?php echo __js('Additional requirements:-'); ?>";
 
     var networkErrMessage = "<?php echo __js('Please connect to the internet to view the available add-ons.'); ?>";
     var marketpalceErrMessage = "<?php echo __js('Error Occur Please try again later'); ?>";

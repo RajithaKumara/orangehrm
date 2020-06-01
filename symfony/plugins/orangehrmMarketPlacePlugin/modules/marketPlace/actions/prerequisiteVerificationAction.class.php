@@ -24,7 +24,7 @@ class prerequisiteVerificationAction extends baseAddonAction
 {
     /**
      * @param sfRequest $request
-     * @return array
+     * @return string
      * @throws CoreServiceException
      * return array contains not installed prerequisites
      */
@@ -32,6 +32,15 @@ class prerequisiteVerificationAction extends baseAddonAction
     {
         $data = $request->getParameterHolder()->getAll();
         $addonId = $data['addonID'];
+
+        $execPrerequisites = null;
+        try {
+            $this->checkExecPrerequisites();
+        } catch (ExecServicePrerequisitesException $e) {
+            $execPrerequisites = $e->getMessage();
+            $this->logException($e);
+        }
+
         try {
             $addonList = $this->getAddons();
             foreach ($addonList as $addon) {
@@ -39,21 +48,26 @@ class prerequisiteVerificationAction extends baseAddonAction
                     $addonDetail = $addon;
                 }
             }
+
             $notInstalledPrerequisites = $this->getMarcketplaceService()->addonPrerequisitesVerify($addonDetail);
-            echo json_encode($notInstalledPrerequisites);
-            return sfView::NONE;
+            return $this->renderJson(array(
+                'notInstalledPrerequisites' => $notInstalledPrerequisites,
+                'execPrerequisites' => $execPrerequisites == null ? array() : explode("\n", $execPrerequisites),
+            ));
 
         } catch (GuzzleHttp\Exception\ConnectException $e) {
-            $this->getMarketPlaceLogger()->error($e->getCode() . ' : ' . $e->getMessage());
-            $this->getMarketPlaceLogger()->error($e->getTraceAsString());
-            echo json_encode(self::ERROR_CODE_NO_CONNECTION);
-            return sfView::NONE;
+            $this->logException($e);
+            return $this->renderJson(array(
+                'error' => true,
+                'code' => self::ERROR_CODE_NO_CONNECTION,
+            ));
         } catch (Exception $e) {
-            $this->getMarketPlaceLogger()->error($e->getCode() . ' : ' . $e->getMessage());
-            $this->getMarketPlaceLogger()->error($e->getTraceAsString());
-            echo json_encode(self::ERROR_CODE_EXCEPTION);
-            return sfView::NONE;
+            $this->logException($e);
+            return $this->renderJson(array(
+                'error' => true,
+                'code' => self::ERROR_CODE_EXCEPTION,
+            ));
         }
     }
-    
+
 }

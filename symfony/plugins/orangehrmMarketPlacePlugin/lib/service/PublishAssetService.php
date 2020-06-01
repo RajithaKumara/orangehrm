@@ -17,13 +17,12 @@
  * Boston, MA 02110-1301, USA
  */
 
-class PublishAssetService
+class PublishAssetService extends BaseExecService
 {
     const RESOURCE_DIR_PREFIX = 'webres_';
     const RESOURCE_DIR_INC_FILE = 'resource_dir_inc.php';
 
     protected $resourceDir = null;
-    protected $fileSystem = null;
 
     public function publishAssets()
     {
@@ -107,7 +106,7 @@ class PublishAssetService
             $result['status'] = true;
         } else {
             $result['status'] = false;
-            array_push($result['errors'], __("File write permission required to `symfony/web` directory."));
+            array_push($result['errors'], __("File write permission required to %dir% directory.", array('%dir%' => '`symfony/web`')));
         }
         return $result;
     }
@@ -154,29 +153,14 @@ class PublishAssetService
     }
 
     /**
-     * @return sfFilesystem
+     * @inheritDoc
      */
-    protected function getFilesystem()
+    public function exec()
     {
-        if (is_null($this->fileSystem)) {
-            $this->fileSystem = new sfFilesystem();
+        try {
+            $this->publishAssets();
+        } catch (Exception $e) {
+            throw new PublishAssetException('', 0, $e);
         }
-        return $this->fileSystem;
-    }
-
-    /**
-     * @return Logger
-     */
-    protected function getLogger()
-    {
-        return Logger::getLogger("marketplace");
-    }
-
-    /**
-     * @param string $message
-     */
-    protected function logInfo($message)
-    {
-        $this->getLogger()->forcedLog(Logger::class, null, LoggerLevel::getLevelInfo(), $message);
     }
 }
