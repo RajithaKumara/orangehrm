@@ -31,11 +31,13 @@ class OAuthClientHeaderListConfigurationFactory extends ohrmListConfigurationFac
         $header1 = new ListHeader();
         $header2 = new ListHeader();
         $header3 = new ListHeader();
+        $header4 = new ListHeader();
+        $header5 = new ListHeader();
 
         $header1->populateFromArray(array(
             'name' => 'ID',
             'elementType' => 'link',
-            'width' => '40%',
+            'width' => '30%',
             'elementProperty' => array(
                 'labelGetter' => 'getClientId',
                 'urlPattern' => 'javascript:'),
@@ -50,8 +52,24 @@ class OAuthClientHeaderListConfigurationFactory extends ohrmListConfigurationFac
             'elementType' => 'label',
             'elementProperty' => array( 'getter' => 'getRedirectUri' ),
         ));
+        $header4->populateFromArray(
+            array(
+                'name' => 'Allowed Grant Types',
+                'elementType' => 'label',
+                'width' => '10%',
+                'elementProperty' => array('getter' => 'getGrantTypesString'),
+            )
+        );
+        $header5->populateFromArray(
+            array(
+                'name' => 'Allowed Scopes',
+                'elementType' => 'label',
+                'width' => '10%',
+                'elementProperty' => array('getter' => 'getScopeString'),
+            )
+        );
 
-        $this->headers = array($header1,$header2,$header3);
+        $this->headers = array($header1,$header2,$header3,$header4,$header5);
 
     }
 

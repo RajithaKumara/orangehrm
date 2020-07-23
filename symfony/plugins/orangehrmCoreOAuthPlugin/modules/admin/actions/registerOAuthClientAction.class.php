@@ -81,6 +81,9 @@ class registerOAuthClientAction extends ohrmBaseAction {
                     $client->setRedirectUri($values['redirect_uri']);
                 }
 
+                $client->setGrantTypes($values['client_grant_types']);
+                $client->setScope($values['client_scopes']);
+
                 try{
                     $client->save();  
                     $this->getUser()->setFlash("success", __("OAuth Client Saved Successfully"), false);
