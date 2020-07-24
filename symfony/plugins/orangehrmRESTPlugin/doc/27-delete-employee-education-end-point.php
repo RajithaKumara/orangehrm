@@ -3,6 +3,7 @@
 * @apiName deleteEmployeeEducation
 * @apiGroup Employee
 * @apiVersion 0.1.0
+* @apiUse PrivilegedDescription
 *
 * @apiParam {Number}  id Employee id.
 * @apiParam {Number} seqId Education record id.

@@ -2,9 +2,9 @@
 /**
  * @api {get} /employees 11.Get Accessible Employees
  * @apiName getAccessibleEmployees
- * @apiGroup Mobile
+ * @apiGroup User
  * @apiVersion 0.1.0
- * @apiUse MobileDescription
+ * @apiUse UserDescription
  *
  * @apiParam {String} [actionName] Action name. e.g. `assign_leave`, `view_leave_list`
  * @apiParam {String[]} [properties[]] Employee properties array. e.g. `employeeId`, `firstName`, `lastName`, `termination_id`.

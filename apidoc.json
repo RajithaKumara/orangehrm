@@ -11,6 +11,10 @@
       "Leave",
       "Performance",
       "Time",
-      "Mobile"
-  ]
+      "User"
+  ],
+  "header": {
+    "title": "User Guide",
+    "filename": "symfony/plugins/orangehrmRESTPlugin/doc/common/header.md"
+  }
 }

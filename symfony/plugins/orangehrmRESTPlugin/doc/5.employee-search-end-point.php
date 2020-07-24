@@ -3,6 +3,7 @@
 * @apiName SearchEmployee
 * @apiGroup Employee
 * @apiVersion 0.1.0
+* @apiUse PrivilegedDescription
 *
 * @apiParam {String} [name] Employee name.
 * @apiParam {String} [code] Employee code.

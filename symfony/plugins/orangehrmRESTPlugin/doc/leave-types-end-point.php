@@ -3,6 +3,7 @@
 * @apiName leaveTypes
 * @apiGroup Leave
 * @apiVersion 0.1.0
+* @apiUse PrivilegedDescription
 *
 *
 * @apiSuccess {String} type Leave type.

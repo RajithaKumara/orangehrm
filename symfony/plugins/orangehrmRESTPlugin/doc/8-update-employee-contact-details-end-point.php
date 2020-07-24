@@ -3,6 +3,7 @@
 * @apiName updateEmployeeContactDetails
 * @apiGroup Employee
 * @apiVersion 0.1.0
+* @apiUse PrivilegedDescription
 *
 * @apiParam {Number}  id Employee id.
 *

@@ -3,6 +3,7 @@
 * @apiName updateActivity
 * @apiGroup Time
 * @apiVersion 0.1.0
+* @apiUse PrivilegedDescription
 *
 *
 * @apiParam  {Number} projectId  Project id.

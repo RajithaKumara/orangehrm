@@ -3,6 +3,7 @@
 * @apiName getCustomers
 * @apiGroup Time
 * @apiVersion 0.1.0
+* @apiUse PrivilegedDescription
 *
 *
 * @apiSuccess  {Number} customerId  Customer Id.

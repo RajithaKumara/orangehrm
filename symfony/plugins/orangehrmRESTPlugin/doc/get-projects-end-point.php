@@ -3,6 +3,7 @@
 * @apiName getProjects
 * @apiGroup Time
 * @apiVersion 0.1.0
+* @apiUse PrivilegedDescription
 *
 *
 * @apiSuccess  {Number} projectId  Project id.

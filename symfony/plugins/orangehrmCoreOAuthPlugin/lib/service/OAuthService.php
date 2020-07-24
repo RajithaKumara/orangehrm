@@ -21,6 +21,7 @@ class OAuthService extends BaseService
     protected $oauthResponse = null;
     protected $authenticationService;
     protected $oAuthClientDao;
+    protected $oauthScopeDao = null;
 
     public function __construct()
     {
@@ -73,6 +74,25 @@ class OAuthService extends BaseService
     public function setOAuthClientDao($oAuthClientDao)
     {
         $this->oAuthClientDao = $oAuthClientDao;
+    }
+
+    /**
+     * @return OAuthScopeDao
+     */
+    public function getOAuthScopeDao(): OAuthScopeDao
+    {
+        if (is_null($this->oauthScopeDao)) {
+            $this->oauthScopeDao = new OAuthScopeDao();
+        }
+        return $this->oauthScopeDao;
+    }
+
+    /**
+     * @param OAuthScopeDao $oauthScopeDao
+     */
+    public function setOAuthScopeDao(OAuthScopeDao $oauthScopeDao)
+    {
+        $this->oauthScopeDao = $oauthScopeDao;
     }
 
     public function getOAuthServer()
@@ -162,6 +182,13 @@ class OAuthService extends BaseService
         return $this->getOAuthClientDao()->deleteOAuthClient($ids);
     }
 
-}
+    /**
+     * @return array|OAuthScope[]
+     * @throws DaoException
+     */
+    public function listOAuthScopes()
+    {
+        return $this->getOAuthScopeDao()->listOAuthScopes();
+    }
 
-?>
+}

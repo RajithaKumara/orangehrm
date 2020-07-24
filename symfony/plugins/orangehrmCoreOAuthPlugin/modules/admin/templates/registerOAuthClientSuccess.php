@@ -8,6 +8,7 @@
 
     <?php
     use_javascript(plugin_web_path('orangehrmCoreOAuthPlugin', 'js/registerOAuthClientSuccess'));
+    use_stylesheet(plugin_web_path('orangehrmCoreOAuthPlugin', 'css/registerOAuthClientSuccess.css'));
     ?>
 
 <?php if (!$authorized) { ?>

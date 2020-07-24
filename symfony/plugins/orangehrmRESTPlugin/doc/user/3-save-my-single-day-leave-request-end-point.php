@@ -2,16 +2,16 @@
 /**
  * @api {post} /leave/my-leave-request 03.Save My Leave Request (Single Day)
  * @apiName saveMyLeaveRequestSingleDay
- * @apiGroup Mobile
+ * @apiGroup User
  * @apiVersion 0.1.0
- * @apiUse MobileDescription
+ * @apiUse UserDescription
  *
- * @apiUse MobileLeaveRequestSingleDay
+ * @apiUse UserLeaveRequestSingleDay
  *
  */
 
 /**
- * @apiDefine MobileLeaveRequestSingleDay
+ * @apiDefine UserLeaveRequestSingleDay
  * @apiParam {Number} type Mandatory leave type id
  * @apiParam {Date} fromDate Leave start date
  * @apiParam {Date} toDate Leave end date

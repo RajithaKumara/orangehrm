@@ -3,6 +3,7 @@
 * @apiName deleteCustomer
 * @apiGroup Time
 * @apiVersion 0.1.0
+* @apiUse PrivilegedDescription
 *
 *
 * @apiParam  {Number} customerId  Customer Id.

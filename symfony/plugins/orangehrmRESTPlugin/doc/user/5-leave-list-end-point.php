@@ -2,9 +2,9 @@
 /**
  * @api {get} /leave/leave-list 05.Get Leave List
  * @apiName getLeaveList
- * @apiGroup Mobile
+ * @apiGroup User
  * @apiVersion 0.1.0
- * @apiUse MobileDescription
+ * @apiUse UserDescription
  *
  * @apiParam {Date} [fromDate] From date (default current leave period from date)
  * @apiParam {Date} [toDate] To date (default current leave period to date)

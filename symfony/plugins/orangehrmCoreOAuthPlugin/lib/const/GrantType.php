@@ -17,10 +17,10 @@
  * Boston, MA  02110-1301, USA
  */
 
-namespace Orangehrm\Rest\Api;
-
-final class Scope
+final class GrantType
 {
-    const SCOPE_PRIVILEGED = 'privileged';
-    const SCOPE_MOBILE = 'mobile';
+    const AUTHORIZATION_CODE = 'authorization_code';
+    const CLIENT_CREDENTIALS = 'client_credentials';
+    const REFRESH_TOKEN = 'refresh_token';
+    const USER_CREDENTIALS = 'password';
 }

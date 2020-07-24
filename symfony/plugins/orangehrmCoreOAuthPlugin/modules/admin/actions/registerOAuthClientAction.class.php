@@ -81,8 +81,13 @@ class registerOAuthClientAction extends ohrmBaseAction {
                     $client->setRedirectUri($values['redirect_uri']);
                 }
 
-                $client->setGrantTypes($values['client_grant_types']);
-                $client->setScope($values['client_scopes']);
+                $allowedGrantTypes = $values['client_grant_types'];
+                $allowedScopes = $values['client_scopes'];
+                $allowedGrantTypes = implode(' ', $allowedGrantTypes);
+                $allowedScopes = implode(' ', $allowedScopes);
+
+                $client->setGrantTypes($allowedGrantTypes);
+                $client->setScope($allowedScopes);
 
                 try{
                     $client->save();  

@@ -2,11 +2,11 @@
 /**
  * @api {post} /subordinate/:id/leave-request 09.Save Subordinate Leave Request (Single Day)
  * @apiName saveSubordinateLeaveRequestSingleDay
- * @apiGroup Mobile
+ * @apiGroup User
  * @apiVersion 0.1.0
- * @apiUse MobileDescription
+ * @apiUse UserDescription
  *
  * @apiParam {Date} id Subordinate employee id
- * @apiUse MobileLeaveRequestSingleDay
+ * @apiUse UserLeaveRequestSingleDay
  *
  */

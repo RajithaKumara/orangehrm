@@ -2,9 +2,9 @@
 /**
  * @api {get} /leave/leave-request/:id 06.Get Leave Request
  * @apiName getLeaveRequestById
- * @apiGroup Mobile
+ * @apiGroup User
  * @apiVersion 0.1.0
- * @apiUse MobileDescription
+ * @apiUse UserDescription
  *
  * @apiParam {Number} id Leave request id
  *

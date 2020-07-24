@@ -3,6 +3,7 @@
 * @apiName userLogin
 * @apiGroup Admin
 * @apiVersion 0.1.0
+* @apiUse PrivilegedDescription
 *
 *
 * @apiParam   {String} username  User Name.

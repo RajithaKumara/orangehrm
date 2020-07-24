@@ -18,7 +18,6 @@
  */
 
 use Orangehrm\Rest\Api\Exception\BadRequestException;
-use Orangehrm\Rest\Api\Scope;
 
 abstract class BaseMobileApiAction extends baseRestAction
 {
@@ -102,7 +101,7 @@ abstract class BaseMobileApiAction extends baseRestAction
     {
         $oauthRequest = $this->getOAuthRequest();
         $oauthResponse = $this->getOAuthResponse();
-        if (!$this->getOAuthServer()->verifyResourceRequest($oauthRequest, $oauthResponse, Scope::SCOPE_MOBILE)) {
+        if (!$this->getOAuthServer()->verifyResourceRequest($oauthRequest, $oauthResponse, Scope::SCOPE_USER)) {
             $oauthResponse->send();
             throw new sfStopException();
         }

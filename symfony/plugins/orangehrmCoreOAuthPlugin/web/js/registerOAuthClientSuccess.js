@@ -77,11 +77,16 @@ $(document).ready(function() {
                 maxlength: 80
             },
             'oauth[client_secret]' : {
-                required:true,
                 maxlength: 80
             },
             'oauth[redirect_uri]' : {
                 maxlength: 2000
+            },
+            'oauth[client_grant_types]' : {
+                required:true,
+            },
+            'oauth[client_scopes]' : {
+                required:true,
             }
 
         },
@@ -92,11 +97,16 @@ $(document).ready(function() {
 
             },
             'oauth[client_secret]': {
-                required: "Required",
                 maxlength: "Max Length 80"
             },
             'oauth[redirect_uri]': {
                 maxlength: "Max Length 2000"
+            },
+            'oauth[client_grant_types]': {
+                required: "Required",
+            },
+            'oauth[client_scopes]': {
+                required: "Required",
             }
 
         }
@@ -121,6 +131,30 @@ function setUpdateValues(selectedTableRow){
         if(column == 3) {
             $('#oauth_redirect_uri').val( $(td).html());
         }
+        if (column == 4) {
+            $("input[name='oauth[client_grant_types][]']").prop("checked",false);
+            const grantTypeString = $(td).html();
+            if (grantTypeString !== '') {
+                const grantTypes = getArrayFromCommaSeparatedString(grantTypeString);
+                console.log(grantTypes);
+                grantTypes.forEach(function (grantType) {
+                    const id = '#oauth_client_grant_types_' + grantType;
+                    $(id).val(grantTypeString).prop("checked", true);
+                });
+            }
+        }
+        if (column == 5) {
+            $("input[name='oauth[client_scopes][]']").prop("checked",false);
+            const scopesString = $(td).html();
+            if (scopesString !== '') {
+                const scopes = getArrayFromCommaSeparatedString(scopesString);
+                console.log(scopes);
+                scopes.forEach(function (scope) {
+                    const id = '#oauth_client_scopes_' + scope;
+                    $(id).val(scopesString).prop("checked", true);
+                });
+            }
+        }
 
     });
 
@@ -129,8 +163,18 @@ function setUpdateValues(selectedTableRow){
 
 }
 
+function getArrayFromCommaSeparatedString(commaSeparatedString) {
+    const array = commaSeparatedString.split(',');
+    return array.map(function (value) {
+        return value.trim();
+    });
+}
+
 function resetFields(){
     $('#oauth_client_id').val('');
     $('#oauth_client_secret').val('');
     $('#oauth_redirect_uri').val('');
+    $('#oauth_client_grant_types').val('');
+    $("input[name='oauth[client_grant_types][]']").prop("checked",false);
+    $("input[name='oauth[client_scopes][]']").prop("checked",false);
 }

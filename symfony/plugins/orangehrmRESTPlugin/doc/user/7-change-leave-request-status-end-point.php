@@ -2,9 +2,9 @@
 /**
  * @api {post} /leave/leave-request/:id 07.Change Leave Request Status
  * @apiName changeLeaveRequestStatus
- * @apiGroup Mobile
+ * @apiGroup User
  * @apiVersion 0.1.0
- * @apiUse MobileDescription
+ * @apiUse UserDescription
  *
  * @apiParam {Number} id Leave request id
  * @apiParam {String='changeStatus','comment'} actionType Action type on leave request

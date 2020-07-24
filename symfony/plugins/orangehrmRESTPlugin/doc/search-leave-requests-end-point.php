@@ -3,6 +3,7 @@
 * @apiName searchLeaveRequest
 * @apiGroup Leave
 * @apiVersion 0.1.0
+* @apiUse PrivilegedDescription
 *
 *
 * @apiParam {Date}  fromDate From date.

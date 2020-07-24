@@ -8136,6 +8136,18 @@
         <source>Allowed Scopes</source>
         <target>FR_Allowed Scopes</target>
       </trans-unit>
+      <trans-unit id="2037">
+        <source>Client Credentials</source>
+        <target>FR_Client Credentials</target>
+      </trans-unit>
+      <trans-unit id="2038">
+        <source>User Credentials</source>
+        <target>FR_User Credentials</target>
+      </trans-unit>
+      <trans-unit id="2039">
+        <source>Refresh Token</source>
+        <target>FR_Refresh Token</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

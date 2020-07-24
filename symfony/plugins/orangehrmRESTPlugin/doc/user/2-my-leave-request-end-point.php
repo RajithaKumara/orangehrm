@@ -2,9 +2,9 @@
 /**
  * @api {get} /leave/my-leave-request 02.Get My Leave Requests
  * @apiName myLeaveRequests
- * @apiGroup Mobile
+ * @apiGroup User
  * @apiVersion 0.1.0
- * @apiUse MobileDescription
+ * @apiUse UserDescription
  *
  * @apiParam {Date}  [fromDate] From date
  * @apiParam {Date}  [toDate] To date
