@@ -309,7 +309,7 @@
         <exclude-pattern>symfony/lib/vendor/dapphp/securimage/WavFile.php</exclude-pattern>
     </rule>
 
-<!--    open source start block-->
+    <!--    open source start block-->
     <rule ref="PHPCompatibility.Extensions.RemovedExtensions.mcryptDeprecatedRemoved">
         <exclude-pattern>symfony/lib/vendor/bshaffer/oauth2-server-php/src/OAuth2/ResponseType/AccessToken.php</exclude-pattern>
         <exclude-pattern>symfony/lib/vendor/bshaffer/oauth2-server-php/src/OAuth2/ResponseType/AuthorizationCode.php</exclude-pattern>
@@ -324,7 +324,11 @@
     </rule>
 
     <exclude-pattern>symfony/lib/vendor/phpunit/*</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/sebastian/object-enumerator/*</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/sebastian/global-state/*</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/sebastian/diff/*</exclude-pattern>
     <exclude-pattern>symfony/lib/vendor/codeception/*</exclude-pattern>
-<!--    open source end block-->
+    <exclude-pattern>symfony/lib/vendor/respect/validation/tests/*</exclude-pattern>
+    <!--    open source end block-->
 
 </ruleset>
