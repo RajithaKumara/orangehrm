@@ -13,3 +13,9 @@ jobs:
 
       -   name: Test
           run: dir "C:\Program Files (x86)\NSIS\"
+
+      -   name: Test
+          run: dir "C:\Program Files (x86)\NSIS\Plugins"
+
+      -   name: Test
+          run: dir "C:\Program Files (x86)\NSIS\Plugins\x86-ansi"
