@@ -78,9 +78,8 @@ jobs:
 
       - name: Copy xampp
         run: |
-          copy ..\trimmed-xampp.zip devTools\installer\SOURCE
-          cd devTools\installer\SOURCE
-          7z e trimmed-xampp.zip
+          cd ..
+          7z e trimmed-xampp.zip -o$GITHUB_WORKSPACE\devTools\installer\SOURCE
 
       - name: Download artifacts
         uses: actions/download-artifact@v2
