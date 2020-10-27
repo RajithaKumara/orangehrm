@@ -62,7 +62,7 @@ jobs:
       - name: Copy required plugins
         run: copy x86-ansi_Plugins\*.dll "C:\Program Files (x86)\NSIS\Plugins\x86-ansi"
 
-      - name: Copy required plugins
+      - name: Copy xampp
         run: copy trimmed-xampp.zip ..
 
       - uses: actions/checkout@v2
@@ -71,10 +71,7 @@ jobs:
         run: dir
 
       - name: Copy xampp
-        run: |
-          copy ..\trimmed-xampp.zip devTools\installer\SOURCE
-          cd devTools\installer\SOURCE
-          tar -xf trimmed-xampp.zip
+        run: 7z e ..\trimmed-xampp.zip -odevTools\installer\SOURCE
 
       - name: Download artifacts
         uses: actions/download-artifact@v2
