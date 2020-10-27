@@ -33,7 +33,7 @@ jobs:
       - name: Build OrangeHRM
         run: |
           composer global require phing/phing
-          composer config repositories.pear pear http://pear.php.net
+          composer global config repositories.pear pear http://pear.php.net
           composer global require pear-pear.php.net/pear
           export PATH=~/.composer/vendor/bin:$PATH
           cd build/
