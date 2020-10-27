@@ -71,7 +71,7 @@ jobs:
       - name: Test
         run: |
           dir
-          cd copy devTools\installer\SOURCE
+          cd devTools\installer\SOURCE
           dir
 
       - name: Download artifacts
