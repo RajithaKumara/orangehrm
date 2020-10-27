@@ -71,19 +71,19 @@ jobs:
       - name: Test
         run: |
           dir
-          cd ..
+          cd copy devTools\installer\SOURCE
           dir
-
-      - name: Extract xampp
-        run: |
-          cd devTools\installer\SOURCE
-          7z e trimmed-xampp.zip
 
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
           name: orangehrm
           path: devTools\installer\SOURCE
+
+      - name: Extract xampp
+        run: |
+          cd devTools\installer\SOURCE
+          7z e trimmed-xampp.zip
 
       - name: Test
         run: |
