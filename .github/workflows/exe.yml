@@ -65,13 +65,22 @@ jobs:
       - name: Copy xampp
         run: copy trimmed-xampp.zip ..
 
+      - name: Test
+        run: |
+          dir
+          cd ..
+          dir
+
       - uses: actions/checkout@v2
 
       - name: Test
         run: dir
 
       - name: Copy xampp
-        run: 7z e ..\trimmed-xampp.zip -odevTools\installer\SOURCE
+        run: |
+          copy ..\trimmed-xampp.zip devTools\installer\SOURCE
+          cd devTools\installer\SOURCE
+          7z e trimmed-xampp.zip
 
       - name: Download artifacts
         uses: actions/download-artifact@v2
@@ -87,7 +96,7 @@ jobs:
       - name: Extract zip
         run: |
           cd devTools\installer\SOURCE
-          tar -xf orangehrm-4.6..zip
+          7z e orangehrm-4.6..zip
 
       - name: Build EXE
         run: makensis SPEC/main.nsi
