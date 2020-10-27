@@ -39,7 +39,7 @@ jobs:
           phing dist
           echo "file_path=$(find dist/ -maxdepth 1 -name '*.zip')" >> $GITHUB_ENV
           PREFIX="dist/"
-          echo "file_name=${$file_path#$PREFIX}" >> $GITHUB_ENV
+          echo "file_name=${file_path#$PREFIX}" >> $GITHUB_ENV
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
