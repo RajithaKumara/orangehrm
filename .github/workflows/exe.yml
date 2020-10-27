@@ -1,21 +1,76 @@
 name: OrangeHRM EXE Build
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate -d ./symfony/lib
+
+      - name: Cache Deps
+        id: cache-deps
+        uses: actions/cache@v2
+        with:
+          path: symfony/lib/vendor
+          key: ${{ runner.os }}-vendor
+
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: composer install -d ./symfony/lib
+
+      - name: Dumps the autoloader
+        run: composer dump-autoload -o -d ./symfony/lib
+
+      - name: Update mode
+        run: |
+          cd symfony/
+          php symfony orangehrm:change-mode --mode=prod
+
+      - name: Build OrangeHRM
+        run: |
+          cd build/
+          phing dist
+          FILE_PATH=$(find dist/ -maxdepth 1 -name '*.zip')
+          echo "::set-env name=file_path::${FILE_PATH}"
+          PREFIX="dist/"
+          echo "::set-env name=file_name::${FILE_PATH#$PREFIX}"
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: (${{ env.file_name }})
+          path: build/(${{ env.file_path }})
+
+  build_exe:
+    needs: build
     runs-on: windows-latest
     steps:
-      -   uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      -   name: Test
-          run: dir
+      - uses: actions/checkout@v2
+        with:
+          repository: 'RajithaKumara/orangehrm-nsis-build-assets'
+          ref: 'master'
 
-      -   name: Test
-          run: dir "C:\Program Files (x86)\NSIS\"
+      - name: Test
+        run: dir
 
-      -   name: Test
-          run: dir "C:\Program Files (x86)\NSIS\Plugins"
+      - name: Test
+        run: |
+          cd ..
+          dir
+          cd ..
+          dir
 
-      -   name: Test
-          run: dir "C:\Program Files (x86)\NSIS\Plugins\x86-ansi"
+      - name: Test
+        run: dir "C:\Program Files (x86)\NSIS\"
+
+      - name: Test
+        run: dir "C:\Program Files (x86)\NSIS\Plugins"
+
+      - name: Test
+        run: dir "C:\Program Files (x86)\NSIS\Plugins\x86-ansi"
