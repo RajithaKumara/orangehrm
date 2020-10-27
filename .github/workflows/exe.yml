@@ -37,23 +37,20 @@ jobs:
           export PATH=~/.composer/vendor/bin:$PATH
           cd build/
           phing dist
-          FILE_PATH=$(find dist/ -maxdepth 1 -name '*.zip')
-          echo "::set-env name=file_path::${FILE_PATH}"
+          echo "file_path=$(find dist/ -maxdepth 1 -name '*.zip')" >> $GITHUB_ENV
           PREFIX="dist/"
-          echo "::set-env name=file_name::${FILE_PATH#$PREFIX}"
+          echo "file_name=${$file_path#$PREFIX}" >> $GITHUB_ENV
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: (${{ env.file_name }})
-          path: build/(${{ env.file_path }})
+          name: ${{ env.file_name }}
+          path: build/${{ env.file_path }}
 
   build_exe:
     needs: build
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
-
       - uses: actions/checkout@v2
         with:
           repository: 'RajithaKumara/orangehrm-nsis-build-assets'
@@ -62,12 +59,13 @@ jobs:
       - name: Test
         run: dir
 
-      - name: Test
-        run: |
-          cd ..
-          dir
-          cd ..
-          dir
+      - name: Copy required plugins
+        run: copy x86-ansi_Plugins\*.dll "C:\Program Files (x86)\NSIS\Plugins\x86-ansi"
+
+      - name: Copy required plugins
+        run: copy trimmed-xampp.zip ..
+
+      - uses: actions/checkout@v2
 
       - name: Test
         run: dir "C:\Program Files (x86)\NSIS\"
