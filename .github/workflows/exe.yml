@@ -32,6 +32,8 @@ jobs:
 
       - name: Build OrangeHRM
         run: |
+          composer global require phing/phing
+          export PATH=~/.composer/vendor/bin:$PATH
           cd build/
           phing dist
           FILE_PATH=$(find dist/ -maxdepth 1 -name '*.zip')
