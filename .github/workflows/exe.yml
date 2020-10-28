@@ -123,12 +123,13 @@ jobs:
       - name: EXE file name
         run: |
           echo "exe_name=orangehrm-4.6.exe" >> $GITHUB_ENV
+          echo $exe_name
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: orangehrm-exe
-          path: devTools/${{ env.exe_name }}
+          path: devTools/orangehrm-4.6.exe
 
       - name: EXE file name
         run: |
