@@ -123,8 +123,9 @@ jobs:
       - name: EXE file name
         run: |
           cd devTools
+          rmdir installer /s /q
           echo 'exe_name<<EOF' >> $GITHUB_ENV
-          dir /b /s .exe | findstr /e .exe >> $GITHUB_ENV
+          dir /b /s *.exe | findstr /e orangehrm-.*.exe >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
 
       - name: Upload Artifacts
