@@ -122,8 +122,8 @@ jobs:
 
       - name: EXE file name
         run: |
-          rmdir $GITHUB_WORKSPACE\devTools\installer /s /q
           cd devTools
+          rmdir /S/Q installer
           echo 'exe_name<<EOF' >> $GITHUB_ENV
           dir /b /s *.exe | findstr /e orangehrm-.*.exe >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
