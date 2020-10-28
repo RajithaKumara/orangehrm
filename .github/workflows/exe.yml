@@ -69,6 +69,20 @@ jobs:
 #        run: copy trimmed-xampp.zip ..
 
       - name: Test
+        run: dir "C:\Program Files (x86)\NSIS\"
+
+      - name: Test
+        run: dir "C:\Program Files (x86)\NSIS\Plugins"
+
+      - name: Test
+        run: dir "C:\Program Files (x86)\NSIS\Plugins\x86-ansi"
+
+      - name: Extract xampp
+        run: |
+          cd devTools\installer
+          7z e orangehrm-nsis-build-assets\trimmed-xampp.zip -oSOURCE -aoa
+
+      - name: Test
         run: |
           dir
           cd devTools\installer\SOURCE
@@ -90,15 +104,10 @@ jobs:
           cd devTools\installer\SOURCE
           dir
 
-      - name: Extract zip
+      - name: Extract OrangeHRM zip
         run: |
           cd devTools\installer\SOURCE
-          7z e orangehrm-4.6..zip
-
-      - name: Extract xampp
-        run: |
-          cd devTools\installer
-          7z e orangehrm-nsis-build-assets\trimmed-xampp.zip -oSOURCE
+          7z e orangehrm-4.6..zip -aoa
 
       - name: Build EXE
         run: makensis SPEC/main.nsi
@@ -107,12 +116,3 @@ jobs:
         run: |
           cd devTools
           dir
-
-      - name: Test
-        run: dir "C:\Program Files (x86)\NSIS\"
-
-      - name: Test
-        run: dir "C:\Program Files (x86)\NSIS\Plugins"
-
-      - name: Test
-        run: dir "C:\Program Files (x86)\NSIS\Plugins\x86-ansi"
