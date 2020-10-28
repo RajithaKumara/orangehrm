@@ -81,7 +81,7 @@ jobs:
         run: |
           cd devTools\installer
           curl -fSL -o trimmed-xampp.zip "https://github.com/RajithaKumara/orangehrm-nsis-build-assets/raw/master/trimmed-xampp.zip"
-          7z e trimmed-xampp.zip -oSOURCE -aoa
+          7z x trimmed-xampp.zip -oSOURCE -aoa
 
       - name: Test
         run: |
@@ -102,13 +102,13 @@ jobs:
 
       - name: Test
         run: |
-          cd devTools\installer\SOURCE
+          cd devTools\installer\SPEC
           dir
 
       - name: Extract OrangeHRM zip
         run: |
           cd devTools\installer\SOURCE
-          7z e orangehrm-4.6..zip -aoa
+          7z x orangehrm-4.6..zip -aoa
 
       - name: Build EXE
         run: makensis SPEC/main.nsi
