@@ -80,7 +80,8 @@ jobs:
       - name: Extract xampp
         run: |
           cd devTools\installer
-          7z e orangehrm-nsis-build-assets\trimmed-xampp.zip -oSOURCE -aoa
+          curl -fSL -o trimmed-xampp.zip "https://github.com/RajithaKumara/orangehrm-nsis-build-assets/raw/master/trimmed-xampp.zip"
+          7z e trimmed-xampp.zip -oSOURCE -aoa
 
       - name: Test
         run: |
