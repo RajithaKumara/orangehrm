@@ -85,12 +85,6 @@ jobs:
 
       - name: Test
         run: |
-          dir
-          cd devTools\installer\SOURCE
-          dir
-
-      - name: Test
-        run: |
           cd devTools\installer\orangehrm-nsis-build-assets
           dir
 
@@ -99,6 +93,12 @@ jobs:
         with:
           name: orangehrm
           path: devTools\installer\SOURCE
+
+      - name: Test
+        run: |
+          dir
+          cd devTools\installer\SOURCE
+          dir
 
       - name: Test
         run: |
@@ -111,9 +111,24 @@ jobs:
           7z x orangehrm-4.6..zip -aoa
 
       - name: Build EXE
-        run: makensis SPEC/main.nsi
+        run: |
+          cd devTools\installer
+          makensis SPEC\main.nsi
 
       - name: Test
         run: |
           cd devTools
           dir
+
+      - name: EXE file name
+        run: |
+          cd devTools
+          echo 'exe_name<<EOF' >> $GITHUB_ENV
+          dir /b /s .exe | findstr /e .exe >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: orangehrm-exe
+          path: devTools/${{ env.exe_name }}
