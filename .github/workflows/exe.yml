@@ -123,10 +123,8 @@ jobs:
       - name: EXE file name
         run: |
           echo "exe_name=orangehrm-4.6.exe" >> $GITHUB_ENV
-          echo $exe_name
           echo "Test"
-          echo %exe_name%
-          set
+          echo $Env:exe_name
 
 #       - name: Upload Artifacts
 #         uses: actions/upload-artifact@v2
@@ -143,7 +141,5 @@ jobs:
           echo 'exe_name<<EOF' >> $GITHUB_ENV
           Get-ChildItem -Path * -Filter *.zip >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-          echo $exe_name
           echo "Test"
-          echo %exe_name%
-          set
+          echo $Env:exe_name
