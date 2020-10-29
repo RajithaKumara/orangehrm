@@ -8,12 +8,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Validate composer.json and composer.lock
+      - name: Setup PHP
+        uses: nanasess/setup-php@master
+        with:
+          php-version: '7.0'
+
+      - name: Check env
         run: |
-          composer validate -d ./symfony/lib
           php -v
           php -m
           composer -v
+
+      - name: Validate composer.json and composer.lock
+        run: |
+          composer validate -d ./symfony/lib
 
 #       - name: Cache Deps
 #         id: cache-deps
