@@ -4,22 +4,26 @@ on: [ push ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
 
       - name: Validate composer.json and composer.lock
-        run: composer validate -d ./symfony/lib
+        run: |
+          composer validate -d ./symfony/lib
+          php -v
+          php -m
+          composer -v
 
-      - name: Cache Deps
-        id: cache-deps
-        uses: actions/cache@v2
-        with:
-          path: symfony/lib/vendor
-          key: ${{ runner.os }}-vendor
+#       - name: Cache Deps
+#         id: cache-deps
+#         uses: actions/cache@v2
+#         with:
+#           path: symfony/lib/vendor
+#           key: ${{ runner.os }}-vendor
 
       - name: Install dependencies
-        if: steps.cache-deps.outputs.cache-hit != 'true'
+#         if: steps.cache-deps.outputs.cache-hit != 'true'
         run: composer install -d ./symfony/lib
 
       - name: Dumps the autoloader
