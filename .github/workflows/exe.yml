@@ -15,6 +15,7 @@ jobs:
 
       - name: Check env
         run: |
+          composer self-update 1.10.16
           php -v
           php -m
           composer -v
