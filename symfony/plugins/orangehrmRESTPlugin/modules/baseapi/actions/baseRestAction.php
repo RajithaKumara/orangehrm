@@ -96,15 +96,15 @@ abstract class baseRestAction extends baseOAuthAction {
     }
 
     /**
-     * @param sfWebRequest $request
+     * @param \Symfony\Component\HttpFoundation\Request $request
      * @return string
      */
-    public function execute($request) {
+    public function execute(\Symfony\Component\HttpFoundation\Request $request) {
 
         $httpRequest = new Request($request);
         $this->init($httpRequest);
-        $response = $this->getResponse();
-        $response->setHttpHeader('Content-type', 'application/json');
+        $response = new \Symfony\Component\HttpFoundation\Response();
+        $response->headers->set('Content-type','application/json');
         try{
 
             if(!empty($this->getValidationRule($request))) {
@@ -153,8 +153,7 @@ abstract class baseRestAction extends baseOAuthAction {
             $response->setStatusCode(500);
         }
 
-
-        return sfView::NONE;
+        return $response;
     }
 
     /**

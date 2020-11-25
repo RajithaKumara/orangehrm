@@ -44,7 +44,7 @@ class RequestParams {
             $this->postParameters = json_decode($this->getContent(),true);
         }else{
             // `application/x-www-form-urlencoded` already handled in sfWebRequest
-            $this->postParameters = $this->getRequest()->getActionRequest()->getPostParameters();
+            $this->postParameters = $this->getRequest()->getActionRequest()->request;
         }
     }
 
@@ -73,7 +73,7 @@ class RequestParams {
      */
     public function getQueryParam($paramName, $default = null) {
 
-        return $this->getRequest()->getActionRequest()->getParameter($paramName, $default);
+        return $this->getRequest()->getActionRequest()->get($paramName, $default);
     }
 
     /**
@@ -81,7 +81,7 @@ class RequestParams {
      */
     public function getUrlParam($paramName) {
 
-       return  $this->getRequest()->getActionRequest()->getParameter($paramName);
+       return  $this->getRequest()->getActionRequest()->get($paramName);
     }
 
     /**
@@ -128,7 +128,7 @@ class RequestParams {
      * @param $value
      */
     public function setParam($name, $value) {
-        $this->getRequest()->getActionRequest()->setParameter($name, $value);
+        $this->getRequest()->getActionRequest()->attributes->set($name, $value);
     }
 
     /**
