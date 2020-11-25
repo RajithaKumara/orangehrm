@@ -24,14 +24,14 @@ class Request{
     protected $actionRequest;
 
     /**
-     * @param \sfWebRequest $request
+     * @param \Symfony\Component\HttpFoundation\Request $request
      */
     public function __construct($request){
         $this->actionRequest = $request;
     }
 
     /**
-     * @return \sfWebRequest
+     * @return \Symfony\Component\HttpFoundation\Request
      */
     public function getActionRequest()
     {
@@ -39,7 +39,7 @@ class Request{
     }
 
     /**
-     * @param \sfWebRequest $actionRequest
+     * @param \Symfony\Component\HttpFoundation\Request $actionRequest
      */
     public function setActionRequest($actionRequest)
     {
@@ -57,9 +57,11 @@ class Request{
      * @return array
      */
     public function getAllParameters() {
-        return array_merge($this->getActionRequest()->getGetParameters(),
-            $this->getActionRequest()->getPostParameters(),
-            array('id'=>$this->getActionRequest()->getParameter('id'))
+        return array_merge(
+            $this->getActionRequest()->attributes->all(),
+            $this->getActionRequest()->query->all(),
+            $this->getActionRequest()->request->all(),
+            array('id'=>$this->getActionRequest()->get('id'))
             );
 
     }
