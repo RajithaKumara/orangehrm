@@ -2,7 +2,9 @@ name: Build
 
 on:
   push:
+    branches: [ '5.0' ]
   pull_request:
+    branches: [ '5.0' ]
 
 jobs:
   build:
@@ -25,10 +27,6 @@ jobs:
 
       - name: Run build
         run: |
-          ls /usr/bin
-          php -v
-          which php
-          php7.3 -v
           cd build
           wget https://www.phing.info/get/phing-latest.phar
           php phing-latest.phar dist
