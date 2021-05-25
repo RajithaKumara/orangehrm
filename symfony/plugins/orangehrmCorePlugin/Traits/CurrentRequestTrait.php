@@ -17,16 +17,18 @@
  * Boston, MA  02110-1301, USA
  */
 
-namespace OrangeHRM\Core\Api\V2\Serializer;
+namespace OrangeHRM\Core\Traits;
 
-class EndpointDeleteResult extends AbstractEndpointResult
+use OrangeHRM\Core\Helper\ModuleScreenHelper;
+use OrangeHRM\Framework\Http\Request;
+
+trait CurrentRequestTrait
 {
     /**
-     * @inheritDoc
-     * @throws NormalizeException
+     * @return Request|null
      */
-    public function normalize(): array
+    protected function getCurrentRequest(): ?Request
     {
-        return $this->normalizeObject();
+        return ModuleScreenHelper::getCurrentRequest();
     }
 }
