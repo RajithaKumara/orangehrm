@@ -295,7 +295,8 @@ class Conf {
 		\$this->dbhost	= '$dbHost';
 		\$this->dbport 	= '$dbHostPort';
 		if(defined('ENVIRNOMENT') && ENVIRNOMENT == 'test'){
-		\$this->dbname    = 'test_$dbName';		
+		\$prefix = \$_SERVER['TEST_DB_PREFIX'] ?? '';
+		\$this->dbname    = \$prefix . 'test_$dbName';		
 		}else {
 		\$this->dbname    = '$dbName';
 		}

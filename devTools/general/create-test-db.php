@@ -25,7 +25,8 @@ require_once $confPath;
 
 $c = new Conf();
 
-$testDb = 'test_' . $c->dbname;
+$prefix = $_SERVER['TEST_DB_PREFIX'] ?? '';
+$testDb = $prefix . 'test_' . $c->dbname;
 $dbUser = $c->dbuser;
 $dbHost = $c->dbhost;
 $dbPort = $c->dbport;
