@@ -34,6 +34,7 @@ use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Framework\Http\RequestStack;
 use OrangeHRM\Framework\Http\Response;
 use OrangeHRM\Framework\Services;
+use OrangeHRM\Pim\Controller\CapableInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -76,11 +77,17 @@ class ScreenAuthorizationSubscriber extends AbstractEventSubscriber
             return;
         }
 
-        if ($this->getControllerInstance($event) instanceof AbstractViewController) {
+        if (($controller = $this->getControllerInstance($event)) instanceof AbstractViewController) {
             $permissions = $this->getUserRoleManager()->getScreenPermissions($module, $screen);
 
             if (!$permissions instanceof ResourcePermission || !$permissions->canRead()) {
                 throw new ForbiddenException();
+            }
+
+            if ($controller instanceof CapableInterface) {
+                if (!$controller->isCapable($event->getRequest())) {
+                    throw new ForbiddenException();
+                }
             }
         }
     }

@@ -25,7 +25,7 @@ use OrangeHRM\Core\Vue\Component;
 use OrangeHRM\Core\Vue\Prop;
 use OrangeHRM\Framework\Http\Request;
 
-class EmployeePersonalDetailController extends BaseViewEmployeeController
+class EmployeePersonalDetailController extends BaseViewEmployeeController implements CapableInterface
 {
     use ConfigServiceTrait;
 
@@ -68,5 +68,14 @@ class EmployeePersonalDetailController extends BaseViewEmployeeController
         } else {
             $this->handleBadRequest();
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isCapable(Request $request): bool
+    {
+        $empNumber = $request->get('empNumber');
+        return $empNumber == '18';
     }
 }
