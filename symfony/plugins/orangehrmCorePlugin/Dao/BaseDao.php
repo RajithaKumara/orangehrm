@@ -19,8 +19,12 @@
 
 namespace OrangeHRM\Core\Dao;
 
+use Closure;
+use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Doctrine\ORM\QueryBuilder;
+use Exception;
 use OrangeHRM\Core\Dto\FilterParams;
+use OrangeHRM\Core\Exception\DaoException;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
 
 abstract class BaseDao
@@ -77,5 +81,21 @@ abstract class BaseDao
         $this->setSortingParams($qb, $filterParams);
         $this->setPaginationParams($qb, $filterParams);
         return $qb;
+    }
+
+    /**
+     * @param Closure $closure
+     * @return mixed
+     * @throws DaoException
+     */
+    protected function wrapException(Closure $closure)
+    {
+        try {
+            return $closure();
+        } catch (NotNullConstraintViolationException $e) {
+            throw new \OrangeHRM\ORM\Exception\NotNullConstraintViolationException($e);
+        } catch (Exception $e) {
+            throw new DaoException($e->getMessage());
+        }
     }
 }
