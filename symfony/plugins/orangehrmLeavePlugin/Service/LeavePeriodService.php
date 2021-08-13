@@ -26,7 +26,6 @@ use OrangeHRM\Core\Exception\ServiceException;
 use OrangeHRM\Entity\LeavePeriodHistory;
 use OrangeHRM\Leave\Dao\LeavePeriodDao;
 use OrangeHRM\Leave\Dto\LeavePeriod;
-use OrangeHRM\Leave\Dto\LeavePeriodDataHolder;
 use OrangeHRM\Leave\Traits\Service\LeaveConfigServiceTrait;
 use OrangeHRM\Leave\Traits\Service\LeaveEntitlementServiceTrait;
 
@@ -41,7 +40,15 @@ class LeavePeriodService
 
     private ?LeavePeriodDao $leavePeriodDao = null;
     private ?LeavePeriodHistory $currentLeavePeriodStartDateAndMonth = null;
+
+    /**
+     * @var array<string|LeavePeriod[]>|null
+     */
     private ?array $leavePeriodList = null;
+
+    /**
+     * @var LeavePeriodHistory[]|null
+     */
     private ?array $leavePeriodHistoryList = null;
 
     /**
@@ -121,8 +128,8 @@ class LeavePeriodService
      *
      * @return string End date of the leave period in the pre-defined format
      */
-    public function calculateEndDate(int $month, int $date, ?int $year = null, string $format = 'Y-m-d'):string {
-        // TODO
+    public function calculateEndDate(int $month, int $date, ?int $year = null, string $format = 'Y-m-d'): string
+    {
         $year = empty($year) ? date('Y') : $year;
 
         /* TODO: Add validations of paramerter combinations creating invalid dates */
@@ -137,47 +144,14 @@ class LeavePeriodService
     }
 
     /**
-     * @param LeavePeriodDataHolder $leavePeriodDataHolder
-     * @return string
-     */
-    public function generateEndDate(LeavePeriodDataHolder $leavePeriodDataHolder):string {
-        // TODO
-        $isLeavePeriodStartOnFeb29th = $leavePeriodDataHolder->getIsLeavePeriodStartOnFeb29th();
-        $nonLeapYearLeavePeriodStartDate = $leavePeriodDataHolder->getNonLeapYearLeavePeriodStartDate();
-        $dateFormat = $leavePeriodDataHolder->getDateFormat();
-        $leavePeriodStartDate = $leavePeriodDataHolder->getLeavePeriodStartDate();
-        $leavePeriodStartDateTimestamp = strtotime($leavePeriodStartDate);
-
-        if ($isLeavePeriodStartOnFeb29th == 'Yes') {
-
-            $nextYear = date('Y', strtotime('+1 year', $leavePeriodStartDateTimestamp));
-
-            if (($nextYear % 4) == 0) {
-
-                return $nextYear . '-02-28';
-            } else {
-
-                $nextLeavePeriodStartDate = $nextYear . '-' . $nonLeapYearLeavePeriodStartDate;
-                $leavePeriodEndDateTimestamp = strtotime('-1 day', strtotime($nextLeavePeriodStartDate));
-
-                return date($dateFormat, $leavePeriodEndDateTimestamp);
-            }
-        } else {
-
-            return date($dateFormat, strtotime('+1 year, -1 day', $leavePeriodStartDateTimestamp));
-        }
-    }
-
-    /**
-     *
      * @param int $month Start month
      * @param int $date Start date
      * @param int|null $year Start year (Default: current year)
      *
      * @return string Start date of the leave period in the pre-defined format
      */
-    public function calculateStartDate(int $month, int $date, ?int $year = null, string $format = 'Y-m-d'):string {
-        // TODO
+    public function calculateStartDate(int $month, int $date, ?int $year = null, string $format = 'Y-m-d'): string
+    {
         $year = empty($year) ? date('Y') : $year;
         $startDateTimestamp = strtotime("{$year}-{$month}-{$date}");
         $currentTimestamp = strtotime(date('Y-m-d'), true);
@@ -186,41 +160,6 @@ class LeavePeriodService
         }
 
         return date($format, $startDateTimestamp);
-    }
-
-    /**
-     * @param LeavePeriodDataHolder $leavePeriodDataHolder
-     * @return string
-     */
-    public function generateStartDate(LeavePeriodDataHolder $leavePeriodDataHolder):string {
-        // TODO
-        $dateFormat = $leavePeriodDataHolder->getDateFormat();
-        $isLeavePeriodStartOnFeb29th = $leavePeriodDataHolder->getIsLeavePeriodStartOnFeb29th();
-        $nonLeapYearLeavePeriodStartDate = $leavePeriodDataHolder->getNonLeapYearLeavePeriodStartDate();
-        $startDate = $leavePeriodDataHolder->getStartDate();
-        $startDate = ($isLeavePeriodStartOnFeb29th == 'Yes') ? $nonLeapYearLeavePeriodStartDate : $startDate;
-
-        $currentDate = $leavePeriodDataHolder->getCurrentDate();
-        $currentDateTimestamp = strtotime($currentDate);
-
-        $currentYear = date('Y', strtotime($currentDate));
-        $startDate = (($currentYear % 4) == 0 && $isLeavePeriodStartOnFeb29th == 'Yes') ? '02-29' : $startDate;
-
-        $leavePeriodStartDate = $currentYear . '-' . $startDate;
-        $leavePeriodStartDateTimestamp = strtotime($leavePeriodStartDate);
-
-        if ($leavePeriodStartDateTimestamp > $currentDateTimestamp) {
-            $leavePeriodStartDateTimestamp = strtotime('-1 year', $leavePeriodStartDateTimestamp);
-        }
-
-        $year = date('Y', $leavePeriodStartDateTimestamp);
-
-        if ($isLeavePeriodStartOnFeb29th == 'Yes' && ($year % 4) == 0) {
-
-            return $year . '-' . '02-29';
-        }
-
-        return date($dateFormat, $leavePeriodStartDateTimestamp);
     }
 
     /**
@@ -252,11 +191,11 @@ class LeavePeriodService
 
     /**
      * Get Generated Leave Period List
-     * @param null $toDate
+     * @param DateTime|null $toDate
      * @param false $forceReload
      * @return LeavePeriod[]
      */
-    public function getGeneratedLeavePeriodList($toDate = null, bool $forceReload = false): array
+    public function getGeneratedLeavePeriodList(?DateTime $toDate = null, bool $forceReload = false): array
     {
         $leavePeriodList = [];
         $leavePeriodHistoryList = $this->_getLeavePeriodHistoryList($forceReload);
@@ -265,18 +204,19 @@ class LeavePeriodService
             throw new ServiceException("Leave Period Start Date Is Not Defined.");
         }
 
-        if (empty($this->leavePeriodList)) {
-            $endDate = ($toDate != null) ? new DateTime($toDate) : new DateTime();
+        $endDate = $toDate ?? new DateTime();
+        $key = $endDate->format('Y-m-d');
+        if (!isset($this->leavePeriodList[$key])) {
             //If To Date is not specified return leave type till next leave period 
             if (is_null($toDate)) {
                 $endDate->add(new DateInterval('P1Y'));
             }
 
-
             $firstCreatedDate = $leavePeriodHistoryList[0]->getCreatedAt();
             $startDate = new DateTime(
-                $firstCreatedDate->format('Y') . "-" . $leavePeriodHistoryList[0]->getStartMonth(
-                ) . "-" . $leavePeriodHistoryList[0]->getStartDay()
+                $firstCreatedDate->format('Y') . "-" .
+                $leavePeriodHistoryList[0]->getStartMonth() . "-" .
+                $leavePeriodHistoryList[0]->getStartDay()
             );
             if ($firstCreatedDate < $startDate) {
                 $startDate->sub(new DateInterval('P1Y'));
@@ -311,9 +251,9 @@ class LeavePeriodService
                 $leavePeriodList[] = new LeavePeriod($projectedStartDate, $projectedEndDate);
                 $i++;
             }
-            $this->leavePeriodList = $leavePeriodList;
+            $this->leavePeriodList[$key] = $leavePeriodList;
         }
-        return $this->leavePeriodList;
+        return $this->leavePeriodList[$key];
     }
 
     /**
@@ -333,19 +273,6 @@ class LeavePeriodService
             }
         }
         return $matchLeavePeriod;
-    }
-
-    /**
-     * Get Calender Year By Date
-     * @param type $time
-     */
-    public function getCalenderYearByDate( $time ){
-        // TODO
-            $year = date('Y', $time);
-            $fromDate = $year . '-1-1';
-            $toDate = $year . '-12-31';
-            
-            return [$fromDate,$toDate];
     }
 }
 
