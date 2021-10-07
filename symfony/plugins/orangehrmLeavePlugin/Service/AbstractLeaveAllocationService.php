@@ -54,16 +54,6 @@ abstract class AbstractLeaveAllocationService
      * @var array<string, DateTime[]>
      */
     protected array $workShiftLengthExceedOverlapLeaveDates = [];
-    protected $workflowService;
-
-    public function getWorkflowService()
-    {
-        // TODO
-        if (empty($this->workflowService)) {
-            $this->workflowService = new AccessFlowStateMachineService();
-        }
-        return $this->workflowService;
-    }
 
     /**
      *

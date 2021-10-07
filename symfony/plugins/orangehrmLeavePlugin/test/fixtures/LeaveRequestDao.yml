@@ -7,6 +7,15 @@ TerminationReason:
 EmployeeTerminationRecord:
   0: {id: 1, reason_id: 1, date: '2011-11-20'}
 
+LeaveStatus:
+  - { "id": "1","status": "-1","name": "REJECTED" }
+  - { "id": "2","status": "0","name": "CANCELLED" }
+  - { "id": "3","status": "1","name": "PENDING APPROVAL" }
+  - { "id": "4","status": "2","name": "SCHEDULED" }
+  - { "id": "5","status": "3","name": "TAKEN" }
+  - { "id": "6","status": "4","name": "WEEKEND" }
+  - { "id": "7","status": "5","name": "HOLIDAY" }
+
 # 1=Organization
 #    2=Engineering
 #       5=Support
