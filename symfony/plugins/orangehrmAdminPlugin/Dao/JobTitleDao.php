@@ -181,12 +181,12 @@ class JobTitleDao extends BaseDao
      */
     public function saveJobTitle(JobTitle $jobTitle): JobTitle
     {
-        try {
-            $this->persist($jobTitle);
-            return $jobTitle;
-        } catch (Exception $e) {
-            throw new DaoException($e->getMessage());
-        }
+        return $this->wrapException(
+            function () use ($jobTitle) {
+                $this->persist($jobTitle);
+                return $jobTitle;
+            }
+        );
     }
 
     /**
