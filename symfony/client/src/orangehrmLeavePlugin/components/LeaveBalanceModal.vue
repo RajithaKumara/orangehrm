@@ -93,11 +93,11 @@ export default {
   props: {
     data: {
       type: Object,
-      default: () => ({}),
+      default: () => null,
     },
     meta: {
       type: Object,
-      default: () => ({}),
+      default: () => null,
     },
   },
   emits: ['close'],

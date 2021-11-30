@@ -116,7 +116,7 @@ export default {
     workShiftId: {
       type: Number,
       required: true,
-      default: 0,
+      default: null,
     },
   },
   setup() {

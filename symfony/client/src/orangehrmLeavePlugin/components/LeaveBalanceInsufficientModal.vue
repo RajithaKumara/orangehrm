@@ -86,7 +86,7 @@ export default {
     },
     meta: {
       type: Object,
-      default: () => ({}),
+      default: () => null,
     },
   },
   emits: ['close'],

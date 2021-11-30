@@ -75,7 +75,7 @@ export default {
     operator: {
       type: Object,
       required: false,
-      default: () => ({}),
+      default: () => null,
     },
     valueX: {
       type: String,

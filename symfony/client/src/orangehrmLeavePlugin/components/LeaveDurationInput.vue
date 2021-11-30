@@ -71,7 +71,7 @@ export default {
     duration: {
       type: Object,
       required: false,
-      default: () => ({}),
+      default: () => null,
     },
     fromTime: {
       type: String,

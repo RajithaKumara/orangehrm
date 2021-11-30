@@ -48,12 +48,12 @@ export default {
     operator: {
       type: Object,
       required: false,
-      default: () => ({}),
+      default: () => null,
     },
     valueX: {
       type: Object,
       required: false,
-      default: () => ({}),
+      default: () => null,
     },
   },
   emits: ['update:valueX', 'update:operator'],

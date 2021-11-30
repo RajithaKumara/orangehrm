@@ -78,7 +78,7 @@ export default {
     id: {
       type: Number,
       required: false,
-      default: 0,
+      default: null,
     },
     leaveRequest: {
       type: Boolean,

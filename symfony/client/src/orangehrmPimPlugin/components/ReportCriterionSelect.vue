@@ -52,7 +52,7 @@ export default {
     valueX: {
       type: Object,
       required: false,
-      default: () => ({}),
+      default: () => null,
     },
   },
   emits: ['update:valueX', 'update:operator'],

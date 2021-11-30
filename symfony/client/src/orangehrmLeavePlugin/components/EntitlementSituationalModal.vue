@@ -53,12 +53,6 @@ export default {
   components: {
     'oxd-dialog': Dialog,
   },
-  props: {
-    data: {
-      type: Object,
-      default: () => ({}),
-    },
-  },
   emits: ['close'],
   methods: {
     onCancel() {

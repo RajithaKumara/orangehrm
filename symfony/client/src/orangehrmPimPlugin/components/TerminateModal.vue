@@ -103,7 +103,7 @@ export default {
     terminationId: {
       type: Number,
       required: false,
-      default: 0,
+      default: null,
     },
   },
   emits: ['close'],
