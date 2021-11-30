@@ -70,6 +70,7 @@ export default {
       required: true,
     },
   },
+  emits: ['update:firstName', 'update:middleName', 'update:lastName'],
   computed: {
     classes() {
       return {

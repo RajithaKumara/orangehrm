@@ -43,6 +43,7 @@ export default {
     api: {
       type: String,
       required: false,
+      default: null,
     },
     options: {
       type: Array,
@@ -51,8 +52,10 @@ export default {
     valueX: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
   },
+  emits: ['update:valueX', 'update:operator'],
   setup(props, context) {
     const opts = ref(props.options);
     const rules = [required];

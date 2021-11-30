@@ -103,8 +103,10 @@ export default {
     terminationId: {
       type: Number,
       required: false,
+      default: 0,
     },
   },
+  emits: ['close'],
   setup(props) {
     const http = new APIService(
       window.appGlobal.baseUrl,

@@ -204,6 +204,7 @@ export default {
   props: {
     workShift: {
       type: Object,
+      default: () => ({}),
     },
   },
 

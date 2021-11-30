@@ -64,16 +64,20 @@ export default {
     operator: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
     valueX: {
       type: String,
       required: false,
+      default: null,
     },
     valueY: {
       type: String,
       required: false,
+      default: null,
     },
   },
+  emits: ['update:valueX', 'update:valueY', 'update:operator'],
   setup(props) {
     const operators = ref([
       {id: 'lt', label: 'Less Than'},

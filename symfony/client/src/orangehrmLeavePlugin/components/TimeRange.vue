@@ -47,20 +47,25 @@ export default {
     fromTime: {
       type: String,
       required: false,
+      default: null,
     },
     toTime: {
       type: String,
       required: false,
+      default: null,
     },
     rules: {
       type: Object,
       required: true,
+      default: () => ({}),
     },
     workShift: {
       type: Object,
       required: true,
+      default: () => ({}),
     },
   },
+  emits: ['update:fromTime', 'update:toTime'],
   mounted() {
     if (this.workShift?.startTime) {
       this.$emit('update:fromTime', this.workShift.startTime);

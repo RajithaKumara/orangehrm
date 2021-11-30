@@ -76,6 +76,7 @@ export default {
     leavePeriod: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
   },
 

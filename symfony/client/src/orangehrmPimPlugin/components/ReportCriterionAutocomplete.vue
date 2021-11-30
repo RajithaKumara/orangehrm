@@ -48,13 +48,15 @@ export default {
     operator: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
     valueX: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
   },
-
+  emits: ['update:valueX', 'update:operator'],
   setup(_, context) {
     const rules = [required];
     context.emit('update:operator', {id: 'eq', label: 'Equal'});

@@ -50,6 +50,7 @@ export default {
     employeeId: {
       type: Number,
       required: false,
+      default: 0,
     },
     showEmptySelector: {
       type: Boolean,

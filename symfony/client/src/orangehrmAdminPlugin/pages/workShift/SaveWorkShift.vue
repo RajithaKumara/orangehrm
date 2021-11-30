@@ -116,6 +116,7 @@ export default {
     workShiftConfig: {
       type: Object,
       required: true,
+      default: () => ({}),
     },
   },
   setup() {
