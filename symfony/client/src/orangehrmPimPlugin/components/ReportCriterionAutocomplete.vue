@@ -26,7 +26,7 @@
         includeEmployees: 'currentAndPast',
       }"
       :rules="rules"
-      :modelValue="valueX"
+      :model-value="valueX"
       @update:modelValue="$emit('update:valueX', $event)"
     ></employee-autocomplete>
   </oxd-grid-item>
@@ -37,12 +37,12 @@ import {required} from '@ohrm/core/util/validation/rules';
 import EmployeeAutocomplete from '@/core/components/inputs/EmployeeAutocomplete';
 
 export default {
-  name: 'report-criterion-autocomplete',
-  inheritAttrs: false,
+  name: 'ReportCriterionAutocomplete',
 
   components: {
     'employee-autocomplete': EmployeeAutocomplete,
   },
+  inheritAttrs: false,
 
   props: {
     operator: {

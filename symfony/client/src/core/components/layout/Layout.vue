@@ -1,9 +1,9 @@
 <template>
   <oxd-layout v-bind="$attrs">
-    <template v-for="(_, name) in $slots" v-slot:[name]="slotData">
+    <template v-for="(_, name) in $slots" #[name]="slotData">
       <slot :name="name" v-bind="slotData" />
     </template>
-    <template v-slot:user-actions>
+    <template #user-actions>
       <li>
         <a
           href="#"
@@ -44,11 +44,11 @@ import About from '@/core/pages/About.vue';
 import Layout from '@ohrm/oxd/core/components/Layout/Layout.vue';
 
 export default {
-  inheritAttrs: false,
   components: {
     about: About,
     'oxd-layout': Layout,
   },
+  inheritAttrs: false,
   props: {
     permissions: {
       type: Object,

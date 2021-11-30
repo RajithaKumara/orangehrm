@@ -20,8 +20,8 @@
 
 <template>
   <oxd-dialog
-    @update:show="onCancel"
     :style="{width: '90%', maxWidth: '600px'}"
+    @update:show="onCancel"
   >
     <div class="orangehrm-modal-header">
       <oxd-text type="card-title">
@@ -39,9 +39,9 @@
     <oxd-form :loading="isLoading" @submitValid="onSave">
       <oxd-form-row>
         <oxd-input-field
+          v-model="comment"
           type="textarea"
           placeholder="Comment here"
-          v-model="comment"
           :rules="rules.comment"
         />
       </oxd-form-row>
@@ -49,7 +49,7 @@
       <oxd-form-actions>
         <oxd-button
           type="button"
-          displayType="ghost"
+          display-type="ghost"
           label="Cancel"
           @click="onCancel"
         />
@@ -69,7 +69,11 @@ import {
 import LeaveComment from '@/orangehrmLeavePlugin/components/LeaveComment';
 
 export default {
-  name: 'leave-comment-modal',
+  name: 'LeaveCommentModal',
+  components: {
+    'oxd-dialog': Dialog,
+    'leave-comment': LeaveComment,
+  },
   props: {
     id: {
       type: Number,
@@ -79,10 +83,6 @@ export default {
       type: Boolean,
       default: true,
     },
-  },
-  components: {
-    'oxd-dialog': Dialog,
-    'leave-comment': LeaveComment,
   },
   setup(props) {
     const apiPath = props.leaveRequest ? 'leave-requests' : 'leaves';
@@ -104,6 +104,18 @@ export default {
       comments: [],
     };
   },
+  beforeMount() {
+    this.isLoading = true;
+    this.http
+      .getAll({limit: 0})
+      .then(response => {
+        const {data} = response.data;
+        this.comments = data;
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
+  },
   methods: {
     onSave() {
       this.isLoading = true;
@@ -120,18 +132,6 @@ export default {
       this.comment = null;
       this.$emit('close', true);
     },
-  },
-  beforeMount() {
-    this.isLoading = true;
-    this.http
-      .getAll({limit: 0})
-      .then(response => {
-        const {data} = response.data;
-        this.comments = data;
-      })
-      .finally(() => {
-        this.isLoading = false;
-      });
   },
 };
 </script>

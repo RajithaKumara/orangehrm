@@ -20,8 +20,8 @@
 
 <template>
   <oxd-dialog
-    @update:show="onCancel"
     :style="{width: '90%', maxWidth: '600px'}"
+    @update:show="onCancel"
   >
     <div class="orangehrm-modal-header">
       <oxd-text type="card-title">Add Organization Unit</oxd-text>
@@ -30,25 +30,25 @@
     <oxd-form :loading="isLoading" @submitValid="onSave">
       <oxd-form-row>
         <oxd-input-field
-          label="Unit Id"
           v-model="orgUnit.unitId"
+          label="Unit Id"
           :rules="rules.unitId"
         />
       </oxd-form-row>
       <oxd-form-row>
         <oxd-input-field
-          label="Name"
           v-model="orgUnit.name"
+          label="Name"
           :rules="rules.name"
           required
         />
       </oxd-form-row>
       <oxd-form-row>
         <oxd-input-field
+          v-model="orgUnit.description"
           type="textarea"
           label="Description"
           placeholder="Type description here"
-          v-model="orgUnit.description"
           :rules="rules.description"
         />
       </oxd-form-row>
@@ -61,7 +61,7 @@
         <required-text />
         <oxd-button
           type="button"
-          displayType="ghost"
+          display-type="ghost"
           label="Cancel"
           @click="onCancel"
         />
@@ -86,14 +86,14 @@ const orgUnitModel = {
 };
 
 export default {
-  name: 'save-org-unit',
+  name: 'SaveOrgUnit',
+  components: {
+    'oxd-dialog': Dialog,
+  },
   props: {
     data: {
       type: Object,
     },
-  },
-  components: {
-    'oxd-dialog': Dialog,
   },
   setup() {
     const http = new APIService(
@@ -114,26 +114,6 @@ export default {
         description: [shouldNotExceedCharLength(400)],
       },
     };
-  },
-  methods: {
-    onSave() {
-      this.isLoading = true;
-      this.http
-        .create({
-          ...this.orgUnit,
-          parentId: this.data?.id,
-        })
-        .then(() => {
-          return this.$toast.saveSuccess();
-        })
-        .then(() => {
-          this.onCancel();
-        });
-    },
-    onCancel() {
-      this.orgUnit = {...orgUnitModel};
-      this.$emit('close', true);
-    },
   },
   beforeMount() {
     this.isLoading = true;
@@ -158,6 +138,26 @@ export default {
       .finally(() => {
         this.isLoading = false;
       });
+  },
+  methods: {
+    onSave() {
+      this.isLoading = true;
+      this.http
+        .create({
+          ...this.orgUnit,
+          parentId: this.data?.id,
+        })
+        .then(() => {
+          return this.$toast.saveSuccess();
+        })
+        .then(() => {
+          this.onCancel();
+        });
+    },
+    onCancel() {
+      this.orgUnit = {...orgUnitModel};
+      this.$emit('close', true);
+    },
   },
 };
 </script>

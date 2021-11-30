@@ -20,8 +20,8 @@
 
 <template>
   <oxd-dialog
-    @update:show="onCancel"
     :style="{width: '90%', maxWidth: '600px'}"
+    @update:show="onCancel"
   >
     <div class="orangehrm-modal-header">
       <oxd-text type="card-title">Add Subscriber</oxd-text>
@@ -30,16 +30,16 @@
     <oxd-form :loading="isLoading" @submitValid="onSave">
       <oxd-form-row>
         <oxd-input-field
-          label="Name"
           v-model="subscriber.name"
+          label="Name"
           :rules="rules.name"
           required
         />
       </oxd-form-row>
       <oxd-form-row>
         <oxd-input-field
-          label="Email"
           v-model="subscriber.email"
+          label="Email"
           :rules="rules.email"
           required
         />
@@ -50,7 +50,7 @@
         <required-text />
         <oxd-button
           type="button"
-          displayType="ghost"
+          display-type="ghost"
           label="Cancel"
           @click="onCancel"
         />
@@ -75,14 +75,14 @@ const subscriberModel = {
 };
 
 export default {
-  name: 'save-subscriber',
+  name: 'SaveSubscriber',
+  components: {
+    'oxd-dialog': Dialog,
+  },
   props: {
     data: {
       type: Object,
     },
-  },
-  components: {
-    'oxd-dialog': Dialog,
   },
   setup(props) {
     const http = new APIService(
@@ -102,25 +102,6 @@ export default {
         email: [required, validEmailFormat, shouldNotExceedCharLength(100)],
       },
     };
-  },
-  methods: {
-    onSave() {
-      this.isLoading = true;
-      this.http
-        .create({
-          ...this.subscriber,
-        })
-        .then(() => {
-          return this.$toast.saveSuccess();
-        })
-        .then(() => {
-          this.onCancel();
-        });
-    },
-    onCancel() {
-      this.subscriber = {...subscriberModel};
-      this.$emit('close', true);
-    },
   },
   beforeMount() {
     this.isLoading = true;
@@ -142,6 +123,25 @@ export default {
       .finally(() => {
         this.isLoading = false;
       });
+  },
+  methods: {
+    onSave() {
+      this.isLoading = true;
+      this.http
+        .create({
+          ...this.subscriber,
+        })
+        .then(() => {
+          return this.$toast.saveSuccess();
+        })
+        .then(() => {
+          this.onCancel();
+        });
+    },
+    onCancel() {
+      this.subscriber = {...subscriberModel};
+      this.$emit('close', true);
+    },
   },
 };
 </script>

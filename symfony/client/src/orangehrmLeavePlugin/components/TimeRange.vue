@@ -22,26 +22,26 @@
   <oxd-grid-item>
     <time-input
       :label="$t('general.from')"
-      :modelValue="fromTime"
+      :model-value="fromTime"
       :rules="rules.fromTime"
-      @update:modelValue="$emit('update:fromTime', $event)"
       required
+      @update:modelValue="$emit('update:fromTime', $event)"
     />
   </oxd-grid-item>
   <oxd-grid-item>
     <time-input
       :label="$t('general.to')"
-      :modelValue="toTime"
+      :model-value="toTime"
       :rules="rules.toTime"
-      @update:modelValue="$emit('update:toTime', $event)"
       required
+      @update:modelValue="$emit('update:toTime', $event)"
     />
   </oxd-grid-item>
 </template>
 
 <script>
 export default {
-  name: 'time-range',
+  name: 'TimeRange',
   inheritAttrs: false,
   props: {
     fromTime: {

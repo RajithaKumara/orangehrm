@@ -66,14 +66,14 @@
         :items="items"
         :clickable="false"
         class="orangehrm-horizontal-padding"
-        rowDecorator="oxd-table-decorator-card"
+        row-decorator="oxd-table-decorator-card"
       />
     </div>
     <div class="orangehrm-horizontal-padding orangehrm-vertical-padding">
       <oxd-form-actions>
         <oxd-button
           type="submit"
-          displayType="secondary"
+          display-type="secondary"
           :label="$t('general.ok')"
           @click="onCancel"
         />
@@ -86,7 +86,10 @@
 import Dialog from '@ohrm/oxd/core/components/Dialog/Dialog';
 
 export default {
-  name: 'leave-balance-modal',
+  name: 'LeaveBalanceModal',
+  components: {
+    'oxd-dialog': Dialog,
+  },
   props: {
     data: {
       type: Object,
@@ -94,9 +97,6 @@ export default {
     meta: {
       type: Object,
     },
-  },
-  components: {
-    'oxd-dialog': Dialog,
   },
   data() {
     return {
@@ -119,11 +119,6 @@ export default {
         },
       ],
     };
-  },
-  methods: {
-    onCancel() {
-      this.$emit('close', true);
-    },
   },
   computed: {
     items() {
@@ -160,6 +155,11 @@ export default {
       return this.data?.balance
         ? `${parseFloat(this.data.balance).toFixed(2)} Day(s)`
         : '0.00 Day(s)';
+    },
+  },
+  methods: {
+    onCancel() {
+      this.$emit('close', true);
     },
   },
 };

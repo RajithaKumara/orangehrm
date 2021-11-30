@@ -25,7 +25,7 @@
       type="select"
       :rules="rules"
       :options="opts"
-      :modelValue="valueX"
+      :model-value="valueX"
       @update:modelValue="$emit('update:valueX', $event)"
     />
   </oxd-grid-item>
@@ -37,7 +37,7 @@ import {required} from '@ohrm/core/util/validation/rules';
 import {APIService} from '@ohrm/core/util/services/api.service';
 
 export default {
-  name: 'report-criterion-select',
+  name: 'ReportCriterionSelect',
   inheritAttrs: false,
   props: {
     api: {
