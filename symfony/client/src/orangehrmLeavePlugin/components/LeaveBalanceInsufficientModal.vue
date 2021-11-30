@@ -86,8 +86,10 @@ export default {
     },
     meta: {
       type: Object,
+      default: () => ({}),
     },
   },
+  emits: ['close'],
   data() {
     return {
       headers: [

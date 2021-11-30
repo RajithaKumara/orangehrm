@@ -60,6 +60,8 @@ export default {
     },
   },
 
+  emits: ['delete'],
+
   setup(props) {
     const getNoun = count => {
       if (!count) return `No Records`;

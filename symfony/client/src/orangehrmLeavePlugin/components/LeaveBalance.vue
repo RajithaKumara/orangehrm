@@ -67,6 +67,7 @@ export default {
   props: {
     leaveData: {
       type: Object,
+      default: () => ({}),
     },
   },
   setup(props) {

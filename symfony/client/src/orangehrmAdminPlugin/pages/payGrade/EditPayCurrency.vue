@@ -94,6 +94,8 @@ export default {
       required: true,
     },
   },
+  emits: ['close'],
+
   setup(props) {
     const http = new APIService(
       window.appGlobal.baseUrl,

@@ -75,6 +75,7 @@ export default {
     'oxd-loading-spinner': Spinner,
     'oxd-dialog': Dialog,
   },
+  emits: ['close'],
   setup() {
     const http = new APIService(window.appGlobal.baseUrl, 'api/v2/core/about');
     return {

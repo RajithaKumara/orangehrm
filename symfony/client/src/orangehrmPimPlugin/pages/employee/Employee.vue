@@ -97,10 +97,10 @@
       ></table-header>
       <div class="orangehrm-container">
         <oxd-card-table
-          :headers="headers"
           v-model:selected="checkedItems"
-          :items="items?.data"
           v-model:order="sortDefinition"
+          :headers="headers"
+          :items="items?.data"
           :selectable="true"
           :clickable="true"
           :loading="isLoading"

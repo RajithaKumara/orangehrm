@@ -71,14 +71,17 @@ export default {
     duration: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
     fromTime: {
       type: String,
       required: false,
+      default: null,
     },
     toTime: {
       type: String,
       required: false,
+      default: null,
     },
     partial: {
       type: Boolean,
@@ -87,8 +90,10 @@ export default {
     workShift: {
       type: Object,
       required: true,
+      default: () => ({}),
     },
   },
+  emits: ['update:fromTime', 'update:toTime', 'update:duration'],
   data() {
     return {
       rules: {

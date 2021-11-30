@@ -60,6 +60,7 @@ export default {
       default: false,
     },
   },
+  emits: ['update:modelValue'],
   setup(props, context) {
     const options = ref([]);
     const http = new APIService(

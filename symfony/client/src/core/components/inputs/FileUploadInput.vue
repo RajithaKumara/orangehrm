@@ -94,9 +94,11 @@ export default {
       required: true,
     },
     file: {
+      type: Object,
       required: true,
     },
     newFile: {
+      type: Object,
       required: true,
     },
     disabled: {
@@ -104,6 +106,7 @@ export default {
       default: false,
     },
   },
+  emits: ['update:method', 'update:newFile'],
   methods: {
     downloadFile() {
       if (!this.file?.id) return;

@@ -82,8 +82,10 @@ export default {
   props: {
     data: {
       type: Object,
+      default: () => ({}),
     },
   },
+  emits: ['close'],
   setup(props) {
     const http = new APIService(
       window.appGlobal.baseUrl,

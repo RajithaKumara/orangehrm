@@ -52,15 +52,19 @@ export default {
   props: {
     permissions: {
       type: Object,
+      default: () => ({}),
     },
     logoutUrl: {
       type: String,
+      default: '#',
     },
     supportUrl: {
       type: String,
+      default: '#',
     },
     updatePasswordUrl: {
       type: String,
+      default: '#',
     },
   },
   setup(props) {

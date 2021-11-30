@@ -78,6 +78,7 @@ export default {
     },
     columnCount: {
       type: Number,
+      default: 0,
       required: false,
     },
   },

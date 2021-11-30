@@ -174,22 +174,27 @@ export default {
     employee: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
     leaveType: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
     fromDate: {
       type: String,
       required: false,
+      default: null,
     },
     toDate: {
       type: String,
       required: false,
+      default: null,
     },
     leaveStatus: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
   },
 

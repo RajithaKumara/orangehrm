@@ -31,9 +31,9 @@
     <oxd-divider />
     <div v-if="!isLoading" class="orangehrm-modal-content">
       <leave-comment
-        v-for="comment in comments"
-        :key="comment.id"
-        :data="comment"
+        v-for="comm in comments"
+        :key="comm.id"
+        :data="comm"
       ></leave-comment>
     </div>
     <oxd-form :loading="isLoading" @submitValid="onSave">
@@ -78,12 +78,14 @@ export default {
     id: {
       type: Number,
       required: false,
+      default: 0,
     },
     leaveRequest: {
       type: Boolean,
       default: true,
     },
   },
+  emits: ['close'],
   setup(props) {
     const apiPath = props.leaveRequest ? 'leave-requests' : 'leaves';
     const http = new APIService(

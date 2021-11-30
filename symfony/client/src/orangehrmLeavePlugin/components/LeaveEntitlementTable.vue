@@ -103,14 +103,17 @@ export default {
     employee: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
     leaveType: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
     leavePeriod: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
   },
 

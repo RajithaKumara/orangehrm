@@ -69,6 +69,7 @@ export default {
     bulkActions: {
       type: Object,
       required: false,
+      default: () => ({}),
     },
   },
 

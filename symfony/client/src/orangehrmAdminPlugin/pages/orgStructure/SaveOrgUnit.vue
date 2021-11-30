@@ -52,9 +52,9 @@
           :rules="rules.description"
         />
       </oxd-form-row>
-      <oxd-text tag="p" class="level-label"
-        >This unit will be added under <b>{{ data?.name }}</b></oxd-text
-      >
+      <oxd-text tag="p" class="level-label">
+        This unit will be added under <b>{{ data?.name }}</b>
+      </oxd-text>
       <oxd-divider />
 
       <oxd-form-actions>
@@ -93,8 +93,10 @@ export default {
   props: {
     data: {
       type: Object,
+      default: () => ({}),
     },
   },
+  emits: ['close'],
   setup() {
     const http = new APIService(
       window.appGlobal.baseUrl,

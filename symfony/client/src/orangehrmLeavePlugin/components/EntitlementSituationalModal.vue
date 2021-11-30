@@ -56,8 +56,10 @@ export default {
   props: {
     data: {
       type: Object,
+      default: () => ({}),
     },
   },
+  emits: ['close'],
   methods: {
     onCancel() {
       this.$emit('close', true);
