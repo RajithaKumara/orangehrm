@@ -329,6 +329,30 @@
   <exclude-pattern>symfony/lib/vendor/sebastian/diff/*</exclude-pattern>
   <exclude-pattern>symfony/lib/vendor/codeception/*</exclude-pattern>
   <exclude-pattern>symfony/lib/vendor/respect/validation/tests/*</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmBuzzPlugin/test/*</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmHelpPlugin/test/model/service/HelpConfigServiceTest.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmAdminPlugin/test/model/*</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmCorePlugin/test/components/TextareaCellTest.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmCorePlugin/test/ohrmWidgets/*</exclude-pattern>
+  <exclude-pattern>symfony/lib/vendor/symfony/console/Tests/Helper/TableTest.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmPimPlugin/lib/form/EmployeeTerminateForm.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmAdminPlugin/lib/form/OrganizationGeneralInformationForm.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmAdminPlugin/lib/form/LocalizationForm.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmAdminPlugin/lib/form/JobTitleForm.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmAdminPlugin/lib/service/LocalizationService.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmCorePlugin/test/authorization/manager/BasicUserRoleManagerTest.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmCorePlugin/lib/list/ohrmListHeaderFactory.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmCorePlugin/lib/role/AdminUserRoleDecorator.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmCorePlugin/lib/role/InterviewerUserRoleDecorator.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmCorePlugin/lib/role/SupervisorUserRoleDecorator.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmCorePlugin/lib/role/HiringManagerUserRoleDecorator.php</exclude-pattern>
+  <exclude-pattern>symfony/plugins/orangehrmCorePlugin/lib/role/EssUserRoleDecorator.php</exclude-pattern>
+  <exclude-pattern>symfony/apps/orangehrm/lib/form/admin/EmailConfigurationForm.php</exclude-pattern>
+  <exclude-pattern>symfony/lib/vendor/scssphp/scssphp/src/Util.php</exclude-pattern>
+<!--  <exclude-pattern></exclude-pattern>-->
+<!--  <exclude-pattern></exclude-pattern>-->
+<!--  <exclude-pattern></exclude-pattern>-->
+<!--  <exclude-pattern></exclude-pattern>-->
   <!--    open source end block-->
 
 </ruleset>
