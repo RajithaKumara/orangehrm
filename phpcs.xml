@@ -12,9 +12,10 @@
   <rule ref="PHPCompatibility"/>
 
   <exclude-pattern>symfony/cache/*</exclude-pattern>
-  <exclude-pattern>symfony/lib/vendor/symfony/test/*</exclude-pattern>
+  <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/test/*</exclude-pattern>
+  <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/doctrine1/tests/*</exclude-pattern>
   <exclude-pattern>symfony/lib/vendor/symfony/yaml/Tests/*</exclude-pattern>
-  <exclude-pattern>symfony/lib/vendor/symfony/lib/plugins/sfDoctrinePlugin/test/functional/fixtures/apps/frontend/modules/attachment/templates/*</exclude-pattern>
+  <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/plugins/sfDoctrinePlugin/test/functional/fixtures/apps/frontend/modules/attachment/templates/*</exclude-pattern>
   <exclude-pattern>vendor/squizlabs/*</exclude-pattern>
   <exclude-pattern>upgrader/cache/*</exclude-pattern>
 
@@ -24,8 +25,8 @@
   </rule>
 
   <rule ref="PHPCompatibility.Extensions.RemovedExtensions.sqliteRemoved">
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/i18n/sfMessageSource_SQLite.class.php</exclude-pattern>
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/cache/sfSQLiteCache.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/i18n/sfMessageSource_SQLite.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/cache/sfSQLiteCache.class.php</exclude-pattern>
   </rule>
 
   <rule ref="PHPCompatibility.FunctionUse.RemovedFunctions.get_magic_quotes_gpcDeprecated">
@@ -33,31 +34,33 @@
   </rule>
 
   <rule ref="PHPCompatibility.Extensions.RemovedExtensions.mysql_DeprecatedRemoved">
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/i18n/sfMessageSource_MySQL.class.php</exclude-pattern>
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/storage/sfMySQLSessionStorage.class.php</exclude-pattern>
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/database/sfMySQLDatabase.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/i18n/sfMessageSource_MySQL.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/storage/sfMySQLSessionStorage.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/database/sfMySQLDatabase.class.php</exclude-pattern>
     <exclude-pattern>symfony/lib/vendor/iignatov/lightopenid/provider/example-mysql.php</exclude-pattern>
   </rule>
 
   <rule ref="PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection">
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/i18n/sfMessageSource_MySQL.class.php</exclude-pattern>
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/storage/sfMySQLSessionStorage.class.php</exclude-pattern>
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/database/sfMySQLDatabase.class.php</exclude-pattern>
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/vendor/lime/lime.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/i18n/sfMessageSource_MySQL.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/storage/sfMySQLSessionStorage.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/database/sfMySQLDatabase.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/vendor/lime/lime.php</exclude-pattern>
   </rule>
 
   <rule ref="PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.Changed">
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/vendor/lime/lime.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/vendor/lime/lime.php</exclude-pattern>
     <exclude-pattern>symfony/lib/vendor/iignatov/lightopenid/openid.php</exclude-pattern>
   </rule>
 
   <rule ref="PHPCompatibility.IniDirectives.RemovedIniDirectives.magic_quotes_runtimeDeprecatedRemoved">
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/command/sfCommandApplication.class.php</exclude-pattern>
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/config/sfProjectConfiguration.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/command/sfCommandApplication.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/config/sfProjectConfiguration.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/swiftmailer/swiftmailer/lib/classes/Swift/ByteStream/FileByteStream.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/DiskKeyCache.php</exclude-pattern>
   </rule>
 
   <rule ref="PHPCompatibility.IniDirectives.RemovedIniDirectives.track_errorsDeprecated">
-    <exclude-pattern>symfony/lib/vendor/symfony/lib/command/sfCommandApplication.class.php</exclude-pattern>
+    <exclude-pattern>symfony/lib/vendor/friendsofsymfony1/symfony1/lib/command/sfCommandApplication.class.php</exclude-pattern>
   </rule>
 
   <rule ref="PHPCompatibility.IniDirectives.RemovedIniDirectives.safe_modeDeprecatedRemoved">
