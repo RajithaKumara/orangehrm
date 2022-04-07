@@ -28,6 +28,8 @@ use OrangeHRM\Installer\Util\V1\AbstractMigration;
 
 class Migration extends AbstractMigration
 {
+    protected ?LangStringHelper $langStringHelper = null;
+
     /**
      * @inheritDoc
      */
@@ -186,6 +188,12 @@ class Migration extends AbstractMigration
         );
         $this->updateModuleDisplayNames();
         $this->insertI18nGroups();
+
+        $groups = ['admin', 'general', 'pim', 'leave', 'time', 'attendance', 'maintenance', 'help', 'auth'];
+        foreach ($groups as $group) {
+            $this->getLangStringHelper()->deleteNonCustomizedLangStrings($group);
+            $this->getLangStringHelper()->insertOrUpdateLangStrings($group);
+        }
     }
 
     /**
@@ -327,5 +335,16 @@ class Migration extends AbstractMigration
                 ->setParameter('title', $title)
                 ->executeQuery();
         }
+    }
+
+    /**
+     * @return LangStringHelper
+     */
+    public function getLangStringHelper(): LangStringHelper
+    {
+        if (is_null($this->langStringHelper)) {
+            $this->langStringHelper = new LangStringHelper($this->getConnection());
+        }
+        return $this->langStringHelper;
     }
 }
