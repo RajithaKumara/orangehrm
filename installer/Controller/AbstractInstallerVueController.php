@@ -183,6 +183,16 @@ abstract class AbstractInstallerVueController extends AbstractInstallerControlle
             VueControllerHelper::COPYRIGHT_YEAR => date('Y'),
             VueControllerHelper::PRODUCT_VERSION => Config::PRODUCT_VERSION,
             VueControllerHelper::PRODUCT_NAME => Config::PRODUCT_NAME,
+            'steps' => [
+                "Welcome",
+                "Database Information",
+                "System Check",
+                "Add-on Check",
+                "Version Details",
+                "Upgrade",
+                "Completion",
+            ],
+            'currentStep' => 2,
         ];
     }
 

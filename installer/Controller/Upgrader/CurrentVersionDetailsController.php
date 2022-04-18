@@ -17,21 +17,20 @@
  * Boston, MA  02110-1301, USA
  */
 
-namespace OrangeHRM\Installer\Controller;
+namespace OrangeHRM\Installer\Controller\Upgrader;
 
 use OrangeHRM\Core\Vue\Component;
 use OrangeHRM\Framework\Http\Request;
+use OrangeHRM\Installer\Controller\AbstractInstallerVueController;
 
-class UpgraderController extends AbstractInstallerVueController
+class CurrentVersionDetailsController extends AbstractInstallerVueController
 {
     /**
      * @inheritDoc
      */
     public function preRender(Request $request): void
     {
-        $component = new Component('upgrade-process-screen');
+        $component = new Component('current-version-screen');
         $this->setComponent($component);
     }
 }
-
-

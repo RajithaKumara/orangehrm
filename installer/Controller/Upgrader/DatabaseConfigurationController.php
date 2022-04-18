@@ -17,19 +17,20 @@
  * Boston, MA  02110-1301, USA
  */
 
-namespace OrangeHRM\Installer\Controller;
+namespace OrangeHRM\Installer\Controller\Upgrader;
 
 use OrangeHRM\Core\Vue\Component;
 use OrangeHRM\Framework\Http\Request;
+use OrangeHRM\Installer\Controller\AbstractInstallerVueController;
 
-class SystemCheckController extends AbstractInstallerVueController
+class DatabaseConfigurationController extends AbstractInstallerVueController
 {
     /**
      * @inheritDoc
      */
     public function preRender(Request $request): void
     {
-        $component = new Component('system-check-screen');
+        $component = new Component('database-config-screen');
         $this->setComponent($component);
     }
 }
