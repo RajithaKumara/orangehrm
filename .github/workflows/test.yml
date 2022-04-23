@@ -9,14 +9,18 @@ jobs:
 
     runs-on: ubuntu-18.04
 
+    strategy:
+      matrix:
+        database: [ 'mysql:5.5', 'mysql:5.6', 'mysql:5.7', 'mariadb:5.5', 'mariadb:10.0', 'mariadb:10.1', 'mariadb:10.2', 'mariadb:10.3', 'mariadb:10.4', 'mariadb:10.5', 'mariadb:10.6' ]
+
     services:
       mysql:
-        image: mariadb:10.3
+        image: ${{ matrix.database }}
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 --name="database"
 
     steps:
       - uses: actions/checkout@v2
@@ -46,6 +50,10 @@ jobs:
         run: |
           cd src/client
           yarn test:unit --coverage
+
+      - name: Config sql_mode
+        if: ${{ matrix.database == 'mysql:5.7' }}
+        run: docker exec database bash -c "mysql -uroot -proot -e \"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));\""
 
       - name: Run test
         run: |
