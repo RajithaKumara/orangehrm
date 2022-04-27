@@ -5,8 +5,7 @@ on:
     - cron: '30 12,0 * * *'
 
 jobs:
-  test:
-
+  db_test:
     runs-on: ubuntu-20.04
 
     strategy:
@@ -43,3 +42,37 @@ jobs:
       - name: Run test
         run: |
           ./src/vendor/bin/phpunit
+
+  php_test:
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        php: [ 'php7.4', 'php8.0', 'php8.1' ]
+
+    services:
+      mysql:
+        image: 'mariadb:5.5'
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          cd src
+          php7.4 -f /usr/bin/composer install
+          php7.4 -f /usr/bin/composer dump-autoload -o
+
+      - name: Install OrangeHRM
+        run: |
+          ${{ matrix.php }} installer/cli_install.php
+          ${{ matrix.php }} devTools/general/create-test-db.php root
+
+      - name: Run test
+        run: |
+          ${{ matrix.php }} ./src/vendor/bin/phpunit
