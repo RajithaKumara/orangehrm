@@ -37,7 +37,7 @@ jobs:
           php7.4 devTools/general/create-test-db.php root
 
       - name: Config sql_mode
-        if: ${{ matrix.database == 'mysql:5.7' }}
+        if: ${{ matrix.database == 'mysql:5.7' || matrix.database == 'mysql:8.0' }}
         run: docker exec database bash -c "mysql -uroot -proot -e \"SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));\""
 
       - name: Run test
