@@ -2,8 +2,7 @@ name: Scheduled Test
 
 on:
   schedule:
-#    - cron: '0 2,3,4 * * *'
-    - cron: '0,15,30,45 * * * *'
+    - cron: '0 2 * * *'
 
 jobs:
   db_test:
