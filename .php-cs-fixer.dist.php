@@ -28,8 +28,6 @@ $finder = PhpCsFixer\Finder::create()
     ->exclude('src/plugins/orangehrmCorePlugin/test/form')
     ->exclude('src/plugins/orangehrmCorePlugin/test/model')
     ->exclude('src/plugins/orangehrmCorePlugin/test/utility')
-    ->exclude('src/plugins/orangehrmCorporateBrandingPlugin/lib')
-    ->exclude('src/plugins/orangehrmCorporateBrandingPlugin/test/model')
     ->exclude('src/plugins/orangehrmCorporateDirectoryPlugin')
     ->exclude('src/plugins/orangehrmDashboardPlugin')
     ->exclude('src/plugins/orangehrmHelpPlugin/test')
@@ -49,5 +47,6 @@ return $config->setRules(
         '@PSR12' => true,
         'array_syntax' => ['syntax' => 'short'],
         'no_unused_imports' => true,
+        'array_push' => true,
     ]
 )->setFinder($finder);

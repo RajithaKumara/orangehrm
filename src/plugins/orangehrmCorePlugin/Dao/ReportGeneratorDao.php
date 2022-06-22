@@ -399,7 +399,7 @@ class ReportGeneratorDao extends BaseDao
         $displayFieldGroups = $this->getDisplayFieldGroupIds($reportId);
         $displayFieldGroupIds = [];
         foreach ($displayFieldGroups as $displayFieldGroup) {
-            array_push($displayFieldGroupIds, $displayFieldGroup->getDisplayFieldGroup()->getId());
+            $displayFieldGroupIds[] = $displayFieldGroup->getDisplayFieldGroup()->getId();
         }
         return $displayFieldGroupIds;
     }

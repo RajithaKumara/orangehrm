@@ -90,7 +90,7 @@ class EmployeeAllowedLanguageModel implements CollectionNormalizable
             if (!isset($employeeLanguagesAssoc[$employeeLanguage->getLanguage()->getId()])) {
                 $employeeLanguagesAssoc[$employeeLanguage->getLanguage()->getId()] = [];
             }
-            array_push($employeeLanguagesAssoc[$employeeLanguage->getLanguage()->getId()], $employeeLanguage);
+            $employeeLanguagesAssoc[$employeeLanguage->getLanguage()->getId()][] = $employeeLanguage;
         }
 
         foreach ($this->languages as $language) {

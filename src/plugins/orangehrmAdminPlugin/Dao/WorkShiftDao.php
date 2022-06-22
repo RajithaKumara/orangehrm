@@ -128,16 +128,16 @@ class WorkShiftDao extends BaseDao
             $employeeNumber = $existingEmployee->getEmpNumber();
             if (!in_array($employeeNumber, $empNumbers)) {
                 // this array is containing the employees that's going to  be deleted.
-                array_push($deletableEmployeeNumberList, $employeeNumber);
+                $deletableEmployeeNumberList[] = $employeeNumber;
             } else {
-                array_push($employeeNumberList, $employeeNumber);
+                $employeeNumberList[] = $employeeNumber;
             }
         }
         $this->deleteExistingEmployees($workShift->getId(), $deletableEmployeeNumberList);
         $employeeList = array_diff($empNumbers, $employeeNumberList);
         $newEmployeeList = [];
         foreach ($employeeList as $employee) {
-            array_push($newEmployeeList, $employee);
+            $newEmployeeList[] = $employee;
         }
         $this->persist($workShift);
         if (count($newEmployeeList) > 0) {

@@ -403,14 +403,14 @@ class ReportGeneratorService
         foreach ($fieldGroup as $key => $value) {
             // creating an array that contains the display field group id which selected as header by user(`ohrm_display_field_group` table)
             if ($value['includeHeader'] ?? false) {
-                array_push($selectedDisplayFieldGroupIds, $key);
+                $selectedDisplayFieldGroupIds[] = $key;
             }
 
             foreach ($value['fields'] as $field) {
                 /** creating an array that contains the display field id (`ohrm_display_field` table)
                  * Here fields is the value pair of $fieldGroup associative array which  contains the id of `ohrm_display_field` table
                  **/
-                array_push($selectedDisplayFieldIds, $field);
+                $selectedDisplayFieldIds[] = $field;
             }
         }
         $selectedFilterFields = $this->generateSelectedFilterFieldsByCriteria($report, $criterias);

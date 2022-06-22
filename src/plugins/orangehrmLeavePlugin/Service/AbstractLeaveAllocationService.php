@@ -502,7 +502,7 @@ abstract class AbstractLeaveAllocationService
             );
             $leave->setStatus($this->getLeaveRequestStatus($isWeekend, $isHoliday, $leaveDate, $leaveAssignmentData));
 
-            array_push($leaveList, $leave);
+            $leaveList[] = $leave;
         }
 
         return $leaveList;

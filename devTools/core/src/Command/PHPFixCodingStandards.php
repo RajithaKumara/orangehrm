@@ -64,7 +64,7 @@ class PHPFixCodingStandards extends Command
             }
         }
         $process = new Process(
-            [$input->getOption('php'), './devTools/core/vendor/bin/php-cs-fixer', 'fix', '--format=json'],
+            [$input->getOption('php'), './devTools/core/vendor/bin/php-cs-fixer', 'fix', '--format=json', '--allow-risky=yes'],
             realpath(__DIR__ . '/../../../../')
         );
         try {

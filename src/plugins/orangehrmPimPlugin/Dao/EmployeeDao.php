@@ -209,7 +209,7 @@ class EmployeeDao extends BaseDao
 
         foreach ($reportToArray as $reportTo) {
             $subordinateEmpNumber = $reportTo->getSubordinate()->getEmpNumber();
-            array_push($employeeIdList, $subordinateEmpNumber);
+            $employeeIdList[] = $subordinateEmpNumber;
 
             if ($includeChain || (!is_null($maxDepth) && ($depth < $maxDepth))) {
                 if (!in_array($subordinateEmpNumber, $supervisorIdStack)) {
@@ -223,7 +223,7 @@ class EmployeeDao extends BaseDao
                     );
                     if (count($subordinateIdList) > 0) {
                         foreach ($subordinateIdList as $id) {
-                            array_push($employeeIdList, $id);
+                            $employeeIdList[] = $id;
                         }
                     }
                 }
@@ -389,7 +389,7 @@ class EmployeeDao extends BaseDao
 
         foreach ($reportToArray as $reportTo) {
             $supervisorEmpNumber = $reportTo->getSupervisor()->getEmpNumber();
-            array_push($employeeIdList, $supervisorEmpNumber);
+            $employeeIdList[] = $supervisorEmpNumber;
 
             if ($includeChain || (!is_null($maxDepth) && ($depth < $maxDepth))) {
                 if (!in_array($supervisorEmpNumber, $subordinateIdStack)) {
@@ -403,7 +403,7 @@ class EmployeeDao extends BaseDao
                     );
                     if (count($supervisorIdList) > 0) {
                         foreach ($supervisorIdList as $id) {
-                            array_push($employeeIdList, $id);
+                            $employeeIdList[] = $id;
                         }
                     }
                 }

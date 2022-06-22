@@ -1970,7 +1970,7 @@ class LeaveRequestDaoTest extends KernelTestCase
         $this->assertCount(5, $leaves);
         $ids = [];
         foreach ($leaves as $leave) {
-            array_push($ids, $leave->getId());
+            $ids[] = $leave->getId();
         }
         $this->assertEquals([29, 30, 14, 15, 16], $ids);
 
@@ -1982,7 +1982,7 @@ class LeaveRequestDaoTest extends KernelTestCase
         $this->assertCount(5, $leaves);
         $ids = [];
         foreach ($leaves as $leave) {
-            array_push($ids, $leave->getId());
+            $ids[] = $leave->getId();
         }
         $this->assertEquals([29, 30, 14, 15, 16], $ids);
 
@@ -1994,7 +1994,7 @@ class LeaveRequestDaoTest extends KernelTestCase
         $this->assertCount(5, $leaves);
         $ids = [];
         foreach ($leaves as $leave) {
-            array_push($ids, $leave->getId());
+            $ids[] = $leave->getId();
         }
         $this->assertEquals([30, 14, 15, 16, 17], $ids);
 
@@ -2006,7 +2006,7 @@ class LeaveRequestDaoTest extends KernelTestCase
         $this->assertCount(5, $leaves);
         $ids = [];
         foreach ($leaves as $leave) {
-            array_push($ids, $leave->getId());
+            $ids[] = $leave->getId();
         }
         $this->assertEquals([14, 15, 16, 17, 18], $ids);
     }

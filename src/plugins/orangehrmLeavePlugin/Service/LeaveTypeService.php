@@ -58,13 +58,13 @@ class LeaveTypeService
 
         foreach ($leaveTypes as $leaveType) {
             if ($includeAllocated && $this->getLeaveTypeDao()->hasEmployeeAllocatedLeavesForLeaveType($empNumber, $leaveType->getId())) {
-                array_push($leaveTypeList, $leaveType);
+                $leaveTypeList[] = $leaveType;
                 continue;
             }
             $balance = $this->getLeaveEntitlementService()->getLeaveBalance($empNumber, $leaveType->getId());
 
             if ($balance->getEntitled() > 0) {
-                array_push($leaveTypeList, $leaveType);
+                $leaveTypeList[] = $leaveType;
             }
         }
         return $leaveTypeList;
