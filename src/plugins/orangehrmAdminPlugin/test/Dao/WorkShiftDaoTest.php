@@ -107,7 +107,7 @@ class WorkShiftDaoTest extends TestCase
 
     public function testDeleteWorkShifts(): void
     {
-        $toTobedeletedIds = [1,2];
+        $toTobedeletedIds = [1, 2];
         $result = $this->workShiftDao->deleteWorkShifts($toTobedeletedIds);
         $this->assertEquals(2, $result);
     }

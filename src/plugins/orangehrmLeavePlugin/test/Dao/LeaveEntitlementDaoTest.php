@@ -581,7 +581,7 @@ class LeaveEntitlementDaoTest extends KernelTestCase
 
     public function testBulkAssignLeaveEntitlements(): void
     {
-        $empList = [1,2,3];
+        $empList = [1, 2, 3];
 
         $leaveEntitlement = new LeaveEntitlement();
         $leaveEntitlement->setLeaveType($this->getEntityReference(LeaveType::class, 1));

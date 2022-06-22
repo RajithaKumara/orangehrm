@@ -177,7 +177,7 @@ class CustomFieldAPITest extends EndpointTestCase
     public function testUpdateChangeExtraData()
     {
         $customFieldDao = $this->getMockBuilder(CustomFieldDao::class)
-            ->onlyMethods(['saveCustomField', 'getCustomFieldById','isCustomFieldInUse'])
+            ->onlyMethods(['saveCustomField', 'getCustomFieldById', 'isCustomFieldInUse'])
             ->getMock();
 
         $customField = new CustomField();
@@ -193,7 +193,7 @@ class CustomFieldAPITest extends EndpointTestCase
             ->willReturn($customField);
 
         $customFieldService = $this->getMockBuilder(CustomFieldService::class)
-            ->onlyMethods(['getCustomFieldDao','deleteRelatedEmployeeCustomFieldsExtraData'])
+            ->onlyMethods(['getCustomFieldDao', 'deleteRelatedEmployeeCustomFieldsExtraData'])
             ->getMock();
 
         $customFieldService->expects($this->exactly(2))
@@ -238,7 +238,7 @@ class CustomFieldAPITest extends EndpointTestCase
     public function testUpdateChangeType()
     {
         $customFieldDao = $this->getMockBuilder(CustomFieldDao::class)
-            ->onlyMethods(['saveCustomField', 'getCustomFieldById','isCustomFieldInUse'])
+            ->onlyMethods(['saveCustomField', 'getCustomFieldById', 'isCustomFieldInUse'])
             ->getMock();
 
         $customField = new CustomField();
@@ -259,7 +259,7 @@ class CustomFieldAPITest extends EndpointTestCase
             ->willReturn(true);
 
         $customFieldService = $this->getMockBuilder(CustomFieldService::class)
-            ->onlyMethods(['getCustomFieldDao','deleteRelatedEmployeeCustomFieldsExtraData'])
+            ->onlyMethods(['getCustomFieldDao', 'deleteRelatedEmployeeCustomFieldsExtraData'])
             ->getMock();
 
         $customFieldService->expects($this->exactly(2))
@@ -316,7 +316,7 @@ class CustomFieldAPITest extends EndpointTestCase
             ->getMock();
 
         $customFieldService = $this->getMockBuilder(CustomFieldService::class)
-            ->onlyMethods(['getCustomFieldDao','getAllFieldsInUse'])
+            ->onlyMethods(['getCustomFieldDao', 'getAllFieldsInUse'])
             ->getMock();
 
         $customFieldService->expects($this->exactly(0))
@@ -325,7 +325,7 @@ class CustomFieldAPITest extends EndpointTestCase
 
         $customFieldService->expects($this->exactly(1))
             ->method('getAllFieldsInUse')
-            ->willReturn([1,5]);
+            ->willReturn([1, 5]);
 
         /** @var MockObject&CustomFieldAPI $api */
         $api = $this->getApiEndpointMockBuilder(
@@ -352,7 +352,7 @@ class CustomFieldAPITest extends EndpointTestCase
             ->getMock();
 
         $customFieldService = $this->getMockBuilder(CustomFieldService::class)
-            ->onlyMethods(['getCustomFieldDao','getAllFieldsInUse'])
+            ->onlyMethods(['getCustomFieldDao', 'getAllFieldsInUse'])
             ->getMock();
 
         $customFieldService->expects($this->exactly(1))
@@ -361,7 +361,7 @@ class CustomFieldAPITest extends EndpointTestCase
 
         $customFieldService->expects($this->exactly(1))
             ->method('getAllFieldsInUse')
-            ->willReturn([1,5]);
+            ->willReturn([1, 5]);
 
         /** @var MockObject&CustomFieldAPI $api */
         $api = $this->getApiEndpointMockBuilder(

@@ -39,7 +39,7 @@ class CandidateInterviewModel implements Normalizable
             ['getCandidate', 'getLastName'],
             ['getCandidateVacancy', 'getVacancy', 'getId'],
             ['getCandidateVacancy', 'getVacancy', 'getName'],
-            ['getInterviewers', ['getEmpNumber', 'getLastName', 'getFirstName', 'getMiddleName','getEmployeeTerminationRecord']],
+            ['getInterviewers', ['getEmpNumber', 'getLastName', 'getFirstName', 'getMiddleName', 'getEmployeeTerminationRecord']],
             ['getDecorator', 'getInterviewDate'],
             ['getDecorator', 'getInterviewTime'],
             'note',
@@ -54,7 +54,7 @@ class CandidateInterviewModel implements Normalizable
             ['candidate', 'lastName'],
             ['vacancy', 'id'],
             ['vacancy', 'name'],
-            ['interviewers', ['empNumber', 'lastName', 'firstName', 'middleName','terminationId']],
+            ['interviewers', ['empNumber', 'lastName', 'firstName', 'middleName', 'terminationId']],
             'interviewDate',
             'interviewTime',
             'note'

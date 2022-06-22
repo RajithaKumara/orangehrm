@@ -33,7 +33,7 @@ class VacancyAttachmentModel implements Normalizable
         $this->setFilters(
             [
                 'id',
-                ['getVacancy','getId'],
+                ['getVacancy', 'getId'],
                 'fileName',
                 'fileType',
                 'fileSize',

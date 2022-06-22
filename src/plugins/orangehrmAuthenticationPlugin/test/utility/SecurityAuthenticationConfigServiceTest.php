@@ -59,7 +59,7 @@ class SecurityAuthenticationConfigServiceTest extends PHPUnit_Framework_TestCase
     public function testIsPasswordStrengthEnforced()
     {
         $this->securityAuthConfigService = $this->getMockBuilder('SecurityAuthenticationConfigService')
-            ->setMethods(['_getConfigValue','isPluginEnabled'])
+            ->setMethods(['_getConfigValue', 'isPluginEnabled'])
             ->getMock();
         $this->securityAuthConfigService->expects($this->exactly(2))
             ->method('_getConfigValue')
@@ -102,7 +102,7 @@ class SecurityAuthenticationConfigServiceTest extends PHPUnit_Framework_TestCase
     public function testGetCurrentPasswordStrength()
     {
         $this->securityAuthConfigService = $this->getMockBuilder('SecurityAuthenticationConfigService')
-            ->setMethods(['_getConfigValue','getRequiredPasswordStength'])
+            ->setMethods(['_getConfigValue', 'getRequiredPasswordStength'])
             ->getMock();
         $this->securityAuthConfigService->expects($this->exactly(6))
             ->method('getRequiredPasswordStength')

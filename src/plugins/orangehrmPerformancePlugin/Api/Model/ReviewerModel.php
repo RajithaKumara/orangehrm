@@ -41,22 +41,22 @@ class ReviewerModel implements Normalizable
                 ['getEmployee', 'getEmployeeTerminationRecord', 'getId'],
                 ['getEmployee', 'getJobTitle', 'getId'],
                 ['getEmployee', 'getJobTitle', 'getJobTitleName'],
-                ['getEmployee','getJobTitle', 'isDeleted'],
+                ['getEmployee', 'getJobTitle', 'isDeleted'],
                 'status'
             ]
         );
         $this->setAttributeNames(
             [
                 'id',
-                ['employee','empNumber'],
-                ['employee','lastName'],
-                ['employee','firstName'],
-                ['employee','middleName'],
-                ['employee','employeeId'],
-                ['employee','terminationId'],
-                ['employee','jobTitle','id'],
-                ['employee','jobTitle','name'],
-                ['employee','jobTitle', 'deleted'],
+                ['employee', 'empNumber'],
+                ['employee', 'lastName'],
+                ['employee', 'firstName'],
+                ['employee', 'middleName'],
+                ['employee', 'employeeId'],
+                ['employee', 'terminationId'],
+                ['employee', 'jobTitle', 'id'],
+                ['employee', 'jobTitle', 'name'],
+                ['employee', 'jobTitle', 'deleted'],
                 'status'
             ]
         );

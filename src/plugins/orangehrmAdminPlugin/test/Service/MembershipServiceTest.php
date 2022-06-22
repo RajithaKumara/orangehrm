@@ -78,7 +78,7 @@ class MembershipServiceTest extends TestCase
 
     public function testDeleteMemberships(): void
     {
-        $toBeDeletedEducationIds = [1,2];
+        $toBeDeletedEducationIds = [1, 2];
         $membershipDao = $this->getMockBuilder(MembershipDao::class)->getMock();
         $membershipDao->expects($this->once())
                 ->method('deleteMemberships')

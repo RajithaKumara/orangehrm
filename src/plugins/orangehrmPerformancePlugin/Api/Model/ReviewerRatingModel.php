@@ -35,7 +35,7 @@ class ReviewerRatingModel implements Normalizable
                 'id',
                 'rating',
                 'comment',
-                ['getKpi','getId'],
+                ['getKpi', 'getId'],
             ]
         );
 

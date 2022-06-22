@@ -310,23 +310,23 @@ class PurgeEmployeeServiceTest extends KernelTestCase
         $this->assertCount(4, $empReportTo->findAll());
 
         $empLeaveComments = $this->getRepository(LeaveComment::class);
-        $purgedLeaveComments = $empLeaveComments->findBy(['leave' => [1,2]]);
+        $purgedLeaveComments = $empLeaveComments->findBy(['leave' => [1, 2]]);
         $this->assertCount(4, $purgedLeaveComments);
         foreach ($purgedLeaveComments as $purgedLeaveComment) {
             $this->assertEquals('Purged', $purgedLeaveComment->getComment());
         }
-        $preservedLeaveComments = $empLeaveComments->findBy(['leave' => [3,4], 'createdByEmployee' => 1]);
+        $preservedLeaveComments = $empLeaveComments->findBy(['leave' => [3, 4], 'createdByEmployee' => 1]);
         $this->assertCount(2, $preservedLeaveComments);
         $this->assertEquals('employee 1 comment on emp 3 leave', $preservedLeaveComments[0]->getComment());
         $this->assertEquals('employee 1 comment on emp 4 leave', $preservedLeaveComments[1]->getComment());
 
         $empLeaveRequestComments = $this->getRepository(LeaveRequestComment::class);
-        $purgedLeaveRequestComments = $empLeaveRequestComments->findBy(['leaveRequest' => [1,2]]);
+        $purgedLeaveRequestComments = $empLeaveRequestComments->findBy(['leaveRequest' => [1, 2]]);
         $this->assertCount(6, $purgedLeaveRequestComments);
         foreach ($purgedLeaveRequestComments as $purgedLeaveRequestComment) {
             $this->assertEquals('Purged', $purgedLeaveRequestComment->getComment());
         }
-        $preservedLeaveRequestComments = $empLeaveRequestComments->findBy(['leaveRequest' => [3,4], 'createdByEmployee' => 1]);
+        $preservedLeaveRequestComments = $empLeaveRequestComments->findBy(['leaveRequest' => [3, 4], 'createdByEmployee' => 1]);
         $this->assertCount(2, $preservedLeaveRequestComments);
         $this->assertEquals('employee 1 comment on emp 3 leave request', $preservedLeaveRequestComments[0]->getComment());
         $this->assertEquals('employee 1 comment on emp 4 leave request', $preservedLeaveRequestComments[1]->getComment());
@@ -355,7 +355,7 @@ class PurgeEmployeeServiceTest extends KernelTestCase
         $this->assertEquals('Final Comment by Employee 1', $preservedPerformanceReviews[0]->getFinalComment());
 
         $empReviewerRatings = $this->getRepository(ReviewerRating::class);
-        $purgedReviewerRatings = $empReviewerRatings->findBy(['performanceReview' => [1,2]]);
+        $purgedReviewerRatings = $empReviewerRatings->findBy(['performanceReview' => [1, 2]]);
         $this->assertCount(8, $purgedReviewerRatings);
         foreach ($purgedReviewerRatings as $purgedReviewerRating) {
             $this->assertEquals('', $purgedReviewerRating->getComment());
@@ -368,7 +368,7 @@ class PurgeEmployeeServiceTest extends KernelTestCase
         $this->assertEquals('Kpi 2 - Review 3 - Sup Emp 1', $preservedReviewerRatings[3]->getComment());
 
         $empReviewers = $this->getRepository(Reviewer::class);
-        $purgedReviewers = $empReviewers->findBy(['review' => [1,2]]);
+        $purgedReviewers = $empReviewers->findBy(['review' => [1, 2]]);
         $this->assertCount(4, $purgedReviewers);
         foreach ($purgedReviewers as $purgedReviewer) {
             $this->assertEquals('', $purgedReviewer->getComment());
@@ -379,7 +379,7 @@ class PurgeEmployeeServiceTest extends KernelTestCase
         $this->assertEquals('General comment by Sup Emp 1 on Emp 2 review', $preservedReviewers[1]->getComment());
 
         $empPerformanceTrackerLogs = $this->getRepository(PerformanceTrackerLog::class);
-        $purgedPerformanceTrackerLogs = $empPerformanceTrackerLogs->findBy(['performanceTracker' => [1,2]]);
+        $purgedPerformanceTrackerLogs = $empPerformanceTrackerLogs->findBy(['performanceTracker' => [1, 2]]);
         $this->assertCount(0, $purgedPerformanceTrackerLogs);
 
         $preservedPerformanceTrackerLogs = $empPerformanceTrackerLogs->findBy(['performanceTracker' => 3]);

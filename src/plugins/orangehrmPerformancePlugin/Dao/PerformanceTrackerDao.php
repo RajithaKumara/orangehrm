@@ -43,7 +43,7 @@ class PerformanceTrackerDao extends BaseDao
      */
     public function getPerformanceTracker(int $performanceTrackId): ?PerformanceTracker
     {
-        $performanceTracker = $this->getRepository(PerformanceTracker::class)->findOneBy(['id' => $performanceTrackId ,'status' => 1]);
+        $performanceTracker = $this->getRepository(PerformanceTracker::class)->findOneBy(['id' => $performanceTrackId , 'status' => 1]);
         if ($performanceTracker instanceof PerformanceTracker) {
             return $performanceTracker;
         }

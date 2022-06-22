@@ -51,12 +51,12 @@ class EmpUsTaxExemptionModel implements Normalizable
             [
                 'federalStatus',
                 'federalExemptions',
-                ['taxState','code'],
-                ['taxState','name'],
+                ['taxState', 'code'],
+                ['taxState', 'name'],
                 'stateStatus',
                 'stateExemptions',
-                ['unemploymentState','code'],
-                ['unemploymentState','name'],
+                ['unemploymentState', 'code'],
+                ['unemploymentState', 'name'],
                 ['workState', 'code'],
                 ['workState', 'name'],
             ]

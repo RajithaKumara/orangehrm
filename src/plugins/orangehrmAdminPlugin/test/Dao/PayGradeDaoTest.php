@@ -147,14 +147,14 @@ class PayGradeDaoTest extends TestCase
 
     public function testDeletePayGrades(): void
     {
-        $ids = [1,2];
+        $ids = [1, 2];
         $results = $this->payGradeDao->deletePayGrades($ids);
         $this->assertEquals(2, $results);
     }
 
     public function testDeletePayGradeCurrency(): void
     {
-        $ids = ['USD','AUD'];
+        $ids = ['USD', 'AUD'];
         $results = $this->payGradeDao->deletePayGradeCurrency(1, $ids);
         $this->assertEquals(2, $results);
     }

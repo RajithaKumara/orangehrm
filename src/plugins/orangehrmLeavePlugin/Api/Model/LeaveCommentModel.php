@@ -33,30 +33,30 @@ class LeaveCommentModel implements Normalizable
         $this->setFilters(
             [
                 'id',
-                ['getLeave','getId'],
-                ['getDecorator','getCreatedAtDate'],
-                ['getDecorator','getCreatedAtTime'],
-                ['getCreatedByEmployee','getEmpNumber'],
-                ['getCreatedByEmployee','getLastName'],
-                ['getCreatedByEmployee','getFirstName'],
-                ['getCreatedByEmployee','getMiddleName'],
-                ['getCreatedByEmployee','getEmployeeId'],
-                ['getCreatedByEmployee','getEmployeeTerminationRecord', 'getId'],
+                ['getLeave', 'getId'],
+                ['getDecorator', 'getCreatedAtDate'],
+                ['getDecorator', 'getCreatedAtTime'],
+                ['getCreatedByEmployee', 'getEmpNumber'],
+                ['getCreatedByEmployee', 'getLastName'],
+                ['getCreatedByEmployee', 'getFirstName'],
+                ['getCreatedByEmployee', 'getMiddleName'],
+                ['getCreatedByEmployee', 'getEmployeeId'],
+                ['getCreatedByEmployee', 'getEmployeeTerminationRecord', 'getId'],
                 'comment',
             ]
         );
         $this->setAttributeNames(
             [
                 'id',
-                ['leave','id'],
+                ['leave', 'id'],
                 'date',
                 'time',
-                ['createdByEmployee','empNumber'],
-                ['createdByEmployee','lastName'],
-                ['createdByEmployee','firstName'],
-                ['createdByEmployee','middleName'],
-                ['createdByEmployee','employeeId'],
-                ['createdByEmployee','employeeTerminationRecord','terminationId'],
+                ['createdByEmployee', 'empNumber'],
+                ['createdByEmployee', 'lastName'],
+                ['createdByEmployee', 'firstName'],
+                ['createdByEmployee', 'middleName'],
+                ['createdByEmployee', 'employeeId'],
+                ['createdByEmployee', 'employeeTerminationRecord', 'terminationId'],
                 'comment',
             ]
         );

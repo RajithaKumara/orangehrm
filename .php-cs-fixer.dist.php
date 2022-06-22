@@ -49,5 +49,6 @@ return $config->setRules(
         'no_unused_imports' => true,
         'array_push' => true,
         'trim_array_spaces' => true,
+        'whitespace_after_comma_in_array' => true,
     ]
 )->setFinder($finder);

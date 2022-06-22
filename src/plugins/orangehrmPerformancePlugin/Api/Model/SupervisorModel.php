@@ -32,10 +32,10 @@ class SupervisorModel implements Normalizable
         $this->setEntity($reportTo);
         $this->setFilters(
             [
-                ['getSupervisor','getEmpNumber'],
-                ['getSupervisor','getLastName'],
-                ['getSupervisor','getFirstName'],
-                ['getSupervisor','getMiddleName'],
+                ['getSupervisor', 'getEmpNumber'],
+                ['getSupervisor', 'getLastName'],
+                ['getSupervisor', 'getFirstName'],
+                ['getSupervisor', 'getMiddleName'],
                 ['getSupervisor', 'getEmployeeTerminationRecord', 'getId'],
             ]
         );

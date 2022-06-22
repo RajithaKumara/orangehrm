@@ -58,7 +58,7 @@ class PasswordHelperTest extends PHPUnit_Framework_TestCase
     public function testIsPasswordStrongWithEnforcement()
     {
         $this->securityAuthConfigService = $this->getMockBuilder('SecurityAuthenticationConfigService')
-            ->setMethods(['isPasswordStengthEnforced','getRequiredPasswordStength'])
+            ->setMethods(['isPasswordStengthEnforced', 'getRequiredPasswordStength'])
             ->getMock();
         $this->securityAuthConfigService->expects($this->exactly(3))
             ->method('isPasswordStengthEnforced')

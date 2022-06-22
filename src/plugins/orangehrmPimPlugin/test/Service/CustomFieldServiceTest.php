@@ -98,13 +98,13 @@ class CustomFieldServiceTest extends TestCase
             ->method('getCustomFieldDao')
             ->willReturn($customFieldDao);
         $result = $customFieldService->getAllFieldsInUse();
-        $this->assertEquals([1,5], $result);
+        $this->assertEquals([1, 5], $result);
     }
 
     public function testDeleteRelatedEmployeeCustomFieldsExtraDataWhenNotDeleteOption()
     {
         $customFieldDao = $this->getMockBuilder(CustomFieldDao::class)
-            ->onlyMethods(['getCustomFieldById','updateEmployeesIfDropDownValueInUse'])
+            ->onlyMethods(['getCustomFieldById', 'updateEmployeesIfDropDownValueInUse'])
             ->getMock();
 
         $customField = new CustomField();
@@ -137,7 +137,7 @@ class CustomFieldServiceTest extends TestCase
     public function testDeleteRelatedEmployeeCustomFieldsExtraDataWhenDeleteOption()
     {
         $customFieldDao = $this->getMockBuilder(CustomFieldDao::class)
-            ->onlyMethods(['getCustomFieldById','updateEmployeesIfDropDownValueInUse'])
+            ->onlyMethods(['getCustomFieldById', 'updateEmployeesIfDropDownValueInUse'])
             ->getMock();
 
         $customField = new CustomField();

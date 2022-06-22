@@ -101,7 +101,7 @@ class Migration extends AbstractMigration
             $this->getSchemaHelper()->createTable('ohrm_i18n_source')
                 ->addColumn('id', Types::INTEGER, ['Autoincrement' => true])
                 ->addColumn('source', Types::TEXT, ['Length' => 18, 'Notnull' => false])
-                ->addColumn('modified_at', Types::DATETIME_MUTABLE, ['Notnull' => false,])
+                ->addColumn('modified_at', Types::DATETIME_MUTABLE, ['Notnull' => false, ])
                 ->setPrimaryKey(['id'])
                 ->create();
         }

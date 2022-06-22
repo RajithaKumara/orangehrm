@@ -34,10 +34,10 @@ class PerformanceTrackerModel implements Normalizable
             [
                 'id',
                 'trackerName',
-                ['getDecorator','getAddedDate'],
-                ['getDecorator','getModifiedDate'],
+                ['getDecorator', 'getAddedDate'],
+                ['getDecorator', 'getModifiedDate'],
                 'status',
-                ['getEmployee', 'getEmpNumber',],
+                ['getEmployee', 'getEmpNumber', ],
                 ['getEmployee', 'getLastName'],
                 ['getEmployee', 'getFirstName'],
                 ['getEmployee', 'getEmployeeTerminationRecord', 'getId'],

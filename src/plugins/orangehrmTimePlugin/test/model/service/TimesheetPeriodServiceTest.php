@@ -106,7 +106,7 @@ class TimesheetPeriodServiceTest extends PHPUnit_Framework_Testcase
         $startDay='1';
         $xml = '<TimesheetPeriod><PeriodType>Weekly</PeriodType><ClassName>WeeklyTimesheetPeriod</ClassName><StartDate>1</StartDate><Heading>Week</Heading></TimesheetPeriod>';
         $timesheetPeriodDaoMock = $this->getMockBuilder('TimesheetPeriodDao')
-            ->setMethods(['setTimesheetPeriod','setTimesheetPeriodAndStartDate'])
+            ->setMethods(['setTimesheetPeriod', 'setTimesheetPeriodAndStartDate'])
             ->getMock();
         $timesheetPeriodDaoMock->expects($this->once())
             ->method('setTimesheetPeriod')

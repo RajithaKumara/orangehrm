@@ -32,7 +32,7 @@ class PerformanceTrackerLogDao extends BaseDao
      */
     public function getPerformanceTrackerLogById(int $performanceTrackerLogId): ?PerformanceTrackerLog
     {
-        $performanceTrackerLog = $this->getRepository(PerformanceTrackerLog::class)->findOneBy(['id' => $performanceTrackerLogId,'status' => PerformanceTrackerLog::STATUS_NOT_DELETED]);
+        $performanceTrackerLog = $this->getRepository(PerformanceTrackerLog::class)->findOneBy(['id' => $performanceTrackerLogId, 'status' => PerformanceTrackerLog::STATUS_NOT_DELETED]);
         if ($performanceTrackerLog instanceof PerformanceTrackerLog) {
             return $performanceTrackerLog;
         }

@@ -40,7 +40,7 @@ class CandidateModel implements Normalizable
             'status',
             'comment',
             'modeOfApplication',
-            ['getDecorator','getDateOfApplication'],
+            ['getDecorator', 'getDateOfApplication'],
             'keywords',
         ]);
 

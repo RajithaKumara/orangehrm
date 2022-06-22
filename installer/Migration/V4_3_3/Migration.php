@@ -33,7 +33,7 @@ class Migration extends AbstractMigration
         $this->getSchemaHelper()->disableConstraints();
 
         $this->getSchemaHelper()->changeColumn('hs_hr_employee', 'emp_number', [
-            'Type' => Type::getType(Types::INTEGER), 'Length' => 7, 'Notnull' => true, 'Default' => null,'Autoincrement' => true
+            'Type' => Type::getType(Types::INTEGER), 'Length' => 7, 'Notnull' => true, 'Default' => null, 'Autoincrement' => true
         ]);
 
         $this->getSchemaHelper()->changeColumn('ohrm_timesheet', 'timesheet_id', [

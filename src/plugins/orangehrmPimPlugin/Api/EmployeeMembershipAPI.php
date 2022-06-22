@@ -195,7 +195,7 @@ class EmployeeMembershipAPI extends Endpoint implements CrudEndpoint
                 new ParamRule(
                     self::PARAMETER_SUBSCRIPTION_PAID_BY,
                     new Rule(Rules::STRING_TYPE),
-                    new Rule(Rules::IN, [[EmployeeMembership::COMPANY,EmployeeMembership::INDIVIDUAL]]),
+                    new Rule(Rules::IN, [[EmployeeMembership::COMPANY, EmployeeMembership::INDIVIDUAL]]),
                 ),
             ),
             $this->getValidationDecorator()->notRequiredParamRule(
