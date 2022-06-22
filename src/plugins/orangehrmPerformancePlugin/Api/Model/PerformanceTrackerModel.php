@@ -40,7 +40,7 @@ class PerformanceTrackerModel implements Normalizable
                 ['getEmployee', 'getEmpNumber',],
                 ['getEmployee', 'getLastName'],
                 ['getEmployee', 'getFirstName'],
-                ['getEmployee', 'getEmployeeTerminationRecord', 'getId' ],
+                ['getEmployee', 'getEmployeeTerminationRecord', 'getId'],
             ]
         );
         $this->setAttributeNames(

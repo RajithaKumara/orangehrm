@@ -48,5 +48,6 @@ return $config->setRules(
         'array_syntax' => ['syntax' => 'short'],
         'no_unused_imports' => true,
         'array_push' => true,
+        'trim_array_spaces' => true,
     ]
 )->setFinder($finder);
