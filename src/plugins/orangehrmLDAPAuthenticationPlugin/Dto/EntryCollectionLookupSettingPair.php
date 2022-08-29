@@ -17,43 +17,38 @@
  * Boston, MA 02110-1301, USA
  */
 
-namespace OrangeHRM\Authentication\Auth;
+namespace OrangeHRM\LDAP\Dto;
 
-use OrangeHRM\Authentication\Dto\UserCredential;
-use OrangeHRM\Authentication\Service\AuthenticationService;
+use Symfony\Component\Ldap\Adapter\CollectionInterface;
 
-class LocalAuthProvider extends AbstractAuthProvider
+class EntryCollectionLookupSettingPair
 {
-    private AuthenticationService $authenticationService;
+    private CollectionInterface $collection;
+    private LDAPUserLookupSetting $lookupSetting;
 
     /**
-     * @return AuthenticationService
+     * @param CollectionInterface $collection
+     * @param LDAPUserLookupSetting $lookupSetting
      */
-    private function getAuthenticationService(): AuthenticationService
+    public function __construct(CollectionInterface $collection, LDAPUserLookupSetting $lookupSetting)
     {
-        return $this->authenticationService ??= new AuthenticationService();
+        $this->collection = $collection;
+        $this->lookupSetting = $lookupSetting;
     }
 
     /**
-     * @inheritDoc
+     * @return CollectionInterface
      */
-    public function authenticate(UserCredential $credential): bool
+    public function getCollection(): CollectionInterface
     {
-        $success = $this->getAuthenticationService()->setCredentials($credential, []);
-        if ($success) {
-            return true;
-        }
-//        if (!$success) {
-//            throw AuthenticationException::invalidCredentials();
-//        }
-        return false;
+        return $this->collection;
     }
 
     /**
-     * @inheritDoc
+     * @return LDAPUserLookupSetting
      */
-    public function getPriority(): int
+    public function getLookupSetting(): LDAPUserLookupSetting
     {
-        return 10000;
+        return $this->lookupSetting;
     }
 }

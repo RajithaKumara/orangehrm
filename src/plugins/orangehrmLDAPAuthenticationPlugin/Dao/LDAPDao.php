@@ -17,43 +17,34 @@
  * Boston, MA 02110-1301, USA
  */
 
-namespace OrangeHRM\Authentication\Auth;
+namespace OrangeHRM\LDAP\Dao;
 
-use OrangeHRM\Authentication\Dto\UserCredential;
-use OrangeHRM\Authentication\Service\AuthenticationService;
+use OrangeHRM\Admin\Dto\UserSearchFilterParams;
+use OrangeHRM\Core\Dao\BaseDao;
+use OrangeHRM\Entity\User;
+use OrangeHRM\ORM\Paginator;
 
-class LocalAuthProvider extends AbstractAuthProvider
+class LDAPDao extends BaseDao
 {
-    private AuthenticationService $authenticationService;
-
     /**
-     * @return AuthenticationService
+     * @param UserSearchFilterParams $userSearchParamHolder
+     * @return Paginator
      */
-    private function getAuthenticationService(): AuthenticationService
+    public function getSearchUserPaginator(UserSearchFilterParams $userSearchParamHolder): Paginator
     {
-        return $this->authenticationService ??= new AuthenticationService();
-    }
+        $q = $this->createQueryBuilder(User::class, 'user');
+        $q->leftJoin('user.userRole', 'role');
+        $q->leftJoin('user.employee', 'employee');
+        $q->leftJoin('user.authProviders', 'providers');
 
-    /**
-     * @inheritDoc
-     */
-    public function authenticate(UserCredential $credential): bool
-    {
-        $success = $this->getAuthenticationService()->setCredentials($credential, []);
-        if ($success) {
-            return true;
+        if (!is_null($userSearchParamHolder->getStatus())) {
+            $q->andWhere('u.status = :status');
+            $q->setParameter('status', $userSearchParamHolder->getStatus());
         }
-//        if (!$success) {
-//            throw AuthenticationException::invalidCredentials();
-//        }
-        return false;
-    }
 
-    /**
-     * @inheritDoc
-     */
-    public function getPriority(): int
-    {
-        return 10000;
+        $q->andWhere('u.deleted = :deleted');
+        $q->setParameter('deleted', false);
+
+        return $this->getPaginator($q);
     }
 }

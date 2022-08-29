@@ -54,7 +54,7 @@ class LDAPConfigAPITest extends EndpointIntegrationTestCase
 
     public static function saveLDAPConfigPreHook(): void
     {
-        $ldapSettings = new LDAPSetting('localhost', 389, 'OpenLDAP', 'ssl', null);
+        $ldapSettings = new LDAPSetting('localhost', 389, 'OpenLDAP', 'ssl');
         $ldapSettings->setVersion(3);
         $ldapSettings->setOptReferrals(false);
         $ldapSettings->setBindAnonymously(true);

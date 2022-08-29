@@ -298,7 +298,6 @@ class SupervisorEvaluationAPI extends Endpoint implements CrudEndpoint
                 self::PARAMETER_REVIEW_ID
             )
         );
-        $this->setSortingAndPaginationParams($supervisorParamHolder);
 
         $this->beginTransaction();
         try {

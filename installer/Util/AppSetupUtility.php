@@ -25,6 +25,7 @@ use Exception;
 use InvalidArgumentException;
 use OrangeHRM\Config\Config;
 use OrangeHRM\Core\Utility\PasswordHash;
+use OrangeHRM\Entity\UserAuthProvider;
 use OrangeHRM\Installer\Migration\V3_3_3\Migration;
 use OrangeHRM\Installer\Util\SystemConfig\SystemConfiguration;
 use OrangeHRM\Installer\Util\V1\AbstractMigration;
@@ -322,6 +323,24 @@ class AppSetupUtility
             ->setParameter('username', $adminUserData[StateContainer::ADMIN_USERNAME])
             ->setParameter('hashedPassword', $hashedPassword)
             ->setParameter('created', new DateTime(), Types::DATETIME_MUTABLE)
+            ->executeQuery();
+
+        $userId = Connection::getConnection()->createQueryBuilder()
+            ->select('user.id')
+            ->from('ohrm_user', 'user')
+            ->where('user.emp_number = :empNumber')
+            ->setParameter('empNumber', $empNumber)
+            ->setMaxResults(1)
+            ->fetchOne();
+
+        Connection::getConnection()->createQueryBuilder()
+            ->insert('ohrm_user_auth_provider')
+            ->values([
+                'user_id' => ':userId',
+                'provider_type' => ':providerType',
+            ])
+            ->setParameter('userId', $userId)
+            ->setParameter('providerType', UserAuthProvider::TYPE_LOCAL)
             ->executeQuery();
 
         $this->updateUniqueIdForAdminEmployeeInsertion();

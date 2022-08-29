@@ -14,45 +14,14 @@
  *
  * You should have received a copy of the GNU General Public License along with this program;
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA  02110-1301, USA
+ * Boston, MA 02110-1301, USA
  */
 
-namespace OrangeHRM\Core\Utility;
+namespace OrangeHRM\Tests\LDAP\Dao;
 
-/**
- * A simple wrapper around the php password_hash and password_verify functions
- */
-class PasswordHash
+use OrangeHRM\Tests\Util\KernelTestCase;
+
+class LDAPDaoTest extends KernelTestCase
 {
-    // TODO:: test this class
-    public const ALGORITHM = PASSWORD_BCRYPT;
 
-    // 2^12 iterations
-    public const COST = 12;
-
-    /**
-     * Create password hash
-     *
-     * @param string $password Password
-     * @return false|string|null
-     */
-    public function hash(string $password)
-    {
-        $options = [
-            'cost' => self::COST
-        ];
-        return password_hash($password, PASSWORD_BCRYPT, $options);
-    }
-
-    /**
-     * Verify password
-     *
-     * @param string $password Password
-     * @param string $hash Hash
-     * @return bool
-     */
-    public function verify(string $password, string $hash): bool
-    {
-        return password_verify($password, $hash);
-    }
 }

@@ -20,6 +20,10 @@
 namespace OrangeHRM\Installer\Migration\V5_2_0;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint;
+use Doctrine\DBAL\Types\Types;
+use OrangeHRM\Entity\UserAuthProvider;
+use OrangeHRM\Installer\Util\Logger;
 use OrangeHRM\Installer\Util\V1\AbstractMigration;
 
 class Migration extends AbstractMigration
@@ -60,6 +64,42 @@ class Migration extends AbstractMigration
 
         $this->updatePimLeftMenuConfigurators();
         $this->updateOrganizationStructure();
+
+        $this->getSchemaHelper()->createTable('ohrm_user_auth_provider')
+            ->addColumn('id', Types::INTEGER, ['Autoincrement' => true])
+            ->addColumn('user_id', Types::INTEGER, ['Notnull' => true])
+            ->addColumn('provider_type', Types::INTEGER, ['Notnull' => true])
+            ->addColumn('ldap_user_hash', Types::STRING, ['Length' => 255, 'Notnull' => false, 'Default' => null])
+            ->addColumn('ldap_user_dn', Types::STRING, ['Length' => 255, 'Notnull' => false, 'Default' => null])
+            ->addColumn('ldap_user_unique_id', Types::STRING, ['Length' => 255, 'Notnull' => false, 'Default' => null])
+            ->setPrimaryKey(['id'])
+            ->create();
+        $foreignKeyConstraint = new ForeignKeyConstraint(
+            ['user_id'],
+            'ohrm_user',
+            ['id'],
+            'ohrm_user_id',
+            ['onDelete' => 'CASCADE', 'onUpdate' => 'RESTRICT']
+        );
+        $this->getSchemaHelper()->addForeignKey('ohrm_user_auth_provider', $foreignKeyConstraint);
+
+        $q = $this->createQueryBuilder()
+            ->select('user.id')
+            ->from('ohrm_user ', 'user');
+        $userIds = $q->where($q->expr()->isNotNull('user.user_password'))
+            ->executeQuery()
+            ->fetchFirstColumn();
+        foreach ($userIds as $userId) {
+            $this->createQueryBuilder()
+                ->insert('ohrm_user_auth_provider')
+                ->values([
+                    'user_id' => ':userId',
+                    'provider_type' => ':providerType',
+                ])
+                ->setParameter('userId', $userId)
+                ->setParameter('providerType', UserAuthProvider::TYPE_LOCAL)
+                ->executeQuery();
+        }
     }
 
     /**
@@ -125,5 +165,22 @@ class Migration extends AbstractMigration
                 ->setParameter('topLevel', 0)
                 ->executeQuery();
         }
+    }
+
+    /**
+     * @param string $name
+     */
+    private function logAndDeleteConfigValue(string $name): void
+    {
+        $value = $this->createQueryBuilder()
+            ->select('name')
+            ->from('hs_hr_config')
+            ->fetchOne();
+        Logger::getLogger()->info("Deleting: $name => $value from `hs_hr_config`");
+        $this->createQueryBuilder()
+            ->delete('hs_hr_config')
+            ->andWhere('hs_hr_config.name = :name')
+            ->setParameter('name', $name)
+            ->executeQuery();
     }
 }

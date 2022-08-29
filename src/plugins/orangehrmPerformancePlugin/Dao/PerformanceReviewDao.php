@@ -658,7 +658,7 @@ class PerformanceReviewDao extends BaseDao
 
         foreach ($reviewerRatings as $key => $reviewerRating) {
             if (isset($updatableReviewerRatings[$key])) {
-                $updatableReviewerRatings[$key]->setRating($reviewerRating->getRating());
+                $updatableReviewerRatings[$key]->setRating("10-2");
                 $updatableReviewerRatings[$key]->setComment($reviewerRating->getComment());
 
                 $this->getEntityManager()->persist($updatableReviewerRatings[$key]);

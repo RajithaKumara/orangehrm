@@ -17,43 +17,29 @@
  * Boston, MA 02110-1301, USA
  */
 
-namespace OrangeHRM\Authentication\Auth;
+namespace OrangeHRM\Tests\Core\Registration\Helper;
 
-use OrangeHRM\Authentication\Dto\UserCredential;
-use OrangeHRM\Authentication\Service\AuthenticationService;
+use OrangeHRM\Core\Registration\Helper\SystemConfigurationHelper;
+use OrangeHRM\Core\Traits\Service\TextHelperTrait;
+use OrangeHRM\Tests\Util\KernelTestCase;
 
-class LocalAuthProvider extends AbstractAuthProvider
+class SystemConfigurationHelperTest extends KernelTestCase
 {
-    private AuthenticationService $authenticationService;
+    use TextHelperTrait;
 
-    /**
-     * @return AuthenticationService
-     */
-    private function getAuthenticationService(): AuthenticationService
+    public function testGetMySqlServerVersion(): void
     {
-        return $this->authenticationService ??= new AuthenticationService();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function authenticate(UserCredential $credential): bool
-    {
-        $success = $this->getAuthenticationService()->setCredentials($credential, []);
-        if ($success) {
-            return true;
+        $systemConfigurationHelper = new SystemConfigurationHelper();
+        $version = $systemConfigurationHelper->getMySqlServerVersion();
+        $prefix = '';
+        if ($this->getTextHelper()->strContains($version, 'MariaDB')) {
+            $prefix = '5.5.5-';
         }
-//        if (!$success) {
-//            throw AuthenticationException::invalidCredentials();
-//        }
-        return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPriority(): int
-    {
-        return 10000;
+        $this->assertEquals(
+            $prefix . $this->getEntityManager()->getConnection()
+                ->executeQuery('SELECT @@version')
+                ->fetchOne(),
+            $version
+        );
     }
 }

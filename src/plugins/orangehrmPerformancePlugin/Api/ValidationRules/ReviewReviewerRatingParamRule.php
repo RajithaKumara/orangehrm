@@ -44,16 +44,16 @@ class ReviewReviewerRatingParamRule extends AbstractRule
      */
     public function validate($ratings): bool
     {
-        if (! is_array($ratings)) {
+        if (!is_array($ratings)) {
             return false;
         }
 
+        $kpiIdsForReviewId = $this->getPerformanceReviewService()->getPerformanceReviewDao()
+            ->getKpiIdsForReviewId($this->reviewId);
         foreach ($ratings as $rating) {
             if (count(array_keys($rating)) != 3 || !(isset($rating[SupervisorEvaluationAPI::PARAMETER_KPI_ID]))) {
                 return false;
             }
-            $kpiIdsForReviewId = $this->getPerformanceReviewService()->getPerformanceReviewDao()
-                ->getKpiIdsForReviewId($this->reviewId);
 
             $kpiId = $rating[SupervisorEvaluationAPI::PARAMETER_KPI_ID];
             if (!(is_numeric($kpiId) && ($kpiId > 0))
@@ -71,6 +71,7 @@ class ReviewReviewerRatingParamRule extends AbstractRule
 
             $userRating = intval($userRating);
 
+//            $userRating = (float)$userRating;
             if ($userRating < $kpi->getMinRating() || $userRating > $kpi->getMaxRating()) {
                 return false;
             }

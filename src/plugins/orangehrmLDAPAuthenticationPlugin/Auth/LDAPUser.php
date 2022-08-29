@@ -17,43 +17,18 @@
  * Boston, MA 02110-1301, USA
  */
 
-namespace OrangeHRM\Authentication\Auth;
+namespace OrangeHRM\LDAP\Auth;
 
-use OrangeHRM\Authentication\Dto\UserCredential;
-use OrangeHRM\Authentication\Service\AuthenticationService;
+use Doctrine\ORM\Mapping as ORM;
+use OrangeHRM\Entity\User;
 
-class LocalAuthProvider extends AbstractAuthProvider
+// TODO:: need to remove
+class LDAPUser extends User
 {
-    private AuthenticationService $authenticationService;
-
     /**
-     * @return AuthenticationService
+     * @var string
+     *
+     * @ORM\Column(name="unique_id", type="string")
      */
-    private function getAuthenticationService(): AuthenticationService
-    {
-        return $this->authenticationService ??= new AuthenticationService();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function authenticate(UserCredential $credential): bool
-    {
-        $success = $this->getAuthenticationService()->setCredentials($credential, []);
-        if ($success) {
-            return true;
-        }
-//        if (!$success) {
-//            throw AuthenticationException::invalidCredentials();
-//        }
-        return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPriority(): int
-    {
-        return 10000;
-    }
+    private string $uniqueId;
 }

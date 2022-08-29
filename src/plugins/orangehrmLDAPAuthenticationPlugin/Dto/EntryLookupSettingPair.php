@@ -17,43 +17,41 @@
  * Boston, MA 02110-1301, USA
  */
 
-namespace OrangeHRM\Authentication\Auth;
+namespace OrangeHRM\LDAP\Dto;
 
-use OrangeHRM\Authentication\Dto\UserCredential;
-use OrangeHRM\Authentication\Service\AuthenticationService;
+use Symfony\Component\Ldap\Entry;
 
-class LocalAuthProvider extends AbstractAuthProvider
+/**
+ * @todo remove
+ */
+class EntryLookupSettingPair
 {
-    private AuthenticationService $authenticationService;
+    private Entry $entry;
+    private LDAPUserLookupSetting $lookupSetting;
 
     /**
-     * @return AuthenticationService
+     * @param Entry $entry
+     * @param LDAPUserLookupSetting $lookupSetting
      */
-    private function getAuthenticationService(): AuthenticationService
+    public function __construct(Entry $entry, LDAPUserLookupSetting $lookupSetting)
     {
-        return $this->authenticationService ??= new AuthenticationService();
+        $this->entry = $entry;
+        $this->lookupSetting = $lookupSetting;
     }
 
     /**
-     * @inheritDoc
+     * @return Entry
      */
-    public function authenticate(UserCredential $credential): bool
+    public function getEntry(): Entry
     {
-        $success = $this->getAuthenticationService()->setCredentials($credential, []);
-        if ($success) {
-            return true;
-        }
-//        if (!$success) {
-//            throw AuthenticationException::invalidCredentials();
-//        }
-        return false;
+        return $this->entry;
     }
 
     /**
-     * @inheritDoc
+     * @return LDAPUserLookupSetting
      */
-    public function getPriority(): int
+    public function getLookupSetting(): LDAPUserLookupSetting
     {
-        return 10000;
+        return $this->lookupSetting;
     }
 }

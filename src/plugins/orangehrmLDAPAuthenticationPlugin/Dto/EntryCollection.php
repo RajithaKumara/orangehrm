@@ -17,43 +17,40 @@
  * Boston, MA 02110-1301, USA
  */
 
-namespace OrangeHRM\Authentication\Auth;
+namespace OrangeHRM\LDAP\Dto;
 
-use OrangeHRM\Authentication\Dto\UserCredential;
-use OrangeHRM\Authentication\Service\AuthenticationService;
+use Countable;
 
-class LocalAuthProvider extends AbstractAuthProvider
+class EntryCollection implements Countable
 {
-    private AuthenticationService $authenticationService;
+    private array $entryCollectionLookupSettingPairArray;
+    private ?int $count = null;
 
-    /**
-     * @return AuthenticationService
-     */
-    private function getAuthenticationService(): AuthenticationService
+    public function __construct(EntryCollectionLookupSettingPair ...$entryCollectionLookupSettingPairArray)
     {
-        return $this->authenticationService ??= new AuthenticationService();
+        $this->entryCollectionLookupSettingPairArray = $entryCollectionLookupSettingPairArray;
     }
 
     /**
      * @inheritDoc
      */
-    public function authenticate(UserCredential $credential): bool
+    public function count(): int
     {
-        $success = $this->getAuthenticationService()->setCredentials($credential, []);
-        if ($success) {
-            return true;
+        if (is_null($this->count)) {
+            $this->count = 0;
+            foreach ($this->entryCollectionLookupSettingPairArray as $collection) {
+                $this->count += $collection->getCollection()->count();
+            }
         }
-//        if (!$success) {
-//            throw AuthenticationException::invalidCredentials();
-//        }
-        return false;
+
+        return $this->count;
     }
 
     /**
-     * @inheritDoc
+     * @return EntryCollectionLookupSettingPair[]
      */
-    public function getPriority(): int
+    public function getCollections(): array
     {
-        return 10000;
+        return $this->entryCollectionLookupSettingPairArray;
     }
 }
