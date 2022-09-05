@@ -108,7 +108,7 @@ class WorkShiftDao extends BaseDao
             $employeeWorkShift = new EmployeeWorkShift();
             $employee = $this->getRepository(Employee::class)->find($empNumber);
             $employeeWorkShift->setWorkShift($workShift);
-            $employeeWorkShift->setEmployee($employee);
+            $employeeWorkShift->setEmployee($employee); // TODO
             $this->getEntityManager()->persist($employeeWorkShift);
         }
         $this->getEntityManager()->flush();

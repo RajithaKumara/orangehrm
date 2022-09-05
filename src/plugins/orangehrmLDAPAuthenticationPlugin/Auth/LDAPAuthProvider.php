@@ -22,17 +22,18 @@ namespace OrangeHRM\LDAP\Auth;
 use OrangeHRM\Authentication\Auth\AbstractAuthProvider;
 use OrangeHRM\Authentication\Dto\UserCredential;
 use OrangeHRM\LDAP\Service\LDAPService;
+use Symfony\Component\Ldap\Exception\LdapException;
 
 class LDAPAuthProvider extends AbstractAuthProvider
 {
-    private LDAPService $ldapAuthService;
+    private LDAPService $ldapService;
 
     /**
      * @return LDAPService
      */
-    private function getLdapAuthService(): LDAPService
+    private function getLdapService(): LDAPService
     {
-        return $this->ldapAuthService ??= new LDAPService();
+        return $this->ldapService ??= new LDAPService();
     }
 
     /**
@@ -40,7 +41,13 @@ class LDAPAuthProvider extends AbstractAuthProvider
      */
     public function authenticate(UserCredential $credential): bool
     {
-        $ldap = $this->getLdapAuthService()->getConnection();
+        $userDN = $credential->getUsername();
+        // TODO
+        $ldapCredential = new UserCredential($userDN, $credential->getPassword());
+        try {
+            $this->getLdapService()->bind($ldapCredential);
+        } catch (LdapException $e) {
+        }
         // TODO:: authenticate
         // IF user not there in the OrangeHRM can fetch and create user and employee
         return false;

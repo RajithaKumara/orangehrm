@@ -31,6 +31,7 @@ class HomeController extends AbstractInstallerController
      */
     protected function execute(Request $request): RedirectResponse
     {
+        clearstatcache(true);
         if (Config::isInstalled()) {
             return new RedirectResponse(str_replace('/installer/index.php', '/web/index.php', $request->getBaseUrl()));
         }

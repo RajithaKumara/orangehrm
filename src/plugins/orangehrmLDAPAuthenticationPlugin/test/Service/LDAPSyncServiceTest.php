@@ -313,8 +313,17 @@ class LDAPSyncServiceTest extends KernelTestCase
             ->willReturn($ldapSetting);
         $this->createKernelWithMockServices([Services::CONFIG_SERVICE => $configService]);
 
+        $timeStart = microtime(true);
         $ldapSyncService = new LDAPSyncService();
         $ldapUserCollection = $ldapSyncService->fetchAllLDAPUsers();
+
+        // check possibility of serializing
+        $filePath = __DIR__ . '/ldap_user_collection.txt';
+        file_put_contents($filePath, serialize($ldapUserCollection));
+        $ldapUserCollection = unserialize(file_get_contents($filePath));
+        $timeEnd = microtime(true);
+        unlink($filePath);
+        //echo "\nExecution time:" . ($timeEnd - $timeStart);
 
         $expectedFailedCount = 4;
         $expectedDuplicateUserCount = 204;

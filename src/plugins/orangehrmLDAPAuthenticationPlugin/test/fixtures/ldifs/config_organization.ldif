@@ -3,3 +3,5 @@ objectClass: dcObject
 objectClass: organization
 dc: example
 o: example
+
+# ldapadd -f config_organization.ldif -x -H "ldap://172.18.0.2:1389" -D "cn=admin,cn=config" -w admin

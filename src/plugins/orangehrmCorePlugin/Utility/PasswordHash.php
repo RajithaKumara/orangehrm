@@ -24,6 +24,7 @@ namespace OrangeHRM\Core\Utility;
  */
 class PasswordHash
 {
+    // TODO:: test this class
     public const ALGORITHM = PASSWORD_BCRYPT;
 
     // 2^12 iterations

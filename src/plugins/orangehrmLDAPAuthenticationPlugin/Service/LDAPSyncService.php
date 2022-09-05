@@ -22,6 +22,10 @@ namespace OrangeHRM\LDAP\Service;
 use OrangeHRM\Authentication\Dto\UserCredential;
 use OrangeHRM\Core\Traits\LoggerTrait;
 use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
+use OrangeHRM\Entity\Employee;
+use OrangeHRM\Entity\User;
+use OrangeHRM\Entity\UserAuthProvider;
+use OrangeHRM\LDAP\Dao\LDAPDao;
 use OrangeHRM\LDAP\Dto\EntryCollection;
 use OrangeHRM\LDAP\Dto\EntryCollectionLookupSettingPair;
 use OrangeHRM\LDAP\Dto\LDAPSetting;
@@ -40,6 +44,7 @@ class LDAPSyncService
     private string $ldapServiceClass;
     private ?LDAPService $ldapService = null;
     private ?LDAPSetting $ldapSetting = null;
+    private LDAPDao $ldapDao;
 
     /**
      * @param string $ldapServiceClass
@@ -47,6 +52,14 @@ class LDAPSyncService
     public function __construct(string $ldapServiceClass = LDAPService::class)
     {
         $this->ldapServiceClass = $ldapServiceClass;
+    }
+
+    /**
+     * @return LDAPDao
+     */
+    private function getLdapDao(): LDAPDao
+    {
+        return $this->ldapDao ??= new LDAPDao();
     }
 
     /**
@@ -114,6 +127,125 @@ class LDAPSyncService
     }
 
     /**
+     * @param LDAPUser[] $ldapUsers
+     */
+    public function createSystemUsers(array $ldapUsers):void
+    {
+        foreach ($ldapUsers as $ldapUser) {
+            $user = $this->getLdapDao()->getUserByUserName($ldapUser->getUsername());
+
+            if ($user instanceof User) {
+                $ldapAuthProvider = $this->getLDAPAuthProvider($user->getAuthProviders());
+                if ($ldapAuthProvider instanceof UserAuthProvider) {
+                    $userHash = md5(serialize($ldapUser));
+                    if ($ldapAuthProvider->getLdapUserHash() === $userHash) {
+                        continue;
+                    }
+
+                    $employee = $user->getEmployee();
+                    $employee->setFirstName($ldapUser->getFirstName());
+                    $employee->setLastName($ldapUser->getLastName());
+                    $employee->setMiddleName($ldapUser->getMiddleName());
+                    $employee->setEmployeeId($ldapUser->getEmployeeId());
+                    $employee->setWorkEmail($ldapUser->getWorkEmail());
+                    $user->setStatus($ldapUser->isUserEnabled());
+                    //$user->setDateModified();
+
+                    // TODO:: save $user
+                    // TODO:: save $employee
+
+                    // Change user data
+                    $ldapAuthProvider->setLdapUserDN($ldapUser->getUserDN());
+                    $ldapAuthProvider->setLdapUserUniqueId($ldapUser->getUserUniqueId());
+                    $userHash = md5(serialize($ldapUser));
+                    $ldapAuthProvider->setLdapUserHash($userHash);
+
+                    // TODO:: save $ldapAuthProvider
+
+                } else {
+                    // local auth, may be skipped
+                    // TODO:: check empty $user->getUserPassword()
+                }
+            } else {
+                // try to find a user who have user unique id
+                if ($ldapUser->getUserUniqueId() !== null) {
+                    $ldapAuthProvider = $this->getLdapDao()->getAuthProviderByUserUniqueId($ldapUser->getUserUniqueId());
+                    if ($ldapAuthProvider instanceof UserAuthProvider) {
+                        $user = $ldapAuthProvider->getUser();
+                        $user->setUserName($ldapUser->getUsername());
+                        $user->setStatus($ldapUser->isUserEnabled());
+                        //$user->setDateModified();
+
+                        $employee = $user->getEmployee();
+                        $employee->setFirstName($ldapUser->getFirstName());
+                        $employee->setLastName($ldapUser->getLastName());
+                        $employee->setMiddleName($ldapUser->getMiddleName());
+                        $employee->setEmployeeId($ldapUser->getEmployeeId());
+                        $employee->setWorkEmail($ldapUser->getWorkEmail());
+
+                        // TODO:: save $user
+                        // TODO:: save $employee
+
+                        // Change user data
+                        $ldapAuthProvider->setLdapUserDN($ldapUser->getUserDN());
+                        $userHash = md5(serialize($ldapUser));
+                        $ldapAuthProvider->setLdapUserHash($userHash);
+
+                        // TODO:: save $ldapAuthProvider
+
+                        continue;
+                    }
+                }
+
+                // Create a new user
+                $employee = new Employee(); // TODO:: get employee using mapper
+                $employee->setFirstName($ldapUser->getFirstName());
+                $employee->setLastName($ldapUser->getLastName());
+                $employee->setMiddleName($ldapUser->getMiddleName());
+                $employee->setEmployeeId($ldapUser->getEmployeeId());
+                $employee->setWorkEmail($ldapUser->getWorkEmail());
+
+                $user = new User();
+                $user->setUserName($ldapUser->getUsername());
+                $user->setStatus($ldapUser->isUserEnabled());
+                $user->setEmployee($employee);
+                //$user->setDateEntered();
+                //$user->setUserRole();
+
+                $authProvider = new UserAuthProvider();
+                $authProvider->setUser($user);
+                $authProvider->setType(UserAuthProvider::TYPE_LDAP);
+                $authProvider->setLdapUserDN($ldapUser->getUserDN());
+                $authProvider->setLdapUserUniqueId($ldapUser->getUserUniqueId());
+                $userHash = md5(serialize($ldapUser));
+                $authProvider->setLdapUserHash($userHash);
+
+                // TODO:: save $authProvider
+            }
+        }
+    }
+
+    /**
+     * @param UserAuthProvider[] $authProviders
+     */
+    public function getLDAPAuthProvider(array $authProviders): ?UserAuthProvider
+    {
+        foreach ($authProviders as $authProvider) {
+            if ($authProvider->getType() === UserAuthProvider::TYPE_LDAP) {
+                return $authProvider;
+            }
+        }
+        return null;
+    }
+
+    public function sync()
+    {
+        // begin transaction
+
+        // commit transaction
+    }
+
+    /**
      * @return EntryCollection
      */
     public function fetchEntryCollections(): EntryCollection
@@ -162,7 +294,7 @@ class LDAPSyncService
                 ->setUserDN($entry->getDn())
                 ->setUsername($username)
                 ->setUserUniqueId($this->getAttribute($entry, $lookupSetting->getUserUniqueIdAttribute()))
-                ->setUserEnabled($this->getAttribute($entry, $dataMapping->getUserStatusAttribute()) ?? true)
+                ->setUserEnabled((bool) $this->getAttribute($entry, $dataMapping->getUserStatusAttribute()) ?? true)
                 ->setFirstName($this->getAttribute($entry, $dataMapping->getFirstNameAttribute()))
                 ->setMiddleName($this->getAttribute($entry, $dataMapping->getMiddleNameAttribute()) ?? '')
                 ->setLastName($this->getAttribute($entry, $dataMapping->getLastNameAttribute()))

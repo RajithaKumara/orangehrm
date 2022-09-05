@@ -1,0 +1,684 @@
+diff --git a/index.php b/index.php
+index f35b9311d..f2197976c 100644
+--- a/index.php
++++ b/index.php
+@@ -20,7 +20,7 @@
+ /* For logging PHP errors */
+ include_once('lib/confs/log_settings.php');
+ 
+-if (!realpath(__DIR__ . '/lib/confs/Conf.php')) {
++if (!is_file(__DIR__ . '/lib/confs/Conf.php')) {
+     header('Location: ./installer/index.php');
+ } else {
+     header("Location: ./web/index.php/auth/login");
+diff --git a/installer/Controller/HomeController.php b/installer/Controller/HomeController.php
+index 890b3efd8..ab1d4a29f 100644
+--- a/installer/Controller/HomeController.php
++++ b/installer/Controller/HomeController.php
+@@ -31,6 +31,7 @@ class HomeController extends AbstractInstallerController
+      */
+     protected function execute(Request $request): RedirectResponse
+     {
++        clearstatcache(true);
+         if (Config::isInstalled()) {
+             return new RedirectResponse(str_replace('/installer/index.php', '/web/index.php', $request->getBaseUrl()));
+         }
+diff --git a/installer/Controller/Upgrader/Api/MigrationAPI.php b/installer/Controller/Upgrader/Api/MigrationAPI.php
+index 6ba021cd3..1acd4730c 100644
+--- a/installer/Controller/Upgrader/Api/MigrationAPI.php
++++ b/installer/Controller/Upgrader/Api/MigrationAPI.php
+@@ -22,6 +22,7 @@ namespace OrangeHRM\Installer\Controller\Upgrader\Api;
+ use OrangeHRM\Framework\Http\Request;
+ use OrangeHRM\Installer\Controller\AbstractInstallerRestController;
+ use OrangeHRM\Installer\Util\AppSetupUtility;
++use OrangeHRM\Installer\Util\Logger;
+ 
+ class MigrationAPI extends AbstractInstallerRestController
+ {
+@@ -44,16 +45,20 @@ class MigrationAPI extends AbstractInstallerRestController
+         $appSetupUtility = new AppSetupUtility();
+         if ($request->request->has('version')) {
+             $version = $request->request->get('version');
++            $result = ['version' => $version];
++            Logger::getLogger()->info(json_encode($result));
+             $appSetupUtility->runMigrationFor($version);
+-            return ['version' => $version];
++            return $result;
+         } else {
+             $fromVersion = $request->request->get('fromVersion');
+             $toVersion = $request->request->get('toVersion');
+-            $appSetupUtility->runMigrations($fromVersion, $toVersion);
+-            return [
++            $result = [
+                 'fromVersion' => $fromVersion,
+                 'toVersion' => $toVersion
+             ];
++            Logger::getLogger()->info(json_encode($result));
++            $appSetupUtility->runMigrations($fromVersion, $toVersion);
++            return $result;
+         }
+     }
+ }
+diff --git a/installer/Migration/V5_2_0/Migration.php b/installer/Migration/V5_2_0/Migration.php
+index 47b877b7f..3fad69fe7 100644
+--- a/installer/Migration/V5_2_0/Migration.php
++++ b/installer/Migration/V5_2_0/Migration.php
+@@ -20,6 +20,10 @@
+ namespace OrangeHRM\Installer\Migration\V5_2_0;
+ 
+ use Doctrine\DBAL\Connection;
++use Doctrine\DBAL\Schema\ForeignKeyConstraint;
++use Doctrine\DBAL\Types\Types;
++use OrangeHRM\Entity\UserAuthProvider;
++use OrangeHRM\Installer\Util\Logger;
+ use OrangeHRM\Installer\Util\V1\AbstractMigration;
+ 
+ class Migration extends AbstractMigration
+@@ -60,8 +64,45 @@ class Migration extends AbstractMigration
+ 
+         $this->updatePimLeftMenuConfigurators();
+         $this->updateOrganizationStructure();
++
+         $this->updateHomePage('Admin', 'dashboard/index');
+         $this->updateHomePage('ESS', 'dashboard/index');
++
++        $this->getSchemaHelper()->createTable('ohrm_user_auth_provider')
++            ->addColumn('id', Types::INTEGER, ['Autoincrement' => true])
++            ->addColumn('user_id', Types::INTEGER, ['Notnull' => true])
++            ->addColumn('provider_type', Types::INTEGER, ['Notnull' => true])
++            ->addColumn('ldap_user_hash', Types::STRING, ['Length' => 255, 'Notnull' => false, 'Default' => null])
++            ->addColumn('ldap_user_dn', Types::STRING, ['Length' => 255, 'Notnull' => false, 'Default' => null])
++            ->addColumn('ldap_user_unique_id', Types::STRING, ['Length' => 255, 'Notnull' => false, 'Default' => null])
++            ->setPrimaryKey(['id'])
++            ->create();
++        $foreignKeyConstraint = new ForeignKeyConstraint(
++            ['user_id'],
++            'ohrm_user',
++            ['id'],
++            'ohrm_user_id',
++            ['onDelete' => 'CASCADE', 'onUpdate' => 'RESTRICT']
++        );
++        $this->getSchemaHelper()->addForeignKey('ohrm_user_auth_provider', $foreignKeyConstraint);
++
++        $q = $this->createQueryBuilder()
++            ->select('user.id')
++            ->from('ohrm_user ', 'user');
++        $userIds = $q->where($q->expr()->isNotNull('user.user_password'))
++            ->executeQuery()
++            ->fetchFirstColumn();
++        foreach ($userIds as $userId) {
++            $this->createQueryBuilder()
++                ->insert('ohrm_user_auth_provider')
++                ->values([
++                    'user_id' => ':userId',
++                    'provider_type' => ':providerType',
++                ])
++                ->setParameter('userId', $userId)
++                ->setParameter('providerType', UserAuthProvider::TYPE_LOCAL)
++                ->executeQuery();
++        }
+     }
+ 
+     /**
+@@ -143,4 +184,21 @@ class Migration extends AbstractMigration
+             ->setParameter('userRoleId', $this->getDataGroupHelper()->getUserRoleIdByName($userRole))
+             ->executeQuery();
+     }
++
++    /**
++     * @param string $name
++     */
++    private function logAndDeleteConfigValue(string $name): void
++    {
++        $value = $this->createQueryBuilder()
++            ->select('name')
++            ->from('hs_hr_config')
++            ->fetchOne();
++        Logger::getLogger()->info("Deleting: $name => $value from `hs_hr_config`");
++        $this->createQueryBuilder()
++            ->delete('hs_hr_config')
++            ->andWhere('hs_hr_config.name = :name')
++            ->setParameter('name', $name)
++            ->executeQuery();
++    }
+ }
+diff --git a/installer/Util/AppSetupUtility.php b/installer/Util/AppSetupUtility.php
+index d0db754f6..9f4def640 100644
+--- a/installer/Util/AppSetupUtility.php
++++ b/installer/Util/AppSetupUtility.php
+@@ -27,6 +27,7 @@ use OrangeHRM\Config\Config;
+ use OrangeHRM\Core\Exception\KeyHandlerException;
+ use OrangeHRM\Core\Utility\KeyHandler;
+ use OrangeHRM\Core\Utility\PasswordHash;
++use OrangeHRM\Entity\UserAuthProvider;
+ use OrangeHRM\Installer\Migration\V3_3_3\Migration;
+ use OrangeHRM\Installer\Util\SystemConfig\SystemConfiguration;
+ use OrangeHRM\Installer\Util\V1\AbstractMigration;
+@@ -326,6 +327,24 @@ class AppSetupUtility
+             ->setParameter('created', new DateTime(), Types::DATETIME_MUTABLE)
+             ->executeQuery();
+ 
++        $userId = Connection::getConnection()->createQueryBuilder()
++            ->select('user.id')
++            ->from('ohrm_user', 'user')
++            ->where('user.emp_number = :empNumber')
++            ->setParameter('empNumber', $empNumber)
++            ->setMaxResults(1)
++            ->fetchOne();
++
++        Connection::getConnection()->createQueryBuilder()
++            ->insert('ohrm_user_auth_provider')
++            ->values([
++                'user_id' => ':userId',
++                'provider_type' => ':providerType',
++            ])
++            ->setParameter('userId', $userId)
++            ->setParameter('providerType', UserAuthProvider::TYPE_LOCAL)
++            ->executeQuery();
++
+         $this->updateUniqueIdForAdminEmployeeInsertion();
+     }
+ 
+diff --git a/src/plugins/orangehrmAdminPlugin/Dao/WorkShiftDao.php b/src/plugins/orangehrmAdminPlugin/Dao/WorkShiftDao.php
+index ef0422d12..16499fd48 100644
+--- a/src/plugins/orangehrmAdminPlugin/Dao/WorkShiftDao.php
++++ b/src/plugins/orangehrmAdminPlugin/Dao/WorkShiftDao.php
+@@ -108,7 +108,7 @@ class WorkShiftDao extends BaseDao
+             $employeeWorkShift = new EmployeeWorkShift();
+             $employee = $this->getRepository(Employee::class)->find($empNumber);
+             $employeeWorkShift->setWorkShift($workShift);
+-            $employeeWorkShift->setEmployee($employee);
++            $employeeWorkShift->setEmployee($employee); // TODO
+             $this->getEntityManager()->persist($employeeWorkShift);
+         }
+         $this->getEntityManager()->flush();
+diff --git a/src/plugins/orangehrmAdminPlugin/Service/UserService.php b/src/plugins/orangehrmAdminPlugin/Service/UserService.php
+index 048c0fcd0..4a406654a 100644
+--- a/src/plugins/orangehrmAdminPlugin/Service/UserService.php
++++ b/src/plugins/orangehrmAdminPlugin/Service/UserService.php
+@@ -203,6 +203,7 @@ class UserService
+     }
+ 
+     /**
++     * @todo remove
+      * Hash password for storage
+      * @param string $password
+      * @return string hashed password
+diff --git a/src/plugins/orangehrmAuthenticationPlugin/Auth/LocalAuthProvider.php b/src/plugins/orangehrmAuthenticationPlugin/Auth/LocalAuthProvider.php
+index ef252a226..80ea6dca5 100644
+--- a/src/plugins/orangehrmAuthenticationPlugin/Auth/LocalAuthProvider.php
++++ b/src/plugins/orangehrmAuthenticationPlugin/Auth/LocalAuthProvider.php
+@@ -39,7 +39,14 @@ class LocalAuthProvider extends AbstractAuthProvider
+      */
+     public function authenticate(UserCredential $credential): bool
+     {
+-        return $this->getAuthenticationService()->setCredentials($credential, []);
++        $success = $this->getAuthenticationService()->setCredentials($credential, []);
++        if ($success) {
++            return true;
++        }
++//        if (!$success) {
++//            throw AuthenticationException::invalidCredentials();
++//        }
++        return false;
+     }
+ 
+     /**
+diff --git a/src/plugins/orangehrmAuthenticationPlugin/Service/AuthenticationService.php b/src/plugins/orangehrmAuthenticationPlugin/Service/AuthenticationService.php
+index 7ef190730..5a53ae017 100644
+--- a/src/plugins/orangehrmAuthenticationPlugin/Service/AuthenticationService.php
++++ b/src/plugins/orangehrmAuthenticationPlugin/Service/AuthenticationService.php
+@@ -22,8 +22,6 @@ namespace OrangeHRM\Authentication\Service;
+ use OrangeHRM\Admin\Traits\Service\UserServiceTrait;
+ use OrangeHRM\Authentication\Dto\UserCredential;
+ use OrangeHRM\Authentication\Exception\AuthenticationException;
+-use OrangeHRM\Core\Exception\DaoException;
+-use OrangeHRM\Core\Exception\ServiceException;
+ use OrangeHRM\Core\Traits\Auth\AuthUserTrait;
+ use OrangeHRM\Entity\Employee;
+ use OrangeHRM\Entity\User;
+@@ -35,13 +33,12 @@ class AuthenticationService
+ 
+     /**
+      * @param User|null $user
+-     * @param array $additionalData
+      * @return bool
+      * @throws AuthenticationException
+      */
+-    public function setCredentialsForUser(?User $user, array $additionalData): bool
++    private function setCredentialsForUser(?User $user): bool
+     {
+-        if (!$user instanceof User) {
++        if (!$user instanceof User || $user->isDeleted()) {
+             return false;
+         } else {
+             if (!$user->getDecorator()->isAdmin() && is_null($user->getEmpNumber())) {
+@@ -65,13 +62,11 @@ class AuthenticationService
+      * @param $additionalData
+      * @return bool
+      * @throws AuthenticationException
+-     * @throws DaoException
+-     * @throws ServiceException
+      */
+     public function setCredentials(UserCredential $credentials, $additionalData): bool
+     {
+         $user = $this->getUserService()->getCredentials($credentials);
+-        return $this->setCredentialsForUser($user, $additionalData);
++        return $this->setCredentialsForUser($user);
+     }
+ 
+     /**
+diff --git a/src/plugins/orangehrmCorePlugin/Utility/PasswordHash.php b/src/plugins/orangehrmCorePlugin/Utility/PasswordHash.php
+index f45d756ae..830d3a8d3 100644
+--- a/src/plugins/orangehrmCorePlugin/Utility/PasswordHash.php
++++ b/src/plugins/orangehrmCorePlugin/Utility/PasswordHash.php
+@@ -24,6 +24,7 @@ namespace OrangeHRM\Core\Utility;
+  */
+ class PasswordHash
+ {
++    // TODO:: test this class
+     public const ALGORITHM = PASSWORD_BCRYPT;
+ 
+     // 2^12 iterations
+diff --git a/src/plugins/orangehrmCorePlugin/config/CorePluginConfiguration.php b/src/plugins/orangehrmCorePlugin/config/CorePluginConfiguration.php
+index 94040251e..4b9e9c7f8 100644
+--- a/src/plugins/orangehrmCorePlugin/config/CorePluginConfiguration.php
++++ b/src/plugins/orangehrmCorePlugin/config/CorePluginConfiguration.php
+@@ -69,7 +69,7 @@ class CorePluginConfiguration implements PluginConfigurationInterface
+             'cookie_path' => $path,
+             'cookie_samesite' => 'Strict',
+         ];
+-        $sessionStorage = new NativeSessionStorage($options, new NativeFileSessionHandler());
++        $sessionStorage = new NativeSessionStorage($options, new NativeFileSessionHandler(\OrangeHRM\Config\Config::get(\OrangeHRM\Config\Config::CACHE_DIR) . '/session'));
+         $session = new Session($sessionStorage);
+         $session->start();
+ 
+diff --git a/src/plugins/orangehrmCorePlugin/entity/User.php b/src/plugins/orangehrmCorePlugin/entity/User.php
+index c267ae2f9..de98b7c5c 100644
+--- a/src/plugins/orangehrmCorePlugin/entity/User.php
++++ b/src/plugins/orangehrmCorePlugin/entity/User.php
+@@ -20,6 +20,7 @@
+ namespace OrangeHRM\Entity;
+ 
+ use DateTime;
++use Doctrine\Common\Collections\ArrayCollection;
+ use Doctrine\ORM\Mapping as ORM;
+ use OrangeHRM\Entity\Decorator\DecoratorTrait;
+ use OrangeHRM\Entity\Decorator\UserDecorator;
+@@ -51,11 +52,11 @@ class User
+     private string $userName;
+ 
+     /**
+-     * @var string
++     * @var string|null
+      *
+-     * @ORM\Column(name="user_password", type="string", length=255)
++     * @ORM\Column(name="user_password", type="string", length=255, nullable=true)
+      */
+-    private string $userPassword;
++    private ?string $userPassword = null;
+ 
+     /**
+      * @var bool
+@@ -114,10 +115,18 @@ class User
+      */
+     private UserRole $userRole;
+ 
++    /**
++     * @var UserAuthProvider[]
++     *
++     * @ORM\OneToMany(targetEntity="OrangeHRM\Entity\UserAuthProvider", mappedBy="user")
++     */
++    private iterable $authProviders;
++
+     public function __construct()
+     {
+         $this->status = true;
+         $this->deleted = false;
++        $this->authProviders = new ArrayCollection();
+     }
+ 
+     /**
+@@ -153,17 +162,17 @@ class User
+     }
+ 
+     /**
+-     * @return string
++     * @return string|null
+      */
+-    public function getUserPassword(): string
++    public function getUserPassword(): ?string
+     {
+         return $this->userPassword;
+     }
+ 
+     /**
+-     * @param string $userPassword
++     * @param string|null $userPassword
+      */
+-    public function setUserPassword(string $userPassword): void
++    public function setUserPassword(?string $userPassword): void
+     {
+         $this->userPassword = $userPassword;
+     }
+@@ -303,4 +312,20 @@ class User
+     {
+         $this->userRole = $userRole;
+     }
++
++    /**
++     * @return UserAuthProvider[]
++     */
++    public function getAuthProviders(): iterable
++    {
++        return $this->authProviders;
++    }
++
++    /**
++     * @param UserAuthProvider[] $authProviders
++     */
++    public function setAuthProviders(array $authProviders): void
++    {
++        $this->authProviders = $authProviders;
++    }
+ }
+diff --git a/src/plugins/orangehrmLDAPAuthenticationPlugin/Api/LDAPConfigAPI.php b/src/plugins/orangehrmLDAPAuthenticationPlugin/Api/LDAPConfigAPI.php
+index 231738703..fc4beffe0 100644
+--- a/src/plugins/orangehrmLDAPAuthenticationPlugin/Api/LDAPConfigAPI.php
++++ b/src/plugins/orangehrmLDAPAuthenticationPlugin/Api/LDAPConfigAPI.php
+@@ -289,6 +289,27 @@ class LDAPConfigAPI extends Endpoint implements ResourceEndpoint
+                     new Rule(Rules::LENGTH, [null, self::PARAMETER_RULE_BIND_USER_PASSWORD_MAX_LENGTH])
+                 )
+             ),
++// TODO
++//            $this->getValidationDecorator()->notRequiredParamRule(
++//                new ParamRule(
++//                    self::PARAMETER_BASE_DISTINGUISHED_NAME,
++//                    new Rule(Rules::STRING_TYPE),
++//                    new Rule(Rules::LENGTH, [null, self::PARAMETER_RULE_BASE_DISTINGUISHED_NAME_MAX_LENGTH])
++//                )
++//            ),
++//            new ParamRule(
++//                self::PARAMETER_SEARCH_SCOPE,
++//                new Rule(Rules::STRING_TYPE),
++//                new Rule(
++//                    Rules::IN,
++//                    [[QueryInterface::SCOPE_SUB, QueryInterface::SCOPE_ONE]]
++//                )
++//            ),
++//            new ParamRule(
++//                self::PARAMETER_USER_NAME_ATTRIBUTE,
++//                new Rule(Rules::STRING_TYPE),
++//                new Rule(Rules::LENGTH, [null, self::PARAMETER_RULE_ATTRIBUTE_MAX_LENGTH])
++//            ),
+             new ParamRule(
+                 self::PARAMETER_GROUP_OBJECT_CLASS,
+                 new Rule(Rules::STRING_TYPE),
+diff --git a/src/plugins/orangehrmLDAPAuthenticationPlugin/Api/Model/LDAPConfigModel.php b/src/plugins/orangehrmLDAPAuthenticationPlugin/Api/Model/LDAPConfigModel.php
+index c7dda911d..297ffbb09 100644
+--- a/src/plugins/orangehrmLDAPAuthenticationPlugin/Api/Model/LDAPConfigModel.php
++++ b/src/plugins/orangehrmLDAPAuthenticationPlugin/Api/Model/LDAPConfigModel.php
+@@ -43,7 +43,7 @@ class LDAPConfigModel implements Normalizable
+     public function toArray(): array
+     {
+         $userLookupSettings = array_map(
+-            fn (LDAPUserLookupSetting $lookupSetting) =>$lookupSetting->toArray(),
++            fn (LDAPUserLookupSetting $lookupSetting) => $lookupSetting->toArray(),
+             $this->LDAPSetting->getUserLookupSettings()
+         );
+         return [
+diff --git a/src/plugins/orangehrmLDAPAuthenticationPlugin/Auth/LDAPAuthProvider.php b/src/plugins/orangehrmLDAPAuthenticationPlugin/Auth/LDAPAuthProvider.php
+index e2fcbc01a..c9727e18d 100644
+--- a/src/plugins/orangehrmLDAPAuthenticationPlugin/Auth/LDAPAuthProvider.php
++++ b/src/plugins/orangehrmLDAPAuthenticationPlugin/Auth/LDAPAuthProvider.php
+@@ -22,17 +22,18 @@ namespace OrangeHRM\LDAP\Auth;
+ use OrangeHRM\Authentication\Auth\AbstractAuthProvider;
+ use OrangeHRM\Authentication\Dto\UserCredential;
+ use OrangeHRM\LDAP\Service\LDAPService;
++use Symfony\Component\Ldap\Exception\LdapException;
+ 
+ class LDAPAuthProvider extends AbstractAuthProvider
+ {
+-    private LDAPService $ldapAuthService;
++    private LDAPService $ldapService;
+ 
+     /**
+      * @return LDAPService
+      */
+-    private function getLdapAuthService(): LDAPService
++    private function getLdapService(): LDAPService
+     {
+-        return $this->ldapAuthService ??= new LDAPService();
++        return $this->ldapService ??= new LDAPService();
+     }
+ 
+     /**
+@@ -40,7 +41,13 @@ class LDAPAuthProvider extends AbstractAuthProvider
+      */
+     public function authenticate(UserCredential $credential): bool
+     {
+-        $ldap = $this->getLdapAuthService()->getConnection();
++        $userDN = $credential->getUsername();
++        // TODO
++        $ldapCredential = new UserCredential($userDN, $credential->getPassword());
++        try {
++            $this->getLdapService()->bind($ldapCredential);
++        } catch (LdapException $e) {
++        }
+         // TODO:: authenticate
+         // IF user not there in the OrangeHRM can fetch and create user and employee
+         return false;
+diff --git a/src/plugins/orangehrmLDAPAuthenticationPlugin/Dto/LDAPUserCollection.php b/src/plugins/orangehrmLDAPAuthenticationPlugin/Dto/LDAPUserCollection.php
+index 9db8caeeb..6b5804295 100644
+--- a/src/plugins/orangehrmLDAPAuthenticationPlugin/Dto/LDAPUserCollection.php
++++ b/src/plugins/orangehrmLDAPAuthenticationPlugin/Dto/LDAPUserCollection.php
+@@ -28,7 +28,7 @@ class LDAPUserCollection
+     private ?int $duplicateUserCount = null;
+ 
+     /**
+-     * @param LDAPUser[] $ldapUsers
++     * @param array<string,LDAPUser> $ldapUsers e.g. ['user1' => LDAPUser, 'user2' => LDAPUser, ...]
+      * @param string[] $duplicateUsernames
+      * @param array<string,LDAPUser[]> $usersOfDuplicateUsernames e.g. ['user' => [LDAPUser, LDAPUser], ...]
+      * @param string[] $failedUsers Failed user DNs
+@@ -46,7 +46,7 @@ class LDAPUserCollection
+     }
+ 
+     /**
+-     * @return LDAPUser[]
++     * @return array<string,LDAPUser>
+      */
+     public function getLDAPUsers(): array
+     {
+diff --git a/src/plugins/orangehrmLDAPAuthenticationPlugin/Service/LDAPSyncService.php b/src/plugins/orangehrmLDAPAuthenticationPlugin/Service/LDAPSyncService.php
+index 71a25fb7e..1f269fd65 100644
+--- a/src/plugins/orangehrmLDAPAuthenticationPlugin/Service/LDAPSyncService.php
++++ b/src/plugins/orangehrmLDAPAuthenticationPlugin/Service/LDAPSyncService.php
+@@ -22,6 +22,7 @@ namespace OrangeHRM\LDAP\Service;
+ use OrangeHRM\Authentication\Dto\UserCredential;
+ use OrangeHRM\Core\Traits\LoggerTrait;
+ use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
++use OrangeHRM\LDAP\Dao\LDAPDao;
+ use OrangeHRM\LDAP\Dto\EntryCollection;
+ use OrangeHRM\LDAP\Dto\EntryCollectionLookupSettingPair;
+ use OrangeHRM\LDAP\Dto\LDAPSetting;
+@@ -40,6 +41,7 @@ class LDAPSyncService
+     private string $ldapServiceClass;
+     private ?LDAPService $ldapService = null;
+     private ?LDAPSetting $ldapSetting = null;
++    private LDAPDao $ldapDao;
+ 
+     /**
+      * @param string $ldapServiceClass
+@@ -49,6 +51,14 @@ class LDAPSyncService
+         $this->ldapServiceClass = $ldapServiceClass;
+     }
+ 
++    /**
++     * @return LDAPDao
++     */
++    private function getLdapDao(): LDAPDao
++    {
++        return $this->ldapDao ??= new LDAPDao();
++    }
++
+     /**
+      * @return LDAPService
+      */
+@@ -113,6 +123,26 @@ class LDAPSyncService
+         return new LDAPUserCollection($ldapUsers, $duplicateUsernames, $usersOfDuplicateUsernames, $failedUsers);
+     }
+ 
++    /**
++     * @param LDAPUser[] $ldapUsers
++     */
++    public function createSystemUsers(array $ldapUsers)
++    {
++        foreach ($ldapUsers as $ldapUser) {
++            $userHash = md5(serialize($ldapUser));
++            $user = $this->getLdapDao()->getUserByUserName($ldapUser->getUsername());
++
++//            $ldapUser->get
++        }
++    }
++
++    public function sync()
++    {
++        // begin transaction
++
++        // commit transaction
++    }
++
+     /**
+      * @return EntryCollection
+      */
+diff --git a/src/plugins/orangehrmLDAPAuthenticationPlugin/test/Service/LDAPSyncServiceTest.php b/src/plugins/orangehrmLDAPAuthenticationPlugin/test/Service/LDAPSyncServiceTest.php
+index c006ad58f..53e508def 100644
+--- a/src/plugins/orangehrmLDAPAuthenticationPlugin/test/Service/LDAPSyncServiceTest.php
++++ b/src/plugins/orangehrmLDAPAuthenticationPlugin/test/Service/LDAPSyncServiceTest.php
+@@ -313,9 +313,18 @@ class LDAPSyncServiceTest extends KernelTestCase
+             ->willReturn($ldapSetting);
+         $this->createKernelWithMockServices([Services::CONFIG_SERVICE => $configService]);
+ 
++        $timeStart = microtime(true);
+         $ldapSyncService = new LDAPSyncService();
+         $ldapUserCollection = $ldapSyncService->fetchAllLDAPUsers();
+ 
++        // check possibility of serializing
++        $filePath = __DIR__ . '/ldap_user_collection.txt';
++        file_put_contents($filePath, serialize($ldapUserCollection));
++        $ldapUserCollection = unserialize(file_get_contents($filePath));
++        $timeEnd = microtime(true);
++        unlink($filePath);
++        //echo "\nExecution time:" . ($timeEnd - $timeStart);
++
+         $expectedFailedCount = 4;
+         $expectedDuplicateUserCount = 204;
+         $this->assertCount($expectedFailedCount, $ldapUserCollection->getFailedUsers());
+diff --git a/src/plugins/orangehrmLDAPAuthenticationPlugin/test/fixtures/ldifs/config_organization.ldif b/src/plugins/orangehrmLDAPAuthenticationPlugin/test/fixtures/ldifs/config_organization.ldif
+index 63adc8deb..5527f4242 100644
+--- a/src/plugins/orangehrmLDAPAuthenticationPlugin/test/fixtures/ldifs/config_organization.ldif
++++ b/src/plugins/orangehrmLDAPAuthenticationPlugin/test/fixtures/ldifs/config_organization.ldif
+@@ -3,3 +3,5 @@ objectClass: dcObject
+ objectClass: organization
+ dc: example
+ o: example
++
++# ldapadd -f config_organization.ldif -x -H "ldap://172.18.0.2:1389" -D "cn=admin,cn=config" -w admin
+diff --git a/src/plugins/orangehrmPerformancePlugin/Api/SupervisorEvaluationAPI.php b/src/plugins/orangehrmPerformancePlugin/Api/SupervisorEvaluationAPI.php
+index 9abfc1865..90288dc30 100644
+--- a/src/plugins/orangehrmPerformancePlugin/Api/SupervisorEvaluationAPI.php
++++ b/src/plugins/orangehrmPerformancePlugin/Api/SupervisorEvaluationAPI.php
+@@ -298,7 +298,6 @@ class SupervisorEvaluationAPI extends Endpoint implements CrudEndpoint
+                 self::PARAMETER_REVIEW_ID
+             )
+         );
+-        $this->setSortingAndPaginationParams($supervisorParamHolder);
+ 
+         $this->beginTransaction();
+         try {
+diff --git a/src/plugins/orangehrmPerformancePlugin/Api/ValidationRules/ReviewReviewerRatingParamRule.php b/src/plugins/orangehrmPerformancePlugin/Api/ValidationRules/ReviewReviewerRatingParamRule.php
+index 8709ed525..d76293a3c 100644
+--- a/src/plugins/orangehrmPerformancePlugin/Api/ValidationRules/ReviewReviewerRatingParamRule.php
++++ b/src/plugins/orangehrmPerformancePlugin/Api/ValidationRules/ReviewReviewerRatingParamRule.php
+@@ -44,16 +44,16 @@ class ReviewReviewerRatingParamRule extends AbstractRule
+      */
+     public function validate($ratings): bool
+     {
+-        if (! is_array($ratings)) {
++        if (!is_array($ratings)) {
+             return false;
+         }
+ 
++        $kpiIdsForReviewId = $this->getPerformanceReviewService()->getPerformanceReviewDao()
++            ->getKpiIdsForReviewId($this->reviewId);
+         foreach ($ratings as $rating) {
+             if (count(array_keys($rating)) != 3 || !(isset($rating[SupervisorEvaluationAPI::PARAMETER_KPI_ID]))) {
+                 return false;
+             }
+-            $kpiIdsForReviewId = $this->getPerformanceReviewService()->getPerformanceReviewDao()
+-                ->getKpiIdsForReviewId($this->reviewId);
+ 
+             $kpiId = $rating[SupervisorEvaluationAPI::PARAMETER_KPI_ID];
+             if (!(is_numeric($kpiId) && ($kpiId > 0))
+@@ -71,6 +71,7 @@ class ReviewReviewerRatingParamRule extends AbstractRule
+ 
+             $userRating = intval($userRating);
+ 
++//            $userRating = (float)$userRating;
+             if ($userRating < $kpi->getMinRating() || $userRating > $kpi->getMaxRating()) {
+                 return false;
+             }
+diff --git a/src/plugins/orangehrmPerformancePlugin/Dao/PerformanceReviewDao.php b/src/plugins/orangehrmPerformancePlugin/Dao/PerformanceReviewDao.php
+index e69703d3f..f003cfaba 100644
+--- a/src/plugins/orangehrmPerformancePlugin/Dao/PerformanceReviewDao.php
++++ b/src/plugins/orangehrmPerformancePlugin/Dao/PerformanceReviewDao.php
+@@ -658,7 +658,7 @@ class PerformanceReviewDao extends BaseDao
+ 
+         foreach ($reviewerRatings as $key => $reviewerRating) {
+             if (isset($updatableReviewerRatings[$key])) {
+-                $updatableReviewerRatings[$key]->setRating($reviewerRating->getRating());
++                $updatableReviewerRatings[$key]->setRating("10-2");
+                 $updatableReviewerRatings[$key]->setComment($reviewerRating->getComment());
+ 
+                 $this->getEntityManager()->persist($updatableReviewerRatings[$key]);
+diff --git a/src/plugins/orangehrmPimPlugin/Menu/PIMLeftMenuItemConfigurator.php b/src/plugins/orangehrmPimPlugin/Menu/PIMLeftMenuItemConfigurator.php
+index d3e088551..f78dc245b 100644
+--- a/src/plugins/orangehrmPimPlugin/Menu/PIMLeftMenuItemConfigurator.php
++++ b/src/plugins/orangehrmPimPlugin/Menu/PIMLeftMenuItemConfigurator.php
+@@ -22,6 +22,7 @@ namespace OrangeHRM\Pim\Menu;
+ use OrangeHRM\Core\Menu\MenuConfigurator;
+ use OrangeHRM\Core\Traits\Auth\AuthUserTrait;
+ use OrangeHRM\Core\Traits\ControllerTrait;
++use OrangeHRM\Core\Traits\ModuleScreenHelperTrait;
+ use OrangeHRM\Core\Traits\Service\MenuServiceTrait;
+ use OrangeHRM\Entity\MenuItem;
+ use OrangeHRM\Entity\Screen;
+@@ -31,6 +32,7 @@ class PIMLeftMenuItemConfigurator implements MenuConfigurator
+     use MenuServiceTrait;
+     use ControllerTrait;
+     use AuthUserTrait;
++    use ModuleScreenHelperTrait;
+ 
+     /**
+      * @inheritDoc
+@@ -40,6 +42,7 @@ class PIMLeftMenuItemConfigurator implements MenuConfigurator
+         if ($this->getAuthUser()->getEmpNumber() == $this->getCurrentRequest()->attributes->get('empNumber')) {
+             return $this->getMenuService()->getMenuDao()->getMenuItemByTitle('My Info', 1);
+         }
++        $this->getCurrentModuleAndScreen()->overrideScreen('viewEmployeeList');
+         return null;
+     }
+ }
+diff --git a/src/test/functional/tools/plugins/orangehrmFunctionalTestingPlugin/Service/DatabaseBackupService.php b/src/test/functional/tools/plugins/orangehrmFunctionalTestingPlugin/Service/DatabaseBackupService.php
+index 389353db1..c03271a7f 100644
+--- a/src/test/functional/tools/plugins/orangehrmFunctionalTestingPlugin/Service/DatabaseBackupService.php
++++ b/src/test/functional/tools/plugins/orangehrmFunctionalTestingPlugin/Service/DatabaseBackupService.php
+@@ -147,6 +147,7 @@ class DatabaseBackupService
+      */
+     public function restoreToSavepoint(string $savepointName): array
+     {
++        $this->getAppCache()->clear();
+         return $this->_restoreToSavepoint($this->genSavepointCacheKeyPrefix($savepointName));
+     }
+ 

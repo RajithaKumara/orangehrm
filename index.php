@@ -20,7 +20,7 @@
 /* For logging PHP errors */
 include_once('lib/confs/log_settings.php');
 
-if (!realpath(__DIR__ . '/lib/confs/Conf.php')) {
+if (!is_file(__DIR__ . '/lib/confs/Conf.php')) {
     header('Location: ./installer/index.php');
 } else {
     header("Location: ./web/index.php/auth/login");
