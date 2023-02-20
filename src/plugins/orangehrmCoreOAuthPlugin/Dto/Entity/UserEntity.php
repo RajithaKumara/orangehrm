@@ -17,35 +17,37 @@
  * Boston, MA  02110-1301, USA
  */
 
-namespace OrangeHRM\Tests\OAuth\Api\Model;
+namespace OrangeHRM\OAuth\Dto\Entity;
 
-use OrangeHRM\Entity\OAuthClient;
-use OrangeHRM\OAuth\Api\Model\OAuthClientModel;
-use OrangeHRM\Tests\Util\TestCase;
+use League\OAuth2\Server\Entities\UserEntityInterface;
+use OrangeHRM\Entity\User;
 
-/**
- * @group OAuth
- * @group Model
- */
-class OAuthClientModelTest extends TestCase
+class UserEntity implements UserEntityInterface
 {
-    public function testToArray()
+    private string $identifier;
+
+    /**
+     * @param string $identifier
+     */
+    public function __construct(string $identifier)
     {
-        $resultArray = [
-            "clientId" => 'TestOAuth',
-            "clientSecret" => 'TestOAuthSecret',
-            "redirectUri" => 'https://facebook.com',
-        ];
+        $this->identifier = $identifier;
+    }
 
+    /**
+     * @inheritDoc
+     */
+    public function getIdentifier()
+    {
+        return $this->identifier;
+    }
 
-        $oauthClient = new OAuthClient();
-        $oauthClient->setName('TestOAuth');
-        $oauthClient->setClientSecret('TestOAuthSecret');
-        $oauthClient->setRedirectUri('https://facebook.com');
-        $oauthClient->setConfidential('password');
-        $oauthClient->setScope('user');
-
-        $oauthClientModel = new OAuthClientModel($oauthClient);
-        $this->assertEquals($resultArray, $oauthClientModel->toArray());
+    /**
+     * @param User $user
+     * @return self
+     */
+    public static function createFromEntity(User $user): self
+    {
+        return new self($user->getId());
     }
 }

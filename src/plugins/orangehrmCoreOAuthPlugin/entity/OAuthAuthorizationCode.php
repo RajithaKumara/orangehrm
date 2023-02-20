@@ -19,13 +19,14 @@
 
 namespace OrangeHRM\Entity;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="ohrm_oauth2_clients")
+ * @ORM\Table(name="ohrm_oauth2_authorization_codes")
  * @ORM\Entity
  */
-class OAuthClient
+class OAuthAuthorizationCode
 {
     /**
      * @var int
@@ -39,16 +40,23 @@ class OAuthClient
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=false)
+     * @ORM\Column(name="authorization_code", type="string", length=255, nullable=false)
      */
-    private string $name;
+    private string $authCode;
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="client_secret", type="string", length=255, nullable=false)
+     * @ORM\Column(name="client_id", type="integer", nullable=false)
      */
-    private string $clientSecret;
+    private int $clientId;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="user_id", type="integer", nullable=false)
+     */
+    private int $userId;
 
     /**
      * @var string
@@ -58,11 +66,11 @@ class OAuthClient
     private string $redirectUri;
 
     /**
-     * @var bool
+     * @var DateTimeImmutable
      *
-     * @ORM\Column(name="is_confidential", type="boolean", nullable=false)
+     * @ORM\Column(name="expiry_date_time", type="datetime_immutable", nullable=false)
      */
-    private bool $confidential;
+    private DateTimeImmutable $expiryDateTime;
 
     /**
      * @return int
@@ -83,33 +91,49 @@ class OAuthClient
     /**
      * @return string
      */
-    public function getName(): string
+    public function getAuthCode(): string
     {
-        return $this->name;
+        return $this->authCode;
     }
 
     /**
-     * @param string $name
+     * @param string $authCode
      */
-    public function setName(string $name): void
+    public function setAuthCode(string $authCode): void
     {
-        $this->name = $name;
+        $this->authCode = $authCode;
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getClientSecret(): string
+    public function getClientId(): int
     {
-        return $this->clientSecret;
+        return $this->clientId;
     }
 
     /**
-     * @param string $clientSecret
+     * @param int $clientId
      */
-    public function setClientSecret(string $clientSecret): void
+    public function setClientId(int $clientId): void
     {
-        $this->clientSecret = $clientSecret;
+        $this->clientId = $clientId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @param int $userId
+     */
+    public function setUserId(int $userId): void
+    {
+        $this->userId = $userId;
     }
 
     /**
@@ -129,18 +153,18 @@ class OAuthClient
     }
 
     /**
-     * @return bool
+     * @return DateTimeImmutable
      */
-    public function isConfidential(): bool
+    public function getExpiryDateTime(): DateTimeImmutable
     {
-        return $this->confidential;
+        return $this->expiryDateTime;
     }
 
     /**
-     * @param bool $confidential
+     * @param DateTimeImmutable $expiryDateTime
      */
-    public function setConfidential(bool $confidential): void
+    public function setExpiryDateTime(DateTimeImmutable $expiryDateTime): void
     {
-        $this->confidential = $confidential;
+        $this->expiryDateTime = $expiryDateTime;
     }
 }

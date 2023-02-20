@@ -17,35 +17,29 @@
  * Boston, MA  02110-1301, USA
  */
 
-namespace OrangeHRM\Tests\OAuth\Api\Model;
+namespace OrangeHRM\OAuth\Repository;
 
-use OrangeHRM\Entity\OAuthClient;
-use OrangeHRM\OAuth\Api\Model\OAuthClientModel;
-use OrangeHRM\Tests\Util\TestCase;
+use League\OAuth2\Server\Entities\ClientEntityInterface;
+use League\OAuth2\Server\Entities\UserEntityInterface;
+use League\OAuth2\Server\Repositories\UserRepositoryInterface;
+use OAuth2ServerExamples\Entities\UserEntity;
 
-/**
- * @group OAuth
- * @group Model
- */
-class OAuthClientModelTest extends TestCase
+class UserRepository implements UserRepositoryInterface
 {
-    public function testToArray()
-    {
-        $resultArray = [
-            "clientId" => 'TestOAuth',
-            "clientSecret" => 'TestOAuthSecret',
-            "redirectUri" => 'https://facebook.com',
-        ];
+    /**
+     * @inheritdoc
+     */
+    public function getUserEntityByUserCredentials(
+        $username,
+        $password,
+        $grantType,
+        ClientEntityInterface $clientEntity
+    ):?UserEntityInterface {
+        throw new \Exception(__METHOD__);
+        if ($username === 'alex' && $password === 'whisky') {
+            return new UserEntity();
+        }
 
-
-        $oauthClient = new OAuthClient();
-        $oauthClient->setName('TestOAuth');
-        $oauthClient->setClientSecret('TestOAuthSecret');
-        $oauthClient->setRedirectUri('https://facebook.com');
-        $oauthClient->setConfidential('password');
-        $oauthClient->setScope('user');
-
-        $oauthClientModel = new OAuthClientModel($oauthClient);
-        $this->assertEquals($resultArray, $oauthClientModel->toArray());
+        return null;
     }
 }

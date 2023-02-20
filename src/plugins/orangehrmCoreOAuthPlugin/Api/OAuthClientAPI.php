@@ -229,11 +229,11 @@ class OAuthClientAPI extends Endpoint implements CrudEndpoint
             $this->throwRecordNotFoundExceptionIfNotExist($oAuthClient, OAuthClient::class);
         } else {
             $oAuthClient = new OAuthClient();
-            $oAuthClient->setGrantTypes(GrantType::CLIENT_CREDENTIALS);
+            $oAuthClient->setConfidential(GrantType::CLIENT_CREDENTIALS);
             $oAuthClient->setScope(Scope::SCOPE_ADMIN);
         }
 
-        $oAuthClient->setClientId($clientId);
+        $oAuthClient->setName($clientId);
         $oAuthClient->setClientSecret($clientSecret);
         $oAuthClient->setRedirectUri($redirectUri);
         return $this->getOAuthService()->saveOAuthClient($oAuthClient);

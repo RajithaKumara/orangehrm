@@ -17,35 +17,13 @@
  * Boston, MA  02110-1301, USA
  */
 
-namespace OrangeHRM\Tests\OAuth\Api\Model;
+namespace OrangeHRM\Entity;
 
-use OrangeHRM\Entity\OAuthClient;
-use OrangeHRM\OAuth\Api\Model\OAuthClientModel;
-use OrangeHRM\Tests\Util\TestCase;
+use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
+use League\OAuth2\Server\Entities\Traits\EntityTrait;
+use League\OAuth2\Server\Entities\Traits\RefreshTokenTrait;
 
-/**
- * @group OAuth
- * @group Model
- */
-class OAuthClientModelTest extends TestCase
+class OAuthRefreshToken// implements RefreshTokenEntityInterface
 {
-    public function testToArray()
-    {
-        $resultArray = [
-            "clientId" => 'TestOAuth',
-            "clientSecret" => 'TestOAuthSecret',
-            "redirectUri" => 'https://facebook.com',
-        ];
-
-
-        $oauthClient = new OAuthClient();
-        $oauthClient->setName('TestOAuth');
-        $oauthClient->setClientSecret('TestOAuthSecret');
-        $oauthClient->setRedirectUri('https://facebook.com');
-        $oauthClient->setConfidential('password');
-        $oauthClient->setScope('user');
-
-        $oauthClientModel = new OAuthClientModel($oauthClient);
-        $this->assertEquals($resultArray, $oauthClientModel->toArray());
-    }
+//    use RefreshTokenTrait, EntityTrait;
 }
