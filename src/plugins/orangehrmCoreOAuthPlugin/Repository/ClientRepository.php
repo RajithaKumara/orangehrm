@@ -28,10 +28,6 @@ use OrangeHRM\OAuth\Dto\Entity\ClientEntity;
 
 class ClientRepository extends BaseDao implements ClientRepositoryInterface
 {
-    // TODO::remove
-    const CLIENT_NAME = 'My Awesome App';
-    const REDIRECT_URI = 'http://foo/bar';
-
     /**
      * @inheritdoc
      */
@@ -51,28 +47,5 @@ class ClientRepository extends BaseDao implements ClientRepositoryInterface
     public function validateClient($clientIdentifier, $clientSecret, $grantType): bool
     {
         throw new Exception(__METHOD__);
-        // TODO
-        $clients = [
-            'myawesomeapp' => [
-                'secret' => password_hash('abc123', PASSWORD_BCRYPT),
-                'name' => self::CLIENT_NAME,
-                'redirect_uri' => self::REDIRECT_URI,
-                'is_confidential' => true,
-            ],
-        ];
-
-        // Check if client is registered
-        if (array_key_exists($clientIdentifier, $clients) === false) {
-            return false;
-        }
-
-        if (
-            $clients[$clientIdentifier]['is_confidential'] === true
-            && password_verify($clientSecret, $clients[$clientIdentifier]['secret']) === false
-        ) {
-            return false;
-        }
-
-        return true;
     }
 }

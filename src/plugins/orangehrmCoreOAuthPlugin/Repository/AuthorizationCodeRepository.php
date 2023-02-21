@@ -19,7 +19,6 @@
 
 namespace OrangeHRM\OAuth\Repository;
 
-use Exception;
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
 use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
 use OrangeHRM\Core\Dao\BaseDao;
@@ -48,8 +47,14 @@ class AuthorizationCodeRepository extends BaseDao implements AuthCodeRepositoryI
      */
     public function revokeAuthCode($codeId): void
     {
-        throw new Exception(__METHOD__);
-        // TODO::Some logic to revoke the auth code in a database
+        $this->createQueryBuilder(OAuthAuthorizationCode::class, 'authCode')
+            ->update()
+            ->set('authCode.revoked', ':revoked')
+            ->setParameter('revoked', true)
+            ->andWhere('authCode.authCode = :authCode')
+            ->setParameter('authCode', $codeId)
+            ->getQuery()
+            ->execute();
     }
 
     /**
@@ -57,14 +62,12 @@ class AuthorizationCodeRepository extends BaseDao implements AuthCodeRepositoryI
      */
     public function isAuthCodeRevoked($codeId): bool
     {
-        $authCode = $this->getRepository(OAuthAuthorizationCode::class)->findOneBy(['authCode' => $codeId]);
-        if (!$authCode instanceof OAuthAuthorizationCode) {
-            return true;
-        }
-
-        // TODO:: check whether revoked
-
-        return false;
+        $q = $this->createQueryBuilder(OAuthAuthorizationCode::class, 'authCode')
+            ->andWhere('authCode.revoked = :revoked')
+            ->setParameter('revoked', true)
+            ->andWhere('authCode.authCode = :authCode')
+            ->setParameter('authCode', $codeId);
+        return $this->getPaginator($q)->count() > 0;
     }
 
     /**

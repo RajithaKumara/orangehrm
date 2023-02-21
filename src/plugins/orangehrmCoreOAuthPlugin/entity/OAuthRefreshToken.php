@@ -19,11 +19,129 @@
 
 namespace OrangeHRM\Entity;
 
-use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
-use League\OAuth2\Server\Entities\Traits\EntityTrait;
-use League\OAuth2\Server\Entities\Traits\RefreshTokenTrait;
+use DateTimeImmutable;
+use Doctrine\ORM\Mapping as ORM;
 
-class OAuthRefreshToken// implements RefreshTokenEntityInterface
+/**
+ * @ORM\Table(name="ohrm_oauth2_refresh_tokens")
+ * @ORM\Entity
+ */
+class OAuthRefreshToken
 {
-//    use RefreshTokenTrait, EntityTrait;
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private int $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="refresh_token", type="string", length=255, nullable=false)
+     */
+    private string $refreshToken;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="access_token", type="string", length=255, nullable=false)
+     */
+    private string $accessToken;
+
+    /**
+     * @var DateTimeImmutable
+     *
+     * @ORM\Column(name="expiry_date_time", type="datetime_immutable", nullable=false)
+     */
+    private DateTimeImmutable $expiryDateTime;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="revoked", type="boolean", nullable=false)
+     */
+    private bool $revoked = false;
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRefreshToken(): string
+    {
+        return $this->refreshToken;
+    }
+
+    /**
+     * @param string $refreshToken
+     */
+    public function setRefreshToken(string $refreshToken): void
+    {
+        $this->refreshToken = $refreshToken;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccessToken(): string
+    {
+        return $this->accessToken;
+    }
+
+    /**
+     * @param string $accessToken
+     */
+    public function setAccessToken(string $accessToken): void
+    {
+        $this->accessToken = $accessToken;
+    }
+
+    /**
+     * @return DateTimeImmutable
+     */
+    public function getExpiryDateTime(): DateTimeImmutable
+    {
+        return $this->expiryDateTime;
+    }
+
+    /**
+     * @param DateTimeImmutable $expiryDateTime
+     */
+    public function setExpiryDateTime(DateTimeImmutable $expiryDateTime): void
+    {
+        $this->expiryDateTime = $expiryDateTime;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRevoked(): bool
+    {
+        return $this->revoked;
+    }
+
+    /**
+     * @param bool $revoked
+     */
+    public function setRevoked(bool $revoked): void
+    {
+        $this->revoked = $revoked;
+    }
 }

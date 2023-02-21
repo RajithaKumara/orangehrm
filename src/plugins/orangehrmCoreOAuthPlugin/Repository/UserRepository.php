@@ -19,10 +19,10 @@
 
 namespace OrangeHRM\OAuth\Repository;
 
+use Exception;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use League\OAuth2\Server\Repositories\UserRepositoryInterface;
-use OAuth2ServerExamples\Entities\UserEntity;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -34,12 +34,7 @@ class UserRepository implements UserRepositoryInterface
         $password,
         $grantType,
         ClientEntityInterface $clientEntity
-    ):?UserEntityInterface {
-        throw new \Exception(__METHOD__);
-        if ($username === 'alex' && $password === 'whisky') {
-            return new UserEntity();
-        }
-
-        return null;
+    ): ?UserEntityInterface {
+        throw new Exception(__METHOD__);
     }
 }

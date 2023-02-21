@@ -19,19 +19,25 @@
 
 namespace OrangeHRM\OAuth\Repository;
 
+use Exception;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
+use OrangeHRM\Core\Dao\BaseDao;
 use OrangeHRM\Entity\OAuthRefreshToken;
+use OrangeHRM\OAuth\Dto\Entity\RefreshTokenEntity;
 
-class RefreshTokenRepository implements RefreshTokenRepositoryInterface
+class RefreshTokenRepository extends BaseDao implements RefreshTokenRepositoryInterface
 {
     /**
      * @inheritdoc
      */
     public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity): void
     {
-        throw new \Exception(__METHOD__);
-        // TODO::Some logic to persist the refresh token in a database
+        $refreshToken = new OAuthRefreshToken();
+        $refreshToken->setRefreshToken($refreshTokenEntity->getIdentifier());
+        $refreshToken->setAccessToken($refreshTokenEntity->getAccessToken()->getIdentifier());
+        $refreshToken->setExpiryDateTime($refreshTokenEntity->getExpiryDateTime());
+        $this->persist($refreshToken);
     }
 
     /**
@@ -39,8 +45,7 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface
      */
     public function revokeRefreshToken($tokenId): void
     {
-        throw new \Exception(__METHOD__);
-        // TODO::Some logic to revoke the refresh token in a database
+        throw new Exception(__METHOD__);
     }
 
     /**
@@ -48,8 +53,7 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface
      */
     public function isRefreshTokenRevoked($tokenId): bool
     {
-        throw new \Exception(__METHOD__);
-        return false; // TODO
+        throw new Exception(__METHOD__);
     }
 
     /**
@@ -57,8 +61,6 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface
      */
     public function getNewRefreshToken(): ?RefreshTokenEntityInterface
     {
-        throw new \Exception(__METHOD__);
-        // TODO
-        return new OAuthRefreshToken();
+        return new RefreshTokenEntity();
     }
 }

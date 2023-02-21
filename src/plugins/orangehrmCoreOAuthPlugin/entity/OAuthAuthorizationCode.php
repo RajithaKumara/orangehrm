@@ -73,6 +73,13 @@ class OAuthAuthorizationCode
     private DateTimeImmutable $expiryDateTime;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="revoked", type="boolean", nullable=false)
+     */
+    private bool $revoked = false;
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -166,5 +173,21 @@ class OAuthAuthorizationCode
     public function setExpiryDateTime(DateTimeImmutable $expiryDateTime): void
     {
         $this->expiryDateTime = $expiryDateTime;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRevoked(): bool
+    {
+        return $this->revoked;
+    }
+
+    /**
+     * @param bool $revoked
+     */
+    public function setRevoked(bool $revoked): void
+    {
+        $this->revoked = $revoked;
     }
 }

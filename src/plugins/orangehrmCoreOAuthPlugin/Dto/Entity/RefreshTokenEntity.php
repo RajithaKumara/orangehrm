@@ -21,41 +21,13 @@ namespace OrangeHRM\OAuth\Dto\Entity;
 
 use DateTimeImmutable;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
-use League\OAuth2\Server\Entities\ClientEntityInterface;
-use League\OAuth2\Server\Entities\ScopeEntityInterface;
-use League\OAuth2\Server\Entities\Traits\AccessTokenTrait;
+use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 
-class AccessTokenEntity implements AccessTokenEntityInterface
+class RefreshTokenEntity implements RefreshTokenEntityInterface
 {
-    use AccessTokenTrait {
-        AccessTokenTrait::__toString as toString;
-    }
-
     private string $identifier;
     private DateTimeImmutable $expiryDateTime;
-    private ?int $userIdentifier = null;
-    private ClientEntityInterface $client;
-    /**
-     * @var ScopeEntityInterface[]
-     */
-    private array $scopes = [];
-
-    /**
-     * @todo
-     * @inheritDoc
-     */
-//    public function setPrivateKey(CryptKey $privateKey): void
-//    {
-//    }
-
-    /**
-     * @inheritDoc
-     */
-    public function __toString(): string
-    {
-        // TODO
-        return $this->toString();
-    }
+    private AccessTokenEntityInterface $accessToken;
 
     /**
      * @inheritDoc
@@ -72,7 +44,6 @@ class AccessTokenEntity implements AccessTokenEntityInterface
     {
         $this->identifier = $identifier;
     }
-
 
     /**
      * @inheritDoc
@@ -92,51 +63,17 @@ class AccessTokenEntity implements AccessTokenEntityInterface
 
     /**
      * @inheritDoc
-     * @return int|null
      */
-    public function getUserIdentifier(): ?int
+    public function setAccessToken(AccessTokenEntityInterface $accessToken)
     {
-        return $this->userIdentifier;
-    }
-
-    /**
-     * @inheritDoc
-     * @param int|null $identifier
-     */
-    public function setUserIdentifier($identifier): void
-    {
-        $this->userIdentifier = $identifier;
+        $this->accessToken = $accessToken;
     }
 
     /**
      * @inheritDoc
      */
-    public function getClient(): ClientEntityInterface
+    public function getAccessToken(): AccessTokenEntityInterface
     {
-        return $this->client;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setClient(ClientEntityInterface $client): void
-    {
-        $this->client = $client;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function addScope(ScopeEntityInterface $scope): void
-    {
-        $this->scopes[$scope->getIdentifier()] = $scope;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getScopes(): array
-    {
-        return array_values($this->scopes);
+        return $this->accessToken;
     }
 }

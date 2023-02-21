@@ -147,6 +147,7 @@ class Migration extends AbstractMigration
             ->addColumn('user_id', Types::INTEGER)
             ->addColumn('redirect_uri', Types::STRING, ['Length' => 2000])
             ->addColumn('expiry_date_time', Types::DATETIME_IMMUTABLE)
+            ->addColumn('revoked', Types::BOOLEAN)
             ->setPrimaryKey(['id'])
             ->create();
 
@@ -156,6 +157,7 @@ class Migration extends AbstractMigration
             ->addColumn('client_id', Types::INTEGER)
             ->addColumn('user_id', Types::INTEGER)
             ->addColumn('expiry_date_time', Types::DATETIME_IMMUTABLE)
+            ->addColumn('revoked', Types::BOOLEAN)
             ->setPrimaryKey(['id'])
             ->create();
 
@@ -165,14 +167,16 @@ class Migration extends AbstractMigration
             ->addColumn('client_secret', Types::STRING, ['Length' => 255])
             ->addColumn('redirect_uri', Types::STRING, ['Length' => 2000])
             ->addColumn('is_confidential', Types::BOOLEAN)
+            ->addColumn('enabled', Types::BOOLEAN)
             ->setPrimaryKey(['id'])
             ->create();
 
         $this->getSchemaHelper()->createTable('ohrm_oauth2_refresh_tokens')
             ->addColumn('id', Types::INTEGER, ['Autoincrement' => true])
             ->addColumn('refresh_token', Types::STRING, ['Length' => 255])
-            ->addColumn('access_token', Types::INTEGER)
+            ->addColumn('access_token', Types::STRING, ['Length' => 255])
             ->addColumn('expiry_date_time', Types::DATETIME_IMMUTABLE)
+            ->addColumn('revoked', Types::BOOLEAN)
             ->setPrimaryKey(['id'])
             ->create();
     }

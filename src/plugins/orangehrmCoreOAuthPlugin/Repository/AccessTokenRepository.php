@@ -50,7 +50,6 @@ class AccessTokenRepository extends BaseDao implements AccessTokenRepositoryInte
     public function revokeAccessToken($tokenId): void
     {
         throw new Exception(__METHOD__);
-        // TODO::Some logic here to revoke the access token
     }
 
     /**
@@ -59,7 +58,6 @@ class AccessTokenRepository extends BaseDao implements AccessTokenRepositoryInte
     public function isAccessTokenRevoked($tokenId): bool
     {
         throw new Exception(__METHOD__);
-        return false; // TODO
     }
 
     /**

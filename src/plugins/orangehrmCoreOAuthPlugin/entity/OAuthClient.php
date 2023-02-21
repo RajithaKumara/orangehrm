@@ -65,6 +65,13 @@ class OAuthClient
     private bool $confidential;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="enabled", type="boolean", nullable=false)
+     */
+    private bool $enabled = true;
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -142,5 +149,21 @@ class OAuthClient
     public function setConfidential(bool $confidential): void
     {
         $this->confidential = $confidential;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @param bool $enabled
+     */
+    public function setEnabled(bool $enabled): void
+    {
+        $this->enabled = $enabled;
     }
 }
