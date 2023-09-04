@@ -24,6 +24,7 @@ use OrangeHRM\Authentication\Csrf\CsrfTokenManager;
 use OrangeHRM\Authentication\Service\PasswordStrengthService;
 use OrangeHRM\Authentication\Subscriber\AdministratorAccessSubscriber;
 use OrangeHRM\Authentication\Subscriber\AuthenticationSubscriber;
+use OrangeHRM\Authentication\Subscriber\TwoFactorAuthenticationSubscriber;
 use OrangeHRM\Core\Traits\ServiceContainerTrait;
 use OrangeHRM\Framework\Event\EventDispatcher;
 use OrangeHRM\Framework\Http\Request;
@@ -44,6 +45,7 @@ class AuthenticationPluginConfiguration implements PluginConfigurationInterface
         $dispatcher = $this->getContainer()->get(Services::EVENT_DISPATCHER);
         $dispatcher->addSubscriber(new AuthenticationSubscriber());
         $dispatcher->addSubscriber(new AdministratorAccessSubscriber());
+        $dispatcher->addSubscriber(new TwoFactorAuthenticationSubscriber());
         $this->getContainer()->register(Services::AUTH_USER)
             ->setFactory([AuthUser::class, 'getInstance']);
 

@@ -1,3 +1,17 @@
+apiv2_auth_two_factor_auth_enrollments:
+  path: /api/v2/auth/two-factor-auth/enrollments
+  controller: OrangeHRM\Core\Controller\Rest\V2\GenericRestController::handle
+  methods: [ POST ]
+  defaults:
+    _api: OrangeHRM\Authentication\Api\TwoFactorAuthEnrollmentAPI
+
+apiv2_auth_two_factor_auth_verification:
+  path: /api/v2/auth/two-factor-auth/verification
+  controller: OrangeHRM\Core\Controller\Rest\V2\GenericRestController::handle
+  methods: [ POST ]
+  defaults:
+    _api: OrangeHRM\Authentication\Api\TwoFactorAuthVerificationAPI
+
 ##########################
 #     Public APIs
 ##########################

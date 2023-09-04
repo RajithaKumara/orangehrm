@@ -36,6 +36,7 @@ class User
     public const USER_ROLE_ID = 'user.user_role_id';
     public const USER_ROLE_NAME = 'user.user_role_name';
     public const USER_EMPLOYEE_NUMBER = 'user.user_employee_number';
+    public const IS_2FA_VERIFIED = 'user.is_2fa_verified';
 
     public const FLASH_LOGIN_ERROR = 'flash.login_error';
     public const FLASH_PASSWORD_ENFORCE_ERROR = 'flash.password_enforce_error';
@@ -242,5 +243,21 @@ class User
     public function setHasAdminAccess(bool $status = true): void
     {
         $this->setAttribute(self::HAS_ADMIN_ACCESS, $status);
+    }
+
+    /**
+     * @return bool
+     */
+    public function is2FAVerified(): bool
+    {
+        return $this->getAttribute(self::IS_2FA_VERIFIED, false);
+    }
+
+    /**
+     * @param bool $verified
+     */
+    public function setIs2FAVerified(bool $verified): void
+    {
+        $this->setAttribute(self::IS_2FA_VERIFIED, $verified);
     }
 }

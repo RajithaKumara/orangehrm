@@ -36,7 +36,6 @@ class TwoFactorAuthenticationController extends AbstractVueController
         // TODO:: first check 2FA applicable for LDAP and Google users. or selected subgroup, user role
         if ($twoFactorAuthService->isLoggedInUserProvisioned()) {
             $component = new Component('two-factor-auth');
-            $component->addProp(new Prop('provisioning-uri', Prop::TYPE_STRING, ''));
         } else {
             $component = new Component('two-factor-auth-provisioning');
             $otpEnrollment = $twoFactorAuthService->getOTPEnrollmentForLoggedInUser();

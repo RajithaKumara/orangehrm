@@ -25,7 +25,6 @@ use OrangeHRM\Core\Controller\PublicControllerInterface;
 use OrangeHRM\Core\Traits\Auth\AuthUserTrait;
 use OrangeHRM\Framework\Event\AbstractEventSubscriber;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class TwoFactorAuthenticationSubscriber extends AbstractEventSubscriber
@@ -38,27 +37,8 @@ class TwoFactorAuthenticationSubscriber extends AbstractEventSubscriber
     public static function getSubscribedEvents()
     {
         return [
-//            KernelEvents::REQUEST => [['onRequestEvent', 96000]],
             KernelEvents::CONTROLLER => [['onControllerEvent', 70000]],
         ];
-    }
-
-    /**
-     * @param RequestEvent $event
-     */
-    public function onRequestEvent(RequestEvent $event): void
-    {
-        // $this->getAuthUser()->isAuthenticated() already checked in OrangeHRM\Authentication\Subscriber\AuthenticationSubscriber::onRequestEvent
-        if ($this->getAuthUser()->is2FAVerified()) {
-            // If already verified not need to check further
-            return;
-        }
-
-        if ($event->isMainRequest()) {
-            throw new RequestForwardableException(TwoFactorAuthenticationController::class . '::handle');
-        }
-//        die('here');
-//        $this->getAuthUser()->setIs2FAVerified(true);
     }
 
     /**

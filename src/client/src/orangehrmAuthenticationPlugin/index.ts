@@ -25,6 +25,8 @@ import AdministratorAccess from './pages/AdministratorAccess.vue';
 import RequestResetPassword from './pages/RequestResetPassword.vue';
 import ResetPasswordSuccess from './pages/ResetPasswordSuccess.vue';
 import EmailConfigurationWarning from './pages/EmailConfigurationWarning.vue';
+import TwoFactorAuthProvisioning from './pages/TwoFactorAuthProvisioning.vue';
+import TwoFactorAuth from './pages/TwoFactorAuth.vue';
 
 export default {
   'auth-login': Login,
@@ -36,4 +38,6 @@ export default {
   'reset-password-success': ResetPasswordSuccess,
   'request-reset-password': RequestResetPassword,
   'email-configuration-warning': EmailConfigurationWarning,
+  'two-factor-auth-provisioning': TwoFactorAuthProvisioning,
+  'two-factor-auth': TwoFactorAuth,
 };
