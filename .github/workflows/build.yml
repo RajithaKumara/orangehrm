@@ -38,8 +38,8 @@ jobs:
       - name: Install dependencies
         run: |
           cd src
-          php7.4 -f /usr/bin/composer install --no-dev
-          php7.4 -f /usr/bin/composer dump-autoload --optimize --no-dev --classmap-authoritative
+          php8.3 -f /usr/bin/composer install --no-dev
+          php8.3 -f /usr/bin/composer dump-autoload --optimize --no-dev --classmap-authoritative
           cd client
           yarn install
           cd ../../installer/client

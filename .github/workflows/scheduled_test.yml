@@ -4,15 +4,15 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    paths:
-      - '.github/workflows/scheduled_test.yml'
+#  pull_request:
+#    paths:
+#      - '.github/workflows/scheduled_test.yml'
   schedule:
     - cron: "0 2 * * *"
 
 jobs:
   db_test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     strategy:
       fail-fast: false
@@ -119,7 +119,7 @@ jobs:
         run: docker stop openldap
 
   php_test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     strategy:
       fail-fast: false

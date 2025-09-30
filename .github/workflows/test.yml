@@ -2,11 +2,11 @@ name: Test
 
 on:
   push:
-  pull_request:
+#  pull_request:
 
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
@@ -104,7 +104,7 @@ jobs:
         run: docker stop openldap
 
   composer_check:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
@@ -131,7 +131,7 @@ jobs:
 
   installation:
     if: github.event_name == 'push'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     services:
       mysql:

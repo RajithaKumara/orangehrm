@@ -25,8 +25,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          php8.1 -f /usr/bin/composer install -d src
-          php8.1 -f /usr/bin/composer install -d devTools/core
+          php8.3 -f /usr/bin/composer install -d src
+          php8.3 -f /usr/bin/composer install -d devTools/core
 
       - name: Check PHP Coding Standards
         run: php devTools/core/console.php php-cs-fix --php php8.1
