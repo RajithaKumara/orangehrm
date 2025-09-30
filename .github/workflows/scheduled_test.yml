@@ -12,7 +12,7 @@ on:
 
 jobs:
   db_test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
@@ -26,6 +26,7 @@ jobs:
           - { image: "mysql:8.2", admin: "mysqladmin" }
           - { image: "mysql:8.3", admin: "mysqladmin" }
           - { image: "mysql:8.4", admin: "mysqladmin" }
+          - { image: "mysql:9.4", admin: "mysqladmin" }
           - { image: "mariadb:5.5", admin: "mysqladmin" }
           - { image: "mariadb:10.0", admin: "mysqladmin" }
           - { image: "mariadb:10.1", admin: "mysqladmin" }
@@ -44,6 +45,8 @@ jobs:
           - { image: "mariadb:11.2", admin: "mariadb-admin" }
           - { image: "mariadb:11.3", admin: "mariadb-admin" }
           - { image: "mariadb:11.4", admin: "mariadb-admin" }
+          - { image: "mariadb:11.8", admin: "mariadb-admin" }
+          - { image: "mariadb:12.0", admin: "mariadb-admin" }
 
     services:
       mysql:
@@ -116,12 +119,12 @@ jobs:
         run: docker stop openldap
 
   php_test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
       matrix:
-        php: ["php7.4", "php8.0", "php8.1", "php8.2", "php8.3"]
+        php: ["php7.4", "php8.0", "php8.1", "php8.2", "php8.3", "php8.4"]
 
     services:
       mysql:
