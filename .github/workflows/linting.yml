@@ -29,7 +29,7 @@ jobs:
           php8.3 -f /usr/bin/composer install -d devTools/core
 
       - name: Check PHP Coding Standards
-        run: php devTools/core/console.php php-cs-fix --php php8.1
+        run: php devTools/core/console.php php-cs-fix --php php8.3
 
       - name: Check files changed
         id: git-status

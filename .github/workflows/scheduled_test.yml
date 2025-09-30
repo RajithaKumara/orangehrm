@@ -12,7 +12,7 @@ on:
 
 jobs:
   db_test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
@@ -81,17 +81,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          php7.4 -f /usr/bin/composer install -d src
-          php7.4 -f /usr/bin/composer install -d devTools/core
+          php8.3 -f /usr/bin/composer install -d src
+          php8.3 -f /usr/bin/composer install -d devTools/core
 
       - name: Install OrangeHRM
         run: |
-          php7.4 installer/cli_install.php
+          php8.3 installer/cli_install.php
 
       - name: Create Test DB
         run: |
           mysqldump -V
-          php7.4 devTools/core/console.php i:create-test-db -p root --dump-options="--column-statistics=0"
+          php8.3 devTools/core/console.php i:create-test-db -p root --dump-options="--column-statistics=0"
 
       - name: Configure LDAP server
         run: |
@@ -119,12 +119,12 @@ jobs:
         run: docker stop openldap
 
   php_test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
       matrix:
-        php: ["php7.4", "php8.0", "php8.1", "php8.2", "php8.3", "php8.4"]
+        php: ["7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
 
     services:
       mysql:
@@ -151,16 +151,23 @@ jobs:
       - uses: actions/checkout@v4
         if: "${{ github.event_name == 'push' || env.WORKFLOW_BRANCH == ''}}"
 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
       - name: Install dependencies
         run: |
-          php7.4 -f /usr/bin/composer install -d src
-          php7.4 -f /usr/bin/composer install -d devTools/core
+          php -v
+          composer -v
+          php -f /usr/bin/composer install -d src
+          php -f /usr/bin/composer install -d devTools/core
 
       - name: Install OrangeHRM
         run: |
-          ${{ matrix.php }} installer/cli_install.php
+          php installer/cli_install.php
           mysqldump -V
-          ${{ matrix.php }} devTools/core/console.php i:create-test-db -p root --dump-options="--column-statistics=0"
+          php devTools/core/console.php i:create-test-db -p root --dump-options="--column-statistics=0"
 
       - name: Configure LDAP server
         run: |
@@ -181,7 +188,7 @@ jobs:
 
       - name: Run test
         run: |
-          ${{ matrix.php }} ./src/vendor/bin/phpunit
+          php ./src/vendor/bin/phpunit
 
       - name: Stop LDAP container
         if: ${{ always() }}
