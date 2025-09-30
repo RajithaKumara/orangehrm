@@ -3,10 +3,10 @@ name: Docker Build Test
 on:
   push:
     branches: [ "main" ]
-#  pull_request:
-#    paths:
-#      - '.github/workflows/docker_build.yml'
-#      - 'Dockerfile'
+  pull_request:
+    paths:
+      - '.github/workflows/docker_build.yml'
+      - 'Dockerfile'
 
 jobs:
   build:

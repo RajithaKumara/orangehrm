@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-#  pull_request:
-#    paths:
-#      - '.github/workflows/scheduled_test.yml'
+  pull_request:
+    paths:
+      - '.github/workflows/scheduled_test.yml'
   schedule:
     - cron: "0 2 * * *"
 
