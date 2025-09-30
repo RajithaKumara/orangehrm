@@ -119,7 +119,7 @@ class Migration extends AbstractMigration
     {
         $foreignKeyArray = [];
         foreach (self::CONFLICTING_FOREIGN_KEY_TABLES as $table) {
-            $tableDetails = $this->getSchemaManager()->listTableDetails($table);
+            $tableDetails = $this->getSchemaManager()->introspectTable($table);
             $foreignKeys = $tableDetails->getForeignKeys();
             foreach ($foreignKeys as $constraintName => $constraint) {
                 if (in_array($constraint->getForeignTableName(), ['hs_hr_employee', 'ohrm_job_candidate', 'ohrm_job_candidate_vacancy', 'ohrm_job_vacancy'])) {

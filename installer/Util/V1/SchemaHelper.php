@@ -231,7 +231,7 @@ class SchemaHelper
      */
     public function dropPrimaryKey(string $tableName): void
     {
-        $table = $this->getSchemaManager()->listTableDetails($tableName);
+        $table = $this->getSchemaManager()->introspectTable($tableName);
         $this->getSchemaManager()->dropIndex($table->getPrimaryKey(), $table);
     }
 
@@ -268,7 +268,7 @@ class SchemaHelper
      */
     public function columnExists(string $tableName, string $column): bool
     {
-        $table = $this->getSchemaManager()->listTableDetails($tableName);
+        $table = $this->getSchemaManager()->introspectTable($tableName);
         return $table->hasColumn($column);
     }
 

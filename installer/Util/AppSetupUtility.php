@@ -492,10 +492,12 @@ class AppSetupUtility
      */
     public function runMigrations(string $fromVersion, ?string $toVersion = null): void
     {
+        Logger::getLogger()->info("Migration started: from v$fromVersion to v$toVersion");
         StateContainer::getInstance()->clearMigrationCompleted();
         foreach ($this->getVersionsInRange($fromVersion, $toVersion) as $version) {
             $this->runMigrationFor($version);
         }
+        Logger::getLogger()->info("Migration finished: from v$fromVersion to v$toVersion");
     }
 
     /**
@@ -509,6 +511,7 @@ class AppSetupUtility
 
         $this->throwMigrationErrorIfPreviousIncomplete();
 
+        Logger::getLogger()->info("Migration running started: for v$version");
         if (is_array(self::MIGRATIONS_MAP[$version])) {
             foreach (self::MIGRATIONS_MAP[$version] as $migration) {
                 $this->_runMigration($migration);
@@ -517,6 +520,7 @@ class AppSetupUtility
         }
 
         $this->_runMigration(self::MIGRATIONS_MAP[$version]);
+        Logger::getLogger()->info("Migration running finished: for v$version");
     }
 
     /**
@@ -540,6 +544,7 @@ class AppSetupUtility
             $this->getMigrationHelper()->logMigrationStarted($version);
             StateContainer::getInstance()->setMigrationCompleted(false);
             $this->disableExecutionTimeLimit();
+            Logger::getLogger()->info("Migration running class: $migrationClass");
             $migration->up();
             $this->getConfigHelper()->setConfigValue('instance.version', $version);
             StateContainer::getInstance()->setMigrationCompleted(true);

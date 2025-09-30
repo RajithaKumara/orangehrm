@@ -59,7 +59,7 @@ class ConfigHelper
      */
     public function getConfigValue(string $name, string $default = null)
     {
-        $table = $this->getSchemaManager()->listTableDetails('hs_hr_config');
+        $table = $this->getSchemaManager()->introspectTable('hs_hr_config');
         $keyFieldsColumnName = $table->hasColumn('name') ? 'name' : '`key`';
         $result = $this->getConnection()->createQueryBuilder()
             ->select('config.value')
@@ -77,7 +77,7 @@ class ConfigHelper
      */
     public function setConfigValue(string $name, ?string $value): void
     {
-        $table = $this->getSchemaManager()->listTableDetails('hs_hr_config');
+        $table = $this->getSchemaManager()->introspectTable('hs_hr_config');
         $keyFieldsColumnName = $table->hasColumn('name') ? 'name' : '`key`';
 
         $currentValue = $this->getConfigValue($name);
@@ -102,7 +102,7 @@ class ConfigHelper
      */
     public function deleteConfigValue(string $name): void
     {
-        $table = $this->getSchemaManager()->listTableDetails('hs_hr_config');
+        $table = $this->getSchemaManager()->introspectTable('hs_hr_config');
         $keyFieldsColumnName = $table->hasColumn('name') ? 'name' : '`key`';
 
         $currentValue = $this->getConfigValue($name);
