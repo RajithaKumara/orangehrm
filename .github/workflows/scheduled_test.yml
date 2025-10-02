@@ -80,19 +80,24 @@ jobs:
           git remote -v
           cat build/build.xml | grep 'name="version"'
 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+
       - name: Install dependencies
         run: |
-          php8.3 -f /usr/bin/composer install -d src
-          php8.3 -f /usr/bin/composer install -d devTools/core
+          php -f /usr/bin/composer install -d src
+          php -f /usr/bin/composer install -d devTools/core
 
       - name: Install OrangeHRM
         run: |
-          php8.3 installer/cli_install.php
+          php installer/cli_install.php
 
       - name: Create Test DB
         run: |
           mysqldump -V
-          php8.3 devTools/core/console.php i:create-test-db -p root --dump-options="--column-statistics=0"
+          php devTools/core/console.php i:create-test-db -p root --dump-options="--column-statistics=0"
 
       - name: Configure LDAP server
         run: |
@@ -113,7 +118,7 @@ jobs:
 
       - name: Run test
         run: |
-          php8.3 ./src/vendor/bin/phpunit
+          php ./src/vendor/bin/phpunit
 
       - name: Stop LDAP container
         if: ${{ always() }}
