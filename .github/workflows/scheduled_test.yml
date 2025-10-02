@@ -64,12 +64,12 @@ jobs:
           --tmpfs /var/lib/mysql/
 
     env:
-      WORKFLOW_BRANCH: ${{ secrets.WORKFLOW_BRANCH }}
+      WORKFLOW_BRANCH: ${{ vars.WORKFLOW_BRANCH }}
     steps:
       - uses: actions/checkout@v4
         if: "${{ github.event_name != 'push' && env.WORKFLOW_BRANCH != '' }}"
         with:
-          ref: ${{ secrets.WORKFLOW_BRANCH }}
+          ref: ${{ vars.WORKFLOW_BRANCH }}
 
       - uses: actions/checkout@v4
         if: "${{ github.event_name == 'push' || env.WORKFLOW_BRANCH == ''}}"
@@ -78,6 +78,7 @@ jobs:
         run: |
           git log -1
           git remote -v
+          cat build/build.xml | grep 'name="version"'
 
       - name: Install dependencies
         run: |
@@ -112,7 +113,7 @@ jobs:
 
       - name: Run test
         run: |
-          ./src/vendor/bin/phpunit
+          php8.3 ./src/vendor/bin/phpunit
 
       - name: Stop LDAP container
         if: ${{ always() }}
@@ -141,12 +142,12 @@ jobs:
           --tmpfs /var/lib/mysql/
 
     env:
-      WORKFLOW_BRANCH: ${{ secrets.WORKFLOW_BRANCH }}
+      WORKFLOW_BRANCH: ${{ vars.WORKFLOW_BRANCH }}
     steps:
       - uses: actions/checkout@v4
         if: "${{ github.event_name != 'push' && env.WORKFLOW_BRANCH != '' }}"
         with:
-          ref: ${{ secrets.WORKFLOW_BRANCH }}
+          ref: ${{ vars.WORKFLOW_BRANCH }}
 
       - uses: actions/checkout@v4
         if: "${{ github.event_name == 'push' || env.WORKFLOW_BRANCH == ''}}"
