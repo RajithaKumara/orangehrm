@@ -19,7 +19,6 @@
 
 namespace OrangeHRM\Tests\Claim\Dao;
 
-use DoctrineProxies\__CG__\OrangeHRM\Entity\User;
 use OrangeHRM\Claim\Dao\ClaimDao;
 use OrangeHRM\Claim\Dto\ClaimAttachmentSearchFilterParams;
 use OrangeHRM\Config\Config;
@@ -27,6 +26,7 @@ use OrangeHRM\Core\Traits\Auth\AuthUserTrait;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
 use OrangeHRM\Core\Traits\Service\DateTimeHelperTrait;
 use OrangeHRM\Entity\ClaimAttachment;
+use OrangeHRM\Entity\User;
 use OrangeHRM\Tests\Util\KernelTestCase;
 use OrangeHRM\Tests\Util\TestDataService;
 
