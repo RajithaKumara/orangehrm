@@ -24,6 +24,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use OrangeHRM\Installer\Util\V1\AbstractMigration;
 use OrangeHRM\Installer\Util\V1\LangStringHelper;
+use PDO;
 
 class Migration extends AbstractMigration
 {
@@ -45,19 +46,6 @@ class Migration extends AbstractMigration
             $this->correctingCurrencyIdColumnInconsistencies();
         }
 
-        $tableDetails = $this->getSchemaManager()->introspectTable('ohrm_claim_request');
-        $foreignKey = $tableDetails->hasForeignKey('fk_currency_id') ? $tableDetails->getForeignKey('fk_currency_id') : null;
-        if (!$foreignKey instanceof ForeignKeyConstraint) {
-            $foreignKeyConstraint = new ForeignKeyConstraint(
-                ['currency_id'],
-                'hs_hr_currency_type',
-                ['currency_id'],
-                'fk_currency_id',
-                ['onDelete' => 'RESTRICT', 'onUpdate' => 'CASCADE']
-            );
-            $this->getSchemaHelper()->addForeignKey('ohrm_claim_request', $foreignKeyConstraint);
-        }
-
         $groups = ['auth', 'pim'];
         foreach ($groups as $group) {
             $this->getLangStringHelper()->insertOrUpdateLangStrings(__DIR__, $group);
@@ -72,11 +60,13 @@ class Migration extends AbstractMigration
      */
     public function correctingCurrencyIdColumnInconsistencies()
     {
+        $this->disableForeignKeyChecks();
         $foreignKeyArray = [];
         $foreignKeyArray = array_merge($foreignKeyArray, $this->getConflictingForeignKeys('ohrm_pay_grade_currency'));
         $foreignKeyArray = array_merge($foreignKeyArray, $this->getConflictingForeignKeys('hs_hr_emp_basicsalary'));
-        $foreignKeyArray = array_merge($foreignKeyArray, $this->getConflictingForeignKeys('ohrm_claim_request'));
+
         $this->removeConflictingForeignKeys($foreignKeyArray);
+        $this->removeConflictingForeignKeys($this->getConflictingForeignKeys('ohrm_claim_request'));
 
         $this->getConnection()->executeStatement(
             'ALTER TABLE hs_hr_currency_type MODIFY COLUMN currency_id VARCHAR(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci'
@@ -96,7 +86,24 @@ class Migration extends AbstractMigration
             'CustomSchemaOptions' => ['collation' => 'utf8mb3_general_ci', 'charset' => 'utf8mb3']
         ]);
 
+        $this->getSchemaHelper()->changeColumn('ohrm_claim_request', 'currency_id', [
+            'Type' => Type::getType(Types::STRING),
+            'Notnull' => true,
+            'Length' => 3,
+            'CustomSchemaOptions' => ['collation' => 'utf8mb3_general_ci', 'charset' => 'utf8mb3']
+        ]);
+
         $this->recreateRemovedForeignKeys($foreignKeyArray);
+        $foreignKeyConstraint = new ForeignKeyConstraint(
+            ['currency_id'],
+            'hs_hr_currency_type',
+            ['currency_id'],
+            'fk_currency_id',
+            ['onDelete' => 'RESTRICT', 'onUpdate' => 'CASCADE']
+        );
+        $this->getSchemaHelper()->addForeignKey('ohrm_claim_request', $foreignKeyConstraint);
+
+        $this->enableForeignKeyChecks();
     }
 
     /**
@@ -137,6 +144,32 @@ class Migration extends AbstractMigration
                 $conflictingConstraint['constraint']
             );
         }
+    }
+
+    /**
+     * @return PDO
+     */
+    private function getNativeConnection(): PDO
+    {
+        return $this->getConnection()->getNativeConnection();
+    }
+
+    /**
+     * @return void
+     */
+    public function disableForeignKeyChecks(): void
+    {
+        $pdo = $this->getNativeConnection();
+        $pdo->exec('SET FOREIGN_KEY_CHECKS=0;');
+    }
+
+    /**
+     * @return void
+     */
+    public function enableForeignKeyChecks(): void
+    {
+        $pdo = $this->getNativeConnection();
+        $pdo->exec('SET FOREIGN_KEY_CHECKS=1;');
     }
 
     /**
