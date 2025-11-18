@@ -502,14 +502,18 @@ class Migration extends AbstractMigration
 
     private function modifyClaimRequestCurrencyToForeignKey(): void
     {
-        $foreignKeyConstraint = new ForeignKeyConstraint(
-            ['currency_id'],
-            'hs_hr_currency_type',
-            ['currency_id'],
-            'fk_currency_id',
-            ['onDelete' => 'RESTRICT', 'onUpdate' => 'CASCADE']
-        );
-        $this->getSchemaHelper()->addForeignKey('ohrm_claim_request', $foreignKeyConstraint);
+        $tableDetails = $this->getSchemaManager()->introspectTable('ohrm_claim_request');
+        $foreignKey = $tableDetails->hasForeignKey('fk_currency_id') ? $tableDetails->getForeignKey('fk_currency_id') : null;
+        if (!$foreignKey instanceof ForeignKeyConstraint) {
+            $foreignKeyConstraint = new ForeignKeyConstraint(
+                ['currency_id'],
+                'hs_hr_currency_type',
+                ['currency_id'],
+                'fk_currency_id',
+                ['onDelete' => 'RESTRICT', 'onUpdate' => 'CASCADE']
+            );
+            $this->getSchemaHelper()->addForeignKey('ohrm_claim_request', $foreignKeyConstraint);
+        }
     }
 
     private function changeClaimExpenseTypeTableStatusToBoolean(): void
