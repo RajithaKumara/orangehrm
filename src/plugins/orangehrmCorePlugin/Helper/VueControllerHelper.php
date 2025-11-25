@@ -156,6 +156,15 @@ class VueControllerHelper
                 self::SHOW_UPGRADE => $this->getAuthUser()->getUserRoleId() === 1
             ]
         );
+
+        //related to on-demand
+        $freeTrialService  = new \OrangeHRM\FreeTrial\Service\FreeTrialService();
+        $this->context->add(
+            [
+                'remainingDays' => $freeTrialService->getRemainingDays(),
+                'showRemainingDays' => $this->getAuthUser()->getUserRoleId() === 1 && !$freeTrialService->isSubscribed(),
+            ]
+        );
         return $this->context->all();
     }
 
