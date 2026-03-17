@@ -9,7 +9,7 @@ SET
  'apiv2_free_trial_subscribe' LIMIT 1);
 
 INSERT INTO ohrm_api_permission (`api_name`, `module_id`, `data_group_id`)
-VALUES ('OrangeHRM\\FreeTrial\\Api\\SubscribeFreeTrialAPI', @core_module_id, @apiv2_free_trial_subscribe_data_group_id);
+VALUES ('OrangeHRM\\FreeTrial\\RestApi\\SubscribeFreeTrialAPI', @core_module_id, @apiv2_free_trial_subscribe_data_group_id);
 
 SET
 @admin_role_id := (SELECT `id` FROM ohrm_user_role WHERE `name` = 'Admin' LIMIT 1);

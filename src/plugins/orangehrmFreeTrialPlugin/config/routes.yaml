@@ -3,7 +3,7 @@ apiv2_free_trial_subscribe:
   controller: OrangeHRM\Core\Controller\Rest\V2\GenericRestController::handle
   methods: [ POST ]
   defaults:
-    _api: OrangeHRM\FreeTrial\Api\SubscribeFreeTrialAPI
+    _api: OrangeHRM\FreeTrial\RestApi\SubscribeFreeTrialAPI
 
 ##########################
 #        Screens

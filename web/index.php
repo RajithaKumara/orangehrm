@@ -17,7 +17,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-include_once('../src/config/log_settings.php');
+include_once(__DIR__ . '/../src/config/log_settings.php');
 
 use OrangeHRM\Config\Config;
 use OrangeHRM\Framework\Framework;
@@ -38,9 +38,18 @@ if ($debug) {
 $kernel = new Framework($env, $debug);
 $request = Request::createFromGlobals();
 
+$baseDir = "/var/www/orangehrm_57/ondemand/instanceA";
+Config::has(Config::CONF_FILE_PATH);
+Config::set(Config::CONF_FILE_PATH, $baseDir . DIRECTORY_SEPARATOR . 'confs' . DIRECTORY_SEPARATOR . 'Conf.php');
+Config::set(Config::LOG_DIR, $baseDir . DIRECTORY_SEPARATOR . 'log');
+Config::set(Config::CACHE_DIR, $baseDir . DIRECTORY_SEPARATOR . 'cache');
+Config::set(Config::CONFIG_DIR, $baseDir . DIRECTORY_SEPARATOR . 'confs');
+Config::set(Config::CRYPTO_KEY_DIR, $baseDir . DIRECTORY_SEPARATOR . 'confs' . DIRECTORY_SEPARATOR . 'cryptokeys');
+
 if (Config::isInstalled()) {
     $response = $kernel->handleRequest($request);
 } else {
+    // TODO:: your OrangeHRM system seems not installed, please refer these article to install
     $response = new RedirectResponse(str_replace('/web/index.php', '', $request->getBaseUrl()));
 }
 

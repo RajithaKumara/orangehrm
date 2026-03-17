@@ -18,7 +18,7 @@
  * Boston, MA  02110-1301, USA
  */
 
-namespace OrangeHRM\FreeTrial\Api;
+namespace OrangeHRM\FreeTrial\RestApi;
 
 use OrangeHRM\Admin\Service\CountryService;
 use OrangeHRM\Core\Api\V2\CollectionEndpoint;

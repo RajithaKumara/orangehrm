@@ -21,6 +21,7 @@ use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Installer\Exception\SessionStorageNotWritable;
 use OrangeHRM\Installer\Framework\HttpKernel;
 use Symfony\Component\ErrorHandler\Debug;
+use OrangeHRM\Config\Config;
 
 function trimVersion($currentVersion, $points)
 {
@@ -59,6 +60,15 @@ if ($debug) {
     umask(0000);
     Debug::enable();
 }
+
+$baseDir = "/var/www/orangehrm_57/ondemand/instanceB";
+Config::has(Config::CONF_FILE_PATH);
+Config::set(Config::CONF_FILE_PATH, $baseDir . DIRECTORY_SEPARATOR . 'confs' . DIRECTORY_SEPARATOR . 'Conf.php');
+Config::set(Config::LOG_DIR, $baseDir . DIRECTORY_SEPARATOR . 'log');
+Config::set(Config::CACHE_DIR, $baseDir . DIRECTORY_SEPARATOR . 'cache');
+Config::set(Config::CONFIG_DIR, $baseDir . DIRECTORY_SEPARATOR . 'confs');
+Config::set(Config::CRYPTO_KEY_DIR, $baseDir . DIRECTORY_SEPARATOR . 'confs' . DIRECTORY_SEPARATOR . 'cryptokeys');
+
 
 $kernel = new HttpKernel($env, $debug);
 $request = Request::createFromGlobals();

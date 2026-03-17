@@ -1,0 +1,1412 @@
+diff --git a/src/client/src/orangehrmFreeTrialPlugin/components/RemainingDays.vue b/src/client/src/orangehrmFreeTrialPlugin/components/RemainingDays.vue
+deleted file mode 100644
+index eebfbaa68..000000000
+--- a/src/client/src/orangehrmFreeTrialPlugin/components/RemainingDays.vue
++++ /dev/null
+@@ -1,87 +0,0 @@
+-<!--
+-/*
+- * This file is part of OrangeHRM Inc
+- *
+- * Copyright (C) 2020 onwards OrangeHRM Inc
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 3 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program.  If not, see  http://www.gnu.org/licenses
+- */
+--->
+-
+-<template>
+-  <div v-if="showRemainingDays">
+-    <oxd-sheet :gutters="false" type="gray-lighten-2">
+-      <div class="orangehrm-free-trial">
+-        <div class="orangehrm-free-trial-logo">
+-          <img
+-            :src="freeTrialCompanyLogo"
+-            class="orangehrm-free-trial-logo-img"
+-            alt="company logo"
+-          />
+-        </div>
+-        <div class="orangehrm-free-trial-remain-days">
+-          <oxd-text
+-            type="card-title"
+-            class="orangehrm-free-trial-remain-days-title"
+-          >
+-            {{ remainingDays }}
+-          </oxd-text>
+-        </div>
+-        <oxd-text> left to subscribe for free hosting </oxd-text>
+-        <div class="orangehrm-free-trial-subscribe">
+-          <oxd-text
+-            type="card-title"
+-            class="orangehrm-free-trial-subscribe-link"
+-          >
+-            <a @click="navigateSubscribePage"> click here </a>
+-          </oxd-text>
+-        </div>
+-      </div>
+-    </oxd-sheet>
+-  </div>
+-</template>
+-
+-<script>
+-import {OxdSheet} from '@ohrm/oxd';
+-import {navigate} from '@/core/util/helper/navigation';
+-
+-export default {
+-  name: 'RemainingDays',
+-
+-  components: {
+-    'oxd-sheet': OxdSheet,
+-  },
+-  props: {
+-    remainingDays: {
+-      type: String,
+-      default: '0',
+-    },
+-    showRemainingDays: {
+-      type: Boolean,
+-      default: true,
+-    },
+-  },
+-  data() {
+-    return {
+-      freeTrialCompanyLogo: `${window.appGlobal.publicPath}/images/ohrm_logo.png`,
+-    };
+-  },
+-  methods: {
+-    navigateSubscribePage() {
+-      navigate('/trial/subscribeFreeHosting');
+-    },
+-  },
+-};
+-</script>
+-<style src="./remain-days.scss" lang="scss" scoped></style>
+diff --git a/src/client/src/orangehrmFreeTrialPlugin/components/remain-days.scss b/src/client/src/orangehrmFreeTrialPlugin/components/remain-days.scss
+deleted file mode 100644
+index 8a7a77d39..000000000
+--- a/src/client/src/orangehrmFreeTrialPlugin/components/remain-days.scss
++++ /dev/null
+@@ -1,52 +0,0 @@
+-// OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
+-// all the essential functionalities required for any enterprise.
+-// Copyright (C) 2006 OrangeHRM Inc., http://www.orangehrm.com
+-//
+-// OrangeHRM is free software; you can redistribute it and/or modify it under the terms of
+-// the GNU General Public License as published by the Free Software Foundation; either
+-// version 2 of the License, or (at your option) any later version.
+-//
+-// OrangeHRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+-// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+-// See the GNU General Public License for more details.
+-//
+-// You should have received a copy of the GNU General Public License along with this program;
+-// if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+-// Boston, MA  02110-1301, USA
+-
+-.orangehrm-free-trial{
+-  padding: 0.5rem;
+-  display: flex;
+-  align-items: center;
+-  position: fixed;
+-  top: 0;
+-  z-index: 300;
+-  width: 100%;
+-  border-radius: 0;
+-  background-color: #f1f2f5;
+-  @media screen and (max-width: 640px) {
+-    text-align: center;
+-  }
+-  &-logo-img {
+-    width: 25px;
+-    height: 25px;
+-    margin: 0.1rem 0.5rem 0 0.5rem;
+-    @media screen and (max-width: 640px) {
+-    display: none;
+-    }
+-  }
+-  &-remain-days {
+-    padding-right: 0.5rem;
+-  }
+-  &-subscribe-link {
+-    padding-left: 0.5rem;
+-  }
+-  ::v-deep(.orangehrm-free-trial-subscribe-link) {
+-    cursor: pointer;
+-    color: var(--oxd-primary-one-color) !important;
+-  }
+-}
+-
+-.orangehrm-free-trial-subscribe-link a {
+-  cursor: pointer;
+-}
+diff --git a/src/client/src/orangehrmFreeTrialPlugin/index.ts b/src/client/src/orangehrmFreeTrialPlugin/index.ts
+deleted file mode 100644
+index 968d4286c..000000000
+--- a/src/client/src/orangehrmFreeTrialPlugin/index.ts
++++ /dev/null
+@@ -1,25 +0,0 @@
+-/**
+- * OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
+- * all the essential functionalities required for any enterprise.
+- * Copyright (C) 2006 OrangeHRM Inc., http://www.orangehrm.com
+- *
+- * OrangeHRM is free software; you can redistribute it and/or modify it under the terms of
+- * the GNU General Public License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * OrangeHRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+- * See the GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License along with this program;
+- * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA  02110-1301, USA
+- */
+-
+-import RemainingDays from '@/orangehrmFreeTrialPlugin/components/RemainingDays.vue';
+-import SubscribeFreeHosting from '@/orangehrmFreeTrialPlugin/pages/SubscribeFreeHosting.vue';
+-
+-export default {
+-  'on-demand-remaining-days': RemainingDays,
+-  'subscribe-free-hosting': SubscribeFreeHosting,
+-};
+diff --git a/src/client/src/orangehrmFreeTrialPlugin/pages/SubscribeFreeHosting.vue b/src/client/src/orangehrmFreeTrialPlugin/pages/SubscribeFreeHosting.vue
+deleted file mode 100644
+index a66160f5f..000000000
+--- a/src/client/src/orangehrmFreeTrialPlugin/pages/SubscribeFreeHosting.vue
++++ /dev/null
+@@ -1,298 +0,0 @@
+-<!--
+-/*
+- * This file is part of OrangeHRM Inc
+- *
+- * Copyright (C) 2020 onwards OrangeHRM Inc
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 3 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program.  If not, see  http://www.gnu.org/licenses
+- */
+--->
+-
+-<template>
+-  <div>
+-    <oxd-alert
+-      :show="isSubscribed"
+-      type="error"
+-      message="You have already subscribed for free-hosting"
+-    ></oxd-alert>
+-    <div v-if="!isSubscribed" class="orangehrm-background-container">
+-      <div class="orangehrm-paper-container">
+-        <div class="orangehrm-header-container">
+-          <oxd-text tag="h6" class="orangehrm-main-title"
+-            >Subscribe For Free Hosting</oxd-text
+-          >
+-        </div>
+-        <div>
+-          <oxd-divider />
+-          <oxd-form
+-            ref="subscribeForm"
+-            :loading="isLoading"
+-            @submit-valid="onSubmit"
+-          >
+-            <oxd-form-row>
+-              <oxd-grid :cols="1" class="orangehrm-full-width-grid">
+-                <oxd-grid-item>
+-                  <oxd-input-field label="System Url" :value="url" disabled />
+-                </oxd-grid-item>
+-              </oxd-grid>
+-            </oxd-form-row>
+-            <oxd-form-row>
+-              <oxd-grid :cols="1" class="orangehrm-full-width-grid">
+-                <oxd-grid-item>
+-                  <oxd-input-field
+-                    v-model="subscribe.companyName"
+-                    :rules="rules.companyName"
+-                    label="Company Name"
+-                    required
+-                  />
+-                </oxd-grid-item>
+-              </oxd-grid>
+-            </oxd-form-row>
+-            <oxd-form-row>
+-              <oxd-grid :cols="1" class="orangehrm-full-width-grid">
+-                <oxd-grid-item>
+-                  <oxd-input-field
+-                    v-model="subscribe.noOfEmployee"
+-                    :rules="rules.noOfEmployee"
+-                    placeholder="Employee Count"
+-                    label="No. of Employees"
+-                    required
+-                  />
+-                </oxd-grid-item>
+-              </oxd-grid>
+-            </oxd-form-row>
+-            <oxd-form-row>
+-              <oxd-grid :cols="1" class="orangehrm-full-width-grid">
+-                <oxd-grid-item>
+-                  <oxd-input-field
+-                    v-model="subscribe.country"
+-                    type="select"
+-                    :label="$t('general.country')"
+-                    :options="countries"
+-                    :rules="rules.country"
+-                  />
+-                </oxd-grid-item>
+-              </oxd-grid>
+-            </oxd-form-row>
+-            <oxd-form-row>
+-              <oxd-grid :cols="1" class="orangehrm-full-width-grid">
+-                <oxd-grid-item>
+-                  <oxd-input-field
+-                    v-model="subscribe.contactPersonName"
+-                    :rules="rules.contactPersonName"
+-                    label="Contact Person Name"
+-                    required
+-                  />
+-                </oxd-grid-item>
+-              </oxd-grid>
+-            </oxd-form-row>
+-            <oxd-form-row>
+-              <oxd-grid :cols="1" class="orangehrm-full-width-grid">
+-                <oxd-grid-item>
+-                  <oxd-input-field
+-                    v-model="subscribe.contactNumber"
+-                    :rules="rules.contactNumber"
+-                    label="Contact Number"
+-                    required
+-                  />
+-                </oxd-grid-item>
+-              </oxd-grid>
+-            </oxd-form-row>
+-            <oxd-form-row>
+-              <oxd-grid :cols="1" class="orangehrm-full-width-grid">
+-                <oxd-grid-item>
+-                  <oxd-input-field
+-                    v-model="subscribe.email"
+-                    :rules="rules.email"
+-                    label="Email"
+-                    required
+-                  />
+-                </oxd-grid-item>
+-              </oxd-grid>
+-            </oxd-form-row>
+-            <div class="orangehrm-action-button">
+-              <oxd-form-actions>
+-                <required-text />
+-                <oxd-button
+-                  type="button"
+-                  display-type="ghost"
+-                  label="Cancel"
+-                  @click="onCancel"
+-                />
+-                <submit-button label="Submit" />
+-              </oxd-form-actions>
+-            </div>
+-          </oxd-form>
+-        </div>
+-      </div>
+-    </div>
+-  </div>
+-</template>
+-
+-<script>
+-import {APIService} from '@ohrm/core/util/services/api.service';
+-import {
+-  shouldNotExceedCharLength,
+-  validPhoneNumberFormat,
+-  validEmailFormat,
+-  required,
+-  greaterThanOrEqual,
+-  lessThanOrEqual,
+-} from '@ohrm/core/util/validation/rules';
+-import {navigate, reloadPage} from '@/core/util/helper/navigation';
+-import {OxdAlert} from '@ohrm/oxd';
+-
+-export default {
+-  name: 'SubscribeFreeHosting',
+-  components: {
+-    'oxd-alert': OxdAlert,
+-  },
+-  props: {
+-    url: {
+-      type: String,
+-      required: true,
+-    },
+-    companyName: {
+-      type: String,
+-      required: true,
+-    },
+-    contactNumber: {
+-      type: String,
+-      required: true,
+-    },
+-    email: {
+-      type: String,
+-      required: true,
+-    },
+-    contactPersonName: {
+-      type: String,
+-      required: true,
+-    },
+-    country: {
+-      type: Object,
+-      default: null,
+-    },
+-    isSubscribed: {
+-      type: Boolean,
+-      default: false,
+-    },
+-    countries: {
+-      type: Array,
+-      default: () => [],
+-    },
+-  },
+-
+-  setup() {
+-    const http = new APIService(
+-      window.appGlobal.baseUrl,
+-      `/api/v2/trial/subscribeFreeHosting`,
+-    );
+-    return {
+-      http,
+-    };
+-  },
+-
+-  data() {
+-    return {
+-      isLoading: false,
+-      subscribe: {
+-        noOfEmployee: null,
+-        companyName: '',
+-        contactNumber: '',
+-        email: '',
+-        contactPersonName: '',
+-        country: null,
+-        isSubscribed: false,
+-      },
+-      rules: {
+-        email: [required, shouldNotExceedCharLength(320), validEmailFormat],
+-        contactPersonName: [required, shouldNotExceedCharLength(150)],
+-        companyName: [required, shouldNotExceedCharLength(255)],
+-        contactNumber: [
+-          required,
+-          shouldNotExceedCharLength(15),
+-          validPhoneNumberFormat,
+-        ],
+-        noOfEmployee: [
+-          required,
+-          greaterThanOrEqual(
+-            1,
+-            'value should be should be greater than or equal to 1',
+-          ),
+-          lessThanOrEqual(999999999, 'value should be less than 1000000000'),
+-        ],
+-        country: [required],
+-      },
+-    };
+-  },
+-  created() {
+-    this.subscribe.companyName = this.companyName;
+-    this.subscribe.contactNumber = this.contactNumber;
+-    this.subscribe.email = this.email;
+-    this.subscribe.contactPersonName = this.contactPersonName;
+-    this.subscribe.country = this.country;
+-    this.subscribe.isSubscribed = this.isSubscribed;
+-  },
+-  methods: {
+-    onSubmit() {
+-      if (this.subscribe.isSubscribed) {
+-        navigate('/trial/subscribeFreeHosting');
+-      }
+-      if (this.subscribe.noOfEmployee !== null) {
+-        this.subscribe.noOfEmployee = parseInt(this.subscribe.noOfEmployee);
+-      }
+-
+-      this.isLoading = true;
+-      this.http
+-        .request({
+-          method: 'POST',
+-          data: {
+-            companyName: this.subscribe.companyName,
+-            contactNumber: this.subscribe.contactNumber,
+-            email: this.subscribe.email,
+-            contactPersonName: this.subscribe.contactPersonName,
+-            noOfEmployee: this.subscribe.noOfEmployee,
+-            country: this.subscribe.country.label,
+-          },
+-        })
+-        .then((response) => {
+-          if (response.status === 200) {
+-            this.subscribe.companyName = response.data.data.companyName;
+-            this.subscribe.contactNumber = response.data.data.contactNumber;
+-            this.subscribe.contactPersonName =
+-              response.data.data.contactPersonName;
+-            this.subscribe.country = response.data.data.country;
+-            this.subscribe.email = response.data.data.email;
+-            this.subscribe.noOfEmployee = response.data.data.noOfEmployees;
+-            this.subscribe.isSubscribed = true;
+-            this.$toast.success({
+-              title: this.$t('general.success'),
+-              message: 'Successfully Subscribed',
+-            });
+-            navigate('/dashboard/index');
+-          } else if (response.status === 400) {
+-            navigate('/trial/subscribeFreeHosting');
+-          } else if (response.status === 422) {
+-            navigate('/trial/subscribeFreeHosting');
+-          }
+-        });
+-    },
+-    onCancel() {
+-      reloadPage();
+-    },
+-  },
+-};
+-</script>
+-
+-<style src="./subscribe-free-hosting.scss" lang="scss" scoped></style>
+diff --git a/src/client/src/orangehrmFreeTrialPlugin/pages/subscribe-free-hosting.scss b/src/client/src/orangehrmFreeTrialPlugin/pages/subscribe-free-hosting.scss
+deleted file mode 100644
+index dc3b8be15..000000000
+--- a/src/client/src/orangehrmFreeTrialPlugin/pages/subscribe-free-hosting.scss
++++ /dev/null
+@@ -1,24 +0,0 @@
+-// OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
+-// all the essential functionalities required for any enterprise.
+-// Copyright (C) 2006 OrangeHRM Inc., http://www.orangehrm.com
+-//
+-// OrangeHRM is free software; you can redistribute it and/or modify it under the terms of
+-// the GNU General Public License as published by the Free Software Foundation; either
+-// version 2 of the License, or (at your option) any later version.
+-//
+-// OrangeHRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+-// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+-// See the GNU General Public License for more details.
+-//
+-// You should have received a copy of the GNU General Public License along with this program;
+-// if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+-// Boston, MA  02110-1301, USA
+-
+-.orangehrm-full-width-grid {
+-  padding-left: 25px;
+-  padding-right: 25px;
+-}
+-
+-.orangehrm-action-button {
+-  padding: 25px;
+-}
+diff --git a/src/client/src/pages.ts b/src/client/src/pages.ts
+index 3b9ae3c1b..e9e573526 100644
+--- a/src/client/src/pages.ts
++++ b/src/client/src/pages.ts
+@@ -33,10 +33,8 @@ import dashboardPages from '@/orangehrmDashboardPlugin';
+ import buzzPages from '@/orangehrmBuzzPlugin';
+ import systemCheckPages from '@/orangehrmSystemCheckPlugin';
+ import claimPages from '@/orangehrmClaimPlugin';
+-import freeTrialPages from '@/orangehrmFreeTrialPlugin';
+ 
+ export default {
+-  ...freeTrialPages, //related to on demand
+   ...AdminPages,
+   ...PimPages,
+   ...CorePages,
+diff --git a/src/plugins/orangehrmCorePlugin/Helper/VueControllerHelper.php b/src/plugins/orangehrmCorePlugin/Helper/VueControllerHelper.php
+index a4ee7eb05..1fbb1d0ce 100644
+--- a/src/plugins/orangehrmCorePlugin/Helper/VueControllerHelper.php
++++ b/src/plugins/orangehrmCorePlugin/Helper/VueControllerHelper.php
+@@ -156,15 +156,6 @@ class VueControllerHelper
+                 self::SHOW_UPGRADE => $this->getAuthUser()->getUserRoleId() === 1
+             ]
+         );
+-
+-        //related to on-demand
+-        $freeTrialService  = new \OrangeHRM\FreeTrial\Service\FreeTrialService();
+-        $this->context->add(
+-            [
+-                'remainingDays' => $freeTrialService->getRemainingDays(),
+-                'showRemainingDays' => $this->getAuthUser()->getUserRoleId() === 1 && !$freeTrialService->isSubscribed(),
+-            ]
+-        );
+         return $this->context->all();
+     }
+ 
+diff --git a/src/plugins/orangehrmCorePlugin/templates/vue.html.twig b/src/plugins/orangehrmCorePlugin/templates/vue.html.twig
+index 3e93d814f..9b7a7befc 100644
+--- a/src/plugins/orangehrmCorePlugin/templates/vue.html.twig
++++ b/src/plugins/orangehrmCorePlugin/templates/vue.html.twig
+@@ -22,10 +22,6 @@
+   </noscript>
+ 
+   <div id="app">
+-    <on-demand-remaining-days
+-        remaining-days="{{ remainingDays }}"
+-        :show-remaining-days="{{ showRemainingDays | json_encode() }}"
+-    ></on-demand-remaining-days>
+     <oxd-layout
+         home-url="https://www.orangehrm.com/"
+         :sidepanel-menu-items="{{ sidePanelMenuItems | json_encode() }}"
+@@ -51,21 +47,6 @@
+     <template v-slot:footer>{% include 'copyright.html.twig' %}<br></template>
+     </oxd-layout>
+   </div>
+-  {% if showRemainingDays == true %}
+-    <style>
+-      .oxd-topbar {
+-        margin-top: 2.8rem;
+-      }
+-
+-      .oxd-sidepanel {
+-        margin-top: 2.8rem;
+-      }
+-
+-      .oxd-layout-context {
+-        margin-top: 9rem;
+-      }
+-    </style>  
+-  {% endif %}
+ {% endblock %}
+ 
+ {% block javascripts %}
+diff --git a/src/plugins/orangehrmFreeTrialPlugin/Api/SubscribeFreeTrialAPI.php b/src/plugins/orangehrmFreeTrialPlugin/Api/SubscribeFreeTrialAPI.php
+deleted file mode 100644
+index c9ac819c0..000000000
+--- a/src/plugins/orangehrmFreeTrialPlugin/Api/SubscribeFreeTrialAPI.php
++++ /dev/null
+@@ -1,223 +0,0 @@
+-<?php
+-/**
+- * OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
+- * all the essential functionalities required for any enterprise.
+- * Copyright (C) 2006 OrangeHRM Inc., http://www.orangehrm.com
+- *
+- * OrangeHRM is free software; you can redistribute it and/or modify it under the terms of
+- * the GNU General Public License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * OrangeHRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+- * See the GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License along with this program;
+- * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA  02110-1301, USA
+- */
+-
+-namespace OrangeHRM\FreeTrial\Api;
+-
+-use OrangeHRM\Admin\Service\CountryService;
+-use OrangeHRM\Core\Api\V2\CollectionEndpoint;
+-use OrangeHRM\Core\Api\V2\Endpoint;
+-use OrangeHRM\Core\Api\V2\EndpointResourceResult;
+-use OrangeHRM\Core\Api\V2\EndpointResult;
+-use OrangeHRM\Core\Api\V2\Exception\BadRequestException;
+-use OrangeHRM\Core\Api\V2\Model\ArrayModel;
+-use OrangeHRM\Core\Api\V2\RequestParams;
+-use OrangeHRM\Core\Api\V2\Validator\ParamRule;
+-use OrangeHRM\Core\Api\V2\Validator\ParamRuleCollection;
+-use OrangeHRM\Core\Api\V2\Validator\Rule;
+-use OrangeHRM\Core\Api\V2\Validator\Rules;
+-use OrangeHRM\Core\Traits\ServiceContainerTrait;
+-use OrangeHRM\Framework\Services;
+-use OrangeHRM\FreeTrial\Service\FreeTrialService;
+-
+-class SubscribeFreeTrialAPI extends Endpoint implements CollectionEndpoint
+-{
+-    use ServiceContainerTrait;
+-
+-    public const PARAMETER_COMPANY_NAME = 'companyName';
+-    public const PARAMETER_NO_OF_EMPLOYEES = 'noOfEmployee';
+-    public const PARAMETER_COUNTRY = 'country';
+-    public const PARAMETER_CONTACT_PERSON = 'contactPersonName';
+-    public const PARAMETER_CONTACT_NUMBER = 'contactNumber';
+-    public const PARAMETER_EMAIL = 'email';
+-
+-    /**
+-     * @var FreeTrialService|null
+-     */
+-    protected ?FreeTrialService $freeTrialService = null;
+-
+-    /**
+-     * @return FreeTrialService
+-     */
+-    public function getFreeTrialService(): FreeTrialService
+-    {
+-        if (!$this->freeTrialService instanceof FreeTrialService) {
+-            $this->freeTrialService = new FreeTrialService();
+-        }
+-        return $this->freeTrialService;
+-    }
+-
+-    /**
+-     * @inheritDoc
+-     */
+-    public function getAll(): EndpointResult
+-    {
+-        throw $this->getNotImplementedException();
+-    }
+-
+-    /**
+-     * @inheritDoc
+-     */
+-    public function getValidationRuleForGetAll(): ParamRuleCollection
+-    {
+-        throw $this->getNotImplementedException();
+-    }
+-
+-    /**
+-     * @return CountryService
+-     */
+-    public function getCountryService(): CountryService
+-    {
+-        return $this->getContainer()->get(Services::COUNTRY_SERVICE);
+-    }
+-
+-    /**
+-     * @inheritDoc
+-     */
+-    public function create(): EndpointResult
+-    {
+-        if ($this->getFreeTrialService()->isSubscribed()) {
+-            throw new BadRequestException('This Instance have already subscribed.');
+-        }
+-
+-        $response = $this->freeTrialService->saveSubscription($this->getParametersArray());
+-        if ($response != null) {
+-            $this->freeTrialService->setSubscribed();
+-        }
+-
+-        $data = $response[0];
+-        $country = $this->getCountryService()->getCountryByCountryName($data['country']);
+-
+-        $formattedCountry = [
+-            'id' => $country->getCountryCode(),
+-            'label' => $country->getCountryName()
+-        ];
+-
+-        $subscriberDetails = [
+-            'id' => $data['id'],
+-            'companyName' => $data['companyName'],
+-            'contactNumber' => $data['contactNumber'],
+-            'contactPersonName' => $data['contactPersonName'],
+-            'country' => $formattedCountry,
+-            'email' => $data['email'],
+-            'noOfEmployees' => $data['noOfEmployees'],
+-        ];
+-
+-        return new EndpointResourceResult(
+-            ArrayModel::class,
+-            $subscriberDetails
+-        );
+-    }
+-
+-
+-    private function getParametersArray(): array
+-    {
+-        $companyName = $this->getRequestParams()->getString(
+-            RequestParams::PARAM_TYPE_BODY,
+-            self::PARAMETER_COMPANY_NAME,
+-        );
+-
+-        $contactNumber = $this->getRequestParams()->getString(
+-            RequestParams::PARAM_TYPE_BODY,
+-            self::PARAMETER_CONTACT_NUMBER,
+-        );
+-
+-        $contactPerson = $this->getRequestParams()->getString(
+-            RequestParams::PARAM_TYPE_BODY,
+-            self::PARAMETER_CONTACT_PERSON,
+-        );
+-
+-        $noOfEmployees = $this->getRequestParams()->getInt(
+-            RequestParams::PARAM_TYPE_BODY,
+-            self::PARAMETER_NO_OF_EMPLOYEES,
+-        );
+-
+-        $email = $this->getRequestParams()->getString(
+-            RequestParams::PARAM_TYPE_BODY,
+-            self::PARAMETER_EMAIL,
+-        );
+-
+-        $country = $this->getRequestParams()->getString(
+-            RequestParams::PARAM_TYPE_BODY,
+-            self::PARAMETER_COUNTRY,
+-        );
+-
+-        return [
+-            'country' => $country,
+-            'companyName' => $companyName,
+-            'contactNumber' => $contactNumber,
+-            'email' => $email,
+-            'noOfEmployees' => $noOfEmployees,
+-            'contactPersonName' => $contactPerson,
+-        ];
+-    }
+-
+-    /**
+-     * @inheritDoc
+-     */
+-    public function getValidationRuleForCreate(): ParamRuleCollection
+-    {
+-        return new ParamRuleCollection(
+-            new ParamRule(
+-                self::PARAMETER_COMPANY_NAME,
+-                new Rule(Rules::STRING_TYPE),
+-                new Rule(Rules::NOT_BLANK),
+-            ),
+-            new ParamRule(
+-                self::PARAMETER_CONTACT_NUMBER,
+-                new Rule(Rules::STRING_TYPE),
+-                new Rule(Rules::NOT_BLANK),
+-            ),
+-            new ParamRule(
+-                self::PARAMETER_CONTACT_PERSON,
+-                new Rule(Rules::STRING_TYPE),
+-                new Rule(Rules::NOT_BLANK),
+-            ),
+-            new ParamRule(
+-                self::PARAMETER_NO_OF_EMPLOYEES,
+-                new Rule(Rules::INT_TYPE),
+-            ),
+-            new ParamRule(
+-                self::PARAMETER_EMAIL,
+-                new Rule(Rules::EMAIL),
+-                new Rule(Rules::NOT_BLANK),
+-            ),
+-            new ParamRule(
+-                self::PARAMETER_COUNTRY,
+-                new Rule(Rules::STRING_TYPE),
+-                new Rule(Rules::NOT_BLANK),
+-            ),
+-        );
+-    }
+-
+-    /**
+-     * @inheritDoc
+-     */
+-    public function delete(): EndpointResult
+-    {
+-        throw $this->getNotImplementedException();
+-    }
+-
+-    /**
+-     * @inheritDoc
+-     */
+-    public function getValidationRuleForDelete(): ParamRuleCollection
+-    {
+-        throw $this->getNotImplementedException();
+-    }
+-}
+diff --git a/src/plugins/orangehrmFreeTrialPlugin/Controller/FreeTrialController.php b/src/plugins/orangehrmFreeTrialPlugin/Controller/FreeTrialController.php
+deleted file mode 100644
+index d7a65e80f..000000000
+--- a/src/plugins/orangehrmFreeTrialPlugin/Controller/FreeTrialController.php
++++ /dev/null
+@@ -1,119 +0,0 @@
+-<?php
+-/**
+- * OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
+- * all the essential functionalities required for any enterprise.
+- * Copyright (C) 2006 OrangeHRM Inc., http://www.orangehrm.com
+- *
+- * OrangeHRM is free software; you can redistribute it and/or modify it under the terms of
+- * the GNU General Public License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * OrangeHRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+- * See the GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License along with this program;
+- * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA 02110-1301, USA
+- */
+-
+-namespace OrangeHRM\FreeTrial\Controller;
+-
+-use Exception;
+-use OrangeHRM\Admin\Service\CountryService;
+-use OrangeHRM\Authentication\Controller\ForbiddenController;
+-use OrangeHRM\Core\Controller\AbstractVueController;
+-use OrangeHRM\Core\Controller\Exception\RequestForwardableException;
+-use OrangeHRM\Core\Traits\Auth\AuthUserTrait;
+-use OrangeHRM\Core\Traits\ServiceContainerTrait;
+-use OrangeHRM\Core\Vue\Component;
+-use OrangeHRM\Core\Vue\Prop;
+-use OrangeHRM\Framework\Http\Request;
+-use OrangeHRM\Framework\Services;
+-use OrangeHRM\FreeTrial\Service\FreeTrialService;
+-
+-class FreeTrialController extends AbstractVueController
+-{
+-    use ServiceContainerTrait;
+-    use AuthUserTrait;
+-
+-    /**
+-     * @var FreeTrialService|null
+-     */
+-    protected ?FreeTrialService $freeTrialService = null;
+-
+-    /**
+-     * @return FreeTrialService
+-     */
+-    public function getFreeTrialService(): FreeTrialService
+-    {
+-        if (!$this->freeTrialService instanceof FreeTrialService) {
+-            $this->freeTrialService = new FreeTrialService();
+-        }
+-        return $this->freeTrialService;
+-    }
+-
+-    /**
+-     * @return bool
+-     */
+-    private function getSubscribeStatus(): bool
+-    {
+-        $freeTrialService = new FreeTrialService();
+-        return $freeTrialService->isSubscribed();
+-    }
+-
+-    /**
+-     * @return CountryService
+-     */
+-    public function getCountryService(): CountryService
+-    {
+-        return $this->getContainer()->get(Services::COUNTRY_SERVICE);
+-    }
+-
+-    /**
+-     * @inheritDoc
+-     */
+-    public function preRender(Request $request): void
+-    {
+-        if ($this->getAuthUser()->getUserRoleId() !== 1) {
+-            throw new RequestForwardableException(ForbiddenController::class . '::handle');
+-        }
+-
+-        $component = new Component('subscribe-free-hosting');
+-        $currentURL = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+-        $instanceUrl = rtrim($currentURL, '/trial/subscribeFreeHosting');
+-
+-        $preloadedValues = ['response' => []];
+-        try {
+-            $preloadedValues = $this->getFreeTrialService()->getPreloadedValues();
+-        } catch (Exception $e) {
+-            // Log the exception and continue with empty preloaded values
+-        }
+-
+-        $instanceDetails = $preloadedValues['response'];
+-        $countryName = $instanceDetails['country'] ?? null;
+-        $formattedCountry = (object)[];
+-        if ($countryName !== null) {
+-            $country = $this->getCountryService()->getCountryByCountryName($countryName);
+-            $formattedCountry = [
+-                'id' => $country->getCountryCode(),
+-                'label' => $country->getCountryName()
+-            ];
+-        }
+-
+-        /** @var CountryService $countryService */
+-        $countryService = $this->getContainer()->get(Services::COUNTRY_SERVICE);
+-        $component->addProp(new Prop('countries', Prop::TYPE_ARRAY, $countryService->getCountryArray()));
+-        $component->addProp(new Prop('url', Prop::TYPE_STRING, $instanceUrl));
+-        $component->addProp(new Prop('company-name', Prop::TYPE_STRING, $instanceDetails['companyName'] ?? null));
+-        $component->addProp(new Prop('contact-number', Prop::TYPE_NUMBER, $instanceDetails['contactNumber'] ?? null));
+-        $component->addProp(new Prop('email', Prop::TYPE_STRING, $instanceDetails['email'] ?? null));
+-        $component->addProp(
+-            new Prop('contact-person-name', Prop::TYPE_STRING, $instanceDetails['contactPersonName'] ?? null)
+-        );
+-        $component->addProp(new Prop('country', Prop::TYPE_OBJECT, $formattedCountry));
+-        $component->addProp(new Prop('is-subscribed', Prop::TYPE_BOOLEAN, $this->getSubscribeStatus()));
+-
+-        $this->setComponent($component);
+-    }
+-}
+diff --git a/src/plugins/orangehrmFreeTrialPlugin/Dao/FreeTrialDao.php b/src/plugins/orangehrmFreeTrialPlugin/Dao/FreeTrialDao.php
+deleted file mode 100644
+index 1936764d8..000000000
+--- a/src/plugins/orangehrmFreeTrialPlugin/Dao/FreeTrialDao.php
++++ /dev/null
+@@ -1,39 +0,0 @@
+-<?php
+-/**
+- * OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
+- * all the essential functionalities required for any enterprise.
+- * Copyright (C) 2006 OrangeHRM Inc., http://www.orangehrm.com
+- *
+- * OrangeHRM is free software; you can redistribute it and/or modify it under the terms of
+- * the GNU General Public License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * OrangeHRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+- * See the GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License along with this program;
+- * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA  02110-1301, USA
+- */
+-
+-namespace OrangeHRM\FreeTrial\Dao;
+-
+-use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
+-use OrangeHRM\Core\Traits\Service\DateTimeHelperTrait;
+-use OrangeHRM\FreeTrial\Service\FreeTrialService;
+-
+-class FreeTrialDao
+-{
+-    use ConfigServiceTrait;
+-    use DateTimeHelperTrait;
+-
+-    public function saveSubscribeDate(): void
+-    {
+-        $subscribedAt = $this->getDateTimeHelper()->getNow()->format('Y-m-d H:i:s');
+-        $this->getConfigService()->getConfigDao()->setValue(
+-            FreeTrialService::TRIAL_SUBSCRIBED_DATE_CONFIG,
+-            $subscribedAt
+-        );
+-    }
+-}
+diff --git a/src/plugins/orangehrmFreeTrialPlugin/Service/ClientService.php b/src/plugins/orangehrmFreeTrialPlugin/Service/ClientService.php
+deleted file mode 100644
+index f3cd51267..000000000
+--- a/src/plugins/orangehrmFreeTrialPlugin/Service/ClientService.php
++++ /dev/null
+@@ -1,122 +0,0 @@
+-<?php
+-/**
+- * OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
+- * all the essential functionalities required for any enterprise.
+- * Copyright (C) 2006 OrangeHRM Inc., http://www.orangehrm.com
+- *
+- * OrangeHRM is free software; you can redistribute it and/or modify it under the terms of
+- * the GNU General Public License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * OrangeHRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+- * See the GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License along with this program;
+- * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA  02110-1301, USA
+- */
+-
+-namespace OrangeHRM\FreeTrial\Service;
+-
+-use GuzzleHttp\Client;
+-use OrangeHRM\Core\Traits\Auth\AuthUserTrait;
+-use OrangeHRM\Core\Traits\Service\DateTimeHelperTrait;
+-
+-class ClientService
+-{
+-    use AuthUserTrait;
+-    use DateTimeHelperTrait;
+-
+-    public const ON_DEMAND_ACCESS_TOKEN_CREATED_AT = 'ondemand_access_token_created_at';
+-    public const ON_DEMAND_ACCESS_TOKEN = 'ondemand_access_token';
+-    public const ENDPOINT_TOKEN = '/oauth/v2/token';
+-    public const TOKEN_VALID_TIME_PERIOD = 55; // in minutes
+-    public const GRANT_TYPE = 'client_credentials';
+-    public const DEFAULT_CONTENT_TYPE = "application/json";
+-
+-    protected ?FreeTrialService $freeTrialService = null;
+-
+-    /**
+-     * @return FreeTrialService
+-     */
+-    public function getFreeTrialService(): FreeTrialService
+-    {
+-        if (!$this->freeTrialService instanceof FreeTrialService) {
+-            $this->freeTrialService = new FreeTrialService();
+-        }
+-        return $this->freeTrialService;
+-    }
+-
+-    /**
+-     * @return Client
+-     */
+-    public function getApiClient(): Client
+-    {
+-        $url = $this->getFreeTrialService()->getInstanceUrl();
+-        if (!isset($this->apiClient)) {
+-            $this->apiClient = new Client(['base_uri' => $url, 'verify' => false]);
+-        }
+-        return $this->apiClient;
+-    }
+-
+-    /**
+-     * @return bool
+-     */
+-    public function isValidToken(): bool
+-    {
+-        if ($this->getAuthUser()->getAttribute(ClientService::ON_DEMAND_ACCESS_TOKEN) == null) {
+-            return false;
+-        }
+-        $createdDateTime = $this->getAuthUser()->getAttribute(ClientService::ON_DEMAND_ACCESS_TOKEN);
+-        $createdDateTimeInMinutes = strtotime($createdDateTime) / 60;
+-        $timeDifference  = $createdDateTimeInMinutes - (strtotime($this->getDateTimeHelper()->getNow()->format('Y-m-d H:i:s')) / 60);
+-
+-        return $timeDifference <= self::TOKEN_VALID_TIME_PERIOD;
+-    }
+-
+-    private function getNewAccessToken(): void
+-    {
+-        $client = new Client();
+-        $clientId = $this->getFreeTrialService()->getOnDemandClientId();
+-        $clientSecret = $this->getFreeTrialService()->getOnDemandClientSecret();
+-        $onDemandUrl = $this->getFreeTrialService()->getInstanceUrl();
+-        $url = $onDemandUrl . self::ENDPOINT_TOKEN;
+-        $response = $client->post(
+-            $url,
+-            [
+-                'json' => [
+-                    'client_id' => $clientId,
+-                    'client_secret' => $clientSecret,
+-                    'grant_type' => self::GRANT_TYPE,
+-                ],
+-                'headers' => [
+-                    'Content-Type' => self::DEFAULT_CONTENT_TYPE,
+-                    'Accept' => self::DEFAULT_CONTENT_TYPE,
+-                ],
+-                'verify' => false
+-            ]
+-        );
+-        $body = json_decode($response->getBody(), true);
+-        $responseCode = $response->getStatusCode();
+-
+-        if ($responseCode == 200) {
+-            $this->getAuthUser()->setAttribute(ClientService::ON_DEMAND_ACCESS_TOKEN, $body['access_token']);
+-            $this->getAuthUser()->setAttribute(
+-                ClientService::ON_DEMAND_ACCESS_TOKEN_CREATED_AT,
+-                $this->getDateTimeHelper()->getNow()->format('Y-m-d H:i:s')
+-            );
+-        }
+-    }
+-
+-    /**
+-     * @return string
+-     */
+-    public function getAccessToken(): string
+-    {
+-        if (!$this->isValidToken()) {
+-            $this->getNewAccessToken();
+-        }
+-        return $this->getAuthUser()->getAttribute(ClientService::ON_DEMAND_ACCESS_TOKEN);
+-    }
+-}
+diff --git a/src/plugins/orangehrmFreeTrialPlugin/Service/FreeTrialService.php b/src/plugins/orangehrmFreeTrialPlugin/Service/FreeTrialService.php
+deleted file mode 100644
+index 1c49b51e7..000000000
+--- a/src/plugins/orangehrmFreeTrialPlugin/Service/FreeTrialService.php
++++ /dev/null
+@@ -1,205 +0,0 @@
+-<?php
+-/**
+- * OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
+- * all the essential functionalities required for any enterprise.
+- * Copyright (C) 2006 OrangeHRM Inc., http://www.orangehrm.com
+- *
+- * OrangeHRM is free software; you can redistribute it and/or modify it under the terms of
+- * the GNU General Public License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * OrangeHRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+- * See the GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License along with this program;
+- * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA  02110-1301, USA
+- */
+-
+-namespace OrangeHRM\FreeTrial\Service;
+-
+-use OrangeHRM\Core\Api\V2\Exception\BadRequestException;
+-use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
+-use OrangeHRM\FreeTrial\Dao\FreeTrialDao;
+-
+-class FreeTrialService
+-{
+-    use ConfigServiceTrait;
+-
+-    public const TRIAL_CREATED_DATE_CONFIG = 'instance.created_at'; //store in date time
+-    public const TRIAL_PERIOD_CONFIG = 'trial.period'; //store as 30 (days)
+-    public const ON_DEMAND_URL_CONFIG = 'ondemand.url';
+-    public const INSTANCE_NAME_CONFIG = 'instance.name';
+-    public const TRIAL_SUBSCRIBED_DATE_CONFIG = 'trial.subscribed_at';
+-    public const TRIAL_ON_DEMAND_CLIENT_ID_CONFIG = 'trial.ondemand_client_id';
+-    public const TRIAL_ON_DEMAND_CLIENT_SECRET_CONFIG = 'trial.ondemand_client_secret';
+-    public const DEFAULT_CONTENT_TYPE = "application/json";
+-    public const ENDPOINT_BASE_PATH = '/api/instance/v1/instance';
+-
+-    /**
+-     * @var FreeTrialDao
+-     */
+-    private FreeTrialDao $freeTrialDao;
+-
+-    /**
+-     * @var ClientService|null
+-     */
+-    private ?ClientService $clientService = null;
+-
+-    /**
+-     * @return FreeTrialDao
+-     */
+-    public function getFreeTrialDao(): FreeTrialDao
+-    {
+-        return $this->freeTrialDao ??= new FreeTrialDao();
+-    }
+-
+-    /**
+-     * @return ClientService
+-     */
+-    public function getClientService(): ClientService
+-    {
+-        if (!$this->clientService instanceof ClientService) {
+-            $this->clientService = new ClientService();
+-        }
+-        return $this->clientService;
+-    }
+-
+-    /**
+-     * @return string
+-     */
+-    public function getRemainingDays(): string
+-    {
+-        $trialPeriod = $this->getConfigService()->getConfigDao()->getValue(self::TRIAL_PERIOD_CONFIG);
+-        $instanceCreatedDate = $this->getConfigService()->getConfigDao()->getValue(self::TRIAL_CREATED_DATE_CONFIG);
+-
+-        $remainingDays =  $trialPeriod - (round((strtotime(date('Y-m-d H:i:s')) - strtotime($instanceCreatedDate ?? '-1 year')) / (86400)));
+-        if ($remainingDays < 0) {
+-            $remainingDays = 0;
+-        }
+-
+-        if ($remainingDays == '1') {
+-            return $remainingDays . ' Day';
+-        } else {
+-            return $remainingDays . ' Days';
+-        }
+-    }
+-
+-    /**
+-     * @return bool
+-     */
+-    public function isSubscribed(): bool
+-    {
+-        if (($this->getConfigService()->getConfigDao()->getValue(self::TRIAL_SUBSCRIBED_DATE_CONFIG)) != null) {
+-            return true;
+-        }
+-        return false;
+-    }
+-
+-    /**
+-     * @return string|null
+-     */
+-    public function getInstanceName(): ?string
+-    {
+-        return $this->getConfigService()->getConfigDao()->getValue(self::INSTANCE_NAME_CONFIG);
+-    }
+-
+-    /**
+-     * @return string
+-     */
+-    public function getInstanceUrl(): ?string
+-    {
+-        return $this->getConfigService()->getConfigDao()->getValue(self::ON_DEMAND_URL_CONFIG);
+-    }
+-
+-    /**
+-     * @return string
+-     */
+-    public function getOnDemandClientId(): ?string
+-    {
+-        return $this->getConfigService()->getConfigDao()->getValue(self::TRIAL_ON_DEMAND_CLIENT_ID_CONFIG);
+-    }
+-
+-    /**
+-     * @return string
+-     */
+-    public function getOnDemandClientSecret(): ?string
+-    {
+-        return $this->getConfigService()->getConfigDao()->getValue(self::TRIAL_ON_DEMAND_CLIENT_SECRET_CONFIG);
+-    }
+-
+-    public function setSubscribed(): void
+-    {
+-        $this->getFreeTrialDao()->saveSubscribeDate();
+-    }
+-
+-    /**
+-     * @return array
+-     */
+-    public function getPreloadedValues(): array
+-    {
+-        $instanceName = $this->getInstanceName();
+-        $onDemandUrl = $this->getInstanceUrl();
+-        $token = $this->getClientService()->getAccessToken();
+-        $headers = [
+-            'Accept' => self::DEFAULT_CONTENT_TYPE,
+-            'Content-Type' => self::DEFAULT_CONTENT_TYPE,
+-            'Authorization' => 'Bearer ' . $token
+-        ];
+-
+-        $response = $this->getClientService()->getApiClient()->get(
+-            $onDemandUrl . self::ENDPOINT_BASE_PATH . '/details?instanceName=' . $instanceName,
+-            [
+-                'headers' => $headers
+-            ]
+-        );
+-
+-        $body = json_decode($response->getBody(), true);
+-        $responseCode = $response->getStatusCode();
+-
+-        return [
+-            'responseCode' => $responseCode,
+-            'response' => $body,
+-        ];
+-    }
+-
+-    /**
+-     * @param array $queryParams
+-     * @return array|null
+-     */
+-    public function saveSubscription(array $queryParams): ?array
+-    {
+-        $onDemandUrl = $this->getInstanceUrl();
+-        $token = $this->getClientService()->getAccessToken();
+-        $headers = [
+-            'Accept' => self::DEFAULT_CONTENT_TYPE,
+-            'Content-Type' => self::DEFAULT_CONTENT_TYPE,
+-            'Authorization' => 'Bearer ' . $token
+-        ];
+-        $requestData = [
+-            'companyName' => $queryParams['companyName'],
+-            'contactNumber' => $queryParams['contactNumber'],
+-            'contactPersonName' => $queryParams['contactPersonName'],
+-            'country' => $queryParams['country'],
+-            'email' => $queryParams['email'],
+-            'noOfEmployees' => $queryParams['noOfEmployees']
+-        ];
+-        try {
+-            $response = $this->getClientService()->getApiClient()->post(
+-                $onDemandUrl . self::ENDPOINT_BASE_PATH . '/subscribe',
+-                [
+-                    'headers' => $headers,
+-                    'body' => json_encode($requestData)
+-                ]
+-            );
+-            if ($response->getStatusCode() == 200) {
+-                return json_decode($response->getBody(), true);
+-            }
+-        } catch (\Exception $e) {
+-            throw new BadRequestException($e->getMessage());
+-        }
+-
+-        return json_decode('');
+-    }
+-}
+diff --git a/src/plugins/orangehrmFreeTrialPlugin/config/FreeTrialPluginConfiguration.php b/src/plugins/orangehrmFreeTrialPlugin/config/FreeTrialPluginConfiguration.php
+deleted file mode 100644
+index 73707c041..000000000
+--- a/src/plugins/orangehrmFreeTrialPlugin/config/FreeTrialPluginConfiguration.php
++++ /dev/null
+@@ -1,35 +0,0 @@
+-<?php
+-/**
+- * OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
+- * all the essential functionalities required for any enterprise.
+- * Copyright (C) 2006 OrangeHRM Inc., http://www.orangehrm.com
+- *
+- * OrangeHRM is free software; you can redistribute it and/or modify it under the terms of
+- * the GNU General Public License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * OrangeHRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+- * See the GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License along with this program;
+- * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+- * Boston, MA  02110-1301, USA
+- */
+-
+-use Composer\Autoload\ClassLoader;
+-use OrangeHRM\Framework\Http\Request;
+-use OrangeHRM\Framework\PluginConfigurationInterface;
+-
+-class FreeTrialPluginConfiguration implements PluginConfigurationInterface
+-{
+-    /**
+-     * @inheritDoc
+-     */
+-    public function initialize(Request $request): void
+-    {
+-        $loader = new ClassLoader();
+-        $loader->addPsr4('OrangeHRM\\FreeTrial\\', [realpath(__DIR__ . "/..")]);
+-        $loader->register();
+-    }
+-}
+diff --git a/src/plugins/orangehrmFreeTrialPlugin/config/routes.yaml b/src/plugins/orangehrmFreeTrialPlugin/config/routes.yaml
+deleted file mode 100644
+index c18769417..000000000
+--- a/src/plugins/orangehrmFreeTrialPlugin/config/routes.yaml
++++ /dev/null
+@@ -1,14 +0,0 @@
+-apiv2_free_trial_subscribe:
+-  path: /api/v2/trial/subscribeFreeHosting
+-  controller: OrangeHRM\Core\Controller\Rest\V2\GenericRestController::handle
+-  methods: [ POST ]
+-  defaults:
+-    _api: OrangeHRM\FreeTrial\Api\SubscribeFreeTrialAPI
+-
+-##########################
+-#        Screens
+-##########################
+-free_trial_instance:
+-  path: /trial/subscribeFreeHosting
+-  controller: OrangeHRM\FreeTrial\Controller\FreeTrialController::handle
+-  methods: [ GET ]
+diff --git a/src/plugins/orangehrmFreeTrialPlugin/install/db.sql b/src/plugins/orangehrmFreeTrialPlugin/install/db.sql
+deleted file mode 100644
+index 395212c35..000000000
+--- a/src/plugins/orangehrmFreeTrialPlugin/install/db.sql
++++ /dev/null
+@@ -1,19 +0,0 @@
+-INSERT INTO ohrm_data_group (`name`, `description`, `can_read`, `can_create`, `can_update`, `can_delete`)
+-VALUES ('apiv2_free_trial_subscribe', 'API-v2 Free trial subscribe', 0, 1, 0, 0);
+-
+-SET
+-@core_module_id := (SELECT `id` FROM ohrm_module WHERE name = 'core' LIMIT 1);
+-
+-SET
+-@apiv2_free_trial_subscribe_data_group_id := (SELECT `id` FROM ohrm_data_group WHERE name =
+- 'apiv2_free_trial_subscribe' LIMIT 1);
+-
+-INSERT INTO ohrm_api_permission (`api_name`, `module_id`, `data_group_id`)
+-VALUES ('OrangeHRM\\FreeTrial\\Api\\SubscribeFreeTrialAPI', @core_module_id, @apiv2_free_trial_subscribe_data_group_id);
+-
+-SET
+-@admin_role_id := (SELECT `id` FROM ohrm_user_role WHERE `name` = 'Admin' LIMIT 1);
+-
+-INSERT INTO ohrm_user_role_data_group (`can_read`, `can_create`, `can_update`, `can_delete`, `self`, `data_group_id`,
+-                                       `user_role_id`)
+-VALUES (0, 1, 0, 0, 0, @apiv2_free_trial_subscribe_data_group_id, @admin_role_id);
