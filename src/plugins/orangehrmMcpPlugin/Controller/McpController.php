@@ -23,19 +23,33 @@ use OrangeHRM\Core\Controller\AbstractController;
 use OrangeHRM\Core\Controller\PublicControllerInterface;
 use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Framework\Http\Response;
+use OrangeHRM\Mcp\Traits\McpEnabledTrait;
 
 class McpController extends AbstractController implements PublicControllerInterface
 {
+    use McpEnabledTrait;
+
     /**
-     * Placeholder MCP HTTP entry point. Returns a JSON-RPC 2.0 "Method not found"
-     * envelope until Story 2.1 lands the JSON-RPC dispatcher and method handlers.
-     *
-     * @param Request $request
-     * @return Response
+     * MCP HTTP entry point. When the mcp module is disabled, returns
+     * a JSON-RPC -32000 module_disabled envelope before any further
+     * processing. When enabled, returns the Story 1.4 placeholder
+     * -32601 envelope until Story 2.1 wires the dispatcher.
      */
     public function handle(Request $request): Response
     {
-        $envelope = [
+        if (!$this->isMcpModuleEnabled()) {
+            return $this->buildJsonRpcResponse([
+                'jsonrpc' => '2.0',
+                'id' => null,
+                'error' => [
+                    'code' => -32000,
+                    'message' => 'MCP module is disabled',
+                    'data' => ['reason' => 'module_disabled'],
+                ],
+            ]);
+        }
+
+        return $this->buildJsonRpcResponse([
             'jsonrpc' => '2.0',
             'id' => null,
             'error' => [
@@ -45,13 +59,15 @@ class McpController extends AbstractController implements PublicControllerInterf
                     'info' => 'MCP method handlers are not yet implemented; see https://modelcontextprotocol.io',
                 ],
             ],
-        ];
+        ]);
+    }
 
+    private function buildJsonRpcResponse(array $envelope): Response
+    {
         $response = $this->getResponse();
         $response->setStatusCode(Response::HTTP_OK);
         $response->headers->set('Content-Type', 'application/json');
         $response->setContent(json_encode($envelope, JSON_UNESCAPED_SLASHES));
-
         return $response;
     }
 }

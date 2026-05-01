@@ -23,6 +23,7 @@ use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Framework\PluginConfigurationInterface;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\Mcp\Service\McpConfigurationService;
+use OrangeHRM\Mcp\Subscriber\McpModuleStatusChangeSubscriber;
 
 class McpPluginConfiguration implements PluginConfigurationInterface
 {
@@ -38,5 +39,7 @@ class McpPluginConfiguration implements PluginConfigurationInterface
             Services::MCP_CONFIG_SERVICE,
             McpConfigurationService::class
         );
+
+        $this->getEventDispatcher()->addSubscriber(new McpModuleStatusChangeSubscriber());
     }
 }
