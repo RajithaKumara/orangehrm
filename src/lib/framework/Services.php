@@ -235,6 +235,11 @@ final class Services
     public const LEAVE_CONFIG_SERVICE = 'leave.leave_config_service';
 
     /**
+     * @see \OrangeHRM\Mcp\Service\McpConfigurationService
+     */
+    public const MCP_CONFIG_SERVICE = 'mcp.config_service';
+
+    /**
      * @see \OrangeHRM\Leave\Service\LeaveTypeService
      */
     public const LEAVE_TYPE_SERVICE = 'leave.leave_type_service';

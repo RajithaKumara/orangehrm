@@ -21,6 +21,8 @@ use OrangeHRM\Core\Traits\EventDispatcherTrait;
 use OrangeHRM\Core\Traits\ServiceContainerTrait;
 use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Framework\PluginConfigurationInterface;
+use OrangeHRM\Framework\Services;
+use OrangeHRM\Mcp\Service\McpConfigurationService;
 
 class McpPluginConfiguration implements PluginConfigurationInterface
 {
@@ -32,8 +34,9 @@ class McpPluginConfiguration implements PluginConfigurationInterface
      */
     public function initialize(Request $request): void
     {
-        // Service registrations are added by subsequent stories (audit dispatcher,
-        // session manager, write-discipline interceptor, etc.). Subscribers are
-        // registered through $this->getEventDispatcher()->addSubscriber(...).
+        $this->getContainer()->register(
+            Services::MCP_CONFIG_SERVICE,
+            McpConfigurationService::class
+        );
     }
 }
