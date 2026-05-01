@@ -1,0 +1,14 @@
+mcp_endpoint:
+  path: /api/mcp
+  controller: OrangeHRM\Mcp\Controller\McpController::handle
+  methods: [ POST ]
+
+mcp_protected_resource_metadata:
+  path: /.well-known/oauth-protected-resource
+  controller: OrangeHRM\Mcp\Controller\MetadataController::protectedResource
+  methods: [ GET ]
+
+mcp_authorization_server_metadata:
+  path: /.well-known/oauth-authorization-server
+  controller: OrangeHRM\Mcp\Controller\MetadataController::authorizationServer
+  methods: [ GET ]
