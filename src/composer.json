@@ -71,6 +71,7 @@
             "OrangeHRM\\Help\\": "./plugins/orangehrmHelpPlugin",
             "OrangeHRM\\Leave\\": "./plugins/orangehrmLeavePlugin",
             "OrangeHRM\\Maintenance\\": "./plugins/orangehrmMaintenancePlugin",
+            "OrangeHRM\\Mcp\\": "./plugins/orangehrmMcpPlugin",
             "OrangeHRM\\OpenidAuthentication\\": "./plugins/orangehrmOpenidAuthenticationPlugin",
             "OrangeHRM\\Performance\\": "./plugins/orangehrmPerformancePlugin",
             "OrangeHRM\\Pim\\": "./plugins/orangehrmPimPlugin",
@@ -99,7 +100,8 @@
                 "./plugins/orangehrmLDAPAuthenticationPlugin/entity",
                 "./plugins/orangehrmBuzzPlugin/entity",
                 "./plugins/orangehrmClaimPlugin/entity",
-                "./plugins/orangehrmOpenidAuthenticationPlugin/entity"
+                "./plugins/orangehrmOpenidAuthenticationPlugin/entity",
+                "./plugins/orangehrmMcpPlugin/entity"
             ]
         }
     },
