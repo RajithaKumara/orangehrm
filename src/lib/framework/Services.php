@@ -240,6 +240,11 @@ final class Services
     public const MCP_CONFIG_SERVICE = 'mcp.config_service';
 
     /**
+     * @see \OrangeHRM\Mcp\Service\McpOperatorLogger
+     */
+    public const MCP_OPERATOR_LOGGER = 'mcp.operator_logger';
+
+    /**
      * @see \OrangeHRM\Leave\Service\LeaveTypeService
      */
     public const LEAVE_TYPE_SERVICE = 'leave.leave_type_service';

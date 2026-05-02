@@ -26,6 +26,7 @@ use OrangeHRM\Framework\PluginConfigurationInterface;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\Mcp\Command\McpDoctorCommand;
 use OrangeHRM\Mcp\Service\McpConfigurationService;
+use OrangeHRM\Mcp\Service\McpOperatorLogger;
 use OrangeHRM\Mcp\Subscriber\McpModuleStatusChangeSubscriber;
 
 class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleConfigurationInterface
@@ -41,6 +42,11 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
         $this->getContainer()->register(
             Services::MCP_CONFIG_SERVICE,
             McpConfigurationService::class
+        );
+
+        $this->getContainer()->register(
+            Services::MCP_OPERATOR_LOGGER,
+            McpOperatorLogger::class
         );
 
         $this->getEventDispatcher()->addSubscriber(new McpModuleStatusChangeSubscriber());
