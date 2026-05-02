@@ -19,13 +19,16 @@
 
 use OrangeHRM\Core\Traits\EventDispatcherTrait;
 use OrangeHRM\Core\Traits\ServiceContainerTrait;
+use OrangeHRM\Framework\Console\Console;
+use OrangeHRM\Framework\Console\ConsoleConfigurationInterface;
 use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Framework\PluginConfigurationInterface;
 use OrangeHRM\Framework\Services;
+use OrangeHRM\Mcp\Command\McpDoctorCommand;
 use OrangeHRM\Mcp\Service\McpConfigurationService;
 use OrangeHRM\Mcp\Subscriber\McpModuleStatusChangeSubscriber;
 
-class McpPluginConfiguration implements PluginConfigurationInterface
+class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleConfigurationInterface
 {
     use ServiceContainerTrait;
     use EventDispatcherTrait;
@@ -41,5 +44,13 @@ class McpPluginConfiguration implements PluginConfigurationInterface
         );
 
         $this->getEventDispatcher()->addSubscriber(new McpModuleStatusChangeSubscriber());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerCommands(Console $console): void
+    {
+        $console->add(new McpDoctorCommand());
     }
 }
