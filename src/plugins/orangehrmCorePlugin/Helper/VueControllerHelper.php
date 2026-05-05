@@ -34,6 +34,7 @@ use OrangeHRM\CorporateBranding\Traits\ThemeServiceTrait;
 use OrangeHRM\Entity\MenuItem;
 use OrangeHRM\Entity\Module;
 use OrangeHRM\Framework\Http\Request;
+use OrangeHRM\FreeTrial\Service\FreeTrialService;
 use OrangeHRM\I18N\Traits\Service\I18NHelperTrait;
 
 class VueControllerHelper
@@ -67,6 +68,8 @@ class VueControllerHelper
     public const THEME_VARIABLES = 'themeVariables';
     public const HELP_URL = 'helpUrl';
     public const SHOW_UPGRADE = 'showUpgrade';
+    public const REMAINING_DAYS = 'remainingDays'; //related to on-demand
+    public const SHOW_REMAINING_DAYS =  'showRemainingDays'; //related to on-demand
 
     /**
      * @var Request|null
@@ -153,7 +156,9 @@ class VueControllerHelper
                 self::CLIENT_BANNER_URL => $clientBannerUrl,
                 self::THEME_VARIABLES => $themeVariables,
                 self::HELP_URL => $this->getHelpUrl(),
-                self::SHOW_UPGRADE => $this->getAuthUser()->getUserRoleId() === 1
+                self::SHOW_UPGRADE => $this->getAuthUser()->getUserRoleId() === 1,
+                self::REMAINING_DAYS => $this->getRemainingDates(),
+                self::SHOW_REMAINING_DAYS => $this->getAuthUser()->getUserRoleId() === 1 && !$this->getSubscribeStatus(),
             ]
         );
         return $this->context->all();
@@ -295,5 +300,25 @@ class VueControllerHelper
             . '/help/help?label='
             . $this->getCurrentModuleAndScreen()->getModule() . '_'
             . $this->getCurrentModuleAndScreen()->getScreen();
+    }
+
+    //below code is related to free trial/on-demand
+    /**
+     * @return string
+     */
+    private function getRemainingDates(): string
+    {
+        $freeTrialService  = new FreeTrialService();
+        return $freeTrialService->getRemainingDays();
+    }
+
+    //below code is related to free trial/on-demand
+    /**
+     * @return bool
+     */
+    private function getSubscribeStatus(): bool
+    {
+        $freeTrialService  = new FreeTrialService();
+        return $freeTrialService->isSubscribed();
     }
 }
