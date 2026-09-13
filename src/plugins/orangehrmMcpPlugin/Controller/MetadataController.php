@@ -14,11 +14,15 @@ class MetadataController extends AbstractController
 
     public function protectedResource(HttpRequest $request): HttpResponse
     {
-        $origin = $this->getOrigin($request);
+        $hostOrigin = $this->getHostOrigin($request);
+        $appOrigin = $this->getOrigin($request);
 
         return $this->json([
-            'resource' => $origin . self::MCP_RESOURCE_PATH,
-            'authorization_servers' => [$origin],
+            'resource' => $appOrigin . self::MCP_RESOURCE_PATH,
+            // Use host-root as the issuer — Claude (and several other MCP
+            // clients) strip the path when constructing the RFC 8414
+            // well-known URL, so the issuer must live at the host root.
+            'authorization_servers' => [$hostOrigin],
             'bearer_methods_supported' => ['header'],
             'resource_name' => 'OrangeHRM MCP',
         ]);
@@ -26,12 +30,16 @@ class MetadataController extends AbstractController
 
     public function authorizationServer(HttpRequest $request): HttpResponse
     {
-        $origin = $this->getOrigin($request);
+        $hostOrigin = $this->getHostOrigin($request);
+        $appOrigin = $this->getOrigin($request);
 
         return $this->json([
-            'issuer' => $origin,
-            'authorization_endpoint' => $origin . '/oauth2/authorize',
-            'token_endpoint' => $origin . '/oauth2/token',
+            // Issuer must match the value advertised in the protected-resource
+            // doc and equal the well-known URL Claude looked up (host root).
+            'issuer' => $hostOrigin,
+            // OAuth endpoints can live anywhere; advertise their real subpath.
+            'authorization_endpoint' => $appOrigin . '/oauth2/authorize',
+            'token_endpoint' => $appOrigin . '/oauth2/token',
             'response_types_supported' => ['code'],
             'response_modes_supported' => ['query'],
             'grant_types_supported' => ['authorization_code', 'refresh_token'],
@@ -43,7 +51,22 @@ class MetadataController extends AbstractController
 
     public static function getOrigin(HttpRequest $request): string
     {
-        return rtrim($request->getSchemeAndHttpHost() . $request->getBaseUrl(), '/');
+        return rtrim(self::getHostOrigin($request) . $request->getBaseUrl(), '/');
+    }
+
+    public static function getHostOrigin(HttpRequest $request): string
+    {
+        $forwardedProto = $request->headers->get('X-Forwarded-Proto');
+        $scheme = $forwardedProto !== null
+            ? trim(explode(',', $forwardedProto)[0])
+            : $request->getScheme();
+
+        $forwardedHost = $request->headers->get('X-Forwarded-Host');
+        $host = $forwardedHost !== null
+            ? trim(explode(',', $forwardedHost)[0])
+            : $request->getHttpHost();
+
+        return $scheme . '://' . $host;
     }
 
     private function json(array $data): HttpResponse
