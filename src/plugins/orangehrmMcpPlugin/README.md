@@ -9,6 +9,58 @@ Status: **proof of concept**. Handshake, tool listing, and one sample tool
 auth surface. OAuth 2.1 metadata is advertised but the authorize/token endpoints are
 not yet implemented — see [What's not done yet](#whats-not-done-yet).
 
+## Design intent
+
+Guidance that shapes future work on this plugin. Where the code doesn't yet
+follow it, treat the intent as the direction to move in — **not** as a licence to
+walk back the intent to match today's code.
+
+1. **Reuse OrangeHRM's existing OAuth2 authorization server. Do not build a new
+   one inside this plugin.** The `/oauth2/authorize` and `/oauth2/token`
+   endpoints advertised by `MetadataController` must resolve to OHRM's OAuth2
+   implementation. The MCP plugin's job is discovery, protocol translation, and
+   tool dispatch — not identity.
+2. **Bearer-token auth on `/api/mcp` must go through the existing
+   `OAuthSubscriber`** (the same middleware that authorizes `/api/v2/*`). This
+   is how per-user data-group permissions apply for free — a tool call runs as
+   the token's user with the exact same authorization surface as a direct REST
+   call, no parallel permission logic inside this plugin. The current
+   session-auth check on the MCP endpoint is a POC shortcut and must be
+   replaced.
+3. **Tools call OHRM APIs in-process, not over internal HTTP.** A tool
+   instantiates the target API class (e.g. `MyInfoAPI`), forwards arguments,
+   and returns `$result->normalize()`. This preserves auth, DTOs, validation,
+   and normalization while avoiding a loopback roundtrip. See
+   [`PimMyselfTool`](Tool/PimMyselfTool.php) — every new tool should look like it.
+4. **Wrap existing V2 API endpoints; don't hand-roll business logic in tools.**
+   If the capability doesn't exist as a V2 endpoint, add the endpoint first
+   (through the normal REST + service + DAO layers) and then expose it as a
+   tool. Keeps a single implementation and a single authorization path.
+5. **MCP client auto-discovery must work out of the box.** RFC 9728
+   (protected-resource) and RFC 8414 (authorization-server) metadata is served
+   so Claude Desktop / Claude Code / other clients can complete
+   Authorization-Code + PKCE without a human copy-pasting client IDs or
+   endpoints. Anything that breaks discovery is a defect.
+6. **Support subpath deployments and reverse proxies.** OHRM is often mounted at
+   e.g. `/orangehrm/` and lives behind Nginx / an LB in production. Metadata
+   must advertise URLs that reach the app (baseUrl-aware) while still exposing
+   an issuer at the host root, and must honor `X-Forwarded-Proto` /
+   `X-Forwarded-Host`. See [OAuth 2.1 discovery — gotcha](#oauth-21-discovery--gotcha).
+7. **Tool registration must be pluggable across plugins, not centralized here.**
+   Long-term direction: a DI-collector-style registry so Pim, Leave, Time,
+   Admin, etc. contribute their own tools from their own plugin
+   configuration classes, with no edits to `orangehrmMcpPlugin`. The
+   in-constructor registration in `ToolRegistry` today is a placeholder.
+8. **This plugin is auto-discovered via `ConfigHelper`, same as every other
+   OHRM plugin.** When it grows services, wire them through a
+   `McpPluginConfiguration` (per the `services` skill) rather than
+   instantiating from controllers.
+9. **Documentation is a deliverable, not a follow-up.** The README, the routes
+   file, and code comments explain *why* each decision was made (the OAuth
+   subpath gotcha, in-process API calls, permission model) so a fresh
+   contributor — human or agent — can extend the plugin without re-deriving
+   the constraints.
+
 ## Endpoints
 
 Registered by [`config/routes.yaml`](config/routes.yaml). Base URL is whatever
