@@ -66,6 +66,7 @@ Skills cross-reference each other liberally; the table below groups them by area
 | [`scheduled-jobs`](scheduled-jobs/SKILL.md) | The `orangehrm:run-schedule` runner (one host cron entry every minute), `SchedulerConfigurationInterface::schedule()` plugin hook, `Schedule`/`Task`/`CommandInfo` (Task extends `Crunz\Event`), UTC-by-default evaluation, `ohrm_task_scheduler_log` audit. |
 | [`workflow`](workflow/SKILL.md) | `WorkflowStateMachine` `(workflow, state, role, action) → resultingState` transitions, the eight `FLOW_*` constants (Leave/Recruitment/Timesheet/Attendance/Employee/Review/Self-Review/Claim), `AccessFlowStateMachineService`, the two-layer authorization model. |
 | [`menus`](menus/SKILL.md) | The `MenuItem` entity, side panel + top menu rendering (server-computed in `MenuService::getMenuItems()` → Twig → `<oxd-layout>`), `MenuConfigurator` interface for runtime active-menu customization, permission gating, seeding via migrations. |
+| [`mcp-server`](mcp-server/SKILL.md) | The `orangehrmMcpPlugin` MCP surface at `/api/mcp` — curated tools vs the generic OpenAPI-driven router, `RestDispatcher` as the only path to data, `RestrictedApis` exclusions, `McpAccessPolicy` (Admin > Configuration > MCP Access), the synchronous audit row, and OAuth 2 discovery. |
 
 ---
 
@@ -78,6 +79,7 @@ The skills cross-link liberally. Some of the most-traveled paths:
 - **Changing supported runtime or package versions**: `compatibility` ↔ `dependencies` ↔ `dev-environment` ↔ `testing`
 - **Adding an event-triggered notification**: `events` ↔ `mail` ↔ `services`
 - **Encrypting a new sensitive field**: `security-primitives` ↔ `entities` (EntityListener) ↔ `migrations` (column sizing)
+- **Exposing something to an AI assistant**: `mcp-server` ↔ `rest-endpoints` ↔ `authorization` ↔ `rest-openapi`
 - **Setting up a fresh checkout**: `dev-environment` ↔ the project's `/onboard` slash command (Claude Code & Cursor; other tools can run `.agents/commands/onboard.md` as a prompt)
 
 ---
