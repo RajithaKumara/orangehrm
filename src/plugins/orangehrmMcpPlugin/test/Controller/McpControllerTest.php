@@ -53,7 +53,7 @@ class McpControllerTest extends KernelTestCase
     public function testReturnsMethodNotFoundWhenModuleEnabled(): void
     {
         $controller = $this->buildControllerWithEnabledList(['mcp', 'admin']);
-        $response = $controller->handle(Request::create('/mcp', 'POST', [], [], [], [], '{}'));
+        $response = $controller->handle(Request::create('/api/mcp', 'POST', [], [], [], [], '{}'));
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('application/json', $response->headers->get('Content-Type'));
@@ -65,7 +65,7 @@ class McpControllerTest extends KernelTestCase
     public function testReturnsModuleDisabledWhenModuleDisabled(): void
     {
         $controller = $this->buildControllerWithEnabledList(['admin', 'pim']);
-        $response = $controller->handle(Request::create('/mcp', 'POST', [], [], [], [], '{}'));
+        $response = $controller->handle(Request::create('/api/mcp', 'POST', [], [], [], [], '{}'));
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('application/json', $response->headers->get('Content-Type'));
@@ -78,7 +78,7 @@ class McpControllerTest extends KernelTestCase
     public function testReturnsModuleDisabledWhenEnabledListIsEmpty(): void
     {
         $controller = $this->buildControllerWithEnabledList([]);
-        $response = $controller->handle(Request::create('/mcp', 'POST', [], [], [], [], '{}'));
+        $response = $controller->handle(Request::create('/api/mcp', 'POST', [], [], [], [], '{}'));
 
         $body = $this->decode($response->getContent());
         $this->assertSame(-32000, $body['error']['code']);

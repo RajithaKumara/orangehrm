@@ -1,4 +1,4 @@
 mcp_jsonrpc:
-  path: /mcp
+  path: /api/mcp
   controller: OrangeHRM\Mcp\Controller\McpController::handle
   methods: [ POST ]
