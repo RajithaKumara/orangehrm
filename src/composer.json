@@ -131,7 +131,8 @@
             "OrangeHRM\\Tests\\Mobile\\": "./plugins/orangehrmMobilePlugin/test",
             "OrangeHRM\\Tests\\Claim\\": "./plugins/orangehrmClaimPlugin/test",
             "OrangeHRM\\Tests\\OpenidAuthentication\\": "./plugins/orangehrmOpenidAuthenticationPlugin/test",
-            "OrangeHRM\\Tests\\WorkspaceNotifications\\": "./plugins/orangehrmWorkspaceNotificationsPlugin/test"
+            "OrangeHRM\\Tests\\WorkspaceNotifications\\": "./plugins/orangehrmWorkspaceNotificationsPlugin/test",
+            "OrangeHRM\\Tests\\Mcp\\": "./plugins/orangehrmMcpPlugin/test"
         }
     },
     "scripts": {
