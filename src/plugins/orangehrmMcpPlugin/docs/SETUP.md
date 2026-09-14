@@ -175,3 +175,49 @@ verifiers must be 43 to 128 characters from `[A-Za-z0-9-._~]`.
 
 **Empty tool results.** Usually correct. A fresh install has no job titles or
 leave types. Check with `SELECT COUNT(*) FROM ohrm_job_title;`.
+
+**`DEPTH_ZERO_SELF_SIGNED_CERT`.** The client rejected your certificate. Use a
+real one. For a development box only, either trust the specific certificate:
+
+```bash
+openssl s_client -connect <host>:443 -servername <host> </dev/null 2>/dev/null \
+  | openssl x509 -outform PEM > /path/to/host.pem
+NODE_EXTRA_CA_CERTS=/path/to/host.pem claude
+```
+
+**`ERR_TLS_CERT_ALTNAME_INVALID`.** The certificate is trusted but was issued for
+a different name than the one you are calling. Either call the host by a name the
+certificate covers, adding an nginx `server_name` for it, or use a certificate
+matching the hostname you use. Trusting the certificate does not waive the
+hostname check.
+
+## Connecting Claude Code
+
+Register a public OAuth client whose redirect URI is `http://localhost:8080/callback`,
+then:
+
+```bash
+claude mcp add --transport http --scope user \
+  --client-id <client_id> --callback-port 8080 \
+  orangehrm https://<host>/<subpath>/web/index.php/api/mcp
+```
+
+`--callback-port` matters: without it Claude Code picks a random port, and since
+the OAuth server matches the `localhost` spelling exactly including the port, a
+random one can never be pre-registered.
+
+If the host root does not serve this instance's authorization-server metadata
+(see the three-hop check above), point the client straight at the app-path
+document by adding to the server's entry in `~/.claude.json`:
+
+```json
+"oauth": {
+  "clientId": "<client_id>",
+  "callbackPort": 8080,
+  "authServerMetadataUrl":
+    "https://<host>/<subpath>/web/index.php/.well-known/oauth-authorization-server"
+}
+```
+
+Then start Claude Code and run `/mcp` to complete sign-in. A browser opens on the
+OrangeHRM login; sign in as yourself and approve.
