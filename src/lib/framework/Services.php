@@ -245,6 +245,31 @@ final class Services
     public const MCP_OPERATOR_LOGGER = 'mcp.operator_logger';
 
     /**
+     * @see \OrangeHRM\Mcp\JsonRpc\Dispatcher
+     */
+    public const MCP_DISPATCHER = 'mcp.dispatcher';
+
+    /**
+     * @see \OrangeHRM\Mcp\Session\SessionContext
+     */
+    public const MCP_SESSION_CONTEXT = 'mcp.session_context';
+
+    /**
+     * @see \OrangeHRM\Mcp\Tool\ToolRegistry
+     */
+    public const MCP_TOOL_REGISTRY = 'mcp.tool_registry';
+
+    /**
+     * @see \OrangeHRM\Mcp\Tool\RestDispatcher
+     */
+    public const MCP_REST_DISPATCHER = 'mcp.rest_dispatcher';
+
+    /**
+     * @see \OrangeHRM\Mcp\Audit\AuditWriter
+     */
+    public const MCP_AUDIT_WRITER = 'mcp.audit_writer';
+
+    /**
      * @see \OrangeHRM\Leave\Service\LeaveTypeService
      */
     public const LEAVE_TYPE_SERVICE = 'leave.leave_type_service';

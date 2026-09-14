@@ -2,3 +2,22 @@ mcp_jsonrpc:
   path: /api/mcp
   controller: OrangeHRM\Mcp\Controller\McpController::handle
   methods: [ POST ]
+
+# RFC 9728 protected-resource metadata. MCP clients fetch this from the
+# `resource_metadata` pointer in the 401 WWW-Authenticate header.
+mcp_oauth_protected_resource:
+  path: /.well-known/oauth-protected-resource
+  controller: OrangeHRM\Mcp\Controller\OAuthMetadataController::protectedResource
+  methods: [ GET ]
+
+# RFC 9728 path-suffixed form: clients may append the resource path.
+mcp_oauth_protected_resource_suffixed:
+  path: /.well-known/oauth-protected-resource/api/mcp
+  controller: OrangeHRM\Mcp\Controller\OAuthMetadataController::protectedResource
+  methods: [ GET ]
+
+# RFC 8414 authorization-server metadata.
+mcp_oauth_authorization_server:
+  path: /.well-known/oauth-authorization-server
+  controller: OrangeHRM\Mcp\Controller\OAuthMetadataController::authorizationServer
+  methods: [ GET ]

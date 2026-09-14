@@ -24,10 +24,23 @@ use OrangeHRM\Framework\Console\ConsoleConfigurationInterface;
 use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Framework\PluginConfigurationInterface;
 use OrangeHRM\Framework\Services;
+use OrangeHRM\Mcp\Audit\AuditWriter;
 use OrangeHRM\Mcp\Command\McpDoctorCommand;
+use OrangeHRM\Mcp\JsonRpc\Dispatcher;
+use OrangeHRM\Mcp\Method\InitializeHandler;
+use OrangeHRM\Mcp\Method\PingHandler;
+use OrangeHRM\Mcp\Method\ToolsCallHandler;
+use OrangeHRM\Mcp\Method\ToolsListHandler;
 use OrangeHRM\Mcp\Service\McpConfigurationService;
 use OrangeHRM\Mcp\Service\McpOperatorLogger;
+use OrangeHRM\Mcp\Session\SessionContext;
 use OrangeHRM\Mcp\Subscriber\McpModuleStatusChangeSubscriber;
+use OrangeHRM\Mcp\Tool\Curated\CurrentEmployeeTool;
+use OrangeHRM\Mcp\Tool\Curated\ListEmployeesTool;
+use OrangeHRM\Mcp\Tool\Curated\ListJobTitlesTool;
+use OrangeHRM\Mcp\Tool\Curated\ListLeaveTypesTool;
+use OrangeHRM\Mcp\Tool\RestDispatcher;
+use OrangeHRM\Mcp\Tool\ToolRegistry;
 
 class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleConfigurationInterface
 {
@@ -48,6 +61,37 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
             Services::MCP_OPERATOR_LOGGER,
             McpOperatorLogger::class
         );
+
+        // Session identity is per-request; Streamable HTTP is one HTTP request
+        // per JSON-RPC message, so a shared instance is request-scoped already.
+        $this->getContainer()->register(Services::MCP_SESSION_CONTEXT, SessionContext::class);
+
+        $this->getContainer()->register(Services::MCP_REST_DISPATCHER, RestDispatcher::class);
+        $this->getContainer()->register(Services::MCP_AUDIT_WRITER, AuditWriter::class);
+
+        // Curated read-only tool catalog. Adding a tool is a registration here,
+        // never an edit to the protocol code.
+        $registry = new ToolRegistry([
+            new CurrentEmployeeTool(),
+            new ListEmployeesTool(),
+            new ListJobTitlesTool(),
+            new ListLeaveTypesTool(),
+        ]);
+        $this->getContainer()->set(Services::MCP_TOOL_REGISTRY, $registry);
+
+        $restDispatcher = new RestDispatcher();
+        $dispatcher = new Dispatcher([
+            new InitializeHandler(),
+            new PingHandler(),
+            new ToolsListHandler($registry, $restDispatcher),
+            new ToolsCallHandler(
+                $registry,
+                $restDispatcher,
+                new AuditWriter(),
+                $this->getContainer()->get(Services::MCP_SESSION_CONTEXT)
+            ),
+        ]);
+        $this->getContainer()->set(Services::MCP_DISPATCHER, $dispatcher);
 
         $this->getEventDispatcher()->addSubscriber(new McpModuleStatusChangeSubscriber());
     }
