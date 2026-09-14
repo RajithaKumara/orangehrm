@@ -19,6 +19,7 @@
 
 namespace OrangeHRM\Mcp\Command;
 
+use OrangeHRM\Mcp\Service\McpConfigurationService;
 use DateTime;
 use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
@@ -40,7 +41,6 @@ class McpDoctorCommand extends Command
     public const STATUS_FAIL = 'fail';
     public const STATUS_SKIP = 'skip';
 
-    public const MCP_MODULE_NAME = 'mcp';
     public const OAUTH_MODULE_NAME = 'oauth';
     public const PROBE_SESSION_ID = '__doctor_probe__';
 
@@ -101,7 +101,7 @@ class McpDoctorCommand extends Command
     private function checkModuleEnabled(): array
     {
         $enabled = $this->getModuleService()->getModuleDao()->getEnabledModuleNameList();
-        if (in_array(self::MCP_MODULE_NAME, $enabled, true)) {
+        if (in_array(McpConfigurationService::MODULE_NAME, $enabled, true)) {
             return $this->result('Module enabled', self::STATUS_PASS, '');
         }
         return $this->result(

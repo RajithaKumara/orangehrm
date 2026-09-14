@@ -19,14 +19,13 @@
 
 namespace OrangeHRM\Mcp\Subscriber;
 
+use OrangeHRM\Mcp\Service\McpConfigurationService;
 use OrangeHRM\Core\Event\ModuleEvent;
 use OrangeHRM\Core\Event\ModuleStatusChange;
 use OrangeHRM\Framework\Event\AbstractEventSubscriber;
 
 class McpModuleStatusChangeSubscriber extends AbstractEventSubscriber
 {
-    public const MCP_MODULE_NAME = 'mcp';
-
     public static function getSubscribedEvents(): array
     {
         return [
@@ -40,7 +39,7 @@ class McpModuleStatusChangeSubscriber extends AbstractEventSubscriber
         // invalidate the cached OpenAPI spec (Epic 2.5), and reset
         // permission-profile sidecars (Epic 2.7) when the mcp module
         // toggles. v1 has no such caches; intentionally a no-op.
-        if ($event->getCurrentModule()->getName() !== self::MCP_MODULE_NAME) {
+        if ($event->getCurrentModule()->getName() !== McpConfigurationService::MODULE_NAME) {
             return;
         }
     }

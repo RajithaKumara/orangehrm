@@ -19,18 +19,17 @@
 
 namespace OrangeHRM\Mcp\Traits;
 
+use OrangeHRM\Mcp\Service\McpConfigurationService;
 use OrangeHRM\Mcp\Traits\Service\ModuleServiceTrait;
 
 trait McpEnabledTrait
 {
     use ModuleServiceTrait;
 
-    public const MCP_MODULE_NAME = 'mcp';
-
     public function isMcpModuleEnabled(): bool
     {
         return in_array(
-            self::MCP_MODULE_NAME,
+            McpConfigurationService::MODULE_NAME,
             $this->getModuleService()->getModuleDao()->getEnabledModuleNameList(),
             true
         );

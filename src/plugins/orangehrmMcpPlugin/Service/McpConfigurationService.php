@@ -23,6 +23,13 @@ use OrangeHRM\Core\Service\ConfigService;
 
 class McpConfigurationService extends ConfigService
 {
+    /**
+     * Name of this plugin's row in `ohrm_module`. Declared here rather than in
+     * McpEnabledTrait because constants in traits require PHP 8.2 and this
+     * project's floor is PHP 7.4.
+     */
+    public const MODULE_NAME = 'mcp';
+
     public const KEY_READ_ONLY_MODE = 'mcp.read_only_mode';
     public const KEY_RATE_LIMIT_PER_SESSION_PER_MINUTE = 'mcp.rate_limit.per_session_per_minute';
     public const KEY_RATE_LIMIT_PER_USER_PER_MINUTE = 'mcp.rate_limit.per_user_per_minute';
