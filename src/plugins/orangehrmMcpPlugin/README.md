@@ -49,7 +49,7 @@ with 28 skills, bridged into `.claude/skills/` by `.agents/SETUP.md`. That bridg
 | Settings | `Service/McpConfigurationService.php` + trait | `mcp.read_only_mode` (default **true**), per-session / per-user rate limits (60 / 120 per min), daily cap (off), concurrent sessions (5), audit retention (0 = keep), redaction policy (`digest_only`). **Nothing enforces these yet.** |
 | Module gate | `Traits/McpEnabledTrait.php`, `Subscriber/McpModuleStatusChangeSubscriber.php` | subscriber is a deliberate no-op seam for cache busting |
 | Operator log | `Service/McpOperatorLogger.php` + trait | structured `mcp.tool_called` events; tests assert no token-shaped strings ever reach the log |
-| Self-test | `Command/McpDoctorCommand.php` | `php bin/console mcp:doctor [--host=]` checks module, OAuth dependency, audit write path (rolled back), TLS; OpenAPI check is a stub |
+| Self-test | `Command/McpDoctorCommand.php` | `php bin/console mcp:doctor [--host=]` checks module, OAuth dependency (both encryption keys + `ohrm_oauth2_client` present), audit write path (rolled back), TLS; OpenAPI check is a stub pending Story 2.5. Verified 4 PASS / 1 SKIP on a real 5.10 instance |
 | Tests | `test/` (5 files, ~700 lines) | testsuite `Mcp` is registered in `phpunit.xml`; requires `instance:create-test-db` first |
 
 **Not started:** any MCP protocol behaviour. `initialize`, `tools/list`,
@@ -172,6 +172,19 @@ no conflicting folder at all. MCP schema now targets a 5.10 release:
 - namespace → `OrangeHRM\Installer\Migration\V5_10_0`
 - `getVersion()` → `'5.10.0'`
 - `MIGRATIONS_MAP` entry → `'5.10' => \OrangeHRM\Installer\Migration\V5_10_0\Migration::class`
+- **`src/lib/config/Config.php` → `PRODUCT_VERSION = '5.10'`**
+
+**There are three version locations, not two.** `PRODUCT_VERSION` is the one that
+decides whether the migration ever runs, and missing it fails silently:
+`runMigrations('3.3.3', Config::PRODUCT_VERSION)` is the target for both
+`installer/cli_install.php` and `installer/Command/UpgradeCommand`, and
+`getVersionsInRange()` stops at the map key equal to that value. Left at `'5.9'`,
+the range ended one entry early and `V5_10_0` was skipped with no error at all —
+`instance:reinstall` produced a database stamped `5.9.0` carrying upstream's
+workspace-notification tables but no `ohrm_mcp_audit_log` and no `mcp` row in
+`ohrm_module`. `PRODUCT_VERSION` must always equal the last `MIGRATIONS_MAP` key.
+It also feeds the About screen, system check, registration payload and the Vue
+product-version prop.
 
 Two things to know about that map. It is traversed by `getVersionsInRange()` in
 **array insertion order, never sorted**, so the string-ordering trap where `'5.10'`
@@ -336,6 +349,8 @@ Tick items here as they land.
 - [x] ~~Flip module row default~~ — **dropped, D2 decided to keep `status = 1`** (4.8). No migration change.
 - [x] ~~Run the Epic 1 tests~~ — **DONE**. This surfaced a real defect, fixed in `60d2cf037`: `McpEnabledTrait` declared a constant, which is PHP 8.2+, while the project floor is 7.4. The plugin fatalled on every supported PHP version; the suite had only ever been run on 8.3. Module name consolidated onto `McpConfigurationService::MODULE_NAME`. Suite is now 26 tests / 82 assertions green on **both 7.4 and 8.5**.
 - [x] ~~Mark the eight stories `done`; add 2.13, 2.14, 2.15 as `backlog`~~ — **DONE** in `sprint-status.yaml`.
+- [x] ~~Bump `Config::PRODUCT_VERSION`~~ — **DONE** (`fe271afb4`). Missed in the first pass; see 4.7. Without it the 5.10 migration silently never ran.
+- [x] ~~Verify against a real instance~~ — **DONE**. `instance:reinstall` now yields `instance.version` 5.10.0, 173 tables, `ohrm_mcp_audit_log` with all 12 columns / 5 indexes / `fk_mcp_audit_user`, `ohrm_module` row `mcp` status 1, and upstream's 3 workspace-notification tables intact. `mcp:doctor` reports **4 passed, 0 failed, 1 skipped**. Fixing it to get there exposed a second Epic 1 defect (`116530408`).
 - [ ] **Move route to `/api/mcp`** per 4.3 (D1 approved); fix `McpControllerTest`. _Only Phase 0 item left._
 
 ### Phase A — "Claude can talk to it" (target: first demo)
