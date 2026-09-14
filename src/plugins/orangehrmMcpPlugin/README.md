@@ -355,6 +355,65 @@ instance's MCP endpoint. Two instances cannot share a hostname, because they
 cannot both own the host-root well-known paths. This belongs in the IT
 prerequisites guide (4.14) as a hard requirement, not a recommendation.
 
+### 4.16 Claude Code client facts — answers the redirect-URI question (2026-09-14)
+
+Established from Claude Code's own documentation and `--help`, not guessed. These
+close the question 4.12 left open.
+
+**Redirect URI:** `http://localhost:<ephemeral-port>/callback` — the *literal
+word* `localhost`, not the numeric form. That matters enormously here, because
+`RedirectUriValidator` only relaxes the port for numeric loopback hosts
+(`127.0.0.1`, `[::1]`); the `localhost` spelling gets exact string matching,
+port included. With a random port, hand registration would be impossible.
+
+**`--callback-port` fixes that.** `claude mcp add --callback-port 8080 ...`
+pins the redirect to `http://localhost:8080/callback`, which *can* be registered
+by hand. So manual registration is viable for Claude Code after all.
+
+Register both spellings: one Claude Code version (v2.1.229) sent the numeric form
+instead, so `http://localhost:8080/callback` and `http://127.0.0.1:8080/callback`
+both belong on the client until that version is well behind us. Our schema holds
+one URI per row, so that means two client rows or the multi-URI support deferred
+in 4.12.
+
+**Two ways to bypass the broken discovery chain (4.15) without touching shared
+infrastructure:**
+
+1. *Static bearer token.*
+   `claude mcp add --transport http <name> <url> --header "Authorization: Bearer <token>"`
+   skips OAuth entirely, so no discovery happens and the host-root collision is
+   irrelevant. Limited by the access-token lifetime, `PT30M` on this instance.
+   Good for a functional demo, not for testing the real auth path.
+
+2. *Override the metadata URL.* `.mcp.json` accepts an
+   `oauth.authServerMetadataUrl`, which can point straight at this instance's
+   app-path document and bypass the host root:
+
+   ```json
+   {
+     "mcpServers": {
+       "orangehrm": {
+         "type": "http",
+         "url": "https://<host>/<subpath>/web/index.php/api/mcp",
+         "oauth": {
+           "authServerMetadataUrl":
+             "https://<host>/<subpath>/web/index.php/.well-known/oauth-authorization-server"
+         }
+       }
+     }
+   }
+   ```
+
+   This exercises the real authorization-code + PKCE flow. Untested here.
+
+**Still blocking either path on this box:** the certificate is self-signed, and
+MCP clients validate. Every curl in our testing needed `-k`.
+
+**Bearing on D3 (dynamic client registration):** weaker case for it than 4.12
+suggested. With `--callback-port`, Claude Code can be hand-registered. Whether
+other products expose the same control is unknown, so D3 stays open, but it is
+no longer looking necessary for the locked reference client.
+
 ### 4.12 OAuth client registration model — decision D7 (new, 2026-09-14)
 
 **DECIDED: one OAuth client row per AI product, registered by hand by the IT
