@@ -22,6 +22,7 @@ namespace OrangeHRM\Installer\Migration\V5_10_0;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Types\Types;
 use OrangeHRM\Installer\Util\V1\AbstractMigration;
+use OrangeHRM\Mcp\Tool\DefaultTools;
 
 class Migration extends AbstractMigration
 {
@@ -77,6 +78,7 @@ class Migration extends AbstractMigration
         }
 
         $this->registerMcpAccessScreen();
+        $this->seedDefaultMcpTools();
     }
 
     /**
@@ -157,6 +159,29 @@ class Migration extends AbstractMigration
             ->setParameter('status', 1)
             ->executeQuery();
     }
+
+    /**
+     * Writes the shipped default tool list, so a fresh install has a small,
+     * useful catalog rather than nothing, and an upgrade gets a sensible
+     * starting point.
+     *
+     * Only ever writes when the key is absent. Once an administrator has saved
+     * the MCP Access screen, their list is the only thing that counts and an
+     * upgrade must not quietly re-enable tools they turned off.
+     */
+    private function seedDefaultMcpTools(): void
+    {
+        if ($this->getConfigHelper()->getConfigValue(self::CONFIG_KEY_ENABLED_TOOLS) !== null) {
+            return;
+        }
+
+        $this->getConfigHelper()->setConfigValue(
+            self::CONFIG_KEY_ENABLED_TOOLS,
+            (string) json_encode(DefaultTools::all())
+        );
+    }
+
+    private const CONFIG_KEY_ENABLED_TOOLS = 'mcp.access.enabled_tools';
 
     private const SCREEN_NAME = 'Admin - MCP Access';
     private const SCREEN_ACTION = 'mcpAccess';

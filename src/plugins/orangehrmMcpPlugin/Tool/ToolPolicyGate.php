@@ -54,9 +54,11 @@ class ToolPolicyGate
             return false;
         }
 
-        return $this->isCurated($tool)
-            ? $this->policy->isToolEnabled($tool->getName())
-            : $this->policy->isGenericRouterEnabled();
+        // One list governs curated and generic tools alike. Administrators
+        // enable individual tools; there is no separate all-or-nothing switch
+        // for the generic surface, because two controls meant two places to
+        // look when a tool was refused.
+        return $this->policy->isToolEnabled($tool->getName());
     }
 
     /**
@@ -68,14 +70,6 @@ class ToolPolicyGate
         if ($tool->isWriteOperation() && $this->policy->isReadOnly()) {
             return 'This instance is in read-only mode; write tools are disabled';
         }
-        if ($this->isCurated($tool)) {
-            return sprintf('Tool `%s` is not enabled on this instance', $tool->getName());
-        }
-        return 'Direct REST tools are not enabled on this instance';
-    }
-
-    private function isCurated(ToolInterface $tool): bool
-    {
-        return array_key_exists($tool->getName(), $this->registry->curated());
+        return sprintf('Tool `%s` is not enabled on this instance', $tool->getName());
     }
 }

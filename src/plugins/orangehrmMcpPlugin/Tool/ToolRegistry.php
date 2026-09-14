@@ -118,6 +118,6 @@ class ToolRegistry
         }
 
         return $this->merged = $this->tools
-            + $this->genericFactory->readOnlyTools(array_keys($this->tools));
+            + $this->genericFactory->allTools(array_keys($this->tools));
     }
 }

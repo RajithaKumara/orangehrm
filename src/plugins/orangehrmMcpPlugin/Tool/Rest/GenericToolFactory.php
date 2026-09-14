@@ -49,14 +49,21 @@ class GenericToolFactory
     }
 
     /**
+     * Every non-restricted operation, reads and writes alike.
+     *
+     * Writes are built so an administrator *can* enable one, not because they
+     * are offered: the enabled-tools list ships without any, and read-only mode
+     * refuses them regardless of the list. Building them here keeps one code
+     * path rather than a second factory for writes.
+     *
      * @param string[] $excludeNames names already claimed by curated tools
      * @return GenericTool[] keyed by tool name
      */
-    public function readOnlyTools(array $excludeNames = []): array
+    public function allTools(array $excludeNames = []): array
     {
         if ($this->tools === null) {
             $tools = [];
-            foreach ($this->routeMap->readOnly() as $name => $route) {
+            foreach ($this->routeMap->all() as $name => $route) {
                 $tools[$name] = new GenericTool(
                     $route,
                     $this->openApi->getOperation($route->getMethod(), $route->getPath())

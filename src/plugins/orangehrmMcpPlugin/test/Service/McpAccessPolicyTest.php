@@ -23,6 +23,7 @@ use OrangeHRM\Core\Dao\ConfigDao;
 use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\Mcp\Service\McpAccessPolicy;
+use OrangeHRM\Mcp\Tool\DefaultTools;
 use OrangeHRM\Tests\Util\KernelTestCase;
 
 /**
@@ -63,8 +64,6 @@ class McpAccessPolicyTest extends KernelTestCase
         $this->assertSame(McpAccessPolicy::MODE_READ_ONLY, $policy->getMode());
         $this->assertTrue($policy->isReadOnly());
         $this->assertSame([], $policy->getAllowedRoleIds());
-        $this->assertSame([], $policy->getEnabledTools());
-        $this->assertFalse($policy->isToolEnabled('mcp_get_current_employee'));
         $this->assertFalse($policy->mayConnect(1, 1), 'disabled instance must refuse everyone');
     }
 
@@ -129,6 +128,39 @@ class McpAccessPolicyTest extends KernelTestCase
 
         $this->assertTrue($policy->isToolEnabled('mcp_get_current_employee'));
         $this->assertFalse($policy->isToolEnabled('mcp_list_job_titles'));
+    }
+
+    /**
+     * An unset value means "never configured", so the shipped defaults apply --
+     * otherwise a fresh instance would expose nothing and the feature would look
+     * broken. A value that *is* set, including an empty list, is the
+     * administrator's decision and must be honoured exactly.
+     */
+    public function testUnsetToolListFallsBackToDefaultsButAnEmptyListDoesNot(): void
+    {
+        $unconfigured = $this->policyWith([]);
+        $this->assertSame(DefaultTools::all(), $unconfigured->getEnabledTools());
+        $this->assertTrue($unconfigured->isToolEnabled('mcp_get_current_employee'));
+
+        $clearedByAdmin = $this->policyWith([McpAccessPolicy::KEY_ENABLED_TOOLS => '[]']);
+        $this->assertSame([], $clearedByAdmin->getEnabledTools());
+        $this->assertFalse(
+            $clearedByAdmin->isToolEnabled('mcp_get_current_employee'),
+            'an administrator who cleared the list must not have defaults reinstated'
+        );
+    }
+
+    /**
+     * Defaults are reads only. A write is enabled deliberately or not at all.
+     */
+    public function testNoWriteToolIsEnabledByDefault(): void
+    {
+        foreach (DefaultTools::all() as $name) {
+            $this->assertStringStartsNotWith('rest_post_', $name);
+            $this->assertStringStartsNotWith('rest_put_', $name);
+            $this->assertStringStartsNotWith('rest_delete_', $name);
+            $this->assertStringStartsNotWith('rest_patch_', $name);
+        }
     }
 
     /**

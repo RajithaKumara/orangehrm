@@ -55,10 +55,6 @@ class ToolPolicyGateTest extends TestCase
                 return in_array($toolName, $this->o['enabledTools'] ?? [], true);
             }
 
-            public function isGenericRouterEnabled(): bool
-            {
-                return $this->o['generic'] ?? false;
-            }
         };
     }
 
@@ -90,27 +86,39 @@ class ToolPolicyGateTest extends TestCase
     }
 
     /**
-     * Generic tools are governed by one switch, not the per-tool list. Naming
-     * hundreds of them individually is not a control an admin would ever
-     * review honestly.
+     * Generic tools follow the same list as curated ones. There is no separate
+     * all-or-nothing switch: two controls meant two places to look when a tool
+     * was refused.
      */
-    public function testGenericToolsFollowTheRouterSwitchNotTheEnabledList(): void
+    public function testGenericToolsFollowTheSameEnabledList(): void
     {
         $registry = $this->registryWithCurated();
         $generic = $this->genericTool();
 
-        $off = new ToolPolicyGate($this->policy(['generic' => false]), $registry);
+        $off = new ToolPolicyGate($this->policy(['enabledTools' => []]), $registry);
         $this->assertFalse($off->isAllowed($generic));
 
-        // Naming it in the curated list must not help: it is not curated.
-        $named = new ToolPolicyGate(
-            $this->policy(['generic' => false, 'enabledTools' => [$generic->getName()]]),
+        $on = new ToolPolicyGate(
+            $this->policy(['enabledTools' => [$generic->getName()]]),
             $registry
         );
-        $this->assertFalse($named->isAllowed($generic));
-
-        $on = new ToolPolicyGate($this->policy(['generic' => true]), $registry);
         $this->assertTrue($on->isAllowed($generic));
+    }
+
+    /**
+     * Enabling a curated tool must not enable an unrelated generic one, and the
+     * reverse. The list is exact, not a prefix or a category.
+     */
+    public function testEnablingOneToolDoesNotEnableAnother(): void
+    {
+        $registry = $this->registryWithCurated();
+        $gate = new ToolPolicyGate(
+            $this->policy(['enabledTools' => ['mcp_get_current_employee']]),
+            $registry
+        );
+
+        $this->assertTrue($gate->isAllowed(new CurrentEmployeeTool()));
+        $this->assertFalse($gate->isAllowed($this->genericTool()));
     }
 
     /**
@@ -122,14 +130,15 @@ class ToolPolicyGateTest extends TestCase
         $registry = $this->registryWithCurated();
         $write = $this->genericTool('POST');
 
+        // Enabled in the list, yet still refused while read-only.
         $readOnly = new ToolPolicyGate(
-            $this->policy(['generic' => true, 'readOnly' => true]),
+            $this->policy(['enabledTools' => [$write->getName()], 'readOnly' => true]),
             $registry
         );
         $this->assertFalse($readOnly->isAllowed($write));
 
         $readWrite = new ToolPolicyGate(
-            $this->policy(['generic' => true, 'readOnly' => false]),
+            $this->policy(['enabledTools' => [$write->getName()], 'readOnly' => false]),
             $registry
         );
         $this->assertTrue($readWrite->isAllowed($write));
@@ -139,11 +148,14 @@ class ToolPolicyGateTest extends TestCase
     {
         $registry = $this->registryWithCurated();
 
-        $gate = new ToolPolicyGate($this->policy(['generic' => true, 'readOnly' => true]), $registry);
+        $gate = new ToolPolicyGate($this->policy(['readOnly' => true]), $registry);
         $this->assertStringContainsString('read-only', $gate->refusalReason($this->genericTool('DELETE')));
 
-        $gate = new ToolPolicyGate($this->policy(['generic' => false]), $registry);
-        $this->assertStringContainsString('REST tools', $gate->refusalReason($this->genericTool()));
+        $gate = new ToolPolicyGate($this->policy(['enabledTools' => []]), $registry);
+        $this->assertStringContainsString(
+            'rest_get_admin_locations',
+            $gate->refusalReason($this->genericTool())
+        );
 
         $gate = new ToolPolicyGate($this->policy(['enabledTools' => []]), $registry);
         $this->assertStringContainsString(

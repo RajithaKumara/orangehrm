@@ -20,6 +20,7 @@
 namespace OrangeHRM\Mcp\Service;
 
 use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
+use OrangeHRM\Mcp\Tool\DefaultTools;
 
 /**
  * Who may reach the MCP surface, in what mode, through which client, and with
@@ -162,8 +163,23 @@ class McpAccessPolicy
     /**
      * @return string[] tool names an administrator has switched on
      */
+    /**
+     * An unset value means the instance has never been configured, so the
+     * shipped defaults apply. A value that is set -- including an empty list --
+     * is the administrator's decision and is honoured exactly.
+     *
+     * The migration seeds this on install and upgrade, so the fallback only
+     * matters for an instance whose config row was never written.
+     *
+     * @return string[]
+     */
     public function getEnabledTools(): array
     {
+        $raw = $this->getConfigService()->getConfigDao()->getValue(self::KEY_ENABLED_TOOLS);
+        if ($raw === null || $raw === '') {
+            return DefaultTools::all();
+        }
+
         return array_values(array_filter(
             array_map('strval', $this->decodeList(self::KEY_ENABLED_TOOLS)),
             static function (string $name): bool {

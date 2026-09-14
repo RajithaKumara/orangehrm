@@ -91,12 +91,10 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
         $restDispatcher = new RestDispatcher();
         $accessPolicy = new McpAccessPolicy();
 
-        // Generic OpenAPI-driven surface. Attached only when an administrator
-        // has switched it on, so the default catalog stays the curated set.
-        // The registry merges it behind the curated tools, which win on name.
-        if ($accessPolicy->isGenericRouterEnabled()) {
-            $registry->setGenericFactory(new GenericToolFactory(new RouteMap(), new OpenApiLoader()));
-        }
+        // The generic surface is always attached: every non-restricted endpoint
+        // is *available*, and the enabled-tools list decides which are actually
+        // offered. Registry merges it behind the curated tools, which win on name.
+        $registry->setGenericFactory(new GenericToolFactory(new RouteMap(), new OpenApiLoader()));
 
         $discovery = new DiscoverToolsHandler(
             $registry,
