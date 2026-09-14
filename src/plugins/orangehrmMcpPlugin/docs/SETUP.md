@@ -19,8 +19,16 @@ What limits exposure:
   values are never stored.
 - `mcp.read_only_mode` defaults to true.
 
-What does not limit it: there is no per-tool consent, and no way to grant an
-assistant less authority than the user has.
+What does not limit it:
+
+- No per-tool consent, and no way to grant an assistant less authority than the
+  user has.
+- **Token audience is not checked.** Any valid OrangeHRM OAuth token is accepted
+  on the MCP endpoint, including one issued to a different application such as
+  the mobile app. The MCP specification requires servers to reject tokens not
+  issued for them; this server does not yet. A token still carries only its own
+  user's authority, so this is not privilege escalation, but a token granted to
+  another app can be replayed here. Tracked in `../README.md` section 4.13.
 
 ## 1. Requirements
 

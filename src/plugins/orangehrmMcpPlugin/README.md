@@ -236,6 +236,38 @@ is unavailable, with schemas degraded to "any object".
 toggle) should be pulled forward to the end of Phase A so the first shippable
 build is read-only by construction.
 
+### 4.13 Token audience is not validated — known gap, found 2026-09-14
+
+**Verified:** a bearer token minted for the `orangehrm_mobile_app` OAuth client is
+accepted by `/api/mcp` and returns data. Any valid OrangeHRM token works on the
+MCP endpoint regardless of which client it was issued to.
+
+The MCP specification treats this as a hard requirement: a server must verify the
+access token was issued *for it*, and must not accept a token minted for another
+audience. The spec calls this out specifically to prevent the confused-deputy
+problem, where a token obtained by one application is replayed against another.
+
+Why it happens here: `OAuthSubscriber` validates that a token is valid and
+resolves its user, which is all `isAuthenticated()` reports. Nothing in the chain
+records or checks which client the token was issued to, and
+`league/oauth2-server` has no audience concept in this configuration.
+
+Severity in context: every such token still belongs to a real OrangeHRM user and
+carries exactly that user's authority, so this is not privilege escalation. The
+risk is that a token a user granted to a *different* application can be replayed
+against the AI surface without their knowledge, which is precisely the consent
+boundary MCP's audience rule exists to protect.
+
+Fix direction, for the story that closes it: persist the issuing `client_id`
+alongside the access token, expose it through the auth layer, and have
+`McpController` reject tokens whose client is not registered for MCP use. That
+likely means a small schema addition in `orangehrmCoreOAuthPlugin` plus a config
+key listing MCP-approved client ids. Needs architect sign-off because it touches
+the shared OAuth plugin.
+
+Until then the setup guide must say plainly that any OrangeHRM OAuth token works
+on the MCP endpoint.
+
 ### 4.12 OAuth client registration model — decision D7 (new, 2026-09-14)
 
 **DECIDED: one OAuth client row per AI product, registered by hand by the IT
