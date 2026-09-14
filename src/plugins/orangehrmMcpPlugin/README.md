@@ -46,14 +46,27 @@ with 28 skills, bridged into `.claude/skills/` by `.agents/SETUP.md`. That bridg
 | Plugin bootstrap + DI | `config/McpPluginConfiguration.php` | registers `Services::MCP_CONFIG_SERVICE`, `Services::MCP_OPERATOR_LOGGER`, the status-change subscriber, and the `mcp:doctor` command |
 | Route + placeholder controller | `config/routes.yaml`, `Controller/McpController.php` | `POST /mcp`; returns JSON-RPC `-32601` for everything, `-32000` when module disabled. Implements `PublicControllerInterface` (correct, see 4.1) |
 | Schema | `installer/Migration/V5_10_0/Migration.php` | creates `ohrm_mcp_audit_log` (indexed, FK to `ohrm_user`) and inserts the `mcp` row in `ohrm_module` with status 1. Renamed from `V5_9_0` on 2026-09-14, see 4.7 |
-| Settings | `Service/McpConfigurationService.php` + trait | `mcp.read_only_mode` (default **true**), per-session / per-user rate limits (60 / 120 per min), daily cap (off), concurrent sessions (5), audit retention (0 = keep), redaction policy (`digest_only`). **Nothing enforces these yet.** |
+| Settings | `Service/McpConfigurationService.php` + trait | per-session / per-user rate limits (60 / 120 per min), daily cap (off), concurrent sessions (5), audit retention (0 = keep), redaction policy (`digest_only`). **Nothing enforces these yet.** The old `mcp.read_only_mode` key was removed when the verb switches landed — it was a third spelling of the same fact (4.17) |
 | Module gate | `Traits/McpEnabledTrait.php`, `Subscriber/McpModuleStatusChangeSubscriber.php` | subscriber is a deliberate no-op seam for cache busting |
 | Operator log | `Service/McpOperatorLogger.php` + trait | structured `mcp.tool_called` events; tests assert no token-shaped strings ever reach the log |
-| Self-test | `Command/McpDoctorCommand.php` | `php bin/console mcp:doctor [--host=]` checks module, OAuth dependency (both encryption keys + `ohrm_oauth2_client` present), audit write path (rolled back), TLS; OpenAPI check is a stub pending Story 2.5. Verified 4 PASS / 1 SKIP on a real 5.10 instance |
+| Self-test | `Command/McpDoctorCommand.php` | `php bin/console mcp:doctor [--host=]` checks module, OAuth dependency (both encryption keys + `ohrm_oauth2_client` present), audit write path (rolled back), the permission grid, the OpenAPI document, and TLS. Reports its numbers on pass too. Verified 6 PASS on a real 5.10 instance |
 | Tests | `test/` (5 files, ~700 lines) | testsuite `Mcp` is registered in `phpunit.xml`; requires `instance:create-test-db` first |
 
-**Not started:** any MCP protocol behaviour. `initialize`, `tools/list`,
-`tools/call` do not exist. Epics 2 to 7 are all backlog.
+**Done since — Epic 2, protocol and the generic surface** (see the commit log from
+`37606bea` onwards):
+
+| Area | Files | Notes |
+|---|---|---|
+| Protocol | `JsonRpc/`, `Method/{Initialize,Ping,ToolsList,ToolsCall}Handler.php` | protocol version `2025-06-18`, cursor pagination at 50 tools a page, tool annotations published |
+| Generic router | `Tool/Rest/{RouteMap,RestRoute,GenericTool,GenericToolFactory,OpenApiLoader}.php` | one tool per REST operation, **490 operations** across **190 API classes**, names derived from method + path |
+| Discovery meta-tool | `Method/DiscoverToolsHandler.php` | ranked keyword search over the catalog, filtered by the same gate as `tools/list` |
+| Product exclusions | `Tool/RestrictedApis.php` | credential, authentication, purge and password areas excluded in code; user writes excluded, user reads kept (4.17) |
+| Access policy | `Service/McpAccessPolicy.php`, `Api/McpAccessConfigAPI.php`, `pages/mcpAccess/McpAccess.vue` | who may connect, and the four verb switches |
+| Per-API permissions | `ohrm_mcp_api_permission`, `Tool/{ApiPermissionDefaults,ApiSensitivity,ApiVerb,ApiCatalog}.php`, `Dao/McpApiPermissionDao.php` | the grid: which verbs MCP may use against each API class (4.17) |
+
+**Not started:** write discipline with propose/confirm (Epic 3), resources and
+prompts (Epic 5), rate limiting and the daily cap (the config keys exist, nothing
+reads them), the two help articles (Epic 7).
 
 **Reference material:** a separate proof of concept (sibling checkout `ohrm-57`,
 branch `mcp`) implemented the protocol surface end to end with one tool and OAuth
@@ -514,6 +527,81 @@ first, because it is needed regardless. If the test shows a target product refus
 a pasted client id, Story 2.15 comes back into v1 and most of the redirect-URI
 work becomes irrelevant for that product.
 
+### 4.17 Per-API permissions and the four verb switches — decision D8 (2026-09-14)
+
+Replaces the per-tool-name enable list (`mcp.access.enabled_tools`) that shipped in
+`24684bea4`. That list worked while the default set was 53 names and fell apart at
+490: an administrator cannot review a screen of 490 checkboxes, and a name-keyed
+list silently orphans an entry whenever a route is renamed.
+
+**The model.** Four things must agree before a tool is offered, and each narrows:
+
+| Gate | Where | Who owns it |
+|---|---|---|
+| 1. Product exclusion | `Tool/RestrictedApis.php` (code) | us. No tenant can re-admit |
+| 2. Verb switch | `mcp.access.verb.{read,create,update,delete}` | the administrator, as a circuit breaker |
+| 3. Per-class row | `ohrm_mcp_api_permission` | the administrator, per API class |
+| 4. The caller's own RBAC | `ohrm_api_permission` → data groups | OrangeHRM, unchanged |
+
+`ToolPolicyGate` is gates 1 to 3 and nothing else; `RestDispatcher` is gate 4 and
+re-checks 1. A tool being *offered* still never implies the person asking may use
+it.
+
+**The table.** One row per API class, not per route or tool name:
+
+```
+ohrm_mcp_api_permission
+  id | api_name (unique) | can_read | can_create | can_update | can_delete | sensitivity
+```
+
+190 rows, seeded by the V5_10_0 migration from `Tool/ApiPermissionDefaults::ALL`.
+A class is the unit OrangeHRM already authorises against, it survives a route
+rename, and a new endpoint added to an existing family inherits the decision
+already made about that family instead of appearing unreviewed.
+
+It is a **sibling** of `ohrm_api_permission`, deliberately not an extension of it.
+That table is core's and answers "which role may use this endpoint"; writing to it
+from MCP would change the permission model for the web UI too.
+
+**Absence is refusal.** A class with no row is unreachable. So an upgrade that adds
+endpoints without adding rows degrades safely — and `ApiPermissionDefaultsTest`
+asserts the shipped list is exactly the live route collection, so it does not
+degrade silently.
+
+**Seeding rules.** Rows are inserted only when absent and never updated, so an
+upgrade cannot reverse a decision an administrator made. Sensitivity is the one
+exception: it is product-authored and refreshed on upgrade, because a warning a
+tenant can downgrade is not a warning.
+
+**What ships on:** reads for 43 classes — the same endpoints the 48-path default
+list covered, plus the 18 single-item `.../{id}` reads that come with them. **66
+read tools, zero writes.** Every write is available and one checkbox away.
+
+**Two axes of warning, kept separate.** Verb risk is about what a call *does*
+(delete red, create/update amber, read neutral) and is derived from the verb alone.
+Data sensitivity is about what a call *touches* and applies even to a read:
+`normal` (148 classes), `elevated` (25: identifiable personal data), `high` (17:
+compensation, tax, immigration, termination, contracts, evaluations, uploaded
+attachments, PIM report data, user accounts). Collapsing them would get the
+important case backwards — reading a salary matters more than updating a job title,
+yet one is a GET and the other a PUT. Sensitivity is authored in
+`Tool/ApiSensitivity.php`, seeded to the table, shown on the screen, and published
+to clients in `tools/list` under `_meta.orangehrm.sensitivity`. It is **not**
+editable in the UI.
+
+**Also removed here:** `mcp.read_only_mode` (Epic 1, read by nothing) and
+`mcp.access.mode` (the read-only/read-write radio). `isReadOnly()` is now derived
+from the three write switches, so there is one fact and one place to change it.
+`Pim\Api\UpdatePasswordAPI` joined `RestrictedApis::FORBIDDEN` at the same time:
+write-only, and the write is a credential.
+
+**Writes now dispatch as writes.** Before this change every tool went through
+`dispatchGet()` and was sent as a GET whatever its verb, and the RBAC check always
+asked `canRead()`. Enabling a write tool would have performed a read and reported
+success. `RestDispatcher::dispatch()` now sends the tool's own method, puts
+parameters in the query for reads and the body for writes, and checks the matching
+grant (`canCreate`/`canUpdate`/`canDelete`). `RestDispatcherTest` covers all four.
+
 ## 5. Development plan
 
 Ordered. Story numbers refer to `epics.md`; 2.13 to 2.15 are the additions above.
@@ -673,6 +761,7 @@ once, then `cd src && ../vendor/bin/phpunit --testsuite Mcp` (or the project's u
 | D4 | How the OpenAPI JSON reaches a self-hosted install | ship in release artifacts; `mcp:doctor` fails loudly if absent (4.10) | Phase B |
 | D5 | JIRA ticket key for commits | **DECIDED 2026-09-14: `OHRM5X-MCP: <imperative summary>`** until a real ticket exists. Note the eight Epic 1 commits used `feat(mcp):` and are not being rewritten, so the branch history changes style at this point | done |
 | D6 | Keep writing BMAD-style `spec-*.md` files per story | no; this README's plan + `epics.md` acceptance criteria are enough | — |
+| D8 | How per-API permissions are stored and who sets sensitivity | **DECIDED 2026-09-14: new sibling table `ohrm_mcp_api_permission` keyed on the API class with four CRUD flags; four top-level verb switches above it; sensitivity authored in code, seeded by the migration, never editable in the UI** (4.17) | done |
 | D7 | OAuth client registration model | **DECIDED 2026-09-14: one hand-registered public client per AI product; no multi-redirect-URI support; no change to `orangehrmCoreOAuthPlugin`; supported products and redirect URIs published in a help article, not shipped in code** (4.12) | done |
 
 ## 9. Path glossary
@@ -680,13 +769,13 @@ once, then `cd src && ../vendor/bin/phpunit --testsuite Mcp` (or the project's u
 | Path | What |
 |---|---|
 | `src/plugins/orangehrmMcpPlugin/` | this plugin (`OrangeHRM\Mcp\`) |
-| `src/plugins/orangehrmMcpPlugin/Mcp/{Method,Tool,Session,Schema,Audit}/` | protocol code (currently `.gitkeep` only) |
+| `src/plugins/orangehrmMcpPlugin/{Method,Tool,Session,Schema,Audit,JsonRpc}/` | protocol code (the `Mcp/` subdirectory was flattened away: it would have produced `OrangeHRM\Mcp\Mcp\...`) |
 | `src/plugins/orangehrmCoreOAuthPlugin/` | OAuth2 server: `Server/BearerTokenValidator`, `Subscriber/OAuthSubscriber`, `Controller/OAuth2/{AuthorizationController,TokenController}`, entity `OAuthClient` |
 | `src/plugins/orangehrmCorePlugin/Subscriber/{ApiAuthorizationSubscriber,ModuleNotAvailableSubscriber,RequestBodySubscriber}.php` | the kernel checks recipe 7.1 replicates |
 | `src/plugins/orangehrmCorePlugin/Controller/Rest/V2/{AbstractRestController,GenericRestController}.php` | REST pipeline (validation lives here) |
 | `src/plugins/orangehrmCorePlugin/Authorization/` | `UserRoleManager`, `ResourcePermission`, data-group DAOs |
 | `src/plugins/orangehrmAuthenticationPlugin/Subscriber/AuthenticationSubscriber.php` | why controllers must implement `PublicControllerInterface` |
-| `installer/Migration/V5_10_0/Migration.php` | MCP schema, targets the 5.10 release (renamed 2026-09-14, 4.7) |
+| `installer/Migration/V5_10_0/Migration.php` | MCP schema, targets the 5.10 release (renamed 2026-09-14, 4.7): `ohrm_mcp_audit_log`, `ohrm_mcp_api_permission`, the MCP Access screen, the verb switches |
 | `installer/Util/AppSetupUtility.php` | `MIGRATIONS_MAP` |
 | `devTools/core/src/Command/GenerateOpenApiDocCommand.php` | writes `build/orangehrm-v2.json` |
 | `docs/POC-REFERENCE.md` | the ohrm-57 proof of concept, annotated |

@@ -23,7 +23,7 @@ use OrangeHRM\Core\Dao\ConfigDao;
 use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\Mcp\Service\McpAccessPolicy;
-use OrangeHRM\Mcp\Tool\DefaultTools;
+use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Tests\Util\KernelTestCase;
 
 /**
@@ -61,23 +61,45 @@ class McpAccessPolicyTest extends KernelTestCase
         $policy = $this->policyWith([]);
 
         $this->assertFalse($policy->isEnabled());
-        $this->assertSame(McpAccessPolicy::MODE_READ_ONLY, $policy->getMode());
         $this->assertTrue($policy->isReadOnly());
         $this->assertSame([], $policy->getAllowedRoleIds());
         $this->assertFalse($policy->mayConnect(1, 1), 'disabled instance must refuse everyone');
     }
 
-    public function testModeOnlyAcceptsTheTwoKnownValues(): void
+    /**
+     * Reads on, writes off, for an instance that has never been configured. The
+     * migration writes the same values; this is what happens if it did not.
+     */
+    public function testVerbSwitchesDefaultToReadOnly(): void
     {
+        $policy = $this->policyWith([]);
+
+        $this->assertTrue($policy->isVerbEnabled(ApiVerb::READ));
+        $this->assertFalse($policy->isVerbEnabled(ApiVerb::CREATE));
+        $this->assertFalse($policy->isVerbEnabled(ApiVerb::UPDATE));
+        $this->assertFalse($policy->isVerbEnabled(ApiVerb::DELETE));
+    }
+
+    public function testVerbSwitchesAreReadIndependently(): void
+    {
+        $policy = $this->policyWith([
+            McpAccessPolicy::KEY_VERB_PREFIX . ApiVerb::READ => '1',
+            McpAccessPolicy::KEY_VERB_PREFIX . ApiVerb::CREATE => '1',
+            McpAccessPolicy::KEY_VERB_PREFIX . ApiVerb::UPDATE => '0',
+            McpAccessPolicy::KEY_VERB_PREFIX . ApiVerb::DELETE => '0',
+        ]);
+
         $this->assertSame(
-            McpAccessPolicy::MODE_READ_WRITE,
-            $this->policyWith([McpAccessPolicy::KEY_MODE => 'read_write'])->getMode()
+            [
+                ApiVerb::READ => true,
+                ApiVerb::CREATE => true,
+                ApiVerb::UPDATE => false,
+                ApiVerb::DELETE => false,
+            ],
+            $policy->getVerbSwitches()
         );
-        // Anything unrecognised degrades to the safe mode rather than throwing.
-        $this->assertSame(
-            McpAccessPolicy::MODE_READ_ONLY,
-            $this->policyWith([McpAccessPolicy::KEY_MODE => 'anything_else'])->getMode()
-        );
+        // One write verb on is enough to leave read-only.
+        $this->assertFalse($policy->isReadOnly());
     }
 
     public function testRoleGrantsAccess(): void
@@ -120,49 +142,6 @@ class McpAccessPolicyTest extends KernelTestCase
         $this->assertFalse($policy->mayConnect(9, 1), 'the master switch wins over any override');
     }
 
-    public function testToolsMustBeExplicitlyEnabled(): void
-    {
-        $policy = $this->policyWith([
-            McpAccessPolicy::KEY_ENABLED_TOOLS => '["mcp_get_current_employee"]',
-        ]);
-
-        $this->assertTrue($policy->isToolEnabled('mcp_get_current_employee'));
-        $this->assertFalse($policy->isToolEnabled('mcp_list_job_titles'));
-    }
-
-    /**
-     * An unset value means "never configured", so the shipped defaults apply --
-     * otherwise a fresh instance would expose nothing and the feature would look
-     * broken. A value that *is* set, including an empty list, is the
-     * administrator's decision and must be honoured exactly.
-     */
-    public function testUnsetToolListFallsBackToDefaultsButAnEmptyListDoesNot(): void
-    {
-        $unconfigured = $this->policyWith([]);
-        $this->assertSame(DefaultTools::all(), $unconfigured->getEnabledTools());
-        $this->assertTrue($unconfigured->isToolEnabled('mcp_get_current_employee'));
-
-        $clearedByAdmin = $this->policyWith([McpAccessPolicy::KEY_ENABLED_TOOLS => '[]']);
-        $this->assertSame([], $clearedByAdmin->getEnabledTools());
-        $this->assertFalse(
-            $clearedByAdmin->isToolEnabled('mcp_get_current_employee'),
-            'an administrator who cleared the list must not have defaults reinstated'
-        );
-    }
-
-    /**
-     * Defaults are reads only. A write is enabled deliberately or not at all.
-     */
-    public function testNoWriteToolIsEnabledByDefault(): void
-    {
-        foreach (DefaultTools::all() as $name) {
-            $this->assertStringStartsNotWith('rest_post_', $name);
-            $this->assertStringStartsNotWith('rest_put_', $name);
-            $this->assertStringStartsNotWith('rest_delete_', $name);
-            $this->assertStringStartsNotWith('rest_patch_', $name);
-        }
-    }
-
     /**
      * Closes README 4.13. Verified against the running instance: before this,
      * a token minted for the mobile-app client was accepted on /api/mcp.
@@ -197,7 +176,6 @@ class McpAccessPolicyTest extends KernelTestCase
         $policy = $this->policyWith([
             McpAccessPolicy::KEY_ENABLED => '1',
             McpAccessPolicy::KEY_ALLOWED_ROLE_IDS => 'not json',
-            McpAccessPolicy::KEY_ENABLED_TOOLS => '{"not":"a list"}',
             McpAccessPolicy::KEY_USER_OVERRIDES => 'also not json',
         ]);
 
@@ -207,18 +185,24 @@ class McpAccessPolicyTest extends KernelTestCase
     }
 
     /**
-     * Read-only mode is the circuit breaker described in the PRD: it must refuse
-     * writes regardless of the caller's own permissions, so it is checked
-     * independently of RBAC.
+     * Read-only is derived from the three write switches rather than stored
+     * separately, so it cannot drift out of step with them. Each write verb on
+     * its own is enough to leave read-only.
      */
-    public function testReadOnlyIsTheDefaultAndReadWriteIsOptIn(): void
+    public function testReadOnlyIsDerivedFromTheWriteSwitches(): void
     {
         $this->assertTrue($this->policyWith([])->isReadOnly());
+
+        foreach ([ApiVerb::CREATE, ApiVerb::UPDATE, ApiVerb::DELETE] as $verb) {
+            $this->assertFalse(
+                $this->policyWith([McpAccessPolicy::KEY_VERB_PREFIX . $verb => '1'])->isReadOnly(),
+                sprintf('%s switched on must leave read-only mode', $verb)
+            );
+        }
+
+        // Read on its own changes nothing: reading is not writing.
         $this->assertTrue(
-            $this->policyWith([McpAccessPolicy::KEY_MODE => 'read_only'])->isReadOnly()
-        );
-        $this->assertFalse(
-            $this->policyWith([McpAccessPolicy::KEY_MODE => McpAccessPolicy::MODE_READ_WRITE])->isReadOnly()
+            $this->policyWith([McpAccessPolicy::KEY_VERB_PREFIX . ApiVerb::READ => '1'])->isReadOnly()
         );
     }
 

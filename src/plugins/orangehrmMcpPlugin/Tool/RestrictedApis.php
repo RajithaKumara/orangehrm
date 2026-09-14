@@ -88,6 +88,11 @@ final class RestrictedApis
         // Maintenance > Purge. Irreversible destruction of employee records.
         'OrangeHRM\\Maintenance\\Api\\PurgeCandidateAPI',
         'OrangeHRM\\Maintenance\\Api\\PurgeEmployeeAPI',
+
+        // PIM > My Info > change password. Write-only, and the write is a
+        // credential. Same reasoning as the user-account writes below, except
+        // there is no read worth keeping, so the whole class goes.
+        'OrangeHRM\\Pim\\Api\\UpdatePasswordAPI',
     ];
 
     /**

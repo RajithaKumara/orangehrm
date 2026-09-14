@@ -33,7 +33,7 @@
           data that the person signing in already has. Every request is still
           checked against that person's own permissions, and every call is
           recorded in the MCP audit log. Start with a small group and only the
-          tools you need."
+          data you need."
       ></oxd-alert>
 
       <oxd-form :loading="isLoading" @submit-valid="onSave">
@@ -46,30 +46,6 @@
           />
         </oxd-form-row>
 
-        <!-- Global circuit breaker over write tools. OXD radios are one input
-             per option carrying :option-label and :value, not an options array. -->
-        <oxd-form-row>
-          <oxd-input-group label="Access mode">
-            <oxd-input-field
-              v-model="config.mode"
-              type="radio"
-              option-label="Read only"
-              value="read_only"
-            />
-            <oxd-input-field
-              v-model="config.mode"
-              type="radio"
-              option-label="Read and write"
-              value="read_write"
-            />
-          </oxd-input-group>
-          <oxd-text tag="p" class="orangehrm-tool-hint">
-            Read only refuses every tool that changes data, whatever the user's
-            own permissions allow. No write tools exist yet, so this setting has
-            no effect today; it takes effect as soon as any are added.
-          </oxd-text>
-        </oxd-form-row>
-
         <!-- The endpoint an admin hands to the AI client -->
         <oxd-form-row>
           <oxd-input-field
@@ -77,6 +53,48 @@
             label="MCP server URL (give this to the AI client)"
             readonly
           />
+        </oxd-form-row>
+
+        <oxd-divider />
+
+        <!-- Top-level verb switches. These sit above the grid below: turning one
+             off refuses every tool of that kind whatever the grid says. -->
+        <oxd-text tag="p" class="orangehrm-sub-title">
+          What the assistant is allowed to do
+        </oxd-text>
+        <oxd-form-row>
+          <oxd-grid :cols="4" class="orangehrm-full-width-grid">
+            <oxd-grid-item v-for="verb in verbs" :key="verb.key">
+              <oxd-input-field
+                v-model="config.verbs[verb.key]"
+                type="switch"
+                :label="verb.label"
+              />
+              <oxd-text tag="p" class="orangehrm-tool-hint">
+                {{ verb.hint }}
+              </oxd-text>
+            </oxd-grid-item>
+          </oxd-grid>
+        </oxd-form-row>
+
+        <oxd-form-row v-if="config.verbs.delete">
+          <oxd-alert
+            type="error"
+            :show="true"
+            message="Delete is on. An assistant that misreads a request can
+              remove records permanently, and OrangeHRM has no undo. Leave this
+              off unless a specific workflow needs it, and keep the enabled
+              delete list as short as possible."
+          ></oxd-alert>
+        </oxd-form-row>
+        <oxd-form-row v-else-if="config.verbs.create || config.verbs.update">
+          <oxd-alert
+            type="warn"
+            :show="true"
+            message="The assistant can change data. Written records look
+              identical to ones a person entered, so make sure the audit log is
+              being reviewed."
+          ></oxd-alert>
         </oxd-form-row>
 
         <oxd-divider />
@@ -118,39 +136,143 @@
 
         <oxd-divider />
 
-        <!-- Tool surface -->
+        <!-- The grid -->
         <oxd-text tag="p" class="orangehrm-sub-title">
-          What the assistant can do
+          Which parts of OrangeHRM
         </oxd-text>
+        <oxd-text tag="p" class="orangehrm-tool-hint orangehrm-mcp-flush">
+          One row per API. A row decides what the assistant may do with that
+          part of OrangeHRM; the switches above decide whether that kind of
+          action is allowed at all. Anything a person's own role forbids stays
+          forbidden either way.
+        </oxd-text>
+
         <oxd-form-row>
-          <oxd-grid :cols="2" class="orangehrm-full-width-grid">
-            <oxd-grid-item v-for="tool in availableTools" :key="tool.name">
-              <oxd-input-field
-                v-model="selectedTools[tool.name]"
-                type="checkbox"
-                :option-label="tool.label"
-              />
-              <oxd-text tag="p" class="orangehrm-tool-hint">
-                {{ tool.description }}
-              </oxd-text>
-            </oxd-grid-item>
-          </oxd-grid>
+          <div class="orangehrm-mcp-summary">
+            <span
+              v-for="verb in verbs"
+              :key="verb.key"
+              class="orangehrm-mcp-summary__item"
+              :class="'orangehrm-mcp-summary__item--' + verb.risk"
+            >
+              {{ verb.label }}:
+              <strong>{{ liveCounts[verb.key] }}</strong>
+              of {{ counts.tools[verb.key].available }} tools
+            </span>
+            <span class="orangehrm-mcp-summary__total">
+              {{ totalEnabledTools }} tools enabled
+            </span>
+          </div>
         </oxd-form-row>
 
-        <oxd-divider />
+        <oxd-form-row v-if="totalEnabledTools > toolCountCeiling">
+          <oxd-alert
+            type="warn"
+            :show="true"
+            :message="
+              totalEnabledTools +
+              ' tools are enabled. Past roughly ' +
+              toolCountCeiling +
+              ', assistants get measurably worse at picking the right one and ' +
+              'answers degrade. Turn off what nobody asks about.'
+            "
+          ></oxd-alert>
+        </oxd-form-row>
 
-        <!-- Whole-surface switch for the generic OpenAPI router -->
-        <oxd-text tag="p" class="orangehrm-sub-title">
-          Direct access to the REST API
-        </oxd-text>
         <oxd-form-row>
           <oxd-input-field
-            v-model="config.genericRouterEnabled"
-            type="switch"
-            label="Expose every readable REST endpoint as a tool"
+            v-model="search"
+            label="Find an API"
+            placeholder="employee, leave balance, salary..."
           />
+        </oxd-form-row>
+
+        <div
+          v-for="group in filteredModules"
+          :key="group.module"
+          class="orangehrm-mcp-module"
+        >
+          <div
+            class="orangehrm-mcp-module__header"
+            @click="toggleModule(group.module)"
+          >
+            <span class="orangehrm-mcp-module__title">
+              {{ group.label }}
+              <span class="orangehrm-mcp-module__count">
+                {{ enabledInGroup(group) }} of {{ group.apis.length }} enabled
+              </span>
+            </span>
+            <span class="orangehrm-mcp-module__actions">
+              <oxd-button
+                display-type="text"
+                label="All reads"
+                size="small"
+                @click.stop="setGroupVerb(group, 'read', true)"
+              />
+              <oxd-button
+                display-type="text"
+                label="None"
+                size="small"
+                @click.stop="clearGroup(group)"
+              />
+              <span class="orangehrm-mcp-module__chevron">
+                {{ isExpanded(group.module) ? '−' : '+' }}
+              </span>
+            </span>
+          </div>
+
+          <div v-show="isExpanded(group.module)" class="orangehrm-mcp-table">
+            <div class="orangehrm-mcp-row orangehrm-mcp-row--head">
+              <span class="orangehrm-mcp-row__api">API</span>
+              <span
+                v-for="verb in verbs"
+                :key="verb.key"
+                class="orangehrm-mcp-row__verb"
+                :class="'orangehrm-mcp-row__verb--' + verb.risk"
+              >
+                {{ verb.label }}
+              </span>
+            </div>
+
+            <div
+              v-for="api in group.apis"
+              :key="api.apiName"
+              class="orangehrm-mcp-row"
+            >
+              <span class="orangehrm-mcp-row__api">
+                {{ api.label }}
+                <span
+                  v-if="api.sensitivity !== 'normal'"
+                  class="orangehrm-mcp-badge"
+                  :class="'orangehrm-mcp-badge--' + api.sensitivity"
+                  :title="sensitivityHint(api.sensitivity)"
+                >
+                  {{ sensitivityLabel(api.sensitivity) }}
+                </span>
+                <span class="orangehrm-mcp-row__paths">
+                  {{ api.paths.join(', ') }}
+                </span>
+              </span>
+              <span
+                v-for="verb in verbs"
+                :key="verb.key"
+                class="orangehrm-mcp-row__verb"
+              >
+                <oxd-input-field
+                  v-if="hasVerb(api, verb.key)"
+                  v-model="permissions[api.apiName][verb.key]"
+                  type="checkbox"
+                  :disabled="!config.verbs[verb.key]"
+                />
+                <span v-else class="orangehrm-mcp-row__na">—</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <oxd-form-row v-if="!filteredModules.length">
           <oxd-text tag="p" class="orangehrm-tool-hint">
-            {{ genericRouterHint }}
+            Nothing matches "{{ search }}".
           </oxd-text>
         </oxd-form-row>
 
@@ -173,6 +295,46 @@
 <script>
 import {APIService} from '@/core/util/services/api.service';
 
+const VERBS = [
+  {
+    key: 'read',
+    label: 'Read',
+    risk: 'none',
+    hint: 'Look things up and answer questions. Changes nothing.',
+  },
+  {
+    key: 'create',
+    label: 'Create',
+    risk: 'warn',
+    hint: 'Add records: a leave request, a candidate, a timesheet entry.',
+  },
+  {
+    key: 'update',
+    label: 'Update',
+    risk: 'warn',
+    hint: 'Change existing records in place.',
+  },
+  {
+    key: 'delete',
+    label: 'Delete',
+    risk: 'danger',
+    hint: 'Remove records permanently. There is no undo.',
+  },
+];
+
+const SENSITIVITY = {
+  elevated: {
+    label: 'Personal',
+    hint: 'Identifiable personal data about an employee or candidate.',
+  },
+  high: {
+    label: 'Highly sensitive',
+    hint:
+      'Compensation, immigration status, termination, evaluations, uploaded ' +
+      'documents or account control. Enable only with a specific reason.',
+  },
+};
+
 export default {
   name: 'McpAccess',
 
@@ -194,41 +356,74 @@ export default {
   data() {
     return {
       isLoading: false,
+      verbs: VERBS,
+      // Past this many tools, tool selection measurably degrades. Shown as a
+      // warning rather than enforced: a large instance may still want them.
+      toolCountCeiling: 120,
+      search: '',
       config: {
         enabled: false,
-        mode: 'read_only',
-        genericRouterEnabled: false,
+        verbs: {read: true, create: false, update: false, delete: false},
         userOverrides: [],
       },
-      genericRouterStats: null,
+      modules: [],
+      counts: {tools: {}, classes: 0},
       availableRoles: [],
-      availableTools: [],
-      // Checkbox state is kept as maps keyed by id/name so the template binds
-      // directly; they are flattened back to arrays on save.
+      // Checkbox state keyed by id/class name so the template binds directly;
+      // flattened back to arrays on save.
       selectedRoles: {},
-      selectedTools: {},
+      permissions: {},
+      expanded: {},
     };
   },
 
   computed: {
-    genericRouterHint() {
-      const s = this.genericRouterStats;
-      if (!s) {
-        return 'Adds every readable endpoint as a tool, on top of the curated ones above.';
-      }
-      const undescribed = s.readOnly - s.described;
-      let hint =
-        `Adds ${s.readOnly} readable endpoints as tools, on top of the ` +
-        'curated ones above. Each still runs as the signed-in user and is ' +
-        'refused if their permissions do not allow it.';
-      if (!s.specAvailable) {
-        hint +=
-          ' The OpenAPI document is missing, so these tools have no ' +
-          'descriptions and an assistant will struggle to choose between them.';
-      } else if (undescribed > 0) {
-        hint += ` ${undescribed} of them have no published description.`;
-      }
-      return hint;
+    /**
+     * Modules and rows matching the search box. An empty search shows
+     * everything; a search auto-expands what it matched, because a hit inside a
+     * collapsed section is the same as no hit at all.
+     */
+    filteredModules() {
+      const term = this.search.trim().toLowerCase();
+      if (!term) return this.modules;
+
+      return this.modules
+        .map((group) => {
+          const apis = group.apis.filter((api) => {
+            return (
+              api.label.toLowerCase().includes(term) ||
+              api.apiName.toLowerCase().includes(term) ||
+              group.label.toLowerCase().includes(term) ||
+              api.paths.some((p) => p.toLowerCase().includes(term))
+            );
+          });
+          return {...group, apis};
+        })
+        .filter((group) => group.apis.length > 0);
+    },
+
+    /**
+     * Tools enabled right now, per verb, counted from the unsaved state so the
+     * numbers move as the administrator clicks.
+     */
+    liveCounts() {
+      const totals = {read: 0, create: 0, update: 0, delete: 0};
+      this.modules.forEach((group) => {
+        group.apis.forEach((api) => {
+          const row = this.permissions[api.apiName];
+          if (!row) return;
+          api.verbs.forEach((v) => {
+            if (row[v.verb] && this.config.verbs[v.verb]) {
+              totals[v.verb] += v.tools;
+            }
+          });
+        });
+      });
+      return totals;
+    },
+
+    totalEnabledTools() {
+      return VERBS.reduce((sum, v) => sum + this.liveCounts[v.key], 0);
     },
   },
 
@@ -244,27 +439,92 @@ export default {
         .then(({data}) => {
           const d = data.data;
           this.config.enabled = d.enabled;
-          this.config.mode = d.mode;
-          this.config.genericRouterEnabled = d.genericRouterEnabled;
-          this.genericRouterStats = d.genericRouterStats || null;
+          this.config.verbs = {...this.config.verbs, ...(d.verbs || {})};
           this.config.userOverrides = d.userOverrides || [];
           this.availableRoles = d.availableRoles || [];
-          this.availableTools = d.availableTools || [];
+          this.modules = d.modules || [];
+          this.counts = d.counts || {tools: {}, classes: 0};
 
           this.selectedRoles = {};
           this.availableRoles.forEach((r) => {
             this.selectedRoles[r.id] = (d.allowedRoleIds || []).includes(r.id);
           });
-          this.selectedTools = {};
-          this.availableTools.forEach((t) => {
-            this.selectedTools[t.name] = (d.enabledTools || []).includes(
-              t.name,
-            );
+
+          const permissions = {};
+          this.modules.forEach((group) => {
+            group.apis.forEach((api) => {
+              const row = {
+                read: false,
+                create: false,
+                update: false,
+                delete: false,
+              };
+              api.verbs.forEach((v) => {
+                row[v.verb] = v.enabled;
+              });
+              permissions[api.apiName] = row;
+            });
           });
+          this.permissions = permissions;
+
+          // Open the modules that already have something enabled; leave the
+          // rest closed so the page opens on what this instance actually uses.
+          const expanded = {};
+          this.modules.forEach((group) => {
+            expanded[group.module] = this.enabledInGroup(group) > 0;
+          });
+          this.expanded = expanded;
         })
         .finally(() => {
           this.isLoading = false;
         });
+    },
+
+    hasVerb(api, verb) {
+      return api.verbs.some((v) => v.verb === verb);
+    },
+
+    isExpanded(module) {
+      // A search result is always shown expanded, whatever the saved state.
+      return this.search.trim() ? true : !!this.expanded[module];
+    },
+
+    toggleModule(module) {
+      this.expanded[module] = !this.expanded[module];
+    },
+
+    enabledInGroup(group) {
+      return group.apis.filter((api) => {
+        const row = this.permissions[api.apiName];
+        return row && (row.read || row.create || row.update || row.delete);
+      }).length;
+    },
+
+    setGroupVerb(group, verb, value) {
+      group.apis.forEach((api) => {
+        if (this.hasVerb(api, verb) && this.permissions[api.apiName]) {
+          this.permissions[api.apiName][verb] = value;
+        }
+      });
+    },
+
+    clearGroup(group) {
+      group.apis.forEach((api) => {
+        const row = this.permissions[api.apiName];
+        if (!row) return;
+        row.read = false;
+        row.create = false;
+        row.update = false;
+        row.delete = false;
+      });
+    },
+
+    sensitivityLabel(level) {
+      return (SENSITIVITY[level] || {}).label || level;
+    },
+
+    sensitivityHint(level) {
+      return (SENSITIVITY[level] || {}).hint || '';
     },
 
     onSave() {
@@ -278,15 +538,15 @@ export default {
           // is not sent rather than clearing it.
           data: {
             enabled: this.config.enabled,
-            mode: this.config.mode,
-            genericRouterEnabled: this.config.genericRouterEnabled,
+            verbs: this.config.verbs,
             allowedRoleIds: Object.keys(this.selectedRoles)
               .filter((id) => this.selectedRoles[id])
               .map((id) => parseInt(id, 10)),
-            enabledTools: Object.keys(this.selectedTools).filter(
-              (name) => this.selectedTools[name],
-            ),
             userOverrides: this.config.userOverrides,
+            apiPermissions: Object.keys(this.permissions).map((apiName) => ({
+              apiName,
+              ...this.permissions[apiName],
+            })),
           },
         })
         .then(() => {

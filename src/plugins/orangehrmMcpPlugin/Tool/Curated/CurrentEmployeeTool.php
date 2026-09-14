@@ -65,6 +65,11 @@ class CurrentEmployeeTool implements ToolInterface
         return 'pim';
     }
 
+    public function getVerb(): string
+    {
+        return 'GET';
+    }
+
     public function isWriteOperation(): bool
     {
         return false;
@@ -82,7 +87,7 @@ class CurrentEmployeeTool implements ToolInterface
         return ['id' => 0];
     }
 
-    public function buildQueryParams(array $arguments): array
+    public function buildParams(array $arguments): array
     {
         return [];
     }

@@ -20,7 +20,8 @@
 namespace OrangeHRM\Mcp\Method;
 
 use OrangeHRM\Mcp\JsonRpc\Envelope;
-use OrangeHRM\Mcp\Service\McpAccessPolicy;
+use OrangeHRM\Mcp\Service\McpApiPermissionService;
+use OrangeHRM\Mcp\Tool\ApiSensitivity;
 use OrangeHRM\Mcp\Tool\RestDispatcher;
 use OrangeHRM\Mcp\Tool\ToolInterface;
 use OrangeHRM\Mcp\Tool\ToolPolicyGate;
@@ -48,19 +49,23 @@ class ToolsListHandler implements MethodHandlerInterface
 
     private RestDispatcher $dispatcher;
 
-    private McpAccessPolicy $policy;
+    private ToolPolicyGate $gate;
+
+    private McpApiPermissionService $permissions;
 
     private ?DiscoverToolsHandler $discovery;
 
     public function __construct(
         ToolRegistry $registry,
         RestDispatcher $dispatcher,
-        McpAccessPolicy $policy,
+        ToolPolicyGate $gate,
+        McpApiPermissionService $permissions,
         ?DiscoverToolsHandler $discovery = null
     ) {
         $this->registry = $registry;
         $this->dispatcher = $dispatcher;
-        $this->policy = $policy;
+        $this->gate = $gate;
+        $this->permissions = $permissions;
         $this->discovery = $discovery;
     }
 
@@ -71,11 +76,9 @@ class ToolsListHandler implements MethodHandlerInterface
 
     public function handle(Envelope $envelope)
     {
-        $gate = new ToolPolicyGate($this->policy, $this->registry);
-
         $visible = [];
         foreach ($this->registry->all() as $tool) {
-            if (!$gate->isAllowed($tool)) {
+            if (!$this->gate->isAllowed($tool)) {
                 continue;
             }
             if (!$this->dispatcher->isVisibleTo($tool)) {
@@ -118,7 +121,7 @@ class ToolsListHandler implements MethodHandlerInterface
 
     private function describe(ToolInterface $tool): array
     {
-        return [
+        $described = [
             'name' => $tool->getName(),
             'description' => $tool->getDescription(),
             'inputSchema' => $tool->getInputSchema(),
@@ -133,6 +136,23 @@ class ToolsListHandler implements MethodHandlerInterface
                 'openWorldHint' => false,
             ],
         ];
+
+        // Product-authored data sensitivity, passed through `_meta` so a client
+        // that wants to ask before touching compensation or an attachment can,
+        // and one that does not simply ignores it. Deliberately not folded into
+        // the description: a model choosing between tools should not have to
+        // read a warning to find out what an endpoint does.
+        $sensitivity = $this->permissions->getSensitivity($tool->getApiClass());
+        if ($sensitivity !== ApiSensitivity::NORMAL) {
+            $described['_meta'] = [
+                'orangehrm' => [
+                    'sensitivity' => $sensitivity,
+                    'module' => $tool->getModule(),
+                ],
+            ];
+        }
+
+        return $described;
     }
 
     /**

@@ -31,12 +31,11 @@ use OrangeHRM\Core\Api\V2\Validator\ParamRuleCollection;
 use OrangeHRM\Core\Api\V2\Validator\Rule;
 use OrangeHRM\Core\Api\V2\Validator\Rules;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
-use OrangeHRM\Mcp\Service\McpAccessPolicy;
-use OrangeHRM\Mcp\Tool\Rest\GenericToolFactory;
-use OrangeHRM\Mcp\Tool\Rest\OpenApiLoader;
-use OrangeHRM\Mcp\Tool\Rest\RouteMap;
+use OrangeHRM\Mcp\Tool\ApiCatalog;
+use OrangeHRM\Mcp\Tool\ApiSensitivity;
+use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Mcp\Traits\Service\McpAccessPolicyTrait;
-use OrangeHRM\Mcp\Traits\Service\McpToolRegistryTrait;
+use OrangeHRM\Mcp\Traits\Service\McpApiPermissionServiceTrait;
 
 /**
  * Read and write the organisation's MCP access policy.
@@ -45,22 +44,22 @@ use OrangeHRM\Mcp\Traits\Service\McpToolRegistryTrait;
  * permission installed by the V5_10_0 migration -- this endpoint decides who may
  * reach HR data through an AI assistant, so it is an administrative control.
  *
- * GET returns both the current settings and the reference data the screen needs
- * to render (roles, tools, OAuth clients) so the page needs one round trip.
+ * GET returns the settings, the full API catalog grouped by module, and the
+ * reference data the screen needs (roles, counts), so the page needs one round
+ * trip rather than one per module.
  */
 class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
 {
     use McpAccessPolicyTrait;
-    use McpToolRegistryTrait;
+    use McpApiPermissionServiceTrait;
     use EntityManagerHelperTrait;
 
     public const PARAMETER_ENABLED = 'enabled';
-    public const PARAMETER_MODE = 'mode';
+    public const PARAMETER_VERBS = 'verbs';
     public const PARAMETER_ALLOWED_ROLE_IDS = 'allowedRoleIds';
     public const PARAMETER_USER_OVERRIDES = 'userOverrides';
-    public const PARAMETER_ENABLED_TOOLS = 'enabledTools';
+    public const PARAMETER_API_PERMISSIONS = 'apiPermissions';
     public const PARAMETER_APPROVED_CLIENT_IDS = 'approvedClientIds';
-    public const PARAMETER_GENERIC_ROUTER_ENABLED = 'genericRouterEnabled';
 
     /**
      * @inheritDoc
@@ -68,23 +67,24 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
     public function getOne(): EndpointResult
     {
         $policy = $this->getMcpAccessPolicy();
+        $permissions = $this->getMcpApiPermissionService();
+        $catalog = new ApiCatalog();
+        $permissionMap = $permissions->getPermissionMap();
 
         return new EndpointResourceResult(ArrayModel::class, [
             self::PARAMETER_ENABLED => $policy->isEnabled(),
-            self::PARAMETER_MODE => $policy->getMode(),
+            self::PARAMETER_VERBS => $policy->getVerbSwitches(),
             self::PARAMETER_ALLOWED_ROLE_IDS => $policy->getAllowedRoleIds(),
             self::PARAMETER_USER_OVERRIDES => $this->decorateOverrides($policy->getUserOverrides()),
-            self::PARAMETER_ENABLED_TOOLS => $policy->getEnabledTools(),
             self::PARAMETER_APPROVED_CLIENT_IDS => $policy->getApprovedClientIds(),
             'clientApprovalEnforced' => $policy->isClientApprovalEnforced(),
-            self::PARAMETER_GENERIC_ROUTER_ENABLED => $policy->isGenericRouterEnabled(),
-            // So an admin can see the size of what that switch turns on, and how
-            // much of it the OpenAPI document actually describes.
-            'genericRouterStats' => $this->getGenericRouterStats(),
-            // Reference data, so the screen renders in one round trip.
+            'readOnly' => $policy->isReadOnly(),
+            // The grid, grouped so 190 rows arrive as 14 sections rather than
+            // one list nobody will read.
+            'modules' => $catalog->getGroupedByModule($permissionMap),
+            'counts' => $catalog->getCounts($permissionMap),
+            'sensitivityLevels' => ApiSensitivity::levels(),
             'availableRoles' => $this->getSelectableRoles(),
-            'availableTools' => $this->getAvailableTools(),
-            'availableClients' => $this->getOAuthClients(),
         ]);
     }
 
@@ -114,17 +114,18 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
         // control must not silently wipe the setting behind it -- notably
         // approvedClientIds, where wiping it would switch audience enforcement
         // off without anyone asking.
-        $generic = $this->getRequestParams()->getBooleanOrNull(
+        $verbs = $this->getRequestParams()->getArrayOrNull(
             RequestParams::PARAM_TYPE_BODY,
-            self::PARAMETER_GENERIC_ROUTER_ENABLED
+            self::PARAMETER_VERBS
         );
-        if ($generic !== null) {
-            $policy->setGenericRouterEnabled($generic);
-        }
-
-        $mode = $this->getRequestParams()->getStringOrNull(RequestParams::PARAM_TYPE_BODY, self::PARAMETER_MODE);
-        if ($mode !== null) {
-            $policy->setMode($mode);
+        if ($verbs !== null) {
+            $switches = [];
+            foreach (ApiVerb::all() as $verb) {
+                if (array_key_exists($verb, $verbs)) {
+                    $switches[$verb] = (bool) $verbs[$verb];
+                }
+            }
+            $policy->setVerbSwitches($switches);
         }
 
         $roleIds = $this->getRequestParams()->getArrayOrNull(
@@ -133,14 +134,6 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
         );
         if ($roleIds !== null) {
             $policy->setAllowedRoleIds($roleIds);
-        }
-
-        $tools = $this->getRequestParams()->getArrayOrNull(
-            RequestParams::PARAM_TYPE_BODY,
-            self::PARAMETER_ENABLED_TOOLS
-        );
-        if ($tools !== null) {
-            $policy->setEnabledTools($tools);
         }
 
         $clientIds = $this->getRequestParams()->getArrayOrNull(
@@ -167,7 +160,49 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
             $policy->setUserOverrides($overrides);
         }
 
+        $this->saveApiPermissions();
+
         return $this->getOne();
+    }
+
+    /**
+     * Applies the grid.
+     *
+     * Sent as [{apiName, read, create, update, delete}, ...]: a list, not a map,
+     * because the keys are fully qualified class names and a JSON object keyed
+     * by backslash-laden strings is miserable to validate and worse to debug.
+     *
+     * Only classes the screen actually rendered are written; see the Dao, which
+     * ignores names with no row.
+     */
+    private function saveApiPermissions(): void
+    {
+        $rows = $this->getRequestParams()->getArrayOrNull(
+            RequestParams::PARAM_TYPE_BODY,
+            self::PARAMETER_API_PERMISSIONS
+        );
+        if ($rows === null) {
+            return;
+        }
+
+        $flags = [];
+        foreach ($rows as $row) {
+            if (!is_array($row) || !isset($row['apiName']) || !is_string($row['apiName'])) {
+                continue;
+            }
+            $flags[$row['apiName']] = [
+                ApiVerb::READ => !empty($row[ApiVerb::READ]),
+                ApiVerb::CREATE => !empty($row[ApiVerb::CREATE]),
+                ApiVerb::UPDATE => !empty($row[ApiVerb::UPDATE]),
+                ApiVerb::DELETE => !empty($row[ApiVerb::DELETE]),
+            ];
+        }
+
+        $permissions = $this->getMcpApiPermissionService();
+        $permissions->getDao()->saveFlags($flags);
+        // getOne() runs next and would otherwise answer from the map read
+        // before the save.
+        $permissions->reset();
     }
 
     /**
@@ -179,10 +214,7 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
             new ParamRule(CommonParams::PARAMETER_ID),
             new ParamRule(self::PARAMETER_ENABLED, new Rule(Rules::BOOL_VAL)),
             $this->getValidationDecorator()->notRequiredParamRule(
-                new ParamRule(
-                    self::PARAMETER_MODE,
-                    new Rule(Rules::IN, [[McpAccessPolicy::MODE_READ_ONLY, McpAccessPolicy::MODE_READ_WRITE]])
-                )
+                new ParamRule(self::PARAMETER_VERBS, new Rule(Rules::ARRAY_TYPE))
             ),
             $this->getValidationDecorator()->notRequiredParamRule(
                 new ParamRule(self::PARAMETER_ALLOWED_ROLE_IDS, new Rule(Rules::ARRAY_TYPE))
@@ -191,13 +223,10 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
                 new ParamRule(self::PARAMETER_USER_OVERRIDES, new Rule(Rules::ARRAY_TYPE))
             ),
             $this->getValidationDecorator()->notRequiredParamRule(
-                new ParamRule(self::PARAMETER_ENABLED_TOOLS, new Rule(Rules::ARRAY_TYPE))
+                new ParamRule(self::PARAMETER_API_PERMISSIONS, new Rule(Rules::ARRAY_TYPE))
             ),
             $this->getValidationDecorator()->notRequiredParamRule(
                 new ParamRule(self::PARAMETER_APPROVED_CLIENT_IDS, new Rule(Rules::ARRAY_TYPE))
-            ),
-            $this->getValidationDecorator()->notRequiredParamRule(
-                new ParamRule(self::PARAMETER_GENERIC_ROUTER_ENABLED, new Rule(Rules::BOOL_VAL))
             ),
         );
     }
@@ -234,60 +263,6 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
                 'id' => (int) $row['id'],
                 'name' => $row['name'],
                 'displayName' => $row['display_name'] ?? $row['name'],
-            ];
-        }, $rows);
-    }
-
-    private function getAvailableTools(): array
-    {
-        $tools = [];
-        foreach ($this->getMcpToolRegistry()->all() as $tool) {
-            $tools[] = [
-                'name' => $tool->getName(),
-                // Short label for the admin screen. Tool descriptions are written
-                // for tool selection by a model and run to several sentences, so
-                // they read badly as checkbox labels.
-                'label' => self::toDisplayLabel($tool->getName()),
-                'description' => $tool->getDescription(),
-                'module' => $tool->getModule(),
-            ];
-        }
-        return $tools;
-    }
-
-    /**
-     * `mcp_list_job_titles` -> `List job titles`.
-     */
-    private static function toDisplayLabel(string $toolName): string
-    {
-        $words = explode('_', preg_replace('/^mcp_/', '', $toolName));
-        return ucfirst(implode(' ', $words));
-    }
-
-    /**
-     * @return array{readOnly:int,described:int,specAvailable:bool}
-     */
-    private function getGenericRouterStats(): array
-    {
-        $stats = (new GenericToolFactory(new RouteMap(), new OpenApiLoader()))->stats();
-        return [
-            'readOnly' => $stats['readOnly'],
-            'described' => $stats['described'],
-            'specAvailable' => $stats['specAvailable'],
-        ];
-    }
-
-    private function getOAuthClients(): array
-    {
-        $rows = $this->getEntityManager()->getConnection()->fetchAllAssociative(
-            'SELECT client_id, name, is_confidential FROM ohrm_oauth2_client WHERE enabled = 1 ORDER BY name'
-        );
-
-        return array_map(static function (array $row): array {
-            return [
-                'clientId' => $row['client_id'],
-                'name' => $row['name'],
-                'confidential' => (bool) $row['is_confidential'],
             ];
         }, $rows);
     }

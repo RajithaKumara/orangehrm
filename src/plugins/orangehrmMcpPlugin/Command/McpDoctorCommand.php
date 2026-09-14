@@ -25,6 +25,13 @@ use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
 use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
 use OrangeHRM\Framework\Console\Command;
+use OrangeHRM\Mcp\Tool\ApiCatalog;
+use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
+use OrangeHRM\Mcp\Tool\ApiVerb;
+use OrangeHRM\Mcp\Tool\Rest\GenericToolFactory;
+use OrangeHRM\Mcp\Tool\Rest\OpenApiLoader;
+use OrangeHRM\Mcp\Tool\Rest\RouteMap;
+use OrangeHRM\Mcp\Traits\Service\McpApiPermissionServiceTrait;
 use OrangeHRM\Mcp\Traits\Service\ModuleServiceTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -36,6 +43,7 @@ class McpDoctorCommand extends Command
     use ModuleServiceTrait;
     use ConfigServiceTrait;
     use EntityManagerHelperTrait;
+    use McpApiPermissionServiceTrait;
 
     public const STATUS_PASS = 'pass';
     public const STATUS_FAIL = 'fail';
@@ -68,6 +76,7 @@ class McpDoctorCommand extends Command
             $this->checkModuleEnabled(),
             $this->checkOauthDependency(),
             $this->checkAuditWritePath(),
+            $this->checkApiPermissions(),
             $this->checkOpenApiLoaded(),
             $this->checkTls($host),
         ];
@@ -79,7 +88,9 @@ class McpDoctorCommand extends Command
         foreach ($results as $r) {
             $tag = '[' . strtoupper($r['status']) . ']';
             $line = sprintf('%-7s %s', $tag, $r['name']);
-            if ($r['status'] !== self::STATUS_PASS && $r['message'] !== '') {
+            // Printed for a pass too: a check that passes with "68 of 490 tools
+            // enabled" is telling the operator something they came to find out.
+            if ($r['message'] !== '') {
                 $line .= ' -- ' . $r['message'];
             }
             $io->writeln($line);
@@ -186,12 +197,75 @@ class McpDoctorCommand extends Command
         }
     }
 
+    /**
+     * The grid is what decides which endpoints are offered, so an operator
+     * asking "why does the assistant not see X" should be able to see the state
+     * of it without opening the database.
+     */
+    private function checkApiPermissions(): array
+    {
+        try {
+            $map = $this->getMcpApiPermissionService()->getPermissionMap();
+        } catch (Throwable $e) {
+            $map = [];
+        }
+
+        if ($map === []) {
+            return $this->result(
+                'API permissions',
+                self::STATUS_FAIL,
+                'No rows in ohrm_mcp_api_permission -- nothing is reachable. Run the migrations.'
+            );
+        }
+
+        $counts = (new ApiCatalog(new RouteMap()))->getCounts($map);
+
+        $parts = [];
+        $enabledTools = 0;
+        foreach (ApiVerb::all() as $verb) {
+            $parts[] = sprintf('%s %d/%d', $verb, $counts['tools'][$verb]['enabled'], $counts['tools'][$verb]['available']);
+            $enabledTools += $counts['tools'][$verb]['enabled'];
+        }
+
+        $message = sprintf(
+            '%d of %d API classes configured; tools: %s (%d enabled)',
+            count($map),
+            ApiPermissionDefaults::count(),
+            implode(', ', $parts),
+            $enabledTools
+        );
+
+        // A shortfall means the migration ran against an older catalog: those
+        // classes are refused rather than misbehaving, but nobody would guess.
+        if (count($map) < ApiPermissionDefaults::count()) {
+            return $this->result('API permissions', self::STATUS_FAIL, $message . ' -- rows are missing.');
+        }
+
+        return $this->result('API permissions', self::STATUS_PASS, $message);
+    }
+
+    /**
+     * The document is enrichment, never a dependency: an endpoint it fails to
+     * describe is still exposed, with a thinner schema. So a gap is worth
+     * reporting and is not a failure.
+     */
     private function checkOpenApiLoaded(): array
     {
+        $stats = (new GenericToolFactory(new RouteMap(), new OpenApiLoader()))->stats();
+
+        if (!$stats['specAvailable']) {
+            return $this->result(
+                'OpenAPI loaded',
+                self::STATUS_SKIP,
+                'No OpenAPI document found -- tools work but carry no descriptions. '
+                . 'Generate it with `php devTools/core/console.php api:generate-doc`.'
+            );
+        }
+
         return $this->result(
             'OpenAPI loaded',
-            self::STATUS_SKIP,
-            'Pending Story 2.5 (OpenAPI loader).'
+            self::STATUS_PASS,
+            sprintf('%d of %d readable operations described', $stats['described'], $stats['readOnly'])
         );
     }
 

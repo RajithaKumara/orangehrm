@@ -23,6 +23,7 @@ use OrangeHRM\Core\Controller\Rest\V2\GenericRestController;
 use OrangeHRM\Core\Traits\ServiceContainerTrait;
 use OrangeHRM\Core\Traits\UserRoleManagerTrait;
 use OrangeHRM\Framework\Http\Request as HttpRequest;
+use OrangeHRM\Framework\Http\Response as HttpResponse;
 use OrangeHRM\Mcp\JsonRpc\EnvelopeException;
 use OrangeHRM\Mcp\JsonRpc\ErrorCode;
 use OrangeHRM\Mcp\Traits\Service\ModuleServiceTrait;
@@ -51,7 +52,7 @@ class RestDispatcher
     use ServiceContainerTrait;
 
     /**
-     * Resolved read grants, keyed by API class, for the life of the request.
+     * Resolved grants, keyed by API class and verb, for the life of the request.
      *
      * tools/list asks about every tool in the catalog, and the generic router
      * contributes hundreds. Many share an API class -- every route under one
@@ -63,7 +64,7 @@ class RestDispatcher
      *
      * @var array<string,bool>
      */
-    private array $readGrantCache = [];
+    private array $grantCache = [];
 
     /**
      * @var string[]|null enabled module names, resolved once per request
@@ -71,28 +72,38 @@ class RestDispatcher
     private ?array $enabledModules = null;
 
     /**
-     * Dispatch a read-only tool call into the REST pipeline as the authenticated user.
+     * Dispatch a tool call into the REST pipeline as the authenticated user.
      *
      * Takes the raw tool arguments rather than pre-split parameters, so that
-     * splitting them into path placeholders and query string happens in exactly
-     * one place for both curated and generic tools.
+     * splitting them into path placeholders and the rest happens in exactly one
+     * place for both curated and generic tools, under every verb.
      *
      * @return array{status:int,payload:array} decoded REST response
      * @throws EnvelopeException on RBAC denial, a disabled module, or a missing
      *                           path parameter
      */
-    public function dispatchGet(ToolInterface $tool, array $arguments): array
+    public function dispatch(ToolInterface $tool, array $arguments): array
     {
+        $method = strtoupper($tool->getVerb());
+
         $this->assertNotRestricted($tool);
         $this->assertModuleEnabled($tool);
-        $this->assertReadPermitted($tool);
+        $this->assertPermitted($tool);
 
         $path = $this->expandPath($tool, $arguments);
-        $queryParams = $tool->buildQueryParams($arguments);
+        $params = $tool->buildParams($arguments);
 
-        $httpRequest = HttpRequest::create($path, HttpRequest::METHOD_GET);
+        $httpRequest = HttpRequest::create($path, $method);
         $httpRequest->headers->set('Content-Type', 'application/json');
-        $httpRequest->query->add($queryParams);
+        if ($method === HttpRequest::METHOD_GET) {
+            $httpRequest->query->add($params);
+        } else {
+            // Written straight into the request bag rather than as a JSON body,
+            // because that is where Api\V2\Request reads body parameters from.
+            // Encoding JSON here would rely on whatever parses it for real HTTP
+            // requests, which an in-process dispatch never goes through.
+            $httpRequest->request->add($params);
+        }
         $httpRequest->attributes->set('_api', $tool->getApiClass());
         // Replicate the route's `defaults` block; see ToolInterface::getRouteAttributes().
         foreach ($tool->getRouteAttributes() as $name => $value) {
@@ -105,7 +116,7 @@ class RestDispatcher
         }
 
         try {
-            $httpResponse = (new GenericRestController())->handle($httpRequest);
+            $httpResponse = $this->handleInProcess($httpRequest);
         } catch (Throwable $e) {
             throw new EnvelopeException(
                 ErrorCode::INTERNAL_ERROR,
@@ -121,6 +132,16 @@ class RestDispatcher
             'status' => $httpResponse->getStatusCode(),
             'payload' => is_array($decoded) ? $decoded : [],
         ];
+    }
+
+    /**
+     * The one call into the REST pipeline, extracted so a test can see what was
+     * dispatched. Everything else in this class decides *whether* to dispatch;
+     * this is the dispatch.
+     */
+    protected function handleInProcess(HttpRequest $httpRequest): HttpResponse
+    {
+        return (new GenericRestController())->handle($httpRequest);
     }
 
     /**
@@ -189,12 +210,13 @@ class RestDispatcher
      */
     private function assertNotRestricted(ToolInterface $tool): void
     {
-        if (RestrictedApis::isAllowed($tool->getApiClass(), 'GET')) {
+        $method = strtoupper($tool->getVerb());
+        if (RestrictedApis::isAllowed($tool->getApiClass(), $method)) {
             return;
         }
         throw new EnvelopeException(
             ErrorCode::UNAUTHENTICATED,
-            RestrictedApis::refusalReason($tool->getApiClass(), 'GET'),
+            RestrictedApis::refusalReason($tool->getApiClass(), $method),
             ['category' => ErrorCode::CATEGORY_AUTHORIZATION, 'tool' => $tool->getName()]
         );
     }
@@ -220,14 +242,18 @@ class RestDispatcher
     }
 
     /**
-     * Replicates ApiAuthorizationSubscriber for in-process calls. Every tool in
-     * this prototype is a GET, so the relevant grant is always canRead().
+     * Replicates ApiAuthorizationSubscriber for in-process calls, against the
+     * grant that matches the tool's verb.
+     *
+     * Checking canRead() for a delete would be worse than no check at all: it
+     * would look like enforcement in review while letting anyone who may read
+     * an endpoint destroy through it.
      *
      * @throws EnvelopeException
      */
-    private function assertReadPermitted(ToolInterface $tool): void
+    private function assertPermitted(ToolInterface $tool): void
     {
-        if (!$this->canRead($tool->getApiClass())) {
+        if (!$this->isPermitted($tool->getApiClass(), $tool->getVerb())) {
             throw new EnvelopeException(
                 ErrorCode::UNAUTHENTICATED,
                 'You do not have permission to use this tool',
@@ -247,13 +273,13 @@ class RestDispatcher
     public function isVisibleTo(ToolInterface $tool): bool
     {
         try {
-            if (!RestrictedApis::isAllowed($tool->getApiClass(), 'GET')) {
+            if (!RestrictedApis::isAllowed($tool->getApiClass(), $tool->getVerb())) {
                 return false;
             }
             if (!in_array($tool->getModule(), $this->enabledModules(), true)) {
                 return false;
             }
-            return $this->canRead($tool->getApiClass());
+            return $this->isPermitted($tool->getApiClass(), $tool->getVerb());
         } catch (Throwable $e) {
             return false;
         }
@@ -270,12 +296,31 @@ class RestDispatcher
         return $this->enabledModules;
     }
 
-    private function canRead(string $apiClass): bool
+    /**
+     * The caller's own data-group grant for this API class under this verb.
+     */
+    private function isPermitted(string $apiClass, string $method): bool
     {
-        if (!array_key_exists($apiClass, $this->readGrantCache)) {
-            $this->readGrantCache[$apiClass] =
-                $this->getUserRoleManager()->getApiPermissions($apiClass)->canRead();
+        $verb = ApiVerb::fromMethod($method);
+        $key = $apiClass . '#' . $verb;
+
+        if (!array_key_exists($key, $this->grantCache)) {
+            $permissions = $this->getUserRoleManager()->getApiPermissions($apiClass);
+            switch ($verb) {
+                case ApiVerb::CREATE:
+                    $granted = $permissions->canCreate();
+                    break;
+                case ApiVerb::UPDATE:
+                    $granted = $permissions->canUpdate();
+                    break;
+                case ApiVerb::DELETE:
+                    $granted = $permissions->canDelete();
+                    break;
+                default:
+                    $granted = $permissions->canRead();
+            }
+            $this->grantCache[$key] = $granted;
         }
-        return $this->readGrantCache[$apiClass];
+        return $this->grantCache[$key];
     }
 }

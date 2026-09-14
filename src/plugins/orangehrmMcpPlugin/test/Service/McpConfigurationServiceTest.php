@@ -49,7 +49,6 @@ class McpConfigurationServiceTest extends KernelTestCase
     public function testDefaultsAppliedWhenDaoReturnsNull(): void
     {
         $this->stubDao([]);
-        $this->assertTrue($this->service->isReadOnlyMode());
         $this->assertSame(60, $this->service->getRateLimitPerSessionPerMinute());
         $this->assertSame(120, $this->service->getRateLimitPerUserPerMinute());
         $this->assertFalse($this->service->isDailyCallCapEnabled());
@@ -61,8 +60,8 @@ class McpConfigurationServiceTest extends KernelTestCase
 
     public function testBoolFalsyOverride(): void
     {
-        $this->stubDao([McpConfigurationService::KEY_READ_ONLY_MODE => '0']);
-        $this->assertFalse($this->service->isReadOnlyMode());
+        $this->stubDao([McpConfigurationService::KEY_DAILY_CALL_CAP_ENABLED => '0']);
+        $this->assertFalse($this->service->isDailyCallCapEnabled());
     }
 
     public function testBoolTruthyVariantsAreCaseInsensitive(): void

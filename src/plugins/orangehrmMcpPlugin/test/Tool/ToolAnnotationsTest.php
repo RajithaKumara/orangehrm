@@ -46,16 +46,16 @@ class ToolAnnotationsTest extends TestCase
     }
 
     /**
-     * The prototype ships a read-only surface. If this ever fails, a write tool
-     * was added and it must also pass through the write-discipline interceptor
-     * before it is safe to expose.
+     * The curated layer is read-only by design: a hand-written tool exists to
+     * phrase a question well, and writes go through the generic layer where the
+     * grid and the verb switches govern them.
      */
-    public function testEveryShippedToolIsReadOnly(): void
+    public function testEveryCuratedToolIsReadOnly(): void
     {
         foreach ($this->allTools() as $tool) {
             $this->assertFalse(
                 $tool->isWriteOperation(),
-                $tool->getName() . ' claims to be a write tool, but no write path exists yet'
+                $tool->getName() . ' is a curated tool, which must not write'
             );
             $this->assertFalse($tool->isDestructive(), $tool->getName() . ' must not be destructive');
         }
@@ -87,6 +87,19 @@ class ToolAnnotationsTest extends TestCase
             $this->assertNotSame('', $tool->getApiClass());
             $this->assertStringStartsWith('/api/v2/', $tool->getPath());
             $this->assertNotSame('', $tool->getModule());
+            // The verb decides which switch governs the tool, which grant the
+            // dispatcher checks and which HTTP method it sends. A tool that
+            // reports the wrong one is dispatched wrongly three ways.
+            $this->assertContains(
+                $tool->getVerb(),
+                ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+                $tool->getName() . ' reports an unusable verb'
+            );
+            $this->assertSame(
+                $tool->getVerb() !== 'GET',
+                $tool->isWriteOperation(),
+                $tool->getName() . ' disagrees with itself about whether it writes'
+            );
         }
     }
 

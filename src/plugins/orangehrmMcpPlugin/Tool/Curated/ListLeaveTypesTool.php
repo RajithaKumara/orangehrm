@@ -71,6 +71,11 @@ class ListLeaveTypesTool implements ToolInterface
         return 'leave';
     }
 
+    public function getVerb(): string
+    {
+        return 'GET';
+    }
+
     public function isWriteOperation(): bool
     {
         return false;
@@ -86,7 +91,7 @@ class ListLeaveTypesTool implements ToolInterface
         return [];
     }
 
-    public function buildQueryParams(array $arguments): array
+    public function buildParams(array $arguments): array
     {
         return [
             'limit' => isset($arguments['limit']) ? (int) $arguments['limit'] : 100,

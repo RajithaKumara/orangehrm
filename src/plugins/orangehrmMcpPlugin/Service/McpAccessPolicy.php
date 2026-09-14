@@ -20,49 +20,49 @@
 namespace OrangeHRM\Mcp\Service;
 
 use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
-use OrangeHRM\Mcp\Tool\DefaultTools;
+use OrangeHRM\Mcp\Tool\ApiVerb;
 
 /**
- * Who may reach the MCP surface, in what mode, through which client, and with
- * which tools.
+ * Who may reach the MCP surface, through which client, and which of the four
+ * verbs the surface offers at all.
  *
- * This is the organisation's control panel over AI access, and it is deliberately
- * separate from the per-call RBAC that `RestDispatcher` enforces. The two answer
- * different questions:
+ * This is the organisation's control panel over AI access, deliberately separate
+ * from the per-call RBAC that `RestDispatcher` enforces. The two answer different
+ * questions:
  *
  *   - RestDispatcher: "may this user read this endpoint?" (OrangeHRM's own model)
  *   - McpAccessPolicy: "should this user be reaching OrangeHRM through an AI
- *     assistant at all?" (the organisation's policy about the channel)
+ *     assistant at all, and may the assistant do this kind of thing?"
  *
- * A user must pass both. Policy narrows access; it can never widen it, because
- * the per-call RBAC check still runs afterwards regardless of what is configured
- * here.
+ * A call must pass both. Policy narrows access and can never widen it, because
+ * the per-call RBAC check still runs afterwards regardless of what is set here.
  *
- * Storage is `mcp.*` config values holding JSON, so no schema change is needed
- * and the existing configuration mechanism stays the single source of truth
- * (FR41). The read/write split of this class is narrow enough that moving to
- * dedicated tables later would not ripple outwards.
+ * The four verb switches are the top-level control. They sit above the per-class
+ * rows in `ohrm_mcp_api_permission`: turning Delete off refuses every delete tool
+ * in one move, whatever any individual row says, which is the lever an
+ * administrator wants during an incident. Turning it back on restores exactly the
+ * rows that were already enabled, so the switch is a circuit breaker rather than
+ * a setting whose state has to be rebuilt afterwards.
+ *
+ * Storage is `mcp.access.*` config values, so the existing configuration
+ * mechanism stays the single source of truth for settings (FR41). The per-class
+ * grid is a table instead, because a few hundred rows of four booleans is data,
+ * not a setting.
  */
 class McpAccessPolicy
 {
     use ConfigServiceTrait;
 
     public const KEY_ENABLED = 'mcp.access.enabled';
-    public const KEY_MODE = 'mcp.access.mode';
     public const KEY_ALLOWED_ROLE_IDS = 'mcp.access.allowed_role_ids';
     public const KEY_USER_OVERRIDES = 'mcp.access.user_overrides';
-    public const KEY_ENABLED_TOOLS = 'mcp.access.enabled_tools';
     public const KEY_APPROVED_CLIENT_IDS = 'mcp.access.approved_client_ids';
 
     /**
-     * Whole-surface switch for the generic OpenAPI router. Separate from the
-     * per-tool list because that list cannot sensibly hold hundreds of names --
-     * an admin screen with 250 checkboxes is not a control, it is a wall.
+     * One switch per verb, named so the stored keys read the same way the screen
+     * does.
      */
-    public const KEY_GENERIC_ROUTER_ENABLED = 'mcp.access.generic_router_enabled';
-
-    public const MODE_READ_ONLY = 'read_only';
-    public const MODE_READ_WRITE = 'read_write';
+    public const KEY_VERB_PREFIX = 'mcp.access.verb.';
 
     /**
      * Off until an administrator turns it on. Enabling MCP is the deliberate act
@@ -71,14 +71,19 @@ class McpAccessPolicy
     public const DEFAULT_ENABLED = false;
 
     /**
-     * Any tool not named in the enabled list is unavailable. An empty list means
-     * "nothing enabled", not "everything enabled" -- a misconfiguration should
-     * fail closed.
+     * Reads are the point of the feature; writes are not. An instance whose
+     * switches were never written behaves as read-only, and the migration writes
+     * exactly this.
      */
-    public const DEFAULT_ENABLED_TOOLS = [];
+    public const DEFAULT_VERB_SWITCHES = [
+        ApiVerb::READ => true,
+        ApiVerb::CREATE => false,
+        ApiVerb::UPDATE => false,
+        ApiVerb::DELETE => false,
+    ];
 
     /**
-     * Empty means no role may connect. Same fail-closed reasoning.
+     * Empty means no role may connect. A misconfiguration should fail closed.
      */
     public const DEFAULT_ALLOWED_ROLE_IDS = [];
 
@@ -89,24 +94,6 @@ class McpAccessPolicy
      */
     public const DEFAULT_APPROVED_CLIENT_IDS = [];
 
-    /**
-     * Off by default. Turning it on exposes every readable REST endpoint the
-     * caller's own permissions already allow, so it is a deliberate act.
-     */
-    public function isGenericRouterEnabled(): bool
-    {
-        $raw = $this->getConfigService()->getConfigDao()->getValue(self::KEY_GENERIC_ROUTER_ENABLED);
-        if ($raw === null || $raw === '') {
-            return false;
-        }
-        return in_array(strtolower($raw), ['1', 'true', 'yes', 'on'], true);
-    }
-
-    public function setGenericRouterEnabled(bool $enabled): void
-    {
-        $this->setValue(self::KEY_GENERIC_ROUTER_ENABLED, $enabled ? '1' : '0');
-    }
-
     public function isEnabled(): bool
     {
         $raw = $this->getConfigService()->getConfigDao()->getValue(self::KEY_ENABLED);
@@ -116,15 +103,52 @@ class McpAccessPolicy
         return in_array(strtolower($raw), ['1', 'true', 'yes', 'on'], true);
     }
 
-    public function getMode(): string
+    /**
+     * @return array<string,bool> keyed by ApiVerb constant
+     */
+    public function getVerbSwitches(): array
     {
-        $raw = $this->getConfigService()->getConfigDao()->getValue(self::KEY_MODE);
-        return $raw === self::MODE_READ_WRITE ? self::MODE_READ_WRITE : self::MODE_READ_ONLY;
+        $switches = [];
+        foreach (ApiVerb::all() as $verb) {
+            $switches[$verb] = $this->isVerbEnabled($verb);
+        }
+        return $switches;
     }
 
+    public function isVerbEnabled(string $verb): bool
+    {
+        $raw = $this->getConfigService()->getConfigDao()->getValue(self::KEY_VERB_PREFIX . $verb);
+        if ($raw === null || $raw === '') {
+            return self::DEFAULT_VERB_SWITCHES[$verb] ?? false;
+        }
+        return in_array(strtolower($raw), ['1', 'true', 'yes', 'on'], true);
+    }
+
+    /**
+     * @param array<string,bool> $switches partial is fine; unnamed verbs are left alone
+     */
+    public function setVerbSwitches(array $switches): void
+    {
+        foreach (ApiVerb::all() as $verb) {
+            if (!array_key_exists($verb, $switches)) {
+                continue;
+            }
+            $this->setValue(self::KEY_VERB_PREFIX . $verb, $switches[$verb] ? '1' : '0');
+        }
+    }
+
+    /**
+     * True when no verb that changes data is switched on.
+     *
+     * Derived rather than stored. A separate read-only flag alongside these
+     * switches would be a second control over one fact, and the two would
+     * eventually disagree.
+     */
     public function isReadOnly(): bool
     {
-        return $this->getMode() === self::MODE_READ_ONLY;
+        return !$this->isVerbEnabled(ApiVerb::CREATE)
+            && !$this->isVerbEnabled(ApiVerb::UPDATE)
+            && !$this->isVerbEnabled(ApiVerb::DELETE);
     }
 
     /**
@@ -158,34 +182,6 @@ class McpAccessPolicy
             $overrides[(int) $userId] = (bool) $allowed;
         }
         return $overrides;
-    }
-
-    /**
-     * @return string[] tool names an administrator has switched on
-     */
-    /**
-     * An unset value means the instance has never been configured, so the
-     * shipped defaults apply. A value that is set -- including an empty list --
-     * is the administrator's decision and is honoured exactly.
-     *
-     * The migration seeds this on install and upgrade, so the fallback only
-     * matters for an instance whose config row was never written.
-     *
-     * @return string[]
-     */
-    public function getEnabledTools(): array
-    {
-        $raw = $this->getConfigService()->getConfigDao()->getValue(self::KEY_ENABLED_TOOLS);
-        if ($raw === null || $raw === '') {
-            return DefaultTools::all();
-        }
-
-        return array_values(array_filter(
-            array_map('strval', $this->decodeList(self::KEY_ENABLED_TOOLS)),
-            static function (string $name): bool {
-                return $name !== '';
-            }
-        ));
     }
 
     /**
@@ -226,11 +222,6 @@ class McpAccessPolicy
         return in_array($userRoleId, $this->getAllowedRoleIds(), true);
     }
 
-    public function isToolEnabled(string $toolName): bool
-    {
-        return in_array($toolName, $this->getEnabledTools(), true);
-    }
-
     /**
      * Closes the token-audience gap (README 4.13): a token minted for some other
      * OrangeHRM application must not be usable against the AI surface.
@@ -261,14 +252,6 @@ class McpAccessPolicy
         $this->setValue(self::KEY_ENABLED, $enabled ? '1' : '0');
     }
 
-    public function setMode(string $mode): void
-    {
-        $this->setValue(
-            self::KEY_MODE,
-            $mode === self::MODE_READ_WRITE ? self::MODE_READ_WRITE : self::MODE_READ_ONLY
-        );
-    }
-
     /**
      * @param int[] $roleIds
      */
@@ -288,15 +271,6 @@ class McpAccessPolicy
             $clean[(string) (int) $userId] = (bool) $allowed;
         }
         $this->setValue(self::KEY_USER_OVERRIDES, (string) json_encode((object) $clean));
-    }
-
-    /**
-     * @param string[] $toolNames
-     */
-    public function setEnabledTools(array $toolNames): void
-    {
-        $clean = array_values(array_unique(array_map('strval', $toolNames)));
-        $this->setValue(self::KEY_ENABLED_TOOLS, (string) json_encode($clean));
     }
 
     /**

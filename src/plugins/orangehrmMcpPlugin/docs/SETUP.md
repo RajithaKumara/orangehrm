@@ -1,7 +1,8 @@
 # Connecting an MCP client to OrangeHRM
 
-Prototype status, 2026-09-14. Read-only: four curated tools, no writes. See
-[`../README.md`](../README.md) for what is and is not implemented.
+Prototype status, 2026-09-14. Ships read-only: 70 read tools switched on, every
+other endpoint available but switched off. See [`../README.md`](../README.md) for
+what is and is not implemented.
 
 ## Before you enable this
 
@@ -13,11 +14,18 @@ What limits exposure:
 
 - Every tool call runs as the authenticated user and passes the same
   `ohrm_api_permission` check the REST API enforces. An ESS user sees ESS data.
-- Only read tools exist in this prototype. No write path is implemented.
+- Reads, creates, updates and deletes are four separate switches, and only Read
+  ships on. A write tool is refused unless an administrator turns on both the verb
+  and the API it belongs to.
+- Credentials, authentication configuration, purge and password endpoints are
+  excluded in code and cannot be enabled by anyone.
 - Every call writes a row to `ohrm_mcp_audit_log` with user, session, tool,
   endpoint, status, latency and a SHA-256 digest of the arguments. Raw argument
   values are never stored.
-- `mcp.read_only_mode` defaults to true.
+- Admin, then Configuration, then MCP Access is where all of this is set. It also
+  flags which APIs hold personal data (`Personal`) or compensation, immigration,
+  evaluation and attachment data (`Highly sensitive`); none of the highly
+  sensitive ones ships enabled.
 
 What does not limit it:
 
@@ -109,6 +117,8 @@ FROM ohrm_mcp_audit_log ORDER BY id DESC LIMIT 5;
 
 ## Available tools
 
+Four are hand-written, for the questions worth phrasing well:
+
 | Tool | Returns |
 |---|---|
 | `mcp_get_current_employee` | the authenticated user's employee record |
@@ -116,8 +126,17 @@ FROM ohrm_mcp_audit_log ORDER BY id DESC LIMIT 5;
 | `mcp_list_job_titles` | job titles with ids |
 | `mcp_list_leave_types` | leave types with ids |
 
-`tools/list` only shows tools your role can actually invoke, so an ESS user sees
-fewer than an admin.
+The rest are derived from the REST API, one tool per operation, named after the
+method and path — `GET /api/v2/pim/employees/{empNumber}` becomes
+`rest_get_pim_employees_by_empNumber`. 490 exist; 66 ship enabled, alongside the
+four above. Use
+`mcp_discover_tools` with a phrase like "leave balance" to find one rather than
+paging the whole catalog.
+
+`tools/list` shows only tools that pass all four gates: the endpoint is not
+excluded in code, the verb is switched on, the API is enabled on the MCP Access
+screen, and your own role permits it. So an ESS user sees fewer than an admin,
+and an admin sees fewer than the catalog holds.
 
 ## Troubleshooting
 

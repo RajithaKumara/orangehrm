@@ -20,12 +20,12 @@
 namespace OrangeHRM\Mcp\Tool;
 
 /**
- * A curated, read-only MCP tool backed by exactly one REST endpoint.
+ * One MCP tool, backed by exactly one REST operation.
  *
- * v1 prototype scope: every tool is a GET. The generic OpenAPI-driven router
- * (Story 2.6) and write discipline (Epic 3) are not part of this interface yet
- * -- when they land, `getVerb()` stops being implicitly GET and the write path
- * goes through the WriteDisciplineInterceptor.
+ * Curated tools implement this by hand; generic tools are derived from the route
+ * collection. Everything downstream -- the policy gate, the dispatcher, the
+ * annotations published in tools/list -- works through this interface and knows
+ * nothing about which of the two it is holding.
  */
 interface ToolInterface
 {
@@ -54,6 +54,18 @@ interface ToolInterface
      * REST path this tool dispatches to, e.g. `/api/v2/pim/myself`.
      */
     public function getPath(): string;
+
+    /**
+     * HTTP method this tool dispatches with: GET, POST, PUT, PATCH or DELETE.
+     *
+     * Drives three separate decisions, which is why it is a method rather than
+     * something inferred from isWriteOperation(): which of the four top-level
+     * verb switches governs the tool, which `ohrm_api_permission` grant the
+     * dispatcher must check (canRead, canCreate, canUpdate, canDelete), and
+     * which HTTP method the in-process request actually carries. Inferring a
+     * method from "is it a write" would dispatch every write as a PUT.
+     */
+    public function getVerb(): string;
 
     /**
      * Module the backing endpoint belongs to, checked against the disabled-module
@@ -98,10 +110,16 @@ interface ToolInterface
     public function getRouteAttributes(): array;
 
     /**
-     * Map MCP tool arguments onto REST query parameters.
+     * The tool arguments that are not path placeholders, shaped for the REST
+     * endpoint.
+     *
+     * Where they end up depends on the verb, and that is the dispatcher's
+     * decision, not the tool's: a GET carries them in the query string, a
+     * POST/PUT/DELETE carries them in the body. Tools that want defaults --
+     * a page size, a sort order -- apply them here.
      *
      * @param array $arguments validated tool arguments
-     * @return array query parameters for the dispatched request
+     * @return array parameters for the dispatched request
      */
-    public function buildQueryParams(array $arguments): array;
+    public function buildParams(array $arguments): array;
 }

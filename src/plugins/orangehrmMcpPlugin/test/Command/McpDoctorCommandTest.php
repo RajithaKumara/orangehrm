@@ -29,6 +29,9 @@ use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Core\Service\ModuleService;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\Mcp\Command\McpDoctorCommand;
+use OrangeHRM\Mcp\Service\McpApiPermissionService;
+use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
+use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Tests\Util\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -42,7 +45,7 @@ class McpDoctorCommandTest extends KernelTestCase
     private array $rollbackCalls = [];
 
     /**
-     * @param array{enabled?:array<string>,oauthKey?:?string,oauthTokenKey?:?string,oauthSchema?:bool,connectionThrows?:bool} $opts
+     * @param array{enabled?:array<string>,oauthKey?:?string,oauthTokenKey?:?string,oauthSchema?:bool,connectionThrows?:bool,permissionRows?:?array} $opts
      */
     private function buildCommand(array $opts = []): CommandTester
     {
@@ -54,6 +57,11 @@ class McpDoctorCommandTest extends KernelTestCase
         $oauthTokenKey = array_key_exists('oauthTokenKey', $opts) ? $opts['oauthTokenKey'] : 'a-token-key';
         $oauthSchema = $opts['oauthSchema'] ?? true;
         $connectionThrows = $opts['connectionThrows'] ?? false;
+        // A healthy instance has one row per shipped API class; the doctor
+        // compares the two counts, so the stub has to be the full set.
+        $permissionRows = array_key_exists('permissionRows', $opts)
+            ? $opts['permissionRows']
+            : $this->fullPermissionMap();
 
         $moduleDao = $this->getMockBuilder(ModuleDao::class)->disableOriginalConstructor()->getMock();
         $moduleDao->method('getEnabledModuleNameList')->willReturn($enabled);
@@ -105,14 +113,47 @@ class McpDoctorCommandTest extends KernelTestCase
         $em = $this->getMockBuilder(EntityManagerInterface::class)->getMock();
         $em->method('getConnection')->willReturn($connection);
 
+        $permissionService = new class ($permissionRows) extends McpApiPermissionService {
+            private array $rows;
+
+            public function __construct(array $rows)
+            {
+                $this->rows = $rows;
+            }
+
+            public function getPermissionMap(): array
+            {
+                return $this->rows;
+            }
+        };
+
         $this->createKernelWithMockServices([
             Services::MODULE_SERVICE => $moduleService,
             Services::CONFIG_SERVICE => $configService,
             Services::DOCTRINE => $em,
+            Services::MCP_API_PERMISSION_SERVICE => $permissionService,
         ]);
 
         $command = new McpDoctorCommand();
         return new CommandTester($command);
+    }
+
+    /**
+     * @return array<string,array<string,mixed>> every shipped class, reads on
+     */
+    private function fullPermissionMap(): array
+    {
+        $map = [];
+        foreach (ApiPermissionDefaults::rows() as $apiClass => $row) {
+            $map[$apiClass] = [
+                ApiVerb::READ => $row['read'],
+                ApiVerb::CREATE => false,
+                ApiVerb::UPDATE => false,
+                ApiVerb::DELETE => false,
+                'sensitivity' => $row['sensitivity'],
+            ];
+        }
+        return $map;
     }
 
     public function testAllPassExitsZero(): void
@@ -123,8 +164,7 @@ class McpDoctorCommandTest extends KernelTestCase
 
         $this->assertSame(0, $exit);
         $this->assertStringContainsString('[PASS]', $output);
-        $this->assertStringContainsString('[SKIP]  OpenAPI loaded', $output);
-        $this->assertStringContainsString('4 passed, 0 failed, 1 skipped', $output);
+        $this->assertStringContainsString('6 passed, 0 failed, 0 skipped', $output);
         $this->assertNotEmpty($this->insertCalls, 'audit probe should have been attempted');
         $this->assertCount(1, $this->rollbackCalls, 'rollback must run exactly once on success path');
     }
@@ -224,11 +264,46 @@ class McpDoctorCommandTest extends KernelTestCase
         $this->assertStringContainsString('[PASS]  TLS / localhost', $tester->getDisplay());
     }
 
-    public function testOpenApiAlwaysSkippedRegardlessOfOtherChecks(): void
+    public function testOpenApiCheckReportsCoverage(): void
     {
         $tester = $this->buildCommand();
         $tester->execute(['--host' => 'localhost']);
-        $this->assertStringContainsString('[SKIP]  OpenAPI loaded', $tester->getDisplay());
-        $this->assertStringContainsString('Pending Story 2.5', $tester->getDisplay());
+        $output = $tester->getDisplay();
+
+        // The document ships in the repo, so this build describes most
+        // operations. A missing document is a SKIP, never a failure: an endpoint
+        // it does not describe is still exposed, just with a thinner schema.
+        $this->assertStringContainsString('OpenAPI loaded', $output);
+        $this->assertMatchesRegularExpression(
+            '/OpenAPI loaded -- \\d+ of \\d+ readable operations described/',
+            $output
+        );
+    }
+
+    /**
+     * An empty grid means nothing is reachable at all -- the likeliest cause is
+     * a migration that has not run. Silence there would leave an operator
+     * debugging an assistant that simply sees no tools.
+     */
+    public function testEmptyPermissionTableFails(): void
+    {
+        $tester = $this->buildCommand(['permissionRows' => []]);
+        $exit = $tester->execute(['--host' => 'localhost']);
+        $output = $tester->getDisplay();
+
+        $this->assertSame(1, $exit);
+        $this->assertStringContainsString('[FAIL]  API permissions', $output);
+        $this->assertStringContainsString('Run the migrations', $output);
+    }
+
+    public function testPermissionCheckReportsEnabledToolCounts(): void
+    {
+        $tester = $this->buildCommand();
+        $tester->execute(['--host' => 'localhost']);
+
+        $this->assertMatchesRegularExpression(
+            '/API permissions -- \\d+ of \\d+ API classes configured; tools: read \\d+\\/\\d+/',
+            $tester->getDisplay()
+        );
     }
 }

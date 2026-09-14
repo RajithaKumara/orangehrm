@@ -33,6 +33,7 @@ use OrangeHRM\Mcp\Method\PingHandler;
 use OrangeHRM\Mcp\Method\ToolsCallHandler;
 use OrangeHRM\Mcp\Method\ToolsListHandler;
 use OrangeHRM\Mcp\Service\McpAccessPolicy;
+use OrangeHRM\Mcp\Service\McpApiPermissionService;
 use OrangeHRM\Mcp\Service\McpConfigurationService;
 use OrangeHRM\Mcp\Service\McpOperatorLogger;
 use OrangeHRM\Mcp\Service\TokenClientResolver;
@@ -76,6 +77,7 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
         $this->getContainer()->register(Services::MCP_REST_DISPATCHER, RestDispatcher::class);
         $this->getContainer()->register(Services::MCP_ACCESS_POLICY, McpAccessPolicy::class);
         $this->getContainer()->register(Services::MCP_TOKEN_CLIENT_RESOLVER, TokenClientResolver::class);
+        $this->getContainer()->register(Services::MCP_API_PERMISSION_SERVICE, McpApiPermissionService::class);
         $this->getContainer()->register(Services::MCP_AUDIT_WRITER, AuditWriter::class);
 
         // Curated read-only tool catalog. Adding a tool is a registration here,
@@ -90,28 +92,31 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
 
         $restDispatcher = new RestDispatcher();
         $accessPolicy = new McpAccessPolicy();
+        $apiPermissions = $this->getContainer()->get(Services::MCP_API_PERMISSION_SERVICE);
 
         // The generic surface is always attached: every non-restricted endpoint
-        // is *available*, and the enabled-tools list decides which are actually
-        // offered. Registry merges it behind the curated tools, which win on name.
+        // is *available*, and the per-class permission rows decide which are
+        // actually offered. Registry merges it behind the curated tools, which
+        // win on name.
         $registry->setGenericFactory(new GenericToolFactory(new RouteMap(), new OpenApiLoader()));
 
-        $discovery = new DiscoverToolsHandler(
-            $registry,
-            $restDispatcher,
-            new ToolPolicyGate($accessPolicy, $registry)
-        );
+        // One gate for the whole request. It reads the permission table once,
+        // and every handler asks the same instance, so a tools/list over several
+        // hundred tools is one query rather than several hundred.
+        $gate = new ToolPolicyGate($accessPolicy, $apiPermissions);
+
+        $discovery = new DiscoverToolsHandler($registry, $restDispatcher, $gate);
 
         $dispatcher = new Dispatcher([
             new InitializeHandler(),
             new PingHandler(),
-            new ToolsListHandler($registry, $restDispatcher, $accessPolicy, $discovery),
+            new ToolsListHandler($registry, $restDispatcher, $gate, $apiPermissions, $discovery),
             new ToolsCallHandler(
                 $registry,
                 $restDispatcher,
                 new AuditWriter(),
                 $this->getContainer()->get(Services::MCP_SESSION_CONTEXT),
-                $accessPolicy,
+                $gate,
                 $discovery
             ),
         ]);

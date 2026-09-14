@@ -24,7 +24,6 @@ use OrangeHRM\Mcp\Audit\AuditWriter;
 use OrangeHRM\Mcp\JsonRpc\Envelope;
 use OrangeHRM\Mcp\JsonRpc\EnvelopeException;
 use OrangeHRM\Mcp\JsonRpc\ErrorCode;
-use OrangeHRM\Mcp\Service\McpAccessPolicy;
 use OrangeHRM\Mcp\Session\SessionContext;
 use OrangeHRM\Mcp\Tool\RestDispatcher;
 use OrangeHRM\Mcp\Tool\ToolPolicyGate;
@@ -51,7 +50,7 @@ class ToolsCallHandler implements MethodHandlerInterface
 
     private SessionContext $sessionContext;
 
-    private McpAccessPolicy $policy;
+    private ToolPolicyGate $gate;
 
     private ?DiscoverToolsHandler $discovery;
 
@@ -60,14 +59,14 @@ class ToolsCallHandler implements MethodHandlerInterface
         RestDispatcher $dispatcher,
         AuditWriter $auditWriter,
         SessionContext $sessionContext,
-        McpAccessPolicy $policy,
+        ToolPolicyGate $gate,
         ?DiscoverToolsHandler $discovery = null
     ) {
         $this->registry = $registry;
         $this->dispatcher = $dispatcher;
         $this->auditWriter = $auditWriter;
         $this->sessionContext = $sessionContext;
-        $this->policy = $policy;
+        $this->gate = $gate;
         $this->discovery = $discovery;
     }
 
@@ -113,16 +112,15 @@ class ToolsCallHandler implements MethodHandlerInterface
         }
 
         // Re-check the administrator's configuration at dispatch. Filtering
-        // tools/list is a convenience; this is the control. Covers read-only
-        // mode, the curated enable list and the generic-router switch.
-        $gate = new ToolPolicyGate($this->policy, $this->registry);
-        if (!$gate->isAllowed($tool)) {
-            $readOnlyBlock = $tool->isWriteOperation() && $this->policy->isReadOnly();
+        // tools/list is a convenience; this is the control. Covers the four
+        // verb switches and the per-class permission rows alike.
+        if (!$this->gate->isAllowed($tool)) {
+            $verbBlock = $this->gate->isBlockedByVerbSwitch($tool);
             throw new EnvelopeException(
-                $readOnlyBlock ? ErrorCode::READ_ONLY_MODE : ErrorCode::UNAUTHENTICATED,
-                $gate->refusalReason($tool),
+                $verbBlock ? ErrorCode::READ_ONLY_MODE : ErrorCode::UNAUTHENTICATED,
+                $this->gate->refusalReason($tool),
                 [
-                    'category' => $readOnlyBlock
+                    'category' => $verbBlock
                         ? ErrorCode::CATEGORY_READ_ONLY
                         : ErrorCode::CATEGORY_AUTHORIZATION,
                     'tool' => $tool->getName(),
@@ -136,7 +134,7 @@ class ToolsCallHandler implements MethodHandlerInterface
         $thrown = null;
 
         try {
-            $dispatched = $this->dispatcher->dispatchGet($tool, $arguments);
+            $dispatched = $this->dispatcher->dispatch($tool, $arguments);
             $status = (string) $dispatched['status'];
             $result = $this->toToolResult($dispatched);
         } catch (EnvelopeException $e) {
@@ -156,7 +154,7 @@ class ToolsCallHandler implements MethodHandlerInterface
             $this->sessionContext->getSessionId(),
             $tool->getName(),
             $tool->getPath(),
-            'GET',
+            strtoupper($tool->getVerb()),
             $arguments,
             $status,
             $latencyMs,

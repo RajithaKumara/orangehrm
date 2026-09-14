@@ -280,6 +280,11 @@ final class Services
     public const MCP_TOKEN_CLIENT_RESOLVER = 'mcp.token_client_resolver';
 
     /**
+     * @see \OrangeHRM\Mcp\Service\McpApiPermissionService
+     */
+    public const MCP_API_PERMISSION_SERVICE = 'mcp.api_permission_service';
+
+    /**
      * @see \OrangeHRM\Leave\Service\LeaveTypeService
      */
     public const LEAVE_TYPE_SERVICE = 'leave.leave_type_service';

@@ -30,7 +30,6 @@ class McpConfigurationService extends ConfigService
      */
     public const MODULE_NAME = 'mcp';
 
-    public const KEY_READ_ONLY_MODE = 'mcp.read_only_mode';
     public const KEY_RATE_LIMIT_PER_SESSION_PER_MINUTE = 'mcp.rate_limit.per_session_per_minute';
     public const KEY_RATE_LIMIT_PER_USER_PER_MINUTE = 'mcp.rate_limit.per_user_per_minute';
     public const KEY_DAILY_CALL_CAP_ENABLED = 'mcp.daily_call_cap.enabled';
@@ -39,7 +38,6 @@ class McpConfigurationService extends ConfigService
     public const KEY_AUDIT_RETENTION_DAYS = 'mcp.audit.retention_days';
     public const KEY_AUDIT_REDACTION_POLICY = 'mcp.audit.redaction_policy';
 
-    public const DEFAULT_READ_ONLY_MODE = true;
     public const DEFAULT_RATE_LIMIT_PER_SESSION_PER_MINUTE = 60;
     public const DEFAULT_RATE_LIMIT_PER_USER_PER_MINUTE = 120;
     public const DEFAULT_DAILY_CALL_CAP_ENABLED = false;
@@ -47,14 +45,6 @@ class McpConfigurationService extends ConfigService
     public const DEFAULT_CONCURRENT_SESSIONS_PER_USER = 5;
     public const DEFAULT_AUDIT_RETENTION_DAYS = 0;
     public const DEFAULT_AUDIT_REDACTION_POLICY = 'digest_only';
-
-    public function isReadOnlyMode(): bool
-    {
-        return $this->coerceBool(
-            $this->_getConfigValue(self::KEY_READ_ONLY_MODE),
-            self::DEFAULT_READ_ONLY_MODE
-        );
-    }
 
     public function getRateLimitPerSessionPerMinute(): int
     {

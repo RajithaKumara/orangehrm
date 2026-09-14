@@ -76,6 +76,11 @@ class ListEmployeesTool implements ToolInterface
         return 'pim';
     }
 
+    public function getVerb(): string
+    {
+        return 'GET';
+    }
+
     public function isWriteOperation(): bool
     {
         return false;
@@ -91,7 +96,7 @@ class ListEmployeesTool implements ToolInterface
         return ['_key' => 'empNumber'];
     }
 
-    public function buildQueryParams(array $arguments): array
+    public function buildParams(array $arguments): array
     {
         $params = [
             'limit' => isset($arguments['limit']) ? (int) $arguments['limit'] : 50,

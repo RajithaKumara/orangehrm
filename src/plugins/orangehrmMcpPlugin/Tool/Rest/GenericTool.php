@@ -146,6 +146,11 @@ class GenericTool implements ToolInterface
         return $this->route->getModule();
     }
 
+    public function getVerb(): string
+    {
+        return $this->route->getMethod();
+    }
+
     public function isWriteOperation(): bool
     {
         return $this->route->isWrite();
@@ -165,7 +170,7 @@ class GenericTool implements ToolInterface
      * Path placeholders are consumed into the URL by the dispatcher; everything
      * else is passed through as a query parameter.
      */
-    public function buildQueryParams(array $arguments): array
+    public function buildParams(array $arguments): array
     {
         $pathParams = $this->route->getPathParams();
         $query = [];
