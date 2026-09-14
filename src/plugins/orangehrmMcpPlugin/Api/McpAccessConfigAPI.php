@@ -100,42 +100,56 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
         $policy->setEnabled(
             $this->getRequestParams()->getBoolean(RequestParams::PARAM_TYPE_BODY, self::PARAMETER_ENABLED)
         );
-        $policy->setMode(
-            $this->getRequestParams()->getString(
-                RequestParams::PARAM_TYPE_BODY,
-                self::PARAMETER_MODE,
-                McpAccessPolicy::MODE_READ_ONLY
-            )
+
+        // Absent means "leave as it was"; present-but-empty means "clear it".
+        // The distinction matters because a caller that does not render a
+        // control must not silently wipe the setting behind it -- notably
+        // approvedClientIds, where wiping it would switch audience enforcement
+        // off without anyone asking.
+        $mode = $this->getRequestParams()->getStringOrNull(RequestParams::PARAM_TYPE_BODY, self::PARAMETER_MODE);
+        if ($mode !== null) {
+            $policy->setMode($mode);
+        }
+
+        $roleIds = $this->getRequestParams()->getArrayOrNull(
+            RequestParams::PARAM_TYPE_BODY,
+            self::PARAMETER_ALLOWED_ROLE_IDS
         );
-        $policy->setAllowedRoleIds(
-            $this->getRequestParams()->getArray(RequestParams::PARAM_TYPE_BODY, self::PARAMETER_ALLOWED_ROLE_IDS, [])
+        if ($roleIds !== null) {
+            $policy->setAllowedRoleIds($roleIds);
+        }
+
+        $tools = $this->getRequestParams()->getArrayOrNull(
+            RequestParams::PARAM_TYPE_BODY,
+            self::PARAMETER_ENABLED_TOOLS
         );
-        $policy->setEnabledTools(
-            $this->getRequestParams()->getArray(RequestParams::PARAM_TYPE_BODY, self::PARAMETER_ENABLED_TOOLS, [])
+        if ($tools !== null) {
+            $policy->setEnabledTools($tools);
+        }
+
+        $clientIds = $this->getRequestParams()->getArrayOrNull(
+            RequestParams::PARAM_TYPE_BODY,
+            self::PARAMETER_APPROVED_CLIENT_IDS
         );
-        $policy->setApprovedClientIds(
-            $this->getRequestParams()->getArray(
-                RequestParams::PARAM_TYPE_BODY,
-                self::PARAMETER_APPROVED_CLIENT_IDS,
-                []
-            )
-        );
+        if ($clientIds !== null) {
+            $policy->setApprovedClientIds($clientIds);
+        }
 
         // Overrides arrive as [{userId, allowed}, ...] because a JSON object with
         // numeric keys is awkward to validate and round-trips badly.
-        $overrides = [];
-        foreach (
-            $this->getRequestParams()->getArray(
-                RequestParams::PARAM_TYPE_BODY,
-                self::PARAMETER_USER_OVERRIDES,
-                []
-            ) as $entry
-        ) {
-            if (is_array($entry) && isset($entry['userId'])) {
-                $overrides[(int) $entry['userId']] = !empty($entry['allowed']);
+        $rawOverrides = $this->getRequestParams()->getArrayOrNull(
+            RequestParams::PARAM_TYPE_BODY,
+            self::PARAMETER_USER_OVERRIDES
+        );
+        if ($rawOverrides !== null) {
+            $overrides = [];
+            foreach ($rawOverrides as $entry) {
+                if (is_array($entry) && isset($entry['userId'])) {
+                    $overrides[(int) $entry['userId']] = !empty($entry['allowed']);
+                }
             }
+            $policy->setUserOverrides($overrides);
         }
-        $policy->setUserOverrides($overrides);
 
         return $this->getOne();
     }
@@ -148,9 +162,11 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
         return new ParamRuleCollection(
             new ParamRule(CommonParams::PARAMETER_ID),
             new ParamRule(self::PARAMETER_ENABLED, new Rule(Rules::BOOL_VAL)),
-            new ParamRule(
-                self::PARAMETER_MODE,
-                new Rule(Rules::IN, [[McpAccessPolicy::MODE_READ_ONLY, McpAccessPolicy::MODE_READ_WRITE]])
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(
+                    self::PARAMETER_MODE,
+                    new Rule(Rules::IN, [[McpAccessPolicy::MODE_READ_ONLY, McpAccessPolicy::MODE_READ_WRITE]])
+                )
             ),
             $this->getValidationDecorator()->notRequiredParamRule(
                 new ParamRule(self::PARAMETER_ALLOWED_ROLE_IDS, new Rule(Rules::ARRAY_TYPE))
@@ -209,11 +225,24 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
         foreach ($this->getMcpToolRegistry()->all() as $tool) {
             $tools[] = [
                 'name' => $tool->getName(),
+                // Short label for the admin screen. Tool descriptions are written
+                // for tool selection by a model and run to several sentences, so
+                // they read badly as checkbox labels.
+                'label' => self::toDisplayLabel($tool->getName()),
                 'description' => $tool->getDescription(),
                 'module' => $tool->getModule(),
             ];
         }
         return $tools;
+    }
+
+    /**
+     * `mcp_list_job_titles` -> `List job titles`.
+     */
+    private static function toDisplayLabel(string $toolName): string
+    {
+        $words = explode('_', preg_replace('/^mcp_/', '', $toolName));
+        return ucfirst(implode(' ', $words));
     }
 
     private function getOAuthClients(): array

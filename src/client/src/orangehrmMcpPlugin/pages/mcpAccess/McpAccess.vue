@@ -30,31 +30,20 @@
         type="warn"
         :show="true"
         message="Connecting an AI assistant gives it the same access to OrangeHRM
-          data that the person signing in already has. There are no per-tool
-          consent prompts. Start with read only, allow a small group, and
-          review the audit log."
+          data that the person signing in already has. Every request is still
+          checked against that person's own permissions, and every call is
+          recorded in the MCP audit log. Start with a small group and only the
+          tools you need."
       ></oxd-alert>
 
       <oxd-form :loading="isLoading" @submit-valid="onSave">
         <!-- Master switch -->
         <oxd-form-row>
-          <oxd-grid :cols="2" class="orangehrm-full-width-grid">
-            <oxd-grid-item>
-              <oxd-input-field
-                v-model="config.enabled"
-                type="switch"
-                label="Enable MCP access"
-              />
-            </oxd-grid-item>
-            <oxd-grid-item>
-              <oxd-input-field
-                v-model="config.mode"
-                type="radio"
-                label="Access mode"
-                :options="modeOptions"
-              />
-            </oxd-grid-item>
-          </oxd-grid>
+          <oxd-input-field
+            v-model="config.enabled"
+            type="switch"
+            label="Enable MCP access"
+          />
         </oxd-form-row>
 
         <!-- The endpoint an admin hands to the AI client -->
@@ -115,37 +104,11 @@
               <oxd-input-field
                 v-model="selectedTools[tool.name]"
                 type="checkbox"
-                :option-label="tool.description"
+                :option-label="tool.label"
               />
-            </oxd-grid-item>
-          </oxd-grid>
-        </oxd-form-row>
-
-        <oxd-divider />
-
-        <!-- Approved applications: this is the audience control -->
-        <oxd-text tag="p" class="orangehrm-sub-title">
-          Approved AI applications
-        </oxd-text>
-        <oxd-alert
-          v-if="!anyClientApproved"
-          type="warn"
-          :show="true"
-          message="No application is approved yet, so any application holding a
-            valid OrangeHRM token can reach MCP. Approve only the AI clients you
-            intend to use."
-        ></oxd-alert>
-        <oxd-form-row>
-          <oxd-grid :cols="2" class="orangehrm-full-width-grid">
-            <oxd-grid-item
-              v-for="client in availableClients"
-              :key="client.clientId"
-            >
-              <oxd-input-field
-                v-model="selectedClients[client.clientId]"
-                type="checkbox"
-                :option-label="client.name"
-              />
+              <oxd-text tag="p" class="orangehrm-tool-hint">
+                {{ tool.description }}
+              </oxd-text>
             </oxd-grid-item>
           </oxd-grid>
         </oxd-form-row>
@@ -153,11 +116,7 @@
         <oxd-divider />
 
         <oxd-form-actions>
-          <oxd-button
-            display-type="ghost"
-            label="Cancel"
-            @click="onCancel"
-          />
+          <oxd-button display-type="ghost" label="Cancel" @click="onCancel" />
           <oxd-button
             class="orangehrm-left-space"
             display-type="secondary"
@@ -196,28 +155,15 @@ export default {
       isLoading: false,
       config: {
         enabled: false,
-        mode: 'read_only',
         userOverrides: [],
       },
       availableRoles: [],
       availableTools: [],
-      availableClients: [],
       // Checkbox state is kept as maps keyed by id/name so the template binds
       // directly; they are flattened back to arrays on save.
       selectedRoles: {},
       selectedTools: {},
-      selectedClients: {},
-      modeOptions: [
-        {id: 'read_only', label: 'Read only (recommended)'},
-        {id: 'read_write', label: 'Read and write'},
-      ],
     };
-  },
-
-  computed: {
-    anyClientApproved() {
-      return Object.values(this.selectedClients).some(Boolean);
-    },
   },
 
   beforeMount() {
@@ -232,11 +178,9 @@ export default {
         .then(({data}) => {
           const d = data.data;
           this.config.enabled = d.enabled;
-          this.config.mode = d.mode;
           this.config.userOverrides = d.userOverrides || [];
           this.availableRoles = d.availableRoles || [];
           this.availableTools = d.availableTools || [];
-          this.availableClients = d.availableClients || [];
 
           this.selectedRoles = {};
           this.availableRoles.forEach((r) => {
@@ -244,13 +188,9 @@ export default {
           });
           this.selectedTools = {};
           this.availableTools.forEach((t) => {
-            this.selectedTools[t.name] = (d.enabledTools || []).includes(t.name);
-          });
-          this.selectedClients = {};
-          this.availableClients.forEach((c) => {
-            this.selectedClients[c.clientId] = (
-              d.approvedClientIds || []
-            ).includes(c.clientId);
+            this.selectedTools[t.name] = (d.enabledTools || []).includes(
+              t.name,
+            );
           });
         })
         .finally(() => {
@@ -264,17 +204,16 @@ export default {
         .request({
           method: 'PUT',
           url: 'api/v2/admin/mcp/access-config',
+          // `mode` and `approvedClientIds` are deliberately omitted: this page
+          // no longer renders them, and the API preserves any setting it is not
+          // sent rather than clearing it.
           data: {
             enabled: this.config.enabled,
-            mode: this.config.mode,
             allowedRoleIds: Object.keys(this.selectedRoles)
               .filter((id) => this.selectedRoles[id])
               .map((id) => parseInt(id, 10)),
             enabledTools: Object.keys(this.selectedTools).filter(
               (name) => this.selectedTools[name],
-            ),
-            approvedClientIds: Object.keys(this.selectedClients).filter(
-              (id) => this.selectedClients[id],
             ),
             userOverrides: this.config.userOverrides,
           },
