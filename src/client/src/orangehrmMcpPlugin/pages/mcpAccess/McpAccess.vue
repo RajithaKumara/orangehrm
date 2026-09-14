@@ -157,7 +157,7 @@
             >
               {{ verb.label }}:
               <strong>{{ liveCounts[verb.key] }}</strong>
-              of {{ counts.tools[verb.key].available }} tools
+              of {{ availableFor(verb.key) }} tools
             </span>
             <span class="orangehrm-mcp-summary__total">
               {{ totalEnabledTools }} tools enabled
@@ -259,7 +259,7 @@
                 class="orangehrm-mcp-row__verb"
               >
                 <oxd-input-field
-                  v-if="hasVerb(api, verb.key)"
+                  v-if="hasVerb(api, verb.key) && permissions[api.apiName]"
                   v-model="permissions[api.apiName][verb.key]"
                   type="checkbox"
                   :disabled="!config.verbs[verb.key]"
@@ -270,7 +270,7 @@
           </div>
         </div>
 
-        <oxd-form-row v-if="!filteredModules.length">
+        <oxd-form-row v-if="search.trim() && !filteredModules.length">
           <oxd-text tag="p" class="orangehrm-tool-hint">
             Nothing matches "{{ search }}".
           </oxd-text>
@@ -322,6 +322,14 @@ const VERBS = [
   },
 ];
 
+function emptyCounts() {
+  const counts = {};
+  VERBS.forEach((v) => {
+    counts[v.key] = {available: 0, enabled: 0};
+  });
+  return counts;
+}
+
 const SENSITIVITY = {
   elevated: {
     label: 'Personal',
@@ -367,7 +375,10 @@ export default {
         userOverrides: [],
       },
       modules: [],
-      counts: {tools: {}, classes: 0},
+      // Shaped like the loaded payload, because the first render happens before
+      // the GET resolves. An empty object here means the summary bar reads
+      // `undefined.available` and takes the whole screen down.
+      counts: {tools: emptyCounts(), classes: 0},
       availableRoles: [],
       // Checkbox state keyed by id/class name so the template binds directly;
       // flattened back to arrays on save.
@@ -443,7 +454,10 @@ export default {
           this.config.userOverrides = d.userOverrides || [];
           this.availableRoles = d.availableRoles || [];
           this.modules = d.modules || [];
-          this.counts = d.counts || {tools: {}, classes: 0};
+          this.counts = {
+            tools: {...emptyCounts(), ...((d.counts || {}).tools || {})},
+            classes: (d.counts || {}).classes || 0,
+          };
 
           this.selectedRoles = {};
           this.availableRoles.forEach((r) => {
@@ -478,6 +492,10 @@ export default {
         .finally(() => {
           this.isLoading = false;
         });
+    },
+
+    availableFor(verb) {
+      return (this.counts.tools[verb] || {}).available || 0;
     },
 
     hasVerb(api, verb) {
