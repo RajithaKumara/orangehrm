@@ -1,0 +1,5 @@
+'Admin - MCP Access':
+  module: admin
+  url: mcpAccess
+  permissions:
+    - { role: Admin, permission: { read: true } }

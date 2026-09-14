@@ -21,3 +21,17 @@ mcp_oauth_authorization_server:
   path: /.well-known/oauth-authorization-server
   controller: OrangeHRM\Mcp\Controller\OAuthMetadataController::authorizationServer
   methods: [ GET ]
+
+# Admin screen for the MCP access policy.
+apiv2_mcp_access_config:
+  path: /api/v2/admin/mcp/access-config
+  controller: OrangeHRM\Core\Controller\Rest\V2\GenericRestController::handle
+  methods: [ GET, PUT ]
+  defaults:
+    id: 0
+    _api: OrangeHRM\Mcp\Api\McpAccessConfigAPI
+
+admin_view_mcp_access:
+  path: /admin/mcpAccess
+  controller: OrangeHRM\Mcp\Controller\McpAccessController::handle
+  methods: [ GET ]

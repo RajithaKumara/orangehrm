@@ -22,6 +22,7 @@ import HelpPages from '@/orangehrmHelpPlugin';
 import TimePages from '@/orangehrmTimePlugin';
 import LeavePages from '@/orangehrmLeavePlugin';
 import OAuthPages from '@/orangehrmCoreOAuthPlugin';
+import McpPages from '@/orangehrmMcpPlugin';
 import AttendancePages from '@/orangehrmAttendancePlugin';
 import MaintenancePages from '@/orangehrmMaintenancePlugin';
 import RecruitmentPages from '@/orangehrmRecruitmentPlugin';
@@ -43,6 +44,7 @@ export default {
   ...HelpPages,
   ...TimePages,
   ...OAuthPages,
+  ...McpPages,
   ...LeavePages,
   ...AttendancePages,
   ...MaintenancePages,

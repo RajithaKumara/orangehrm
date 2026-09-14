@@ -75,7 +75,91 @@ class Migration extends AbstractMigration
                 ->setParameter('display_name', 'MCP')
                 ->executeQuery();
         }
+
+        $this->registerMcpAccessScreen();
     }
+
+    /**
+     * Registers the MCP Access screen and API under Admin > Configuration, and
+     * grants both to the Admin role.
+     *
+     * Guarded independently of the audit-log block above so that re-running the
+     * migration on a database that already has the table still installs the
+     * screen. The whole method is idempotent.
+     */
+    private function registerMcpAccessScreen(): void
+    {
+        $existingScreenId = $this->createQueryBuilder()
+            ->select('screen.id')
+            ->from('ohrm_screen', 'screen')
+            ->where('screen.name = :screenName')
+            ->setParameter('screenName', self::SCREEN_NAME)
+            ->executeQuery()
+            ->fetchOne();
+
+        if ($existingScreenId !== false && $existingScreenId !== null) {
+            return;
+        }
+
+        // The YAML files create the screen row, the ohrm_user_role_screen grants,
+        // the data group and the ohrm_api_permission entry -- the same mechanism
+        // every other module uses, rather than hand-written inserts.
+        $this->getDataGroupHelper()->insertScreenPermissions(__DIR__ . '/permission/screen.yaml');
+        $this->getDataGroupHelper()->insertApiPermissions(__DIR__ . '/permission/api.yaml');
+
+        $adminMenuId = $this->createQueryBuilder()
+            ->select('menu_item.id')
+            ->from('ohrm_menu_item', 'menu_item')
+            ->where('menu_item.menu_title = :menuTitle')
+            ->setParameter('menuTitle', 'Admin')
+            ->andWhere('level = :level')
+            ->setParameter('level', 1)
+            ->executeQuery()
+            ->fetchOne();
+
+        $configurationMenuId = $this->createQueryBuilder()
+            ->select('menu_item.id')
+            ->from('ohrm_menu_item', 'menu_item')
+            ->where('menu_item.menu_title = :menuTitle')
+            ->setParameter('menuTitle', 'Configuration')
+            ->andWhere('level = :level')
+            ->setParameter('level', 2)
+            ->andWhere('parent_id = :parentId')
+            ->setParameter('parentId', $adminMenuId)
+            ->executeQuery()
+            ->fetchOne();
+
+        $screenId = $this->createQueryBuilder()
+            ->select('screen.id')
+            ->from('ohrm_screen', 'screen')
+            ->where('screen.name = :screenName')
+            ->setParameter('screenName', self::SCREEN_NAME)
+            ->executeQuery()
+            ->fetchOne();
+
+        $this->createQueryBuilder()
+            ->insert('ohrm_menu_item')
+            ->values(
+                [
+                    'menu_title' => ':menuTitle',
+                    'screen_id' => ':screenId',
+                    'parent_id' => ':parentId',
+                    'level' => ':level',
+                    'order_hint' => ':orderHint',
+                    'status' => ':status',
+                ]
+            )
+            ->setParameter('menuTitle', 'MCP Access')
+            ->setParameter('screenId', $screenId)
+            ->setParameter('parentId', $configurationMenuId)
+            ->setParameter('level', 3)
+            ->setParameter('orderHint', 1200)
+            ->setParameter('status', 1)
+            ->executeQuery();
+    }
+
+    private const SCREEN_NAME = 'Admin - MCP Access';
+    private const SCREEN_ACTION = 'mcpAccess';
 
     /**
      * @inheritDoc

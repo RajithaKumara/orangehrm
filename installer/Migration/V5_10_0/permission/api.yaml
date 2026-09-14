@@ -1,0 +1,12 @@
+apiv2_admin_mcp_access_config:
+  description: 'API-v2 Admin - MCP Access Configuration'
+  api: OrangeHRM\Mcp\Api\McpAccessConfigAPI
+  module: admin
+  allowed:
+    read: true
+    create: false
+    update: true
+    delete: false
+  permissions:
+    - { role: Admin, permission: { read: true, create: false, update: true, delete: false } }
+    - { role: ESS, permission: { read: false, create: false, update: false, delete: false } }
