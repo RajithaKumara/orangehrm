@@ -20,6 +20,7 @@
 namespace OrangeHRM\Tests\Mcp\Command;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use OrangeHRM\Core\Dao\ConfigDao;
@@ -41,12 +42,17 @@ class McpDoctorCommandTest extends KernelTestCase
     private array $rollbackCalls = [];
 
     /**
-     * @param array{enabled?:array<string>,oauthKey?:?string,connectionThrows?:bool} $opts
+     * @param array{enabled?:array<string>,oauthKey?:?string,oauthTokenKey?:?string,oauthSchema?:bool,connectionThrows?:bool} $opts
      */
     private function buildCommand(array $opts = []): CommandTester
     {
-        $enabled = $opts['enabled'] ?? ['mcp', 'oauth'];
+        // No 'oauth' entry: orangehrmCoreOAuthPlugin is a core plugin and never appears
+        // in ohrm_module. The real module list on a 5.10 install is admin, auth, core,
+        // leave, mcp, pim, ... with no oauth row.
+        $enabled = $opts['enabled'] ?? ['mcp', 'admin', 'pim'];
         $oauthKey = array_key_exists('oauthKey', $opts) ? $opts['oauthKey'] : 'a-key';
+        $oauthTokenKey = array_key_exists('oauthTokenKey', $opts) ? $opts['oauthTokenKey'] : 'a-token-key';
+        $oauthSchema = $opts['oauthSchema'] ?? true;
         $connectionThrows = $opts['connectionThrows'] ?? false;
 
         $moduleDao = $this->getMockBuilder(ModuleDao::class)->disableOriginalConstructor()->getMock();
@@ -56,7 +62,15 @@ class McpDoctorCommandTest extends KernelTestCase
 
         $configDao = $this->getMockBuilder(ConfigDao::class)->disableOriginalConstructor()->getMock();
         $configDao->method('getValue')->willReturnCallback(
-            fn (string $key) => $key === ConfigService::KEY_OAUTH_ENCRYPTION_KEY ? $oauthKey : null
+            function (string $key) use ($oauthKey, $oauthTokenKey) {
+                if ($key === ConfigService::KEY_OAUTH_ENCRYPTION_KEY) {
+                    return $oauthKey;
+                }
+                if ($key === ConfigService::KEY_OAUTH_TOKEN_ENCRYPTION_KEY) {
+                    return $oauthTokenKey;
+                }
+                return null;
+            }
         );
         $configService = $this->getMockBuilder(ConfigService::class)->getMock();
         $configService->method('getConfigDao')->willReturn($configDao);
@@ -81,6 +95,12 @@ class McpDoctorCommandTest extends KernelTestCase
             $this->rollbackCalls[] = true;
             return true;
         });
+
+        $schemaManager = $this->getMockBuilder(AbstractSchemaManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $schemaManager->method('tablesExist')->willReturn($oauthSchema);
+        $connection->method('createSchemaManager')->willReturn($schemaManager);
 
         $em = $this->getMockBuilder(EntityManagerInterface::class)->getMock();
         $em->method('getConnection')->willReturn($connection);
@@ -111,7 +131,7 @@ class McpDoctorCommandTest extends KernelTestCase
 
     public function testModuleDisabledFails(): void
     {
-        $tester = $this->buildCommand(['enabled' => ['oauth']]);
+        $tester = $this->buildCommand(['enabled' => ['admin', 'pim']]);
         $exit = $tester->execute(['--host' => 'localhost']);
         $output = $tester->getDisplay();
 
@@ -129,6 +149,38 @@ class McpDoctorCommandTest extends KernelTestCase
         $this->assertSame(1, $exit);
         $this->assertStringContainsString('[FAIL]  OAuth dependency', $output);
         $this->assertStringContainsString('oauth.encryption_key', $output);
+    }
+
+    public function testOauthDependencyMissingTokenKey(): void
+    {
+        $tester = $this->buildCommand(['oauthTokenKey' => null]);
+        $exit = $tester->execute(['--host' => 'localhost']);
+        $output = $tester->getDisplay();
+
+        $this->assertSame(1, $exit);
+        $this->assertStringContainsString('[FAIL]  OAuth dependency', $output);
+        $this->assertStringContainsString('oauth.token_encryption_key', $output);
+    }
+
+    public function testOauthDependencyMissingSchema(): void
+    {
+        $tester = $this->buildCommand(['oauthSchema' => false]);
+        $exit = $tester->execute(['--host' => 'localhost']);
+        $output = $tester->getDisplay();
+
+        $this->assertSame(1, $exit);
+        $this->assertStringContainsString('[FAIL]  OAuth dependency', $output);
+        $this->assertStringContainsString('ohrm_oauth2_client', $output);
+    }
+
+    public function testOauthDependencyPassesWithoutAnOauthModuleRow(): void
+    {
+        // Regression guard: the original check required in_array('oauth', $enabledModules),
+        // which can never be true, so mcp:doctor always reported FAIL on a healthy install.
+        $tester = $this->buildCommand(['enabled' => ['mcp']]);
+        $tester->execute(['--host' => 'localhost']);
+
+        $this->assertStringContainsString('[PASS]  OAuth dependency', $tester->getDisplay());
     }
 
     public function testAuditWriteFailsCarriesErrorMessage(): void

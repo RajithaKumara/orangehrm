@@ -41,7 +41,7 @@ class McpDoctorCommand extends Command
     public const STATUS_FAIL = 'fail';
     public const STATUS_SKIP = 'skip';
 
-    public const OAUTH_MODULE_NAME = 'oauth';
+    public const OAUTH_CLIENT_TABLE = 'ohrm_oauth2_client';
     public const PROBE_SESSION_ID = '__doctor_probe__';
 
     public function getCommandName(): string
@@ -111,20 +111,46 @@ class McpDoctorCommand extends Command
         );
     }
 
+    /**
+     * orangehrmCoreOAuthPlugin is a core plugin, not a row in `ohrm_module` -- there is
+     * no module named 'oauth' to look up. What MCP actually depends on is the OAuth
+     * schema being installed and both encryption keys being set, so check those.
+     */
     private function checkOauthDependency(): array
     {
-        $enabled = $this->getModuleService()->getModuleDao()->getEnabledModuleNameList();
-        $oauthEnabled = in_array(self::OAUTH_MODULE_NAME, $enabled, true);
+        $missing = [];
+
         $key = $this->getConfigService()->getConfigDao()->getValue(ConfigService::KEY_OAUTH_ENCRYPTION_KEY);
-        $keyPresent = $key !== null && $key !== '';
-        if ($oauthEnabled && $keyPresent) {
+        if ($key === null || $key === '') {
+            $missing[] = ConfigService::KEY_OAUTH_ENCRYPTION_KEY;
+        }
+
+        $tokenKey = $this->getConfigService()->getConfigDao()
+            ->getValue(ConfigService::KEY_OAUTH_TOKEN_ENCRYPTION_KEY);
+        if ($tokenKey === null || $tokenKey === '') {
+            $missing[] = ConfigService::KEY_OAUTH_TOKEN_ENCRYPTION_KEY;
+        }
+
+        $schemaPresent = false;
+        try {
+            $schemaPresent = $this->getEntityManager()
+                ->getConnection()
+                ->createSchemaManager()
+                ->tablesExist([self::OAUTH_CLIENT_TABLE]);
+        } catch (Throwable $e) {
+            $schemaPresent = false;
+        }
+
+        if ($missing === [] && $schemaPresent) {
             return $this->result('OAuth dependency', self::STATUS_PASS, '');
         }
-        return $this->result(
-            'OAuth dependency',
-            self::STATUS_FAIL,
-            'Ensure orangehrmCoreOAuthPlugin is enabled and oauth.encryption_key is set.'
-        );
+
+        $hint = $schemaPresent
+            ? 'Set the missing OAuth config value(s): ' . implode(', ', $missing) . '.'
+            : 'OAuth schema missing -- expected table ' . self::OAUTH_CLIENT_TABLE
+                . '. Run the installer/migrations.';
+
+        return $this->result('OAuth dependency', self::STATUS_FAIL, $hint);
     }
 
     private function checkAuditWritePath(): array
