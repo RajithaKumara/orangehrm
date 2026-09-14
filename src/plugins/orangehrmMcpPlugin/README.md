@@ -236,6 +236,50 @@ is unavailable, with schemas degraded to "any object".
 toggle) should be pulled forward to the end of Phase A so the first shippable
 build is read-only by construction.
 
+### 4.14 Self-hosted deployment blockers — measured 2026-09-14
+
+Three things stand between a working plugin and a self-hoster being able to
+connect. None is a code defect; all three must be solved before a help article
+can promise the feature works.
+
+**1. `.well-known` must be served from the host root.**
+MCP clients strip the path when building the RFC 9728 / RFC 8414 URLs. Measured
+on this subpath install:
+
+| URL | Result |
+|---|---|
+| `https://host/orangehrm_57/web/index.php/.well-known/oauth-protected-resource` | 200 |
+| `https://host/.well-known/oauth-protected-resource` | **404** |
+
+The route exists, but only under the app path. Anything mounted at a subpath —
+which is the common self-hosted shape — needs a reverse-proxy rewrite from
+`/.well-known/oauth-*` to the app path. That is nginx or Apache configuration,
+not something an HR admin can do.
+
+**Worse: these paths collide per host.** On this very box
+`https://host/.well-known/oauth-authorization-server` already returns 200, served
+by a *different* OrangeHRM instance under `/MCP/orangehrm/`, advertising a stale
+ngrok issuer. Two instances on one hostname cannot both own the host-root
+well-known paths. Multi-instance hosts need one hostname per instance.
+
+**2. TLS must be real, not self-signed.**
+The server enforces TLS off localhost, which is correct. But MCP clients validate
+certificates, so a self-signed cert fails at the client with no useful message.
+Every curl in our testing needed `-k`. Self-hosters need a real certificate.
+
+**3. Web connectors need public reachability.**
+Desktop and CLI clients run on the user's machine and can reach a private host.
+Claude's web connectors run on Anthropic's infrastructure and cannot. A
+self-hoster on a private network can support the former and not the latter, and
+the documentation must say which is which rather than implying both work.
+
+**Consequence for documentation.** A single "configure MCP" article aimed at
+non-technical HR admins is not achievable. The work splits in two: an IT
+prerequisites guide (TLS, well-known rewrite, hostname, reachability) and an HR
+admin guide (register the client, choose who may connect, verify). The HR admin
+guide can only be written against a config screen that does not exist yet — see
+the Growth note below.
+
 ### 4.13 Token audience is not validated — known gap, found 2026-09-14
 
 **Verified:** a bearer token minted for the `orangehrm_mobile_app` OAuth client is
