@@ -139,6 +139,23 @@
 
         <oxd-divider />
 
+        <!-- Whole-surface switch for the generic OpenAPI router -->
+        <oxd-text tag="p" class="orangehrm-sub-title">
+          Direct access to the REST API
+        </oxd-text>
+        <oxd-form-row>
+          <oxd-input-field
+            v-model="config.genericRouterEnabled"
+            type="switch"
+            label="Expose every readable REST endpoint as a tool"
+          />
+          <oxd-text tag="p" class="orangehrm-tool-hint">
+            {{ genericRouterHint }}
+          </oxd-text>
+        </oxd-form-row>
+
+        <oxd-divider />
+
         <oxd-form-actions>
           <oxd-button display-type="ghost" label="Cancel" @click="onCancel" />
           <oxd-button
@@ -180,8 +197,10 @@ export default {
       config: {
         enabled: false,
         mode: 'read_only',
+        genericRouterEnabled: false,
         userOverrides: [],
       },
+      genericRouterStats: null,
       availableRoles: [],
       availableTools: [],
       // Checkbox state is kept as maps keyed by id/name so the template binds
@@ -189,6 +208,28 @@ export default {
       selectedRoles: {},
       selectedTools: {},
     };
+  },
+
+  computed: {
+    genericRouterHint() {
+      const s = this.genericRouterStats;
+      if (!s) {
+        return 'Adds every readable endpoint as a tool, on top of the curated ones above.';
+      }
+      const undescribed = s.readOnly - s.described;
+      let hint =
+        `Adds ${s.readOnly} readable endpoints as tools, on top of the ` +
+        'curated ones above. Each still runs as the signed-in user and is ' +
+        'refused if their permissions do not allow it.';
+      if (!s.specAvailable) {
+        hint +=
+          ' The OpenAPI document is missing, so these tools have no ' +
+          'descriptions and an assistant will struggle to choose between them.';
+      } else if (undescribed > 0) {
+        hint += ` ${undescribed} of them have no published description.`;
+      }
+      return hint;
+    },
   },
 
   beforeMount() {
@@ -204,6 +245,8 @@ export default {
           const d = data.data;
           this.config.enabled = d.enabled;
           this.config.mode = d.mode;
+          this.config.genericRouterEnabled = d.genericRouterEnabled;
+          this.genericRouterStats = d.genericRouterStats || null;
           this.config.userOverrides = d.userOverrides || [];
           this.availableRoles = d.availableRoles || [];
           this.availableTools = d.availableTools || [];
@@ -236,6 +279,7 @@ export default {
           data: {
             enabled: this.config.enabled,
             mode: this.config.mode,
+            genericRouterEnabled: this.config.genericRouterEnabled,
             allowedRoleIds: Object.keys(this.selectedRoles)
               .filter((id) => this.selectedRoles[id])
               .map((id) => parseInt(id, 10)),

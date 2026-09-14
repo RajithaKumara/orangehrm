@@ -32,6 +32,9 @@ use OrangeHRM\Core\Api\V2\Validator\Rule;
 use OrangeHRM\Core\Api\V2\Validator\Rules;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
 use OrangeHRM\Mcp\Service\McpAccessPolicy;
+use OrangeHRM\Mcp\Tool\Rest\GenericToolFactory;
+use OrangeHRM\Mcp\Tool\Rest\OpenApiLoader;
+use OrangeHRM\Mcp\Tool\Rest\RouteMap;
 use OrangeHRM\Mcp\Traits\Service\McpAccessPolicyTrait;
 use OrangeHRM\Mcp\Traits\Service\McpToolRegistryTrait;
 
@@ -57,6 +60,7 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
     public const PARAMETER_USER_OVERRIDES = 'userOverrides';
     public const PARAMETER_ENABLED_TOOLS = 'enabledTools';
     public const PARAMETER_APPROVED_CLIENT_IDS = 'approvedClientIds';
+    public const PARAMETER_GENERIC_ROUTER_ENABLED = 'genericRouterEnabled';
 
     /**
      * @inheritDoc
@@ -73,6 +77,10 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
             self::PARAMETER_ENABLED_TOOLS => $policy->getEnabledTools(),
             self::PARAMETER_APPROVED_CLIENT_IDS => $policy->getApprovedClientIds(),
             'clientApprovalEnforced' => $policy->isClientApprovalEnforced(),
+            self::PARAMETER_GENERIC_ROUTER_ENABLED => $policy->isGenericRouterEnabled(),
+            // So an admin can see the size of what that switch turns on, and how
+            // much of it the OpenAPI document actually describes.
+            'genericRouterStats' => $this->getGenericRouterStats(),
             // Reference data, so the screen renders in one round trip.
             'availableRoles' => $this->getSelectableRoles(),
             'availableTools' => $this->getAvailableTools(),
@@ -106,6 +114,14 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
         // control must not silently wipe the setting behind it -- notably
         // approvedClientIds, where wiping it would switch audience enforcement
         // off without anyone asking.
+        $generic = $this->getRequestParams()->getBooleanOrNull(
+            RequestParams::PARAM_TYPE_BODY,
+            self::PARAMETER_GENERIC_ROUTER_ENABLED
+        );
+        if ($generic !== null) {
+            $policy->setGenericRouterEnabled($generic);
+        }
+
         $mode = $this->getRequestParams()->getStringOrNull(RequestParams::PARAM_TYPE_BODY, self::PARAMETER_MODE);
         if ($mode !== null) {
             $policy->setMode($mode);
@@ -180,6 +196,9 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
             $this->getValidationDecorator()->notRequiredParamRule(
                 new ParamRule(self::PARAMETER_APPROVED_CLIENT_IDS, new Rule(Rules::ARRAY_TYPE))
             ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_GENERIC_ROUTER_ENABLED, new Rule(Rules::BOOL_VAL))
+            ),
         );
     }
 
@@ -243,6 +262,19 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
     {
         $words = explode('_', preg_replace('/^mcp_/', '', $toolName));
         return ucfirst(implode(' ', $words));
+    }
+
+    /**
+     * @return array{readOnly:int,described:int,specAvailable:bool}
+     */
+    private function getGenericRouterStats(): array
+    {
+        $stats = (new GenericToolFactory(new RouteMap(), new OpenApiLoader()))->stats();
+        return [
+            'readOnly' => $stats['readOnly'],
+            'described' => $stats['described'],
+            'specAvailable' => $stats['specAvailable'],
+        ];
     }
 
     private function getOAuthClients(): array

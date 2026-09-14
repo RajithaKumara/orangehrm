@@ -22,6 +22,8 @@ namespace OrangeHRM\Mcp\Method;
 use OrangeHRM\Mcp\JsonRpc\Envelope;
 use OrangeHRM\Mcp\Service\McpAccessPolicy;
 use OrangeHRM\Mcp\Tool\RestDispatcher;
+use OrangeHRM\Mcp\Tool\ToolInterface;
+use OrangeHRM\Mcp\Tool\ToolPolicyGate;
 use OrangeHRM\Mcp\Tool\ToolRegistry;
 
 /**
@@ -30,20 +32,36 @@ use OrangeHRM\Mcp\Tool\ToolRegistry;
  *
  * This filtering is a usability measure, not the security boundary -- tools/call
  * re-checks every grant at dispatch (defense in depth, NFR-S1).
+ *
+ * Paginated because the generic router can contribute hundreds of tools and a
+ * single response would be both enormous and useless to a model.
  */
 class ToolsListHandler implements MethodHandlerInterface
 {
+    /**
+     * Tools per page. Chosen to keep a page comfortably under the 100 KB
+     * response budget even when every tool carries a full parameter schema.
+     */
+    public const PAGE_SIZE = 50;
+
     private ToolRegistry $registry;
 
     private RestDispatcher $dispatcher;
 
     private McpAccessPolicy $policy;
 
-    public function __construct(ToolRegistry $registry, RestDispatcher $dispatcher, McpAccessPolicy $policy)
-    {
+    private ?DiscoverToolsHandler $discovery;
+
+    public function __construct(
+        ToolRegistry $registry,
+        RestDispatcher $dispatcher,
+        McpAccessPolicy $policy,
+        ?DiscoverToolsHandler $discovery = null
+    ) {
         $this->registry = $registry;
         $this->dispatcher = $dispatcher;
         $this->policy = $policy;
+        $this->discovery = $discovery;
     }
 
     public function getMethodName(): string
@@ -53,40 +71,93 @@ class ToolsListHandler implements MethodHandlerInterface
 
     public function handle(Envelope $envelope)
     {
-        $tools = [];
+        $gate = new ToolPolicyGate($this->policy, $this->registry);
+
+        $visible = [];
         foreach ($this->registry->all() as $tool) {
-            // Administrator's switch first: a tool nobody enabled is not offered
-            // even to a user whose permissions would allow it.
-            if (!$this->policy->isToolEnabled($tool->getName())) {
-                continue;
-            }
-            // Read-only mode is a global circuit breaker: write tools are not
-            // offered at all, regardless of the caller's own permissions.
-            if ($tool->isWriteOperation() && $this->policy->isReadOnly()) {
+            if (!$gate->isAllowed($tool)) {
                 continue;
             }
             if (!$this->dispatcher->isVisibleTo($tool)) {
                 continue;
             }
-            $tools[] = [
-                'name' => $tool->getName(),
-                'description' => $tool->getDescription(),
-                'inputSchema' => $tool->getInputSchema(),
-                // MCP tool annotations. These are hints for the client, never a
-                // security boundary -- the server enforces the same facts itself
-                // in tools/call. A client uses them to decide what to surface
-                // for human confirmation.
-                'annotations' => [
-                    'readOnlyHint' => !$tool->isWriteOperation(),
-                    'destructiveHint' => $tool->isDestructive(),
-                    'idempotentHint' => !$tool->isWriteOperation(),
-                    'openWorldHint' => false,
-                ],
-            ];
+            $visible[] = $this->describe($tool);
         }
 
-        // The curated catalog is small enough to return in one page. Cursor
-        // pagination arrives with the generic router (Story 2.8).
-        return ['tools' => $tools];
+        $offset = $this->decodeCursor($envelope->getParams()['cursor'] ?? null);
+        $page = array_slice($visible, $offset, self::PAGE_SIZE);
+
+        // The discovery meta-tool leads the first page and is never paginated
+        // away, because it is how a model reaches anything on later pages. It
+        // is a protocol affordance rather than a REST endpoint, so it is not in
+        // the registry and needs no permission check of its own -- every result
+        // it returns is filtered by the same gate as this list.
+        if ($this->discovery !== null && $offset === 0) {
+            array_unshift($page, [
+                'name' => $this->discovery->getName(),
+                'description' => $this->discovery->getDescription(),
+                'inputSchema' => $this->discovery->getInputSchema(),
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                    'openWorldHint' => false,
+                ],
+            ]);
+        }
+
+        $result = ['tools' => $page];
+
+        $next = $offset + self::PAGE_SIZE;
+        if ($next < count($visible)) {
+            $result['nextCursor'] = $this->encodeCursor($next);
+        }
+
+        return $result;
+    }
+
+    private function describe(ToolInterface $tool): array
+    {
+        return [
+            'name' => $tool->getName(),
+            'description' => $tool->getDescription(),
+            'inputSchema' => $tool->getInputSchema(),
+            // MCP tool annotations. Hints for the client, never a security
+            // boundary -- the server enforces the same facts itself in
+            // tools/call. A client uses them to decide what to surface for
+            // human confirmation.
+            'annotations' => [
+                'readOnlyHint' => !$tool->isWriteOperation(),
+                'destructiveHint' => $tool->isDestructive(),
+                'idempotentHint' => !$tool->isWriteOperation(),
+                'openWorldHint' => false,
+            ],
+        ];
+    }
+
+    /**
+     * Cursors are opaque to the client by contract. Offset encoding is enough
+     * here because the catalog is stable for the life of a request.
+     */
+    private function encodeCursor(int $offset): string
+    {
+        return base64_encode('offset:' . $offset);
+    }
+
+    /**
+     * @param mixed $cursor
+     */
+    private function decodeCursor($cursor): int
+    {
+        if (!is_string($cursor) || $cursor === '') {
+            return 0;
+        }
+        $decoded = base64_decode($cursor, true);
+        if ($decoded === false || strpos($decoded, 'offset:') !== 0) {
+            // A malformed cursor restarts from the beginning rather than
+            // failing the call; the client gets a usable answer either way.
+            return 0;
+        }
+        return max(0, (int) substr($decoded, strlen('offset:')));
     }
 }

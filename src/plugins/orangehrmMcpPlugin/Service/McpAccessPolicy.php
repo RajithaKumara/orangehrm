@@ -53,6 +53,13 @@ class McpAccessPolicy
     public const KEY_ENABLED_TOOLS = 'mcp.access.enabled_tools';
     public const KEY_APPROVED_CLIENT_IDS = 'mcp.access.approved_client_ids';
 
+    /**
+     * Whole-surface switch for the generic OpenAPI router. Separate from the
+     * per-tool list because that list cannot sensibly hold hundreds of names --
+     * an admin screen with 250 checkboxes is not a control, it is a wall.
+     */
+    public const KEY_GENERIC_ROUTER_ENABLED = 'mcp.access.generic_router_enabled';
+
     public const MODE_READ_ONLY = 'read_only';
     public const MODE_READ_WRITE = 'read_write';
 
@@ -80,6 +87,24 @@ class McpAccessPolicy
      * enforced once at least one client has been approved; see isClientApproved().
      */
     public const DEFAULT_APPROVED_CLIENT_IDS = [];
+
+    /**
+     * Off by default. Turning it on exposes every readable REST endpoint the
+     * caller's own permissions already allow, so it is a deliberate act.
+     */
+    public function isGenericRouterEnabled(): bool
+    {
+        $raw = $this->getConfigService()->getConfigDao()->getValue(self::KEY_GENERIC_ROUTER_ENABLED);
+        if ($raw === null || $raw === '') {
+            return false;
+        }
+        return in_array(strtolower($raw), ['1', 'true', 'yes', 'on'], true);
+    }
+
+    public function setGenericRouterEnabled(bool $enabled): void
+    {
+        $this->setValue(self::KEY_GENERIC_ROUTER_ENABLED, $enabled ? '1' : '0');
+    }
 
     public function isEnabled(): bool
     {

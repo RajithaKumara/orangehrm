@@ -19,6 +19,8 @@
 
 namespace OrangeHRM\Mcp\Tool;
 
+use OrangeHRM\Mcp\Tool\Rest\GenericToolFactory;
+
 /**
  * In-memory catalog of curated tools. Populated from McpPluginConfiguration so
  * adding a tool is a DI registration, not an edit to the protocol code.
@@ -29,9 +31,16 @@ namespace OrangeHRM\Mcp\Tool;
 class ToolRegistry
 {
     /**
-     * @var ToolInterface[] keyed by tool name
+     * @var ToolInterface[] curated tools, keyed by tool name
      */
     private array $tools = [];
+
+    private ?GenericToolFactory $genericFactory = null;
+
+    /**
+     * @var ToolInterface[]|null merged view, built once per request
+     */
+    private ?array $merged = null;
 
     /**
      * @param ToolInterface[] $tools
@@ -46,23 +55,69 @@ class ToolRegistry
     public function add(ToolInterface $tool): void
     {
         $this->tools[$tool->getName()] = $tool;
+        $this->merged = null;
     }
 
     /**
+     * Attaches the generic OpenAPI-driven surface. Passing null detaches it,
+     * which is how the whole generic layer is switched off.
+     */
+    public function setGenericFactory(?GenericToolFactory $factory): void
+    {
+        $this->genericFactory = $factory;
+        $this->merged = null;
+    }
+
+    /**
+     * @return ToolInterface[] curated only, keyed by name
+     */
+    public function curated(): array
+    {
+        return $this->tools;
+    }
+
+    public function hasGenericSurface(): bool
+    {
+        return $this->genericFactory !== null;
+    }
+
+    /**
+     * Curated tools first, then generic ones. Curated names win on collision,
+     * so a curated intent can supersede the generic tool for the same endpoint
+     * without either layer knowing about the other.
+     *
      * @return ToolInterface[]
      */
     public function all(): array
     {
-        return array_values($this->tools);
+        return array_values($this->merged());
     }
 
     public function has(string $name): bool
     {
-        return isset($this->tools[$name]);
+        $merged = $this->merged();
+        return isset($merged[$name]);
     }
 
     public function get(string $name): ?ToolInterface
     {
-        return $this->tools[$name] ?? null;
+        $merged = $this->merged();
+        return $merged[$name] ?? null;
+    }
+
+    /**
+     * @return ToolInterface[] keyed by name
+     */
+    private function merged(): array
+    {
+        if ($this->merged !== null) {
+            return $this->merged;
+        }
+        if ($this->genericFactory === null) {
+            return $this->merged = $this->tools;
+        }
+
+        return $this->merged = $this->tools
+            + $this->genericFactory->readOnlyTools(array_keys($this->tools));
     }
 }

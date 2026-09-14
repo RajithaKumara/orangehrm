@@ -27,6 +27,7 @@ use OrangeHRM\Framework\Services;
 use OrangeHRM\Mcp\Audit\AuditWriter;
 use OrangeHRM\Mcp\Command\McpDoctorCommand;
 use OrangeHRM\Mcp\JsonRpc\Dispatcher;
+use OrangeHRM\Mcp\Method\DiscoverToolsHandler;
 use OrangeHRM\Mcp\Method\InitializeHandler;
 use OrangeHRM\Mcp\Method\PingHandler;
 use OrangeHRM\Mcp\Method\ToolsCallHandler;
@@ -41,7 +42,11 @@ use OrangeHRM\Mcp\Tool\Curated\CurrentEmployeeTool;
 use OrangeHRM\Mcp\Tool\Curated\ListEmployeesTool;
 use OrangeHRM\Mcp\Tool\Curated\ListJobTitlesTool;
 use OrangeHRM\Mcp\Tool\Curated\ListLeaveTypesTool;
+use OrangeHRM\Mcp\Tool\Rest\GenericToolFactory;
+use OrangeHRM\Mcp\Tool\Rest\OpenApiLoader;
+use OrangeHRM\Mcp\Tool\Rest\RouteMap;
 use OrangeHRM\Mcp\Tool\RestDispatcher;
+use OrangeHRM\Mcp\Tool\ToolPolicyGate;
 use OrangeHRM\Mcp\Tool\ToolRegistry;
 
 class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleConfigurationInterface
@@ -85,16 +90,31 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
 
         $restDispatcher = new RestDispatcher();
         $accessPolicy = new McpAccessPolicy();
+
+        // Generic OpenAPI-driven surface. Attached only when an administrator
+        // has switched it on, so the default catalog stays the curated set.
+        // The registry merges it behind the curated tools, which win on name.
+        if ($accessPolicy->isGenericRouterEnabled()) {
+            $registry->setGenericFactory(new GenericToolFactory(new RouteMap(), new OpenApiLoader()));
+        }
+
+        $discovery = new DiscoverToolsHandler(
+            $registry,
+            $restDispatcher,
+            new ToolPolicyGate($accessPolicy, $registry)
+        );
+
         $dispatcher = new Dispatcher([
             new InitializeHandler(),
             new PingHandler(),
-            new ToolsListHandler($registry, $restDispatcher, $accessPolicy),
+            new ToolsListHandler($registry, $restDispatcher, $accessPolicy, $discovery),
             new ToolsCallHandler(
                 $registry,
                 $restDispatcher,
                 new AuditWriter(),
                 $this->getContainer()->get(Services::MCP_SESSION_CONTEXT),
-                $accessPolicy
+                $accessPolicy,
+                $discovery
             ),
         ]);
         $this->getContainer()->set(Services::MCP_DISPATCHER, $dispatcher);

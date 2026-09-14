@@ -27,6 +27,7 @@ use OrangeHRM\Mcp\JsonRpc\ErrorCode;
 use OrangeHRM\Mcp\Service\McpAccessPolicy;
 use OrangeHRM\Mcp\Session\SessionContext;
 use OrangeHRM\Mcp\Tool\RestDispatcher;
+use OrangeHRM\Mcp\Tool\ToolPolicyGate;
 use OrangeHRM\Mcp\Tool\ToolRegistry;
 use Throwable;
 
@@ -52,18 +53,22 @@ class ToolsCallHandler implements MethodHandlerInterface
 
     private McpAccessPolicy $policy;
 
+    private ?DiscoverToolsHandler $discovery;
+
     public function __construct(
         ToolRegistry $registry,
         RestDispatcher $dispatcher,
         AuditWriter $auditWriter,
         SessionContext $sessionContext,
-        McpAccessPolicy $policy
+        McpAccessPolicy $policy,
+        ?DiscoverToolsHandler $discovery = null
     ) {
         $this->registry = $registry;
         $this->dispatcher = $dispatcher;
         $this->auditWriter = $auditWriter;
         $this->sessionContext = $sessionContext;
         $this->policy = $policy;
+        $this->discovery = $discovery;
     }
 
     public function getMethodName(): string
@@ -92,6 +97,12 @@ class ToolsCallHandler implements MethodHandlerInterface
             );
         }
 
+        // The discovery meta-tool is answered here rather than dispatched: it
+        // searches the catalog instead of calling a REST endpoint.
+        if ($this->discovery !== null && $name === $this->discovery->getName()) {
+            return $this->discovery->search($arguments);
+        }
+
         $tool = $this->registry->get($name);
         if ($tool === null) {
             throw new EnvelopeException(
@@ -101,23 +112,21 @@ class ToolsCallHandler implements MethodHandlerInterface
             );
         }
 
-        // Re-check the administrator's switch at dispatch. Filtering tools/list
-        // is a convenience; this is the control.
-        if (!$this->policy->isToolEnabled($tool->getName())) {
+        // Re-check the administrator's configuration at dispatch. Filtering
+        // tools/list is a convenience; this is the control. Covers read-only
+        // mode, the curated enable list and the generic-router switch.
+        $gate = new ToolPolicyGate($this->policy, $this->registry);
+        if (!$gate->isAllowed($tool)) {
+            $readOnlyBlock = $tool->isWriteOperation() && $this->policy->isReadOnly();
             throw new EnvelopeException(
-                ErrorCode::UNAUTHENTICATED,
-                sprintf('Tool `%s` is not enabled on this instance', $tool->getName()),
-                ['category' => ErrorCode::CATEGORY_AUTHORIZATION, 'tool' => $tool->getName()]
-            );
-        }
-
-        // Read-only mode, enforced at dispatch as well as in the catalog.
-        // Filtering tools/list is a convenience; this is the control.
-        if ($tool->isWriteOperation() && $this->policy->isReadOnly()) {
-            throw new EnvelopeException(
-                ErrorCode::READ_ONLY_MODE,
-                'This instance is in read-only mode; write tools are disabled',
-                ['category' => ErrorCode::CATEGORY_READ_ONLY, 'tool' => $tool->getName()]
+                $readOnlyBlock ? ErrorCode::READ_ONLY_MODE : ErrorCode::UNAUTHENTICATED,
+                $gate->refusalReason($tool),
+                [
+                    'category' => $readOnlyBlock
+                        ? ErrorCode::CATEGORY_READ_ONLY
+                        : ErrorCode::CATEGORY_AUTHORIZATION,
+                    'tool' => $tool->getName(),
+                ]
             );
         }
 
@@ -127,8 +136,7 @@ class ToolsCallHandler implements MethodHandlerInterface
         $thrown = null;
 
         try {
-            $queryParams = $tool->buildQueryParams($arguments);
-            $dispatched = $this->dispatcher->dispatchGet($tool, $queryParams);
+            $dispatched = $this->dispatcher->dispatchGet($tool, $arguments);
             $status = (string) $dispatched['status'];
             $result = $this->toToolResult($dispatched);
         } catch (EnvelopeException $e) {
