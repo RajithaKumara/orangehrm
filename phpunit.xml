@@ -84,6 +84,9 @@
     <testsuite name="OpenId">
       <directory>src/plugins/orangehrmOpenidAuthenticationPlugin/test</directory>
     </testsuite>
+    <testsuite name="WorkspaceNotifications">
+      <directory>src/plugins/orangehrmWorkspaceNotificationsPlugin/test</directory>
+    </testsuite>
     <testsuite name="Mcp">
       <directory>src/plugins/orangehrmMcpPlugin/test</directory>
     </testsuite>
