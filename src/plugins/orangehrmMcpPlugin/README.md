@@ -312,6 +312,49 @@ the shared OAuth plugin.
 Until then the setup guide must say plainly that any OrangeHRM OAuth token works
 on the MCP endpoint.
 
+### 4.15 Discovery chain is broken on the shared dev box — measured 2026-09-14
+
+**No MCP client can complete OAuth discovery against this instance today.** Not
+a code defect; a host-level routing collision. Traced hop by hop:
+
+| Hop | Result |
+|---|---|
+| 401 on `/api/mcp` names `resource_metadata` | full app path, resolves correctly |
+| that document's `authorization_servers[0]` | `https://php74` (host origin) |
+| client fetches `https://php74/.well-known/oauth-authorization-server` | **a stale static file for a different OrangeHRM instance**, advertising a dead ngrok issuer under `/MCP/orangehrm/` |
+
+The client is then sent to token and authorize endpoints that do not exist, and
+the flow dies before a token is issued.
+
+**Why the host origin at all.** RFC 8414 places authorization-server metadata at
+the *host root*, and MCP clients strip the path when building that URL — which is
+exactly why the POC put the issuer at the host origin (locked decision 9). That
+is correct behaviour. It only fails here because something else already owns
+`https://php74`'s well-known namespace.
+
+The offending file is `/home/administrator/Documents/OHRM/.well-known/oauth-authorization-server`,
+which is outside this project: `/var/www` is bind-mounted from the parent
+directory shared by every instance on the box.
+
+**Three ways out, none applied — architect chose to document only (2026-09-14):**
+
+1. *nginx route.* A `location ^~ /.well-known/oauth-` block fastcgi-passing to
+   this instance's `index.php`. Correct and dynamic: the controller already
+   honours `X-Forwarded-*`, so a tunnelled origin is advertised automatically.
+   Costs: the nginx config is baked into the container rather than bind-mounted,
+   so it is lost on rebuild, and it takes host-root discovery away from the other
+   instances.
+2. *Replace the static file.* One line, but hardcoded, so it goes stale the next
+   time a tunnel URL changes — which is precisely how the current stale file came
+   to exist.
+3. *Dedicated hostname.* A vhost whose document root is this instance, so its
+   host root is genuinely ours. Cleanest, touches nothing shared, most setup.
+
+**Implication for any real deployment.** One hostname serves one OrangeHRM
+instance's MCP endpoint. Two instances cannot share a hostname, because they
+cannot both own the host-root well-known paths. This belongs in the IT
+prerequisites guide (4.14) as a hard requirement, not a recommendation.
+
 ### 4.12 OAuth client registration model — decision D7 (new, 2026-09-14)
 
 **DECIDED: one OAuth client row per AI product, registered by hand by the IT

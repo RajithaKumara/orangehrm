@@ -133,6 +133,29 @@ curl -sk -i -X POST https://<host>/<subpath>/web/index.php/api/mcp \
 **Error -32099, insecure transport.** Not TLS and not localhost. Terminate TLS at
 the proxy and forward `X-Forwarded-Proto: https`.
 
+**The client authenticates against the wrong server, or the flow dies after the
+consent screen.** Check what actually owns the host root. A client follows three
+hops, and the third goes to the *host root*, not your app path:
+
+```bash
+# 1. the pointer your server hands out
+curl -sk -i -X POST https://<host>/<subpath>/web/index.php/api/mcp \
+  -H 'Content-Type: application/json' -d '{}' | grep -i www-authenticate
+
+# 2. that document names the authorization server
+curl -sk https://<host>/<subpath>/web/index.php/.well-known/oauth-protected-resource
+
+# 3. the client fetches THIS, at the host root
+curl -sk https://<host>/.well-known/oauth-authorization-server
+```
+
+If step 3 returns another application's document, or a 404, discovery cannot
+complete no matter how healthy the MCP endpoint is. RFC 8414 puts
+authorization-server metadata at the host root and clients strip the path when
+building that URL, so **one hostname serves one OrangeHRM instance's MCP
+endpoint**. Two instances cannot share a hostname. On a subpath install, route
+host-root `/.well-known/oauth-*` to the application.
+
 **Discovery 404.** Both documents must resolve:
 
 ```bash
