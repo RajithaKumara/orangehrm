@@ -20,6 +20,7 @@
 namespace OrangeHRM\Mcp\Tool\Rest;
 
 use OrangeHRM\Framework\RouteManager;
+use OrangeHRM\Mcp\Tool\RestrictedApis;
 
 /**
  * Every `/api/v2` operation the framework knows about, read from its own route
@@ -72,6 +73,13 @@ class RouteMap
             }
 
             foreach ($methods as $method) {
+                // Product-level exclusions (RestrictedApis) are applied here, so
+                // a restricted endpoint is never built into a tool at all rather
+                // than being built and then refused. Nothing downstream can
+                // re-admit it by mistake.
+                if (!RestrictedApis::isAllowed($apiClass, $method)) {
+                    continue;
+                }
                 $restRoute = new RestRoute($method, $path, $apiClass, $defaults);
                 $routes[$restRoute->getToolName()] = $restRoute;
             }

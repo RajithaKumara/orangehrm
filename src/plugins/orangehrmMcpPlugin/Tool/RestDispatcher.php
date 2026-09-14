@@ -83,6 +83,7 @@ class RestDispatcher
      */
     public function dispatchGet(ToolInterface $tool, array $arguments): array
     {
+        $this->assertNotRestricted($tool);
         $this->assertModuleEnabled($tool);
         $this->assertReadPermitted($tool);
 
@@ -177,6 +178,28 @@ class RestDispatcher
     }
 
     /**
+     * Product-level exclusion, checked again at dispatch.
+     *
+     * RouteMap already prevents restricted endpoints becoming generic tools, so
+     * this only fires if a *curated* tool is pointed at a restricted API class,
+     * or if the generic filter is ever bypassed. Cheap, and the failure mode it
+     * guards against is exposing credentials.
+     *
+     * @throws EnvelopeException
+     */
+    private function assertNotRestricted(ToolInterface $tool): void
+    {
+        if (RestrictedApis::isAllowed($tool->getApiClass(), 'GET')) {
+            return;
+        }
+        throw new EnvelopeException(
+            ErrorCode::UNAUTHENTICATED,
+            RestrictedApis::refusalReason($tool->getApiClass(), 'GET'),
+            ['category' => ErrorCode::CATEGORY_AUTHORIZATION, 'tool' => $tool->getName()]
+        );
+    }
+
+    /**
      * Replicates ModuleNotAvailableSubscriber for in-process calls.
      *
      * @throws EnvelopeException
@@ -224,6 +247,9 @@ class RestDispatcher
     public function isVisibleTo(ToolInterface $tool): bool
     {
         try {
+            if (!RestrictedApis::isAllowed($tool->getApiClass(), 'GET')) {
+                return false;
+            }
             if (!in_array($tool->getModule(), $this->enabledModules(), true)) {
                 return false;
             }
