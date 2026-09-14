@@ -175,17 +175,3 @@ verifiers must be 43 to 128 characters from `[A-Za-z0-9-._~]`.
 
 **Empty tool results.** Usually correct. A fresh install has no job titles or
 leave types. Check with `SELECT COUNT(*) FROM ohrm_job_title;`.
-
-## Manual end-to-end check
-
-`oauth-flow-example.sh`, next to this file, drives the whole flow headlessly with
-curl and prints a token. Useful when a client fails and you need to tell whether
-the problem is the server or the client.
-
-```bash
-OHRM_CLIENT_ID=<client_id> OHRM_PASSWORD=<password> ./oauth-flow-example.sh
-```
-
-Override `BASE`, `OHRM_USER` or `REDIRECT` if they differ from the defaults. The
-variables are `OHRM_`-prefixed on purpose: a bare `USERNAME` is usually already
-set in the shell and would silently override the intended login.
