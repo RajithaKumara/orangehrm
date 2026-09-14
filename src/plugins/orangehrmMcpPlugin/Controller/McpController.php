@@ -29,9 +29,11 @@ use OrangeHRM\Mcp\JsonRpc\EnvelopeException;
 use OrangeHRM\Mcp\JsonRpc\ErrorCode;
 use OrangeHRM\Mcp\Session\SessionContext;
 use OrangeHRM\Mcp\Traits\McpEnabledTrait;
+use OrangeHRM\Mcp\Traits\Service\McpAccessPolicyTrait;
 use OrangeHRM\Mcp\Traits\Service\McpDispatcherTrait;
 use OrangeHRM\Mcp\Traits\Service\McpOperatorLoggerTrait;
 use OrangeHRM\Mcp\Traits\Service\McpSessionContextTrait;
+use OrangeHRM\Mcp\Traits\Service\McpTokenClientResolverTrait;
 use Throwable;
 
 /**
@@ -52,6 +54,8 @@ class McpController extends AbstractController implements PublicControllerInterf
     use McpDispatcherTrait;
     use McpSessionContextTrait;
     use McpOperatorLoggerTrait;
+    use McpAccessPolicyTrait;
+    use McpTokenClientResolverTrait;
 
     public function handle(Request $request): Response
     {
@@ -68,6 +72,42 @@ class McpController extends AbstractController implements PublicControllerInterf
 
         if (!$this->getAuthUser()->isAuthenticated()) {
             return $this->unauthenticated($request, $correlationId);
+        }
+
+        // Organisation policy gate. Distinct from the per-call RBAC that
+        // RestDispatcher enforces: this answers whether this person should be
+        // reaching OrangeHRM through an AI assistant at all.
+        if (!$this->getMcpAccessPolicy()->isEnabled()) {
+            return $this->error(null, ErrorCode::MODULE_DISABLED, 'MCP access is disabled', [
+                'category' => ErrorCode::CATEGORY_AUTHORIZATION,
+                'correlation_id' => $correlationId,
+                'hint' => 'An administrator must enable MCP under Admin > Configuration > MCP Access.',
+            ]);
+        }
+
+        if (!$this->getMcpAccessPolicy()->mayConnect(
+            $this->getAuthUser()->getUserId(),
+            $this->getAuthUser()->getUserRoleId()
+        )) {
+            return $this->error(null, ErrorCode::UNAUTHENTICATED, 'Your account is not permitted to use MCP', [
+                'category' => ErrorCode::CATEGORY_AUTHORIZATION,
+                'correlation_id' => $correlationId,
+                'hint' => 'Ask an administrator to allow your role, or you specifically, under MCP Access.',
+            ]);
+        }
+
+        // Token audience (README 4.13): a token minted for another OrangeHRM
+        // application must not be replayable against the AI surface.
+        if ($this->getMcpAccessPolicy()->isClientApprovalEnforced()) {
+            $clientId = $this->getMcpTokenClientResolver()->resolveClientId($request);
+            if (!$this->getMcpAccessPolicy()->isClientApproved($clientId)) {
+                return $this->error(null, ErrorCode::UNAUTHENTICATED, 'This application is not approved for MCP', [
+                    'category' => ErrorCode::CATEGORY_AUTHORIZATION,
+                    'correlation_id' => $correlationId,
+                    'hint' => 'An administrator must approve this OAuth client under MCP Access.',
+                ]);
+            }
+            $this->getMcpSessionContext()->setClientId($clientId);
         }
 
         if (!$this->isTransportSecure($request)) {

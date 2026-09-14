@@ -31,8 +31,10 @@ use OrangeHRM\Mcp\Method\InitializeHandler;
 use OrangeHRM\Mcp\Method\PingHandler;
 use OrangeHRM\Mcp\Method\ToolsCallHandler;
 use OrangeHRM\Mcp\Method\ToolsListHandler;
+use OrangeHRM\Mcp\Service\McpAccessPolicy;
 use OrangeHRM\Mcp\Service\McpConfigurationService;
 use OrangeHRM\Mcp\Service\McpOperatorLogger;
+use OrangeHRM\Mcp\Service\TokenClientResolver;
 use OrangeHRM\Mcp\Session\SessionContext;
 use OrangeHRM\Mcp\Subscriber\McpModuleStatusChangeSubscriber;
 use OrangeHRM\Mcp\Tool\Curated\CurrentEmployeeTool;
@@ -67,6 +69,8 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
         $this->getContainer()->register(Services::MCP_SESSION_CONTEXT, SessionContext::class);
 
         $this->getContainer()->register(Services::MCP_REST_DISPATCHER, RestDispatcher::class);
+        $this->getContainer()->register(Services::MCP_ACCESS_POLICY, McpAccessPolicy::class);
+        $this->getContainer()->register(Services::MCP_TOKEN_CLIENT_RESOLVER, TokenClientResolver::class);
         $this->getContainer()->register(Services::MCP_AUDIT_WRITER, AuditWriter::class);
 
         // Curated read-only tool catalog. Adding a tool is a registration here,
@@ -80,15 +84,17 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
         $this->getContainer()->set(Services::MCP_TOOL_REGISTRY, $registry);
 
         $restDispatcher = new RestDispatcher();
+        $accessPolicy = new McpAccessPolicy();
         $dispatcher = new Dispatcher([
             new InitializeHandler(),
             new PingHandler(),
-            new ToolsListHandler($registry, $restDispatcher),
+            new ToolsListHandler($registry, $restDispatcher, $accessPolicy),
             new ToolsCallHandler(
                 $registry,
                 $restDispatcher,
                 new AuditWriter(),
-                $this->getContainer()->get(Services::MCP_SESSION_CONTEXT)
+                $this->getContainer()->get(Services::MCP_SESSION_CONTEXT),
+                $accessPolicy
             ),
         ]);
         $this->getContainer()->set(Services::MCP_DISPATCHER, $dispatcher);

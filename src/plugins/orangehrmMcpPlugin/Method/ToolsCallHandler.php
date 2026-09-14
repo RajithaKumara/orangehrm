@@ -24,6 +24,7 @@ use OrangeHRM\Mcp\Audit\AuditWriter;
 use OrangeHRM\Mcp\JsonRpc\Envelope;
 use OrangeHRM\Mcp\JsonRpc\EnvelopeException;
 use OrangeHRM\Mcp\JsonRpc\ErrorCode;
+use OrangeHRM\Mcp\Service\McpAccessPolicy;
 use OrangeHRM\Mcp\Session\SessionContext;
 use OrangeHRM\Mcp\Tool\RestDispatcher;
 use OrangeHRM\Mcp\Tool\ToolRegistry;
@@ -49,16 +50,20 @@ class ToolsCallHandler implements MethodHandlerInterface
 
     private SessionContext $sessionContext;
 
+    private McpAccessPolicy $policy;
+
     public function __construct(
         ToolRegistry $registry,
         RestDispatcher $dispatcher,
         AuditWriter $auditWriter,
-        SessionContext $sessionContext
+        SessionContext $sessionContext,
+        McpAccessPolicy $policy
     ) {
         $this->registry = $registry;
         $this->dispatcher = $dispatcher;
         $this->auditWriter = $auditWriter;
         $this->sessionContext = $sessionContext;
+        $this->policy = $policy;
     }
 
     public function getMethodName(): string
@@ -93,6 +98,16 @@ class ToolsCallHandler implements MethodHandlerInterface
                 ErrorCode::METHOD_NOT_FOUND,
                 sprintf('Unknown tool `%s`', $name),
                 ['category' => ErrorCode::CATEGORY_NOT_FOUND, 'tool' => $name]
+            );
+        }
+
+        // Re-check the administrator's switch at dispatch. Filtering tools/list
+        // is a convenience; this is the control.
+        if (!$this->policy->isToolEnabled($tool->getName())) {
+            throw new EnvelopeException(
+                ErrorCode::UNAUTHENTICATED,
+                sprintf('Tool `%s` is not enabled on this instance', $tool->getName()),
+                ['category' => ErrorCode::CATEGORY_AUTHORIZATION, 'tool' => $tool->getName()]
             );
         }
 

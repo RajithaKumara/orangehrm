@@ -270,6 +270,16 @@ final class Services
     public const MCP_AUDIT_WRITER = 'mcp.audit_writer';
 
     /**
+     * @see \OrangeHRM\Mcp\Service\McpAccessPolicy
+     */
+    public const MCP_ACCESS_POLICY = 'mcp.access_policy';
+
+    /**
+     * @see \OrangeHRM\Mcp\Service\TokenClientResolver
+     */
+    public const MCP_TOKEN_CLIENT_RESOLVER = 'mcp.token_client_resolver';
+
+    /**
      * @see \OrangeHRM\Leave\Service\LeaveTypeService
      */
     public const LEAVE_TYPE_SERVICE = 'leave.leave_type_service';

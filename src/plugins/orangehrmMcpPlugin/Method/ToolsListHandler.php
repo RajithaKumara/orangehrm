@@ -20,6 +20,7 @@
 namespace OrangeHRM\Mcp\Method;
 
 use OrangeHRM\Mcp\JsonRpc\Envelope;
+use OrangeHRM\Mcp\Service\McpAccessPolicy;
 use OrangeHRM\Mcp\Tool\RestDispatcher;
 use OrangeHRM\Mcp\Tool\ToolRegistry;
 
@@ -36,10 +37,13 @@ class ToolsListHandler implements MethodHandlerInterface
 
     private RestDispatcher $dispatcher;
 
-    public function __construct(ToolRegistry $registry, RestDispatcher $dispatcher)
+    private McpAccessPolicy $policy;
+
+    public function __construct(ToolRegistry $registry, RestDispatcher $dispatcher, McpAccessPolicy $policy)
     {
         $this->registry = $registry;
         $this->dispatcher = $dispatcher;
+        $this->policy = $policy;
     }
 
     public function getMethodName(): string
@@ -51,6 +55,11 @@ class ToolsListHandler implements MethodHandlerInterface
     {
         $tools = [];
         foreach ($this->registry->all() as $tool) {
+            // Administrator's switch first: a tool nobody enabled is not offered
+            // even to a user whose permissions would allow it.
+            if (!$this->policy->isToolEnabled($tool->getName())) {
+                continue;
+            }
             if (!$this->dispatcher->isVisibleTo($tool)) {
                 continue;
             }
