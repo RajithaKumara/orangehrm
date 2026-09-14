@@ -17,7 +17,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace OrangeHRM\Installer\Migration\V5_9_0;
+namespace OrangeHRM\Installer\Migration\V5_10_0;
 
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Types\Types;
@@ -82,6 +82,6 @@ class Migration extends AbstractMigration
      */
     public function getVersion(): string
     {
-        return '5.9.0';
+        return '5.10.0';
     }
 }
