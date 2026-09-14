@@ -46,6 +46,30 @@
           />
         </oxd-form-row>
 
+        <!-- Global circuit breaker over write tools. OXD radios are one input
+             per option carrying :option-label and :value, not an options array. -->
+        <oxd-form-row>
+          <oxd-input-group label="Access mode">
+            <oxd-input-field
+              v-model="config.mode"
+              type="radio"
+              option-label="Read only"
+              value="read_only"
+            />
+            <oxd-input-field
+              v-model="config.mode"
+              type="radio"
+              option-label="Read and write"
+              value="read_write"
+            />
+          </oxd-input-group>
+          <oxd-text tag="p" class="orangehrm-tool-hint">
+            Read only refuses every tool that changes data, whatever the user's
+            own permissions allow. No write tools exist yet, so this setting has
+            no effect today; it takes effect as soon as any are added.
+          </oxd-text>
+        </oxd-form-row>
+
         <!-- The endpoint an admin hands to the AI client -->
         <oxd-form-row>
           <oxd-input-field
@@ -155,6 +179,7 @@ export default {
       isLoading: false,
       config: {
         enabled: false,
+        mode: 'read_only',
         userOverrides: [],
       },
       availableRoles: [],
@@ -178,6 +203,7 @@ export default {
         .then(({data}) => {
           const d = data.data;
           this.config.enabled = d.enabled;
+          this.config.mode = d.mode;
           this.config.userOverrides = d.userOverrides || [];
           this.availableRoles = d.availableRoles || [];
           this.availableTools = d.availableTools || [];
@@ -204,11 +230,12 @@ export default {
         .request({
           method: 'PUT',
           url: 'api/v2/admin/mcp/access-config',
-          // `mode` and `approvedClientIds` are deliberately omitted: this page
-          // no longer renders them, and the API preserves any setting it is not
-          // sent rather than clearing it.
+          // `approvedClientIds` is deliberately omitted: OAuth clients are
+          // managed on the OAuth screen, and the API preserves any setting it
+          // is not sent rather than clearing it.
           data: {
             enabled: this.config.enabled,
+            mode: this.config.mode,
             allowedRoleIds: Object.keys(this.selectedRoles)
               .filter((id) => this.selectedRoles[id])
               .map((id) => parseInt(id, 10)),

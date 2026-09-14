@@ -76,6 +76,16 @@ class ListEmployeesTool implements ToolInterface
         return 'pim';
     }
 
+    public function isWriteOperation(): bool
+    {
+        return false;
+    }
+
+    public function isDestructive(): bool
+    {
+        return false;
+    }
+
     public function getRouteAttributes(): array
     {
         return ['_key' => 'empNumber'];

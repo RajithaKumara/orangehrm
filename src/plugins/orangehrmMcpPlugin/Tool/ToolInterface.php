@@ -62,6 +62,27 @@ interface ToolInterface
     public function getModule(): string;
 
     /**
+     * Whether invoking this tool changes data.
+     *
+     * Drives two things: the `readOnlyHint` annotation published in tools/list,
+     * which is how the MCP specification lets a client tell a safe tool from a
+     * mutating one; and the server-side read-only mode, which refuses write
+     * tools outright regardless of what the caller's RBAC would allow.
+     *
+     * Every tool in the prototype returns false. The first write tool must both
+     * return true here and pass through the write-discipline interceptor.
+     */
+    public function isWriteOperation(): bool;
+
+    /**
+     * Whether invoking this tool can destroy or irreversibly change data.
+     *
+     * Published as `destructiveHint`. Only meaningful when isWriteOperation()
+     * is true.
+     */
+    public function isDestructive(): bool;
+
+    /**
      * Request attributes the real route would have supplied via its `defaults`
      * block, minus `_api`.
      *

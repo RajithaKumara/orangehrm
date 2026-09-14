@@ -174,6 +174,22 @@ class McpAccessPolicyTest extends KernelTestCase
         $this->assertFalse($policy->mayConnect(1, 1), 'a corrupt config must fail closed');
     }
 
+    /**
+     * Read-only mode is the circuit breaker described in the PRD: it must refuse
+     * writes regardless of the caller's own permissions, so it is checked
+     * independently of RBAC.
+     */
+    public function testReadOnlyIsTheDefaultAndReadWriteIsOptIn(): void
+    {
+        $this->assertTrue($this->policyWith([])->isReadOnly());
+        $this->assertTrue(
+            $this->policyWith([McpAccessPolicy::KEY_MODE => 'read_only'])->isReadOnly()
+        );
+        $this->assertFalse(
+            $this->policyWith([McpAccessPolicy::KEY_MODE => McpAccessPolicy::MODE_READ_WRITE])->isReadOnly()
+        );
+    }
+
     public function testNullUserIdCannotConnect(): void
     {
         $policy = $this->policyWith([

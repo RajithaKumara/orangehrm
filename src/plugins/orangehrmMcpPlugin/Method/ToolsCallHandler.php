@@ -111,6 +111,16 @@ class ToolsCallHandler implements MethodHandlerInterface
             );
         }
 
+        // Read-only mode, enforced at dispatch as well as in the catalog.
+        // Filtering tools/list is a convenience; this is the control.
+        if ($tool->isWriteOperation() && $this->policy->isReadOnly()) {
+            throw new EnvelopeException(
+                ErrorCode::READ_ONLY_MODE,
+                'This instance is in read-only mode; write tools are disabled',
+                ['category' => ErrorCode::CATEGORY_READ_ONLY, 'tool' => $tool->getName()]
+            );
+        }
+
         $startedAt = microtime(true);
         $status = 'error';
         $result = null;

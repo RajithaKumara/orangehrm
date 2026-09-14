@@ -71,6 +71,16 @@ class ListJobTitlesTool implements ToolInterface
         return 'admin';
     }
 
+    public function isWriteOperation(): bool
+    {
+        return false;
+    }
+
+    public function isDestructive(): bool
+    {
+        return false;
+    }
+
     public function getRouteAttributes(): array
     {
         return [];

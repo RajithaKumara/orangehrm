@@ -65,6 +65,16 @@ class CurrentEmployeeTool implements ToolInterface
         return 'pim';
     }
 
+    public function isWriteOperation(): bool
+    {
+        return false;
+    }
+
+    public function isDestructive(): bool
+    {
+        return false;
+    }
+
     public function getRouteAttributes(): array
     {
         // MyInfoAPI is a ResourceEndpoint with no id in its path; its route

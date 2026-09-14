@@ -60,6 +60,11 @@ class ToolsListHandler implements MethodHandlerInterface
             if (!$this->policy->isToolEnabled($tool->getName())) {
                 continue;
             }
+            // Read-only mode is a global circuit breaker: write tools are not
+            // offered at all, regardless of the caller's own permissions.
+            if ($tool->isWriteOperation() && $this->policy->isReadOnly()) {
+                continue;
+            }
             if (!$this->dispatcher->isVisibleTo($tool)) {
                 continue;
             }
@@ -67,6 +72,16 @@ class ToolsListHandler implements MethodHandlerInterface
                 'name' => $tool->getName(),
                 'description' => $tool->getDescription(),
                 'inputSchema' => $tool->getInputSchema(),
+                // MCP tool annotations. These are hints for the client, never a
+                // security boundary -- the server enforces the same facts itself
+                // in tools/call. A client uses them to decide what to surface
+                // for human confirmation.
+                'annotations' => [
+                    'readOnlyHint' => !$tool->isWriteOperation(),
+                    'destructiveHint' => $tool->isDestructive(),
+                    'idempotentHint' => !$tool->isWriteOperation(),
+                    'openWorldHint' => false,
+                ],
             ];
         }
 
