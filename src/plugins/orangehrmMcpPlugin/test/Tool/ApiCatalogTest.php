@@ -21,6 +21,7 @@ namespace OrangeHRM\Tests\Mcp\Tool;
 
 use OrangeHRM\Mcp\Tool\ApiCatalog;
 use OrangeHRM\Mcp\Tool\ApiSensitivity;
+use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
 use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Tests\Util\KernelTestCase;
 
@@ -30,10 +31,30 @@ use OrangeHRM\Tests\Util\KernelTestCase;
  */
 class ApiCatalogTest extends KernelTestCase
 {
-    public function testEveryRouteLandsInExactlyOneModuleGroup(): void
+    /**
+     * The shipped catalog, as the permission service would return it.
+     *
+     * @return array<string,array<string,mixed>>
+     */
+    private function shippedMap(): array
+    {
+        $map = [];
+        foreach (ApiPermissionDefaults::rows() as $apiClass => $row) {
+            $map[$apiClass] = [
+                ApiVerb::READ => $row['read'],
+                ApiVerb::CREATE => $row['create'],
+                ApiVerb::UPDATE => $row['update'],
+                ApiVerb::DELETE => $row['delete'],
+                'sensitivity' => $row['sensitivity'],
+            ];
+        }
+        return $map;
+    }
+
+    public function testEveryShippedClassLandsInExactlyOneModuleGroup(): void
     {
         $catalog = new ApiCatalog();
-        $groups = $catalog->getGroupedByModule([]);
+        $groups = $catalog->getGroupedByModule($this->shippedMap());
 
         $seen = [];
         foreach ($groups as $group) {
@@ -49,7 +70,33 @@ class ApiCatalogTest extends KernelTestCase
             }
         }
 
-        $this->assertCount(count($catalog->getClasses()), $seen);
+        $this->assertCount(count(ApiPermissionDefaults::ALL), $seen);
+    }
+
+    /**
+     * The table is the catalog. A routable class with no row is not a row the
+     * administrator can see, and a row for a class this build no longer serves
+     * is not one either.
+     */
+    public function testOnlyClassesWithARowAreShown(): void
+    {
+        $catalog = new ApiCatalog();
+        $apiClass = 'OrangeHRM\\Admin\\Api\\LocationAPI';
+
+        $this->assertSame([], $catalog->getGroupedByModule([]), 'no rows means nothing to show');
+
+        $groups = $catalog->getGroupedByModule([
+            $apiClass => [ApiVerb::READ => true, 'sensitivity' => ApiSensitivity::NORMAL],
+            'OrangeHRM\\Not\\A\\RealAPI' => [ApiVerb::READ => true, 'sensitivity' => ApiSensitivity::NORMAL],
+        ]);
+
+        $shown = [];
+        foreach ($groups as $group) {
+            foreach ($group['apis'] as $api) {
+                $shown[] = $api['apiName'];
+            }
+        }
+        $this->assertSame([$apiClass], $shown, 'a row without a route has nothing to enable');
     }
 
     /**
@@ -58,13 +105,15 @@ class ApiCatalogTest extends KernelTestCase
      */
     public function testRowsOnlyOfferVerbsThatExist(): void
     {
-        foreach ((new ApiCatalog())->getGroupedByModule([]) as $group) {
+        foreach ((new ApiCatalog())->getGroupedByModule($this->shippedMap()) as $group) {
             foreach ($group['apis'] as $api) {
                 $this->assertNotEmpty($api['verbs'], sprintf('`%s` offers no verbs', $api['apiName']));
                 foreach ($api['verbs'] as $verb) {
                     $this->assertContains($verb['verb'], ApiVerb::all());
                     $this->assertGreaterThan(0, $verb['tools']);
-                    $this->assertFalse($verb['enabled'], 'an empty permission map enables nothing');
+                    if (ApiVerb::isWrite($verb['verb'])) {
+                        $this->assertFalse($verb['enabled'], 'no write ships enabled');
+                    }
                 }
             }
         }
@@ -113,19 +162,39 @@ class ApiCatalogTest extends KernelTestCase
     public function testCountsAreToolCountsNotClassCounts(): void
     {
         $catalog = new ApiCatalog();
-        $counts = $catalog->getCounts([]);
+        $counts = $catalog->getCounts($this->shippedMap());
 
         $available = 0;
-        foreach ($counts['tools'] as $verb => $pair) {
-            $this->assertSame(0, $pair['enabled'], 'nothing is enabled by an empty map');
+        foreach ($counts['tools'] as $pair) {
             $available += $pair['available'];
         }
 
+        $this->assertSame(count(ApiPermissionDefaults::ALL), $counts['classes']);
         $this->assertGreaterThan(
             $counts['classes'],
             $available,
             'there are more operations than API classes; a class exposes several'
         );
+        $this->assertSame(
+            0,
+            $counts['tools'][ApiVerb::DELETE]['enabled'],
+            'no delete ships enabled'
+        );
+    }
+
+    /**
+     * Counts describe the catalog the administrator is looking at, so a class
+     * with no row contributes to neither side of "66 of 463".
+     */
+    public function testCountsIgnoreClassesWithNoRow(): void
+    {
+        $counts = (new ApiCatalog())->getCounts([]);
+
+        $this->assertSame(0, $counts['classes']);
+        foreach ($counts['tools'] as $pair) {
+            $this->assertSame(0, $pair['available']);
+            $this->assertSame(0, $pair['enabled']);
+        }
     }
 
     public function testRiskIsCarriedByTheVerb(): void

@@ -46,7 +46,9 @@ A tool must also replay its route's `defaults` block. `GenericRestController` ch
 
 ## Areas an assistant may never reach
 
-`Tool/RestrictedApis.php` lists API classes excluded from MCP entirely, and classes that are readable but never writable. This is a product decision rather than a permission check: an administrator holds every grant these endpoints need, so nothing else in the system would stop them.
+`Tool/RestrictedApis.php` is the **only** code-level block, and it is for harm: API classes excluded from MCP entirely, plus classes that are readable but never writable. This is a product decision rather than a permission check — an administrator holds every grant these endpoints need, so nothing else in the system would stop them.
+
+Everything else is data, not code. An endpoint that is merely *unhelpful* — a validation oracle, menu scaffolding, a version endpoint — simply ships without a row in `ohrm_mcp_api_permission` (`ApiPermissionDefaults::NOT_SEEDED` lists them, with reasons). It is refused because no row grants it, and a customer who genuinely needs one can insert a row and use it. Do not add a class to `RestrictedApis` because it looks useless; that list decides for every customer forever and should stay the list of things that can hurt someone.
 
 The list is keyed on the **API class**, not on a route or tool name. A new endpoint added to an already-restricted class is excluded automatically. Read that file for the current list and the reasoning per area; treat adding a new entry as a decision worth discussing, not a formality.
 
@@ -95,7 +97,7 @@ Decide two things:
 - Should it be reachable at all? If it touches credentials, authentication config, or irreversible destruction, add its API class to `RestrictedApis`.
 - Does it deserve a curated tool? Only if an assistant will be asked for it by name and the generated description would not be enough.
 
-If the endpoint introduces a **new** API class, add it to `ApiPermissionDefaults::ALL` and seed a row in a migration, or it is silently unreachable — the drift test will tell you. Classify its sensitivity in `ApiSensitivity` at the same time.
+If the endpoint introduces a **new** API class, add it to `ApiPermissionDefaults::ALL` and seed a row in a migration, or it is silently unreachable — the drift test will tell you. Classify its sensitivity in `ApiSensitivity` at the same time. If it is a validation oracle or UI scaffolding, put it in `NOT_SEEDED` instead — the tests require every routable class to be in one list or the other.
 
 Regenerate the OpenAPI document so the generic tool gets a description and parameter schema — see `rest-openapi`.
 

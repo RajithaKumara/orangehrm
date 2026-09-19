@@ -58,11 +58,11 @@ with 28 skills, bridged into `.claude/skills/` by `.agents/SETUP.md`. That bridg
 | Area | Files | Notes |
 |---|---|---|
 | Protocol | `JsonRpc/`, `Method/{Initialize,Ping,ToolsList,ToolsCall}Handler.php` | protocol version `2025-06-18`, cursor pagination at 50 tools a page, tool annotations published |
-| Generic router | `Tool/Rest/{RouteMap,RestRoute,GenericTool,GenericToolFactory,OpenApiLoader}.php` | one tool per REST operation, **490 operations** across **190 API classes**, names derived from method + path |
+| Generic router | `Tool/Rest/{RouteMap,RestRoute,GenericTool,GenericToolFactory,OpenApiLoader}.php` | one tool per REST operation, **463 operations** across **170 API classes**, names derived from method + path |
 | Discovery meta-tool | `Method/DiscoverToolsHandler.php` | ranked keyword search over the catalog, filtered by the same gate as `tools/list` |
-| Product exclusions | `Tool/RestrictedApis.php` | credential, authentication, purge and password areas excluded in code; user writes excluded, user reads kept (4.17) |
+| Product exclusions | `Tool/RestrictedApis.php` | the one code-level block, for security: credential, authentication, purge and password areas, plus user writes. Everything else is decided by rows in the permission table (4.18) |
 | Access policy | `Service/McpAccessPolicy.php`, `Api/McpAccessConfigAPI.php`, `pages/mcpAccess/McpAccess.vue` | who may connect, and the four verb switches |
-| Per-API permissions | `ohrm_mcp_api_permission`, `Tool/{ApiPermissionDefaults,ApiSensitivity,ApiVerb,ApiCatalog}.php`, `Dao/McpApiPermissionDao.php` | the grid: which verbs MCP may use against each API class (4.17) |
+| Per-API permissions | `ohrm_mcp_api_permission`, `Tool/{ApiPermissionDefaults,ApiSensitivity,ApiVerb,ApiCatalog}.php`, `Dao/McpApiPermissionDao.php` | the grid: which verbs MCP may use against each API class. 170 rows shipped of 190 routable classes (4.17, 4.18) |
 
 **Not started:** write discipline with propose/confirm (Epic 3), resources and
 prompts (Epic 5), rate limiting and the daily cap (the config keys exist, nothing
@@ -531,7 +531,7 @@ work becomes irrelevant for that product.
 
 Replaces the per-tool-name enable list (`mcp.access.enabled_tools`) that shipped in
 `24684bea4`. That list worked while the default set was 53 names and fell apart at
-490: an administrator cannot review a screen of 490 checkboxes, and a name-keyed
+490: an administrator cannot review a screen of hundreds of checkboxes, and a name-keyed
 list silently orphans an entry whenever a route is renamed.
 
 **The model.** Four things must agree before a tool is offered, and each narrows:
@@ -554,7 +554,7 @@ ohrm_mcp_api_permission
   id | api_name (unique) | can_read | can_create | can_update | can_delete | sensitivity
 ```
 
-190 rows, seeded by the V5_10_0 migration from `Tool/ApiPermissionDefaults::ALL`.
+170 rows, seeded by the V5_10_0 migration from `Tool/ApiPermissionDefaults::ALL`.
 A class is the unit OrangeHRM already authorises against, it survives a route
 rename, and a new endpoint added to an existing family inherits the decision
 already made about that family instead of appearing unreviewed.
@@ -580,7 +580,7 @@ read tools, zero writes.** Every write is available and one checkbox away.
 **Two axes of warning, kept separate.** Verb risk is about what a call *does*
 (delete red, create/update amber, read neutral) and is derived from the verb alone.
 Data sensitivity is about what a call *touches* and applies even to a read:
-`normal` (148 classes), `elevated` (25: identifiable personal data), `high` (17:
+`normal` (129 classes), `elevated` (24: identifiable personal data), `high` (17:
 compensation, tax, immigration, termination, contracts, evaluations, uploaded
 attachments, PIM report data, user accounts). Collapsing them would get the
 important case backwards — reading a salary matters more than updating a job title,
@@ -601,6 +601,57 @@ asked `canRead()`. Enabling a write tool would have performed a read and reporte
 success. `RestDispatcher::dispatch()` now sends the tool's own method, puts
 parameters in the query for reads and the body for writes, and checks the matching
 grant (`canCreate`/`canUpdate`/`canDelete`). `RestDispatcherTest` covers all four.
+
+### 4.18 The table is the catalog — twenty classes ship no row (2026-09-15)
+
+Rajitha's call, and it settles how exclusion works in general:
+
+> *"if the client wants, it's okay to let them add to ohrm_mcp_api_permission
+> table and use it. but we have to keep the RestrictedApis, because it has
+> security issues."*
+
+So there is exactly **one** code-level block, `RestrictedApis`, and it is for
+harm. Everything else is a question of what the product hands an administrator
+to start from, and that is data: a row in `ohrm_mcp_api_permission`.
+
+An earlier attempt at this (`Tool/InternalApis.php`) blocked twenty endpoints in
+code. It was wrong, and deleted the same day. Blocking in code decides for every
+customer forever on a judgement that is only usually right — a shop that really
+wants `Version` or a validation endpoint had no way to get it and no way to ask.
+
+**How it works now:**
+
+- `ApiPermissionDefaults::ALL` — 170 classes we ship a row for.
+- `ApiPermissionDefaults::NOT_SEEDED` — 20 routable classes we deliberately do
+  not: validation oracles, UI scaffolding (menus, quick launch, data groups,
+  theme preview, I18N groups, timesheet time format, on-leave-today config),
+  environment metadata (`Version`, `CurrentDateTime`), file plumbing
+  (`EmployeeCSVImport`) and one single-dropdown config.
+- `RouteMap` still builds tools for all 190 routable classes. The gate refuses
+  them because there is no row, not because code says no.
+- `ApiCatalog` renders the **join** of routes and rows, so a class with no row is
+  not on the screen, and inserting a row by hand brings it back automatically,
+  with no code change and no release.
+- The migration never deletes rows, so a hand-added one survives an upgrade.
+
+The reason to leave them out of the shipped set is attention, not safety: 27
+fewer tools in front of every model, and 20 fewer rows an administrator has to
+form an opinion about. Tool-selection accuracy falls as the catalog grows.
+
+`ApiPermissionDefaultsTest` asserts ALL and NOT_SEEDED partition the routable
+surface exactly, so an endpoint family added by a future release cannot go
+unseeded — and therefore unreachable — without a failing test.
+
+Catalog after this: **170 shipped classes, 463 operations** (220 GET, 75 POST,
+101 PUT, 67 DELETE) out of 190 routable, in 12 module groups. Default-on is
+unchanged at 43 classes and 66 read tools.
+
+**Close siblings deliberately left in the shipped set**, for a later decision
+rather than assumed: `Admin\Api\ValidationUserNameAPI`,
+`Buzz\Api\BuzzVideoURLValidationAPI`,
+`Leave\Api\ValidationLeaveEntitlementValueAPI`,
+`SystemCheck\PublicApi\SystemCheckAPI`, and the `…Allowed…` helpers in PIM,
+Recruitment, Performance and Admin.
 
 ## 5. Development plan
 

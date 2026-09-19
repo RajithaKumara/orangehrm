@@ -25,10 +25,11 @@ use OrangeHRM\Mcp\Tool\Rest\RouteMap;
  * The MCP surface as an administrator needs to see it: grouped by module, one
  * row per API class, with the verbs that class actually exposes.
  *
- * Built from the live route collection rather than from the seeded table, so the
- * screen shows what this build can do rather than what some earlier build could.
- * A class in the table but no longer in routes is dropped from the view; a class
- * in routes with no row shows as all-off, which is exactly how it behaves.
+ * The join of two sources, and it needs both. The route collection says what
+ * this build can serve and under which verbs -- the table cannot know that, and
+ * a stale row would otherwise offer a checkbox for an endpoint that no longer
+ * exists. The permission table says which of those the product put in front of
+ * this administrator. A class missing from either side is not shown.
  *
  * Rows carry the verbs that *exist*, not just the ones that are enabled --
  * otherwise an administrator could never turn anything on -- and a verb the
@@ -61,7 +62,7 @@ class ApiCatalog
 
     /**
      * Modules an assistant is most often asked about, first. The rest follow
-     * alphabetically. Ordering is presentation, but with 14 groups it decides
+     * alphabetically. Ordering is presentation, but with a dozen groups it decides
      * whether the screen opens on something recognisable or on Buzz.
      */
     private const MODULE_ORDER = [
@@ -129,6 +130,14 @@ class ApiCatalog
     /**
      * The screen's view model: modules in reading order, each holding its rows.
      *
+     * Only classes with a row are shown. The table is the catalog: shipping no
+     * row for an endpoint keeps it out of an administrator's way, and inserting
+     * one -- which a customer with a specific need can do -- brings it back
+     * here automatically, with no code change.
+     *
+     * A class with a row but no route is skipped in the other direction: the
+     * build no longer serves it, so there is nothing to enable.
+     *
      * @param array<string,array<string,mixed>> $permissionMap from McpApiPermissionService
      * @return array<int,array<string,mixed>>
      */
@@ -137,7 +146,10 @@ class ApiCatalog
         $groups = [];
 
         foreach ($this->getClasses() as $apiClass => $entry) {
-            $row = $permissionMap[$apiClass] ?? null;
+            if (!isset($permissionMap[$apiClass])) {
+                continue;
+            }
+            $row = $permissionMap[$apiClass];
 
             $verbs = [];
             foreach (ApiVerb::all() as $verb) {
@@ -190,7 +202,7 @@ class ApiCatalog
 
     /**
      * How many tools each verb would contribute if every class were enabled,
-     * against how many are enabled now. Lets the screen say "68 of 490" rather
+     * against how many are enabled now. Lets the screen say "66 of 463" rather
      * than leaving an administrator to count checkboxes.
      *
      * @param array<string,array<string,mixed>> $permissionMap
@@ -203,17 +215,25 @@ class ApiCatalog
             $tools[$verb] = ['available' => 0, 'enabled' => 0];
         }
 
+        $classes = 0;
         foreach ($this->getClasses() as $apiClass => $entry) {
             $row = $permissionMap[$apiClass] ?? null;
+            if ($row === null) {
+                // Counted nowhere: "66 of 463" has to describe the catalog an
+                // administrator can actually see, or the numbers argue with the
+                // rows underneath them.
+                continue;
+            }
+            $classes++;
             foreach ($entry['verbs'] as $verb => $count) {
                 $tools[$verb]['available'] += $count;
-                if ($row !== null && !empty($row[$verb])) {
+                if (!empty($row[$verb])) {
                     $tools[$verb]['enabled'] += $count;
                 }
             }
         }
 
-        return ['tools' => $tools, 'classes' => count($this->getClasses())];
+        return ['tools' => $tools, 'classes' => $classes];
     }
 
     /**

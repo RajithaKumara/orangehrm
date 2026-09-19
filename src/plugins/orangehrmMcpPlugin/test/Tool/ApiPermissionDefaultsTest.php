@@ -48,27 +48,42 @@ class ApiPermissionDefaultsTest extends KernelTestCase
 
     /**
      * The seed list is authored by hand, so it can fall behind the routes. A
-     * class missing from it is simply unreachable -- absence of a row is refusal
-     * -- which degrades safely but silently. This turns that into a failure.
+     * class missing from it ships no row and is therefore unreachable until
+     * someone adds one -- which degrades safely, but silently. This turns it
+     * into a failure.
      *
-     * If this fails after adding or removing an endpoint, update ALL in
-     * ApiPermissionDefaults and add a migration for the new rows.
+     * Every routable class must be accounted for as either shipped (ALL) or
+     * deliberately not shipped (NOT_SEEDED). If this fails after adding an
+     * endpoint, put its class in one of the two and add a migration row if it
+     * belongs in ALL.
      */
-    public function testShippedListMatchesTheLiveRouteCollection(): void
+    public function testEveryRoutableClassIsAccountedFor(): void
     {
         $live = $this->liveClasses();
-        $shipped = ApiPermissionDefaults::ALL;
-        sort($shipped);
+        $accounted = array_merge(ApiPermissionDefaults::ALL, ApiPermissionDefaults::NOT_SEEDED);
 
         $this->assertSame(
             [],
-            array_values(array_diff($live, $shipped)),
-            'these API classes are routable but have no shipped permission row'
+            array_values(array_diff($live, $accounted)),
+            'these API classes are routable but are in neither ALL nor NOT_SEEDED'
         );
         $this->assertSame(
             [],
-            array_values(array_diff($shipped, $live)),
-            'these shipped permission rows no longer match any route'
+            array_values(array_diff($accounted, $live)),
+            'these listed classes no longer match any route'
+        );
+    }
+
+    /**
+     * The two lists are a partition, not overlapping sets. A class in both would
+     * make "do we ship a row for this" unanswerable from the code.
+     */
+    public function testShippedAndUnshippedListsDoNotOverlap(): void
+    {
+        $this->assertSame(
+            [],
+            array_values(array_intersect(ApiPermissionDefaults::ALL, ApiPermissionDefaults::NOT_SEEDED)),
+            'these classes are listed as both shipped and not shipped'
         );
     }
 
@@ -182,6 +197,11 @@ class ApiPermissionDefaultsTest extends KernelTestCase
             count(ApiPermissionDefaults::READ_ENABLED),
             count(array_unique(ApiPermissionDefaults::READ_ENABLED)),
             'duplicate API class in the default-on list'
+        );
+        $this->assertSame(
+            count(ApiPermissionDefaults::NOT_SEEDED),
+            count(array_unique(ApiPermissionDefaults::NOT_SEEDED)),
+            'duplicate API class in the not-shipped list'
         );
     }
 }

@@ -30,9 +30,14 @@ use OrangeHRM\Mcp\Tool\RestrictedApis;
  * the OpenAPI document. Two reasons: the document does not carry the `_api`
  * class, without which there is no permission check; and the document is
  * generated, so it lags. Measured on 5.10, the route collection holds 523
- * `/api/v2` operations while the document describes 490, and 478 join. The 45
- * the document misses are still real endpoints and are exposed with a degraded
- * schema rather than dropped.
+ * `/api/v2` operations and 490 survive the RestrictedApis exclusions. The
+ * OpenAPI document describes most of them; the ones it misses are still real
+ * endpoints and are exposed with a degraded schema rather than dropped.
+ *
+ * This is *what exists*, not what is offered. Whether an operation becomes an
+ * available tool is decided by the row for its API class in
+ * `ohrm_mcp_api_permission` -- a class with no row is unreachable -- and the
+ * shipped catalog seeds rows for a deliberate subset (ApiPermissionDefaults).
  */
 class RouteMap
 {

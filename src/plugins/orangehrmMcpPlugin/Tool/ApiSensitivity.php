@@ -114,7 +114,6 @@ final class ApiSensitivity
         'OrangeHRM\\Pim\\Api\\EmployeeLanguageAPI',
         'OrangeHRM\\Pim\\Api\\EmployeeCustomFieldAPI',
         'OrangeHRM\\Pim\\Api\\EmployeePictureAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeeCSVImportAPI',
         'OrangeHRM\\Pim\\Api\\PimReportAPI',
         'OrangeHRM\\Pim\\Api\\PimDefinedReportAPI',
 

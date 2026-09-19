@@ -197,10 +197,12 @@ class Migration extends AbstractMigration
     /**
      * Seeds one row per API class.
      *
-     * Rows are inserted only when absent, never updated. An upgrade must not
-     * reverse a decision an administrator has already made -- if they switched
-     * PIM reads off, they stay off -- while a genuinely new endpoint family
-     * added by this release still arrives with its shipped default.
+     * Rows are inserted only when absent, never updated, and never deleted. An
+     * upgrade must not reverse a decision an administrator has already made --
+     * if they switched PIM reads off, they stay off -- while a genuinely new
+     * endpoint family added by this release still arrives with its shipped
+     * default. A row a customer added by hand for an endpoint we do not ship
+     * (ApiPermissionDefaults::NOT_SEEDED) is left alone for the same reason.
      *
      * Sensitivity is the exception that proves the rule: it is written on insert
      * and is product-owned, because a warning a tenant can downgrade is not a

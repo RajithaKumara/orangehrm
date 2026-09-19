@@ -41,11 +41,15 @@ namespace OrangeHRM\Mcp\Tool;
 final class ApiPermissionDefaults
 {
     /**
-     * Every API class the route collection exposes to MCP, after RestrictedApis
-     * has removed the areas that are excluded on product grounds.
+     * The API classes an instance ships a row for.
+     *
+     * Not everything the route collection exposes: NOT_SEEDED below lists the
+     * routable classes we deliberately leave out, and between them the two cover
+     * the routable surface exactly. Leaving a class out is not a block -- adding
+     * a row makes it work -- it only decides what an administrator starts with.
      */
     public const ALL = [
-        // pim (39)
+        // pim (35)
         'OrangeHRM\\Pim\\Api\\CustomFieldAPI',
         'OrangeHRM\\Pim\\Api\\EmpEmergencyContactAPI',
         'OrangeHRM\\Pim\\Api\\EmpUsTaxExemptionAPI',
@@ -55,7 +59,6 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Pim\\Api\\EmployeeAllowedReportToEmployeeAPI',
         'OrangeHRM\\Pim\\Api\\EmployeeAllowedSkillAPI',
         'OrangeHRM\\Pim\\Api\\EmployeeAttachmentAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeeCSVImportAPI',
         'OrangeHRM\\Pim\\Api\\EmployeeContactDetailsAPI',
         'OrangeHRM\\Pim\\Api\\EmployeeCountAPI',
         'OrangeHRM\\Pim\\Api\\EmployeeCustomFieldAPI',
@@ -81,23 +84,18 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Pim\\Api\\PimDefinedReportAPI',
         'OrangeHRM\\Pim\\Api\\PimReportAPI',
         'OrangeHRM\\Pim\\Api\\PimReportDataAPI',
-        'OrangeHRM\\Pim\\Api\\ReportingMethodConfigurationAPI',
         'OrangeHRM\\Pim\\Api\\TerminationReasonConfigurationAPI',
-        'OrangeHRM\\Pim\\Api\\ValidationEmployeeEmailAPI',
-        'OrangeHRM\\Pim\\Api\\ValidationEmployeeOtherEmailAPI',
 
-        // admin (33)
+        // admin (30)
         'OrangeHRM\\Admin\\Api\\EducationAPI',
         'OrangeHRM\\Admin\\Api\\EmailSubscriberAPI',
         'OrangeHRM\\Admin\\Api\\EmailSubscriptionAPI',
         'OrangeHRM\\Admin\\Api\\EmploymentStatusAPI',
-        'OrangeHRM\\Admin\\Api\\I18NGroupAPI',
         'OrangeHRM\\Admin\\Api\\I18NImportErrorAPI',
         'OrangeHRM\\Admin\\Api\\I18NLanguageAPI',
         'OrangeHRM\\Admin\\Api\\I18NTranslationAPI',
         'OrangeHRM\\Admin\\Api\\I18NTranslationBulkAPI',
         'OrangeHRM\\Admin\\Api\\I18NTranslationImportAPI',
-        'OrangeHRM\\Admin\\Api\\I18NTranslationValidationAPI',
         'OrangeHRM\\Admin\\Api\\JobCategoryAPI',
         'OrangeHRM\\Admin\\Api\\JobSpecificationAPI',
         'OrangeHRM\\Admin\\Api\\JobTitleAPI',
@@ -118,7 +116,6 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Admin\\Api\\ValidationUserNameAPI',
         'OrangeHRM\\Admin\\Api\\WorkShiftAPI',
         'OrangeHRM\\Admin\\Api\\WorkShiftEmployeeAPI',
-        'OrangeHRM\\CorporateBranding\\Api\\PreviewThemeAPI',
         'OrangeHRM\\CorporateBranding\\Api\\ThemeAPI',
 
         // leave (21)
@@ -144,7 +141,7 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Leave\\Api\\ValidationLeaveEntitlementValueAPI',
         'OrangeHRM\\Leave\\Api\\WorkWeekAPI',
 
-        // time (21)
+        // time (16)
         'OrangeHRM\\Time\\Api\\CopyProjectActivityAPI',
         'OrangeHRM\\Time\\Api\\CustomerAPI',
         'OrangeHRM\\Time\\Api\\DefaultTimesheetAPI',
@@ -161,11 +158,6 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Time\\Api\\TimeReportDataAPI',
         'OrangeHRM\\Time\\Api\\TimesheetActionLogAPI',
         'OrangeHRM\\Time\\Api\\TimesheetCommentAPI',
-        'OrangeHRM\\Time\\Api\\TimesheetProjectActivityUniqueValidationAPI',
-        'OrangeHRM\\Time\\Api\\TimesheetTimeFormatAPI',
-        'OrangeHRM\\Time\\Api\\ValidateProjectNameAPI',
-        'OrangeHRM\\Time\\Api\\ValidationCustomerNameAPI',
-        'OrangeHRM\\Time\\Api\\ValidationProjectActivityNameAPI',
 
         // recruitment (18)
         'OrangeHRM\\Recruitment\\Api\\CandidateAPI',
@@ -204,14 +196,13 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Performance\\Api\\ReviewListAPI',
         'OrangeHRM\\Performance\\Api\\SupervisorEvaluationAPI',
 
-        // attendance (12)
+        // attendance (11)
         'OrangeHRM\\Attendance\\Api\\AttendanceConfigurationAPI',
         'OrangeHRM\\Attendance\\Api\\AttendanceEditPunchInRecordOverlapAPI',
         'OrangeHRM\\Attendance\\Api\\AttendanceEditPunchOutRecordOverlapAPI',
         'OrangeHRM\\Attendance\\Api\\AttendancePunchInRecordOverlapAPI',
         'OrangeHRM\\Attendance\\Api\\AttendancePunchOutRecordOverlapAPI',
         'OrangeHRM\\Attendance\\Api\\AttendanceRecordAPI',
-        'OrangeHRM\\Attendance\\Api\\CurrentDateTimeAPI',
         'OrangeHRM\\Attendance\\Api\\EmployeeAttendanceRecordAPI',
         'OrangeHRM\\Attendance\\Api\\EmployeeAttendanceSummaryAPI',
         'OrangeHRM\\Attendance\\Api\\EmployeeLatestAttendanceRecordAPI',
@@ -238,30 +229,21 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Claim\\Api\\EmployeeClaimRequestAPI',
         'OrangeHRM\\Claim\\Api\\MyClaimRequestAPI',
 
-        // dashboard (7)
+        // dashboard (5)
         'OrangeHRM\\Dashboard\\Api\\EmployeeActionSummaryAPI',
         'OrangeHRM\\Dashboard\\Api\\EmployeeDistributionByLocationAPI',
         'OrangeHRM\\Dashboard\\Api\\EmployeeDistributionBySubunitAPI',
         'OrangeHRM\\Dashboard\\Api\\EmployeeOnLeaveAPI',
-        'OrangeHRM\\Dashboard\\Api\\EmployeeOnLeaveTodayConfigAPI',
         'OrangeHRM\\Dashboard\\Api\\EmployeeTimeAtWorkAPI',
-        'OrangeHRM\\Dashboard\\Api\\QuickLaunchAPI',
 
-        // core (5)
+        // core (2)
         'OrangeHRM\\Core\\Api\\Rest\\AboutOrganizationAPI',
-        'OrangeHRM\\Core\\Api\\Rest\\DataGroupAPI',
-        'OrangeHRM\\Core\\Api\\Rest\\ValidationUniqueAPI',
-        'OrangeHRM\\Core\\PublicApi\\VersionAPI',
         'OrangeHRM\\SystemCheck\\PublicApi\\SystemCheckAPI',
-
-        // auth (1)
-        'OrangeHRM\\Authentication\\PublicApi\\PasswordStrengthValidationAPI',
 
         // directory (1)
         'OrangeHRM\\CorporateDirectory\\Api\\EmployeeDirectoryAPI',
 
-        // mobile (1)
-        'OrangeHRM\\Mobile\\Api\\MenuItemAPI',    ];
+    ];
 
     /**
      * Classes whose reads are switched on out of the box.
@@ -274,13 +256,14 @@ final class ApiPermissionDefaults
      *
      * Selection rules, applied to the readable surface to reach these 43:
      *
-     *  - Drop form plumbing. Anything under `validation`, `allowed`, `overlaps`
-     *    or `count` exists to support the web UI as a user types. A model
-     *    calling an overlap checker is confused, not productive.
+     *  - Drop the remaining form plumbing. The worst of it never reaches this
+     *    list at all -- InternalApis excludes validation oracles and UI
+     *    scaffolding from the catalog outright -- but `allowed`, `overlaps` and
+     *    `count` endpoints still exist to support a screen as a user types.
      *  - Drop report builders. `reports` and `reports/data` drive the UI report
      *    designer; they take a report definition, not a question.
      *  - Drop modules nobody asks an assistant about: Buzz, dashboard widgets,
-     *    mobile, internal core, localisation, theme, module lists.
+     *    localisation, theme, module lists.
      *
      * Deliberately left off despite being readable: salary components, tax
      * exemption, termination records, employment contracts, performance reviews
@@ -340,6 +323,67 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Recruitment\\Api\\VacancyAPI',
         'OrangeHRM\\Time\\Api\\EmployeeTimesheetAPI',
         'OrangeHRM\\Time\\Api\\EmployeeTimesheetListAPI',    ];
+
+    /**
+     * Routable API classes we deliberately ship **no row** for.
+     *
+     * Not a block. Nothing in code refuses these: if a customer genuinely wants
+     * one, inserting a row in `ohrm_mcp_api_permission` makes it work, and it
+     * then appears on the MCP Access screen like any other. The only thing this
+     * list decides is what the product hands an administrator to start from.
+     *
+     * They are left out because each is a tool a model must read past to find
+     * the one it wants, and tool-selection accuracy falls as the catalog grows.
+     * A row nobody would ever switch on has a cost and no benefit.
+     *
+     * The shape of the things listed here, so the next one is an easy call:
+     *
+     *  - **Validation oracles.** Their whole job is to answer "is this value
+     *    acceptable" while a person types. A model should submit the real
+     *    request and read the 422 instead.
+     *  - **UI scaffolding.** Menus, quick launch, data groups, theme previews,
+     *    widget configuration. These describe how to draw OrangeHRM, not what
+     *    is in it.
+     *  - **Environment metadata.** Version and clock endpoints.
+     *  - **File plumbing.** Bulk import that takes an uploaded file, which an
+     *    assistant has no way to supply meaningfully.
+     *
+     * Kept as an explicit list rather than left implicit because
+     * ApiPermissionDefaultsTest asserts ALL + NOT_SEEDED covers every routable
+     * class exactly. Without it, an endpoint family added by a future release
+     * would go unseeded and therefore unreachable, and nobody would notice.
+     */
+    public const NOT_SEEDED = [
+        // Validation oracles
+        'OrangeHRM\\Pim\\Api\\ValidationEmployeeEmailAPI',
+        'OrangeHRM\\Pim\\Api\\ValidationEmployeeOtherEmailAPI',
+        'OrangeHRM\\Time\\Api\\ValidateProjectNameAPI',
+        'OrangeHRM\\Time\\Api\\ValidationCustomerNameAPI',
+        'OrangeHRM\\Time\\Api\\ValidationProjectActivityNameAPI',
+        'OrangeHRM\\Time\\Api\\TimesheetProjectActivityUniqueValidationAPI',
+        'OrangeHRM\\Admin\\Api\\I18NTranslationValidationAPI',
+        'OrangeHRM\\Core\\Api\\Rest\\ValidationUniqueAPI',
+        'OrangeHRM\\Authentication\\PublicApi\\PasswordStrengthValidationAPI',
+
+        // UI scaffolding
+        'OrangeHRM\\Dashboard\\Api\\QuickLaunchAPI',
+        'OrangeHRM\\Dashboard\\Api\\EmployeeOnLeaveTodayConfigAPI',
+        'OrangeHRM\\Mobile\\Api\\MenuItemAPI',
+        'OrangeHRM\\Core\\Api\\Rest\\DataGroupAPI',
+        'OrangeHRM\\CorporateBranding\\Api\\PreviewThemeAPI',
+        'OrangeHRM\\Admin\\Api\\I18NGroupAPI',
+        'OrangeHRM\\Time\\Api\\TimesheetTimeFormatAPI',
+
+        // Environment metadata
+        'OrangeHRM\\Core\\PublicApi\\VersionAPI',
+        'OrangeHRM\\Attendance\\Api\\CurrentDateTimeAPI',
+
+        // File plumbing
+        'OrangeHRM\\Pim\\Api\\EmployeeCSVImportAPI',
+
+        // Configuration behind a single dropdown on one PIM screen
+        'OrangeHRM\\Pim\\Api\\ReportingMethodConfigurationAPI',
+    ];
 
     /**
      * The rows to seed, keyed by API class.

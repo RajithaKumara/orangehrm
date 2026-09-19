@@ -18,7 +18,10 @@ What limits exposure:
   ships on. A write tool is refused unless an administrator turns on both the verb
   and the API it belongs to.
 - Credentials, authentication configuration, purge and password endpoints are
-  excluded in code and cannot be enabled by anyone.
+  excluded in code and cannot be enabled by anyone. Endpoints that exist only to
+  serve the web UI -- validation checks, menus, themes -- ship without a row and
+  so are unavailable, though they are not blocked: a row added to
+  `ohrm_mcp_api_permission` brings one back if you need it.
 - Every call writes a row to `ohrm_mcp_audit_log` with user, session, tool,
   endpoint, status, latency and a SHA-256 digest of the arguments. Raw argument
   values are never stored.
@@ -128,8 +131,8 @@ Four are hand-written, for the questions worth phrasing well:
 
 The rest are derived from the REST API, one tool per operation, named after the
 method and path — `GET /api/v2/pim/employees/{empNumber}` becomes
-`rest_get_pim_employees_by_empNumber`. 490 exist; 66 ship enabled, alongside the
-four above. Use
+`rest_get_pim_employees_by_empNumber`. 463 are in the shipped catalog; 66 of them
+ship enabled, alongside the four above. Use
 `mcp_discover_tools` with a phrase like "leave balance" to find one rather than
 paging the whole catalog.
 
