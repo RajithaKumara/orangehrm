@@ -83,7 +83,12 @@ class McpConfigPolicy
     ];
 
     /**
-     * Empty means no role may connect. A misconfiguration should fail closed.
+     * Empty means no role may connect: an instance whose config row was never
+     * written fails closed.
+     *
+     * What ships is not this. The migration seeds both assignable roles, which
+     * is safe because the master switch is off -- see seedAllowedRoles(). This
+     * constant only covers the case where that row is missing entirely.
      */
     public const DEFAULT_ALLOWED_ROLE_IDS = [];
 

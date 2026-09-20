@@ -19,6 +19,7 @@
 
 namespace OrangeHRM\Installer\Migration\V5_10_0;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Types\Types;
 use OrangeHRM\Installer\Util\V1\AbstractMigration;
@@ -81,7 +82,8 @@ class Migration extends AbstractMigration
         $this->registerMcpConfigScreen();
         $this->createApiPermissionTable();
         $this->seedApiPermissions();
-        $this->seedVerbSwitches();
+        $this->seedSwitches();
+        $this->seedAllowedRoles();
     }
 
     /**
@@ -251,17 +253,26 @@ class Migration extends AbstractMigration
     }
 
     /**
-     * The four top-level verb switches.
+     * The master switch and the four verb switches.
      *
-     * Written explicitly rather than left to the code default so that the state
-     * is visible in `ohrm_config` -- an operator answering "can this instance
-     * delete?" should find the answer in the database, not in a PHP constant.
-     * Existing values are left alone for the same reason the grid is.
+     * Written explicitly rather than left to the code defaults so that the
+     * state is visible in `ohrm_config` -- an operator answering "is MCP on?"
+     * or "can this instance delete?" should find the answer in the database,
+     * not in a PHP constant. Existing values are left alone for the same reason
+     * the grid is.
+     *
+     * Ships off, with Read the only verb allowed: turning MCP on is the
+     * deliberate act the advisory is written about, and reading is the thing it
+     * is for.
      */
-    private function seedVerbSwitches(): void
+    private function seedSwitches(): void
     {
+        $switches = [McpConfigPolicy::KEY_ENABLED => McpConfigPolicy::DEFAULT_ENABLED];
         foreach (McpConfigPolicy::DEFAULT_VERB_SWITCHES as $verb => $enabled) {
-            $key = McpConfigPolicy::KEY_VERB_PREFIX . $verb;
+            $switches[McpConfigPolicy::KEY_VERB_PREFIX . $verb] = $enabled;
+        }
+
+        foreach ($switches as $key => $enabled) {
             if ($this->getConfigHelper()->getConfigValue($key) !== null) {
                 continue;
             }
@@ -271,6 +282,42 @@ class Migration extends AbstractMigration
 
     private const SCREEN_NAME = 'Admin - MCP Configuration';
     private const SCREEN_ACTION = 'mcpConfig';
+
+    /**
+     * Ships with both assignable roles allowed to connect.
+     *
+     * Safe because the feature itself is off: `mcp.config.enabled` defaults to
+     * false, so an instance reaches nothing until an administrator turns the
+     * master switch on, and at that point the question they are answering is
+     * "should my people use this", not "which of the two roles did the product
+     * happen to pick". LdapConfiguration ships the same way -- sensible values
+     * inside, the switch off.
+     *
+     * Derived roles (Supervisor, HiringManager, ...) are computed per request
+     * rather than assigned, so gating on them would not behave the way an
+     * administrator expects; only `is_assignable` roles are seeded.
+     */
+    private function seedAllowedRoles(): void
+    {
+        if ($this->getConfigHelper()->getConfigValue(McpConfigPolicy::KEY_ALLOWED_ROLE_IDS) !== null) {
+            return;
+        }
+
+        $roleIds = $this->createQueryBuilder()
+            ->select('role.id')
+            ->from('ohrm_user_role', 'role')
+            ->where('role.name IN (:names)')
+            ->setParameter('names', ['Admin', 'ESS'], Connection::PARAM_STR_ARRAY)
+            ->andWhere('role.is_assignable = :assignable')
+            ->setParameter('assignable', 1)
+            ->executeQuery()
+            ->fetchFirstColumn();
+
+        $this->getConfigHelper()->setConfigValue(
+            McpConfigPolicy::KEY_ALLOWED_ROLE_IDS,
+            (string) json_encode(array_map('intval', $roleIds))
+        );
+    }
 
     /**
      * @inheritDoc

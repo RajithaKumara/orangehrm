@@ -22,7 +22,7 @@
     <div class="orangehrm-card-container">
       <div class="orangehrm-header-container">
         <oxd-text tag="h6" class="orangehrm-main-title">
-          MCP Configuration (AI Assistant)
+          MCP Configuration
         </oxd-text>
         <oxd-switch-input
           v-model="config.enabled"
