@@ -21,14 +21,14 @@ namespace OrangeHRM\Mcp\Traits\Service;
 
 use OrangeHRM\Core\Traits\ServiceContainerTrait;
 use OrangeHRM\Framework\Services;
-use OrangeHRM\Mcp\Service\McpAccessPolicy;
+use OrangeHRM\Mcp\Service\McpConfigPolicy;
 
-trait McpAccessPolicyTrait
+trait McpConfigPolicyTrait
 {
     use ServiceContainerTrait;
 
-    public function getMcpAccessPolicy(): McpAccessPolicy
+    public function getMcpConfigPolicy(): McpConfigPolicy
     {
-        return $this->getContainer()->get(Services::MCP_ACCESS_POLICY);
+        return $this->getContainer()->get(Services::MCP_CONFIG_POLICY);
     }
 }

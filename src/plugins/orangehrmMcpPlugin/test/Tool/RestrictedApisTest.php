@@ -69,7 +69,7 @@ class RestrictedApisTest extends TestCase
                 'OrangeHRM\\WorkspaceNotifications\\Api\\WorkspaceNotificationTestWebhookAPI',
                 'Workspace Notification webhook test',
             ],
-            'MCP Access' => ['OrangeHRM\\Mcp\\Api\\McpAccessConfigAPI', 'MCP Access'],
+            'MCP Access' => ['OrangeHRM\\Mcp\\Api\\McpConfigAPI', 'MCP Access'],
             'Purge candidates' => ['OrangeHRM\\Maintenance\\Api\\PurgeCandidateAPI', 'Maintenance Purge'],
             'Purge employees' => ['OrangeHRM\\Maintenance\\Api\\PurgeEmployeeAPI', 'Maintenance Purge'],
         ];
@@ -109,7 +109,7 @@ class RestrictedApisTest extends TestCase
      */
     public function testLeadingBackslashIsTolerated(): void
     {
-        $this->assertFalse(RestrictedApis::isAllowed('\\OrangeHRM\\Mcp\\Api\\McpAccessConfigAPI', 'GET'));
+        $this->assertFalse(RestrictedApis::isAllowed('\\OrangeHRM\\Mcp\\Api\\McpConfigAPI', 'GET'));
     }
 
     /**

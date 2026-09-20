@@ -31,7 +31,7 @@ use OrangeHRM\Mcp\Tool\ApiVerb;
  * questions:
  *
  *   - RestDispatcher: "may this user read this endpoint?" (OrangeHRM's own model)
- *   - McpAccessPolicy: "should this user be reaching OrangeHRM through an AI
+ *   - McpConfigPolicy: "should this user be reaching OrangeHRM through an AI
  *     assistant at all, and may the assistant do this kind of thing?"
  *
  * A call must pass both. Policy narrows access and can never widen it, because
@@ -44,25 +44,25 @@ use OrangeHRM\Mcp\Tool\ApiVerb;
  * rows that were already enabled, so the switch is a circuit breaker rather than
  * a setting whose state has to be rebuilt afterwards.
  *
- * Storage is `mcp.access.*` config values, so the existing configuration
+ * Storage is `mcp.config.*` config values, so the existing configuration
  * mechanism stays the single source of truth for settings (FR41). The per-class
  * grid is a table instead, because a few hundred rows of four booleans is data,
  * not a setting.
  */
-class McpAccessPolicy
+class McpConfigPolicy
 {
     use ConfigServiceTrait;
 
-    public const KEY_ENABLED = 'mcp.access.enabled';
-    public const KEY_ALLOWED_ROLE_IDS = 'mcp.access.allowed_role_ids';
-    public const KEY_USER_OVERRIDES = 'mcp.access.user_overrides';
-    public const KEY_APPROVED_CLIENT_IDS = 'mcp.access.approved_client_ids';
+    public const KEY_ENABLED = 'mcp.config.enabled';
+    public const KEY_ALLOWED_ROLE_IDS = 'mcp.config.allowed_role_ids';
+    public const KEY_USER_OVERRIDES = 'mcp.config.user_overrides';
+    public const KEY_APPROVED_CLIENT_IDS = 'mcp.config.approved_client_ids';
 
     /**
      * One switch per verb, named so the stored keys read the same way the screen
      * does.
      */
-    public const KEY_VERB_PREFIX = 'mcp.access.verb.';
+    public const KEY_VERB_PREFIX = 'mcp.config.verb.';
 
     /**
      * Off until an administrator turns it on. Enabling MCP is the deliberate act

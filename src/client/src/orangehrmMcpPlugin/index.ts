@@ -15,8 +15,8 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-import McpAccess from './pages/mcpAccess/McpAccess.vue';
+import McpConfig from './pages/mcpConfig/McpConfig.vue';
 
 export default {
-  'mcp-access': McpAccess,
+  'mcp-config': McpConfig,
 };

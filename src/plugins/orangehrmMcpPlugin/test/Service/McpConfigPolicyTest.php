@@ -22,7 +22,7 @@ namespace OrangeHRM\Tests\Mcp\Service;
 use OrangeHRM\Core\Dao\ConfigDao;
 use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Framework\Services;
-use OrangeHRM\Mcp\Service\McpAccessPolicy;
+use OrangeHRM\Mcp\Service\McpConfigPolicy;
 use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Tests\Util\KernelTestCase;
 
@@ -30,12 +30,12 @@ use OrangeHRM\Tests\Util\KernelTestCase;
  * @group Mcp
  * @group Service
  */
-class McpAccessPolicyTest extends KernelTestCase
+class McpConfigPolicyTest extends KernelTestCase
 {
     /**
      * @param array<string,string> $values
      */
-    private function policyWith(array $values): McpAccessPolicy
+    private function policyWith(array $values): McpConfigPolicy
     {
         $dao = $this->getMockBuilder(ConfigDao::class)->disableOriginalConstructor()->getMock();
         $dao->method('getValue')->willReturnCallback(
@@ -49,7 +49,7 @@ class McpAccessPolicyTest extends KernelTestCase
 
         $this->createKernelWithMockServices([Services::CONFIG_SERVICE => $configService]);
 
-        return new McpAccessPolicy();
+        return new McpConfigPolicy();
     }
 
     /**
@@ -83,10 +83,10 @@ class McpAccessPolicyTest extends KernelTestCase
     public function testVerbSwitchesAreReadIndependently(): void
     {
         $policy = $this->policyWith([
-            McpAccessPolicy::KEY_VERB_PREFIX . ApiVerb::READ => '1',
-            McpAccessPolicy::KEY_VERB_PREFIX . ApiVerb::CREATE => '1',
-            McpAccessPolicy::KEY_VERB_PREFIX . ApiVerb::UPDATE => '0',
-            McpAccessPolicy::KEY_VERB_PREFIX . ApiVerb::DELETE => '0',
+            McpConfigPolicy::KEY_VERB_PREFIX . ApiVerb::READ => '1',
+            McpConfigPolicy::KEY_VERB_PREFIX . ApiVerb::CREATE => '1',
+            McpConfigPolicy::KEY_VERB_PREFIX . ApiVerb::UPDATE => '0',
+            McpConfigPolicy::KEY_VERB_PREFIX . ApiVerb::DELETE => '0',
         ]);
 
         $this->assertSame(
@@ -105,8 +105,8 @@ class McpAccessPolicyTest extends KernelTestCase
     public function testRoleGrantsAccess(): void
     {
         $policy = $this->policyWith([
-            McpAccessPolicy::KEY_ENABLED => '1',
-            McpAccessPolicy::KEY_ALLOWED_ROLE_IDS => '[1,3]',
+            McpConfigPolicy::KEY_ENABLED => '1',
+            McpConfigPolicy::KEY_ALLOWED_ROLE_IDS => '[1,3]',
         ]);
 
         $this->assertTrue($policy->mayConnect(10, 1), 'Admin role allowed');
@@ -121,9 +121,9 @@ class McpAccessPolicyTest extends KernelTestCase
     public function testUserOverrideBeatsTheRoleInBothDirections(): void
     {
         $policy = $this->policyWith([
-            McpAccessPolicy::KEY_ENABLED => '1',
-            McpAccessPolicy::KEY_ALLOWED_ROLE_IDS => '[1]',
-            McpAccessPolicy::KEY_USER_OVERRIDES => '{"7":false,"9":true}',
+            McpConfigPolicy::KEY_ENABLED => '1',
+            McpConfigPolicy::KEY_ALLOWED_ROLE_IDS => '[1]',
+            McpConfigPolicy::KEY_USER_OVERRIDES => '{"7":false,"9":true}',
         ]);
 
         $this->assertFalse($policy->mayConnect(7, 1), 'explicit deny beats an allowed role');
@@ -134,9 +134,9 @@ class McpAccessPolicyTest extends KernelTestCase
     public function testOverridesCannotReviveADisabledInstance(): void
     {
         $policy = $this->policyWith([
-            McpAccessPolicy::KEY_ENABLED => '0',
-            McpAccessPolicy::KEY_ALLOWED_ROLE_IDS => '[1]',
-            McpAccessPolicy::KEY_USER_OVERRIDES => '{"9":true}',
+            McpConfigPolicy::KEY_ENABLED => '0',
+            McpConfigPolicy::KEY_ALLOWED_ROLE_IDS => '[1]',
+            McpConfigPolicy::KEY_USER_OVERRIDES => '{"9":true}',
         ]);
 
         $this->assertFalse($policy->mayConnect(9, 1), 'the master switch wins over any override');
@@ -149,7 +149,7 @@ class McpAccessPolicyTest extends KernelTestCase
     public function testApprovedClientListGatesTheAudience(): void
     {
         $policy = $this->policyWith([
-            McpAccessPolicy::KEY_APPROVED_CLIENT_IDS => '["claude-code-id"]',
+            McpConfigPolicy::KEY_APPROVED_CLIENT_IDS => '["claude-code-id"]',
         ]);
 
         $this->assertTrue($policy->isClientApprovalEnforced());
@@ -174,9 +174,9 @@ class McpAccessPolicyTest extends KernelTestCase
     public function testMalformedJsonDegradesToEmptyRatherThanThrowing(): void
     {
         $policy = $this->policyWith([
-            McpAccessPolicy::KEY_ENABLED => '1',
-            McpAccessPolicy::KEY_ALLOWED_ROLE_IDS => 'not json',
-            McpAccessPolicy::KEY_USER_OVERRIDES => 'also not json',
+            McpConfigPolicy::KEY_ENABLED => '1',
+            McpConfigPolicy::KEY_ALLOWED_ROLE_IDS => 'not json',
+            McpConfigPolicy::KEY_USER_OVERRIDES => 'also not json',
         ]);
 
         $this->assertSame([], $policy->getAllowedRoleIds());
@@ -195,22 +195,22 @@ class McpAccessPolicyTest extends KernelTestCase
 
         foreach ([ApiVerb::CREATE, ApiVerb::UPDATE, ApiVerb::DELETE] as $verb) {
             $this->assertFalse(
-                $this->policyWith([McpAccessPolicy::KEY_VERB_PREFIX . $verb => '1'])->isReadOnly(),
+                $this->policyWith([McpConfigPolicy::KEY_VERB_PREFIX . $verb => '1'])->isReadOnly(),
                 sprintf('%s switched on must leave read-only mode', $verb)
             );
         }
 
         // Read on its own changes nothing: reading is not writing.
         $this->assertTrue(
-            $this->policyWith([McpAccessPolicy::KEY_VERB_PREFIX . ApiVerb::READ => '1'])->isReadOnly()
+            $this->policyWith([McpConfigPolicy::KEY_VERB_PREFIX . ApiVerb::READ => '1'])->isReadOnly()
         );
     }
 
     public function testNullUserIdCannotConnect(): void
     {
         $policy = $this->policyWith([
-            McpAccessPolicy::KEY_ENABLED => '1',
-            McpAccessPolicy::KEY_ALLOWED_ROLE_IDS => '[1]',
+            McpConfigPolicy::KEY_ENABLED => '1',
+            McpConfigPolicy::KEY_ALLOWED_ROLE_IDS => '[1]',
         ]);
 
         $this->assertFalse($policy->mayConnect(null, 1));

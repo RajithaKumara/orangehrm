@@ -270,9 +270,9 @@ final class Services
     public const MCP_AUDIT_WRITER = 'mcp.audit_writer';
 
     /**
-     * @see \OrangeHRM\Mcp\Service\McpAccessPolicy
+     * @see \OrangeHRM\Mcp\Service\McpConfigPolicy
      */
-    public const MCP_ACCESS_POLICY = 'mcp.access_policy';
+    public const MCP_CONFIG_POLICY = 'mcp.config_policy';
 
     /**
      * @see \OrangeHRM\Mcp\Service\TokenClientResolver

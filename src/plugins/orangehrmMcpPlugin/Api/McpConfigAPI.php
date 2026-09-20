@@ -34,7 +34,7 @@ use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
 use OrangeHRM\Mcp\Tool\ApiCatalog;
 use OrangeHRM\Mcp\Tool\ApiSensitivity;
 use OrangeHRM\Mcp\Tool\ApiVerb;
-use OrangeHRM\Mcp\Traits\Service\McpAccessPolicyTrait;
+use OrangeHRM\Mcp\Traits\Service\McpConfigPolicyTrait;
 use OrangeHRM\Mcp\Traits\Service\McpApiPermissionServiceTrait;
 
 /**
@@ -48,9 +48,9 @@ use OrangeHRM\Mcp\Traits\Service\McpApiPermissionServiceTrait;
  * reference data the screen needs (roles, counts), so the page needs one round
  * trip rather than one per module.
  */
-class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
+class McpConfigAPI extends Endpoint implements ResourceEndpoint
 {
-    use McpAccessPolicyTrait;
+    use McpConfigPolicyTrait;
     use McpApiPermissionServiceTrait;
     use EntityManagerHelperTrait;
 
@@ -66,7 +66,7 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
      */
     public function getOne(): EndpointResult
     {
-        $policy = $this->getMcpAccessPolicy();
+        $policy = $this->getMcpConfigPolicy();
         $permissions = $this->getMcpApiPermissionService();
         $catalog = new ApiCatalog();
         $permissionMap = $permissions->getPermissionMap();
@@ -103,7 +103,7 @@ class McpAccessConfigAPI extends Endpoint implements ResourceEndpoint
      */
     public function update(): EndpointResult
     {
-        $policy = $this->getMcpAccessPolicy();
+        $policy = $this->getMcpConfigPolicy();
 
         $policy->setEnabled(
             $this->getRequestParams()->getBoolean(RequestParams::PARAM_TYPE_BODY, self::PARAMETER_ENABLED)

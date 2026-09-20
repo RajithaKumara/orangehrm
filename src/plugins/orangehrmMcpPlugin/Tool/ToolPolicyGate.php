@@ -19,7 +19,7 @@
 
 namespace OrangeHRM\Mcp\Tool;
 
-use OrangeHRM\Mcp\Service\McpAccessPolicy;
+use OrangeHRM\Mcp\Service\McpConfigPolicy;
 use OrangeHRM\Mcp\Service\McpApiPermissionService;
 
 /**
@@ -31,7 +31,7 @@ use OrangeHRM\Mcp\Service\McpApiPermissionService;
  *  1. **Product exclusion** (RestrictedApis). Areas that are never reachable
  *     through MCP whatever anyone configures. Code, not data, so no tenant can
  *     turn it off.
- *  2. **The verb switch** (McpAccessPolicy). One switch per verb, above the
+ *  2. **The verb switch** (McpConfigPolicy). One switch per verb, above the
  *     grid. Delete off means no delete tool is offered, whatever its row says.
  *  3. **The per-class row** (ohrm_mcp_api_permission). Which API classes this
  *     organisation has enabled for that verb.
@@ -47,11 +47,11 @@ use OrangeHRM\Mcp\Service\McpApiPermissionService;
  */
 class ToolPolicyGate
 {
-    private McpAccessPolicy $policy;
+    private McpConfigPolicy $policy;
 
     private McpApiPermissionService $permissions;
 
-    public function __construct(McpAccessPolicy $policy, ?McpApiPermissionService $permissions = null)
+    public function __construct(McpConfigPolicy $policy, ?McpApiPermissionService $permissions = null)
     {
         $this->policy = $policy;
         $this->permissions = $permissions ?? new McpApiPermissionService();

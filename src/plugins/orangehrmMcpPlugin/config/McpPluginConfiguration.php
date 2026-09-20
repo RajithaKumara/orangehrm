@@ -32,7 +32,7 @@ use OrangeHRM\Mcp\Method\InitializeHandler;
 use OrangeHRM\Mcp\Method\PingHandler;
 use OrangeHRM\Mcp\Method\ToolsCallHandler;
 use OrangeHRM\Mcp\Method\ToolsListHandler;
-use OrangeHRM\Mcp\Service\McpAccessPolicy;
+use OrangeHRM\Mcp\Service\McpConfigPolicy;
 use OrangeHRM\Mcp\Service\McpApiPermissionService;
 use OrangeHRM\Mcp\Service\McpConfigurationService;
 use OrangeHRM\Mcp\Service\McpOperatorLogger;
@@ -75,7 +75,7 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
         $this->getContainer()->register(Services::MCP_SESSION_CONTEXT, SessionContext::class);
 
         $this->getContainer()->register(Services::MCP_REST_DISPATCHER, RestDispatcher::class);
-        $this->getContainer()->register(Services::MCP_ACCESS_POLICY, McpAccessPolicy::class);
+        $this->getContainer()->register(Services::MCP_CONFIG_POLICY, McpConfigPolicy::class);
         $this->getContainer()->register(Services::MCP_TOKEN_CLIENT_RESOLVER, TokenClientResolver::class);
         $this->getContainer()->register(Services::MCP_API_PERMISSION_SERVICE, McpApiPermissionService::class);
         $this->getContainer()->register(Services::MCP_AUDIT_WRITER, AuditWriter::class);
@@ -91,7 +91,7 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
         $this->getContainer()->set(Services::MCP_TOOL_REGISTRY, $registry);
 
         $restDispatcher = new RestDispatcher();
-        $accessPolicy = new McpAccessPolicy();
+        $accessPolicy = new McpConfigPolicy();
         $apiPermissions = $this->getContainer()->get(Services::MCP_API_PERMISSION_SERVICE);
 
         // The generic surface is always attached: every non-restricted endpoint

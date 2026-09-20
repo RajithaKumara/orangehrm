@@ -357,7 +357,7 @@ const SENSITIVITY = {
 };
 
 export default {
-  name: 'McpAccess',
+  name: 'McpConfig',
 
   props: {
     mcpEndpoint: {
@@ -369,7 +369,7 @@ export default {
   setup() {
     const http = new APIService(
       window.appGlobal.baseUrl,
-      'api/v2/admin/mcp/access-config',
+      'api/v2/admin/mcp/config',
     );
     return {http};
   },
@@ -468,7 +468,7 @@ export default {
     load() {
       this.isLoading = true;
       this.http
-        .request({method: 'GET', url: 'api/v2/admin/mcp/access-config'})
+        .request({method: 'GET', url: 'api/v2/admin/mcp/config'})
         .then(({data}) => {
           const d = data.data;
           this.config.enabled = d.enabled;
@@ -553,7 +553,7 @@ export default {
       this.http
         .request({
           method: 'PUT',
-          url: 'api/v2/admin/mcp/access-config',
+          url: 'api/v2/admin/mcp/config',
           // `approvedClientIds` is deliberately omitted: OAuth clients are
           // managed on the OAuth screen, and the API preserves any setting it
           // is not sent rather than clearing it.
@@ -586,4 +586,4 @@ export default {
 };
 </script>
 
-<style src="./mcp-access.scss" lang="scss" scoped></style>
+<style src="./mcp-config.scss" lang="scss" scoped></style>

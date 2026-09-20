@@ -29,7 +29,7 @@ use OrangeHRM\Mcp\JsonRpc\EnvelopeException;
 use OrangeHRM\Mcp\JsonRpc\ErrorCode;
 use OrangeHRM\Mcp\Session\SessionContext;
 use OrangeHRM\Mcp\Traits\McpEnabledTrait;
-use OrangeHRM\Mcp\Traits\Service\McpAccessPolicyTrait;
+use OrangeHRM\Mcp\Traits\Service\McpConfigPolicyTrait;
 use OrangeHRM\Mcp\Traits\Service\McpDispatcherTrait;
 use OrangeHRM\Mcp\Traits\Service\McpOperatorLoggerTrait;
 use OrangeHRM\Mcp\Traits\Service\McpSessionContextTrait;
@@ -54,7 +54,7 @@ class McpController extends AbstractController implements PublicControllerInterf
     use McpDispatcherTrait;
     use McpSessionContextTrait;
     use McpOperatorLoggerTrait;
-    use McpAccessPolicyTrait;
+    use McpConfigPolicyTrait;
     use McpTokenClientResolverTrait;
 
     public function handle(Request $request): Response
@@ -77,7 +77,7 @@ class McpController extends AbstractController implements PublicControllerInterf
         // Organisation policy gate. Distinct from the per-call RBAC that
         // RestDispatcher enforces: this answers whether this person should be
         // reaching OrangeHRM through an AI assistant at all.
-        if (!$this->getMcpAccessPolicy()->isEnabled()) {
+        if (!$this->getMcpConfigPolicy()->isEnabled()) {
             return $this->error(null, ErrorCode::MODULE_DISABLED, 'MCP access is disabled', [
                 'category' => ErrorCode::CATEGORY_AUTHORIZATION,
                 'correlation_id' => $correlationId,
@@ -85,7 +85,7 @@ class McpController extends AbstractController implements PublicControllerInterf
             ]);
         }
 
-        if (!$this->getMcpAccessPolicy()->mayConnect(
+        if (!$this->getMcpConfigPolicy()->mayConnect(
             $this->getAuthUser()->getUserId(),
             $this->getAuthUser()->getUserRoleId()
         )) {
@@ -98,9 +98,9 @@ class McpController extends AbstractController implements PublicControllerInterf
 
         // Token audience (README 4.13): a token minted for another OrangeHRM
         // application must not be replayable against the AI surface.
-        if ($this->getMcpAccessPolicy()->isClientApprovalEnforced()) {
+        if ($this->getMcpConfigPolicy()->isClientApprovalEnforced()) {
             $clientId = $this->getMcpTokenClientResolver()->resolveClientId($request);
-            if (!$this->getMcpAccessPolicy()->isClientApproved($clientId)) {
+            if (!$this->getMcpConfigPolicy()->isClientApproved($clientId)) {
                 return $this->error(null, ErrorCode::UNAUTHENTICATED, 'This application is not approved for MCP', [
                     'category' => ErrorCode::CATEGORY_AUTHORIZATION,
                     'correlation_id' => $correlationId,

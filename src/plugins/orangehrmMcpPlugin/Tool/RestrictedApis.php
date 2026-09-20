@@ -84,7 +84,7 @@ final class RestrictedApis
 
         // Admin > Configuration > MCP Configuration. The assistant must not be
         // able to read or rewrite the policy that bounds it.
-        'OrangeHRM\\Mcp\\Api\\McpAccessConfigAPI',
+        'OrangeHRM\\Mcp\\Api\\McpConfigAPI',
 
         // Maintenance > Purge. Irreversible destruction of employee records.
         'OrangeHRM\\Maintenance\\Api\\PurgeCandidateAPI',

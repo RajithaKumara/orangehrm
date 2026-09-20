@@ -61,7 +61,7 @@ with 28 skills, bridged into `.claude/skills/` by `.agents/SETUP.md`. That bridg
 | Generic router | `Tool/Rest/{RouteMap,RestRoute,GenericTool,GenericToolFactory,OpenApiLoader}.php` | one tool per REST operation, **430 operations** across **153 API classes**, names derived from method + path |
 | Discovery meta-tool | `Method/DiscoverToolsHandler.php` | ranked keyword search over the catalog, filtered by the same gate as `tools/list` |
 | Product exclusions | `Tool/RestrictedApis.php` | the one code-level block, for security: credential, authentication, purge and password areas, plus user writes. Everything else is decided by rows in the permission table (4.18) |
-| Access policy | `Service/McpAccessPolicy.php`, `Api/McpAccessConfigAPI.php`, `pages/mcpAccess/McpAccess.vue` | who may connect, and the four verb switches |
+| Access policy | `Service/McpConfigPolicy.php`, `Api/McpConfigAPI.php`, `pages/mcpConfig/McpConfig.vue` | who may connect, and the four verb switches |
 | Per-API permissions | `ohrm_mcp_api_permission`, `Tool/{ApiPermissionDefaults,ApiSensitivity,ApiVerb,ApiCatalog}.php`, `Dao/McpApiPermissionDao.php` | the grid: which verbs MCP may use against each API class. 153 rows shipped of 190 routable classes (4.17, 4.18) |
 
 **Not started:** write discipline with propose/confirm (Epic 3), resources and
@@ -529,7 +529,7 @@ work becomes irrelevant for that product.
 
 ### 4.17 Per-API permissions and the four verb switches — decision D8 (2026-09-14)
 
-Replaces the per-tool-name enable list (`mcp.access.enabled_tools`) that shipped in
+Replaces the per-tool-name enable list (`mcp.config.enabled_tools`) that shipped in
 `24684bea4`. That list worked while the default set was 53 names and fell apart at
 490: an administrator cannot review a screen of hundreds of checkboxes, and a name-keyed
 list silently orphans an entry whenever a route is renamed.
@@ -539,7 +539,7 @@ list silently orphans an entry whenever a route is renamed.
 | Gate | Where | Who owns it |
 |---|---|---|
 | 1. Product exclusion | `Tool/RestrictedApis.php` (code) | us. No tenant can re-admit |
-| 2. Verb switch | `mcp.access.verb.{read,create,update,delete}` | the administrator, as a circuit breaker |
+| 2. Verb switch | `mcp.config.verb.{read,create,update,delete}` | the administrator, as a circuit breaker |
 | 3. Per-class row | `ohrm_mcp_api_permission` | the administrator, per API class |
 | 4. The caller's own RBAC | `ohrm_api_permission` → data groups | OrangeHRM, unchanged |
 
@@ -590,7 +590,7 @@ to clients in `tools/list` under `_meta.orangehrm.sensitivity`. It is **not**
 editable in the UI.
 
 **Also removed here:** `mcp.read_only_mode` (Epic 1, read by nothing) and
-`mcp.access.mode` (the read-only/read-write radio). `isReadOnly()` is now derived
+`mcp.config.mode` (the read-only/read-write radio). `isReadOnly()` is now derived
 from the three write switches, so there is one fact and one place to change it.
 `Pim\Api\UpdatePasswordAPI` joined `RestrictedApis::FORBIDDEN` at the same time:
 write-only, and the write is a credential.

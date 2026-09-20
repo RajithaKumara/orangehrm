@@ -32,14 +32,14 @@ use OrangeHRM\Mcp\Controller\OAuthMetadataController as Metadata;
  * V5_10_0 migration installs for the Admin role, the same mechanism every other
  * admin screen uses.
  */
-class McpAccessController extends AbstractVueController
+class McpConfigController extends AbstractVueController
 {
     /**
      * @inheritDoc
      */
     public function preRender(Request $request): void
     {
-        $component = new Component('mcp-access');
+        $component = new Component('mcp-config');
 
         // The endpoint an administrator must hand to the AI client. Computed
         // here rather than in the page so subpath and reverse-proxy installs

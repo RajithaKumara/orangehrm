@@ -22,7 +22,7 @@ namespace OrangeHRM\Installer\Migration\V5_10_0;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Types\Types;
 use OrangeHRM\Installer\Util\V1\AbstractMigration;
-use OrangeHRM\Mcp\Service\McpAccessPolicy;
+use OrangeHRM\Mcp\Service\McpConfigPolicy;
 use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
 
 class Migration extends AbstractMigration
@@ -78,7 +78,7 @@ class Migration extends AbstractMigration
                 ->executeQuery();
         }
 
-        $this->registerMcpAccessScreen();
+        $this->registerMcpConfigScreen();
         $this->createApiPermissionTable();
         $this->seedApiPermissions();
         $this->seedVerbSwitches();
@@ -92,7 +92,7 @@ class Migration extends AbstractMigration
      * migration on a database that already has the table still installs the
      * screen. The whole method is idempotent.
      */
-    private function registerMcpAccessScreen(): void
+    private function registerMcpConfigScreen(): void
     {
         $existingScreenId = $this->createQueryBuilder()
             ->select('screen.id')
@@ -260,8 +260,8 @@ class Migration extends AbstractMigration
      */
     private function seedVerbSwitches(): void
     {
-        foreach (McpAccessPolicy::DEFAULT_VERB_SWITCHES as $verb => $enabled) {
-            $key = McpAccessPolicy::KEY_VERB_PREFIX . $verb;
+        foreach (McpConfigPolicy::DEFAULT_VERB_SWITCHES as $verb => $enabled) {
+            $key = McpConfigPolicy::KEY_VERB_PREFIX . $verb;
             if ($this->getConfigHelper()->getConfigValue($key) !== null) {
                 continue;
             }
@@ -269,17 +269,8 @@ class Migration extends AbstractMigration
         }
     }
 
-    /**
-     * The pre-5.10 per-tool-name list, superseded by the per-class grid above.
-     *
-     * Left behind rather than deleted: it costs nothing, and an instance that
-     * rolls back to 5.9 finds its old setting intact instead of a surface that
-     * silently switched itself off.
-     */
-    private const CONFIG_KEY_LEGACY_ENABLED_TOOLS = 'mcp.access.enabled_tools';
-
     private const SCREEN_NAME = 'Admin - MCP Configuration';
-    private const SCREEN_ACTION = 'mcpConfiguration';
+    private const SCREEN_ACTION = 'mcpConfig';
 
     /**
      * @inheritDoc

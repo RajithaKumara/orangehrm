@@ -1,5 +1,5 @@
 'Admin - MCP Configuration':
   module: admin
-  url: mcpConfiguration
+  url: mcpConfig
   permissions:
     - { role: Admin, permission: { read: true } }

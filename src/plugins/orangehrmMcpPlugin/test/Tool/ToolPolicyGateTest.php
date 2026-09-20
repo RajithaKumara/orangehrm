@@ -19,7 +19,7 @@
 
 namespace OrangeHRM\Tests\Mcp\Tool;
 
-use OrangeHRM\Mcp\Service\McpAccessPolicy;
+use OrangeHRM\Mcp\Service\McpConfigPolicy;
 use OrangeHRM\Mcp\Service\McpApiPermissionService;
 use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Mcp\Tool\Curated\CurrentEmployeeTool;
@@ -39,11 +39,11 @@ class ToolPolicyGateTest extends TestCase
     /**
      * @param array<string,bool> $switches
      */
-    private function policy(array $switches = []): McpAccessPolicy
+    private function policy(array $switches = []): McpConfigPolicy
     {
         // Stubbed rather than mocked through the container: the gate only reads
         // decisions, so the behaviour under test is the branching, not storage.
-        return new class ($switches) extends McpAccessPolicy {
+        return new class ($switches) extends McpConfigPolicy {
             private array $switches;
 
             public function __construct(array $switches)

@@ -1,6 +1,6 @@
-apiv2_admin_mcp_access_config:
+apiv2_admin_mcp_config:
   description: 'API-v2 Admin - MCP Configuration'
-  api: OrangeHRM\Mcp\Api\McpAccessConfigAPI
+  api: OrangeHRM\Mcp\Api\McpConfigAPI
   module: admin
   allowed:
     read: true
