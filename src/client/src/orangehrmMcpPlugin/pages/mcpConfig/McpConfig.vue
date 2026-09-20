@@ -20,9 +20,16 @@
 <template>
   <div class="orangehrm-background-container">
     <div class="orangehrm-card-container">
-      <oxd-text tag="h6" class="orangehrm-main-title">
-        MCP Configuration (AI Assistant)
-      </oxd-text>
+      <div class="orangehrm-header-container">
+        <oxd-text tag="h6" class="orangehrm-main-title">
+          MCP Configuration (AI Assistant)
+        </oxd-text>
+        <oxd-switch-input
+          v-model="config.enabled"
+          label-position="left"
+          option-label="Enable"
+        />
+      </div>
 
       <oxd-divider />
 
@@ -37,15 +44,6 @@
       ></oxd-alert>
 
       <oxd-form :loading="isLoading" @submit-valid="onSave">
-        <!-- Master switch -->
-        <oxd-form-row>
-          <oxd-input-field
-            v-model="config.enabled"
-            type="switch"
-            label="Enable MCP access"
-          />
-        </oxd-form-row>
-
         <!-- The endpoint an admin hands to the AI client -->
         <oxd-form-row>
           <oxd-input-field
@@ -58,14 +56,16 @@
         <oxd-divider />
 
         <!-- Who may connect -->
-        <oxd-text tag="p" class="orangehrm-sub-title">Who can connect</oxd-text>
+        <oxd-text tag="p" class="orangehrm-sub-title">
+          User Role Permission
+        </oxd-text>
         <oxd-form-row>
           <oxd-grid :cols="3" class="orangehrm-full-width-grid">
             <oxd-grid-item v-for="role in availableRoles" :key="role.id">
               <oxd-input-field
                 v-model="selectedRoles[role.id]"
                 type="checkbox"
-                :option-label="role.displayName + ' users'"
+                :option-label="role.displayName"
               />
             </oxd-grid-item>
           </oxd-grid>
@@ -97,7 +97,7 @@
         <!-- Top-level verb switches. These sit above the grid below: turning one
              off refuses every tool of that kind whatever the grid says. -->
         <oxd-text tag="p" class="orangehrm-sub-title">
-          What the assistant is allowed to do
+          Read/Write Permission
         </oxd-text>
         <oxd-form-row>
           <oxd-grid :cols="4" class="orangehrm-full-width-grid">
@@ -147,7 +147,7 @@
             @click="showAdvanced = !showAdvanced"
           >
             <span class="orangehrm-mcp-advanced__title">
-              Advanced: which parts of OrangeHRM
+              Advanced Permission
             </span>
             <span class="orangehrm-mcp-advanced__summary">
               {{ totalEnabledTools }} tools enabled across
@@ -306,6 +306,7 @@
 </template>
 
 <script>
+import {OxdAlert, OxdSwitchInput} from '@ohrm/oxd';
 import {APIService} from '@/core/util/services/api.service';
 
 const VERBS = [
@@ -358,6 +359,14 @@ const SENSITIVITY = {
 
 export default {
   name: 'McpConfig',
+
+  components: {
+    // Neither is registered globally. Without this the alerts render nothing
+    // at all -- which is how the delete and write warnings on this screen were
+    // invisible from the day they were written.
+    'oxd-alert': OxdAlert,
+    'oxd-switch-input': OxdSwitchInput,
+  },
 
   props: {
     mcpEndpoint: {
