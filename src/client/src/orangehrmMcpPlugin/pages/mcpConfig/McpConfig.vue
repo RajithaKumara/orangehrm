@@ -102,15 +102,13 @@
         <oxd-form-row>
           <oxd-grid :cols="4" class="orangehrm-full-width-grid">
             <oxd-grid-item v-for="verb in verbs" :key="verb.key">
-              <oxd-input-field
-                v-model="config.verbs[verb.key]"
-                type="switch"
-                :label="verb.label"
-              />
-              <oxd-text
-                tag="p"
-                class="orangehrm-tool-hint orangehrm-mcp-verb-hint"
-              >
+              <div class="orangehrm-mcp-switch">
+                <oxd-text tag="p" class="orangehrm-mcp-switch-text">
+                  {{ verb.label }}
+                </oxd-text>
+                <oxd-switch-input v-model="config.verbs[verb.key]" />
+              </div>
+              <oxd-text tag="p" class="orangehrm-input-hint">
                 {{ verb.hint }}
               </oxd-text>
             </oxd-grid-item>
@@ -159,7 +157,7 @@
           </div>
 
           <div v-show="showAdvanced" class="orangehrm-mcp-advanced__body">
-            <oxd-text tag="p" class="orangehrm-tool-hint orangehrm-mcp-flush">
+            <oxd-text tag="p" class="orangehrm-mcp-note">
               One row per API. A row decides what the assistant may do with that
               part of OrangeHRM; the switches above decide whether that kind of
               action is allowed at all. Anything a person's own role forbids
@@ -282,7 +280,7 @@
             </div>
 
             <oxd-form-row v-if="search.trim() && !filteredModules.length">
-              <oxd-text tag="p" class="orangehrm-tool-hint">
+              <oxd-text tag="p" class="orangehrm-mcp-note">
                 Nothing matches "{{ search }}".
               </oxd-text>
             </oxd-form-row>
