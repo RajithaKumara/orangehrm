@@ -21,7 +21,7 @@
   <div class="orangehrm-background-container">
     <div class="orangehrm-card-container">
       <oxd-text tag="h6" class="orangehrm-main-title">
-        MCP Access (AI Assistant)
+        MCP Configuration (AI Assistant)
       </oxd-text>
 
       <oxd-divider />
@@ -53,6 +53,43 @@
             label="MCP server URL (give this to the AI client)"
             readonly
           />
+        </oxd-form-row>
+
+        <oxd-divider />
+
+        <!-- Who may connect -->
+        <oxd-text tag="p" class="orangehrm-sub-title">Who can connect</oxd-text>
+        <oxd-form-row>
+          <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+            <oxd-grid-item v-for="role in availableRoles" :key="role.id">
+              <oxd-input-field
+                v-model="selectedRoles[role.id]"
+                type="checkbox"
+                :option-label="role.displayName + ' users'"
+              />
+            </oxd-grid-item>
+          </oxd-grid>
+        </oxd-form-row>
+
+        <!-- Per-user exceptions on top of the role default -->
+        <oxd-form-row v-if="config.userOverrides.length">
+          <oxd-text tag="p" class="orangehrm-sub-title">
+            Individual exceptions
+          </oxd-text>
+          <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+            <oxd-grid-item
+              v-for="(ovr, i) in config.userOverrides"
+              :key="ovr.userId"
+            >
+              <oxd-input-field
+                v-model="config.userOverrides[i].allowed"
+                type="checkbox"
+                :option-label="
+                  ovr.userName + (ovr.allowed ? ' (allowed)' : ' (blocked)')
+                "
+              />
+            </oxd-grid-item>
+          </oxd-grid>
         </oxd-form-row>
 
         <oxd-divider />
@@ -100,172 +137,157 @@
           ></oxd-alert>
         </oxd-form-row>
 
-        <oxd-divider />
-
-        <!-- Who may connect -->
-        <oxd-text tag="p" class="orangehrm-sub-title">Who can connect</oxd-text>
-        <oxd-form-row>
-          <oxd-grid :cols="3" class="orangehrm-full-width-grid">
-            <oxd-grid-item v-for="role in availableRoles" :key="role.id">
-              <oxd-input-field
-                v-model="selectedRoles[role.id]"
-                type="checkbox"
-                :option-label="role.displayName + ' users'"
-              />
-            </oxd-grid-item>
-          </oxd-grid>
-        </oxd-form-row>
-
-        <!-- Per-user exceptions on top of the role default -->
-        <oxd-form-row v-if="config.userOverrides.length">
-          <oxd-text tag="p" class="orangehrm-sub-title">
-            Individual exceptions
-          </oxd-text>
-          <oxd-grid :cols="3" class="orangehrm-full-width-grid">
-            <oxd-grid-item
-              v-for="(ovr, i) in config.userOverrides"
-              :key="ovr.userId"
-            >
-              <oxd-input-field
-                v-model="config.userOverrides[i].allowed"
-                type="checkbox"
-                :option-label="
-                  ovr.userName + (ovr.allowed ? ' (allowed)' : ' (blocked)')
-                "
-              />
-            </oxd-grid-item>
-          </oxd-grid>
-        </oxd-form-row>
-
-        <oxd-divider />
-
-        <!-- The grid -->
-        <oxd-text tag="p" class="orangehrm-sub-title">
-          Which parts of OrangeHRM
-        </oxd-text>
-        <oxd-text tag="p" class="orangehrm-tool-hint orangehrm-mcp-flush">
-          One row per API. A row decides what the assistant may do with that
-          part of OrangeHRM; the switches above decide whether that kind of
-          action is allowed at all. Anything a person's own role forbids stays
-          forbidden either way.
-        </oxd-text>
-
-        <oxd-form-row>
-          <div class="orangehrm-mcp-summary">
-            <span
-              v-for="verb in verbs"
-              :key="verb.key"
-              class="orangehrm-mcp-summary__item"
-              :class="'orangehrm-mcp-summary__item--' + verb.risk"
-            >
-              {{ verb.label }}:
-              <strong>{{ liveCounts[verb.key] }}</strong>
-              of {{ availableFor(verb.key) }} tools
-            </span>
-            <span class="orangehrm-mcp-summary__total">
-              {{ totalEnabledTools }} tools enabled
-            </span>
-          </div>
-        </oxd-form-row>
-
-        <oxd-form-row v-if="totalEnabledTools > toolCountCeiling">
-          <oxd-alert
-            type="warn"
-            :show="true"
-            :message="
-              totalEnabledTools +
-              ' tools are enabled. Past roughly ' +
-              toolCountCeiling +
-              ', assistants get measurably worse at picking the right one and ' +
-              'answers degrade. Turn off what nobody asks about.'
-            "
-          ></oxd-alert>
-        </oxd-form-row>
-
-        <oxd-form-row>
-          <oxd-input-field
-            v-model="search"
-            label="Find an API"
-            placeholder="employee, leave balance, salary..."
-          />
-        </oxd-form-row>
-
-        <div
-          v-for="group in filteredModules"
-          :key="group.module"
-          class="orangehrm-mcp-module"
-        >
+        <!-- The per-API grid is the advanced half of the same decision: the
+             switches above say which kinds of action are allowed at all, this
+             says where. Folded away because most administrators will set the
+             verbs, leave the shipped set alone, and never open it. -->
+        <div class="orangehrm-mcp-advanced">
           <div
-            class="orangehrm-mcp-module__header"
-            @click="toggleModule(group.module)"
+            class="orangehrm-mcp-advanced__header"
+            @click="showAdvanced = !showAdvanced"
           >
-            <span class="orangehrm-mcp-module__title">
-              {{ group.label }}
-              <span class="orangehrm-mcp-module__count">
-                {{ enabledInGroup(group) }} of {{ group.apis.length }} enabled
-              </span>
+            <span class="orangehrm-mcp-advanced__title">
+              Advanced: which parts of OrangeHRM
             </span>
-            <span class="orangehrm-mcp-module__actions">
-              <span class="orangehrm-mcp-module__chevron">
-                {{ isExpanded(group.module) ? '−' : '+' }}
-              </span>
+            <span class="orangehrm-mcp-advanced__summary">
+              {{ totalEnabledTools }} tools enabled across
+              {{ enabledApiCount }} APIs
+            </span>
+            <span class="orangehrm-mcp-module__chevron">
+              {{ showAdvanced ? '−' : '+' }}
             </span>
           </div>
 
-          <div v-show="isExpanded(group.module)" class="orangehrm-mcp-table">
-            <div class="orangehrm-mcp-row orangehrm-mcp-row--head">
-              <span class="orangehrm-mcp-row__api">API</span>
-              <span
-                v-for="verb in verbs"
-                :key="verb.key"
-                class="orangehrm-mcp-row__verb"
-                :class="'orangehrm-mcp-row__verb--' + verb.risk"
-              >
-                {{ verb.label }}
-              </span>
-            </div>
+          <div v-show="showAdvanced" class="orangehrm-mcp-advanced__body">
+            <oxd-text tag="p" class="orangehrm-tool-hint orangehrm-mcp-flush">
+              One row per API. A row decides what the assistant may do with that
+              part of OrangeHRM; the switches above decide whether that kind of
+              action is allowed at all. Anything a person's own role forbids
+              stays forbidden either way.
+            </oxd-text>
+
+            <oxd-form-row>
+              <div class="orangehrm-mcp-summary">
+                <span
+                  v-for="verb in verbs"
+                  :key="verb.key"
+                  class="orangehrm-mcp-summary__item"
+                  :class="'orangehrm-mcp-summary__item--' + verb.risk"
+                >
+                  {{ verb.label }}:
+                  <strong>{{ liveCounts[verb.key] }}</strong>
+                  of {{ availableFor(verb.key) }} tools
+                </span>
+                <span class="orangehrm-mcp-summary__total">
+                  {{ totalEnabledTools }} tools enabled
+                </span>
+              </div>
+            </oxd-form-row>
+
+            <oxd-form-row v-if="totalEnabledTools > toolCountCeiling">
+              <oxd-alert
+                type="warn"
+                :show="true"
+                :message="
+                  totalEnabledTools +
+                  ' tools are enabled. Past roughly ' +
+                  toolCountCeiling +
+                  ', assistants get measurably worse at picking the right one and ' +
+                  'answers degrade. Turn off what nobody asks about.'
+                "
+              ></oxd-alert>
+            </oxd-form-row>
+
+            <oxd-form-row>
+              <oxd-input-field
+                v-model="search"
+                label="Find an API"
+                placeholder="employee, leave balance, salary..."
+              />
+            </oxd-form-row>
 
             <div
-              v-for="api in group.apis"
-              :key="api.apiName"
-              class="orangehrm-mcp-row"
+              v-for="group in filteredModules"
+              :key="group.module"
+              class="orangehrm-mcp-module"
             >
-              <span class="orangehrm-mcp-row__api">
-                {{ api.label }}
-                <span
-                  v-if="api.sensitivity !== 'normal'"
-                  class="orangehrm-mcp-badge"
-                  :class="'orangehrm-mcp-badge--' + api.sensitivity"
-                  :title="sensitivityHint(api.sensitivity)"
-                >
-                  {{ sensitivityLabel(api.sensitivity) }}
-                </span>
-                <span class="orangehrm-mcp-row__paths">
-                  {{ api.paths.join(', ') }}
-                </span>
-              </span>
-              <span
-                v-for="verb in verbs"
-                :key="verb.key"
-                class="orangehrm-mcp-row__verb"
+              <div
+                class="orangehrm-mcp-module__header"
+                @click="toggleModule(group.module)"
               >
-                <oxd-input-field
-                  v-if="hasVerb(api, verb.key) && permissions[api.apiName]"
-                  v-model="permissions[api.apiName][verb.key]"
-                  type="checkbox"
-                  :disabled="!config.verbs[verb.key]"
-                />
-                <span v-else class="orangehrm-mcp-row__na">—</span>
-              </span>
+                <span class="orangehrm-mcp-module__title">
+                  {{ group.label }}
+                  <span class="orangehrm-mcp-module__count">
+                    {{ enabledInGroup(group) }} of
+                    {{ group.apis.length }} enabled
+                  </span>
+                </span>
+                <span class="orangehrm-mcp-module__actions">
+                  <span class="orangehrm-mcp-module__chevron">
+                    {{ isExpanded(group.module) ? '−' : '+' }}
+                  </span>
+                </span>
+              </div>
+
+              <div
+                v-show="isExpanded(group.module)"
+                class="orangehrm-mcp-table"
+              >
+                <div class="orangehrm-mcp-row orangehrm-mcp-row--head">
+                  <span class="orangehrm-mcp-row__api">API</span>
+                  <span
+                    v-for="verb in verbs"
+                    :key="verb.key"
+                    class="orangehrm-mcp-row__verb"
+                    :class="'orangehrm-mcp-row__verb--' + verb.risk"
+                  >
+                    {{ verb.label }}
+                  </span>
+                </div>
+
+                <div
+                  v-for="api in group.apis"
+                  :key="api.apiName"
+                  class="orangehrm-mcp-row"
+                >
+                  <span class="orangehrm-mcp-row__api">
+                    {{ api.label }}
+                    <span
+                      v-if="api.sensitivity !== 'normal'"
+                      class="orangehrm-mcp-badge"
+                      :class="'orangehrm-mcp-badge--' + api.sensitivity"
+                      :title="sensitivityHint(api.sensitivity)"
+                    >
+                      {{ sensitivityLabel(api.sensitivity) }}
+                    </span>
+                    <span class="orangehrm-mcp-row__paths">
+                      {{ api.paths.join(', ') }}
+                    </span>
+                  </span>
+                  <span
+                    v-for="verb in verbs"
+                    :key="verb.key"
+                    class="orangehrm-mcp-row__verb"
+                  >
+                    <oxd-input-field
+                      v-if="hasVerb(api, verb.key) && permissions[api.apiName]"
+                      v-model="permissions[api.apiName][verb.key]"
+                      type="checkbox"
+                      :disabled="!config.verbs[verb.key]"
+                    />
+                    <span v-else class="orangehrm-mcp-row__na">—</span>
+                  </span>
+                </div>
+              </div>
             </div>
+
+            <oxd-form-row v-if="search.trim() && !filteredModules.length">
+              <oxd-text tag="p" class="orangehrm-tool-hint">
+                Nothing matches "{{ search }}".
+              </oxd-text>
+            </oxd-form-row>
           </div>
         </div>
-
-        <oxd-form-row v-if="search.trim() && !filteredModules.length">
-          <oxd-text tag="p" class="orangehrm-tool-hint">
-            Nothing matches "{{ search }}".
-          </oxd-text>
-        </oxd-form-row>
 
         <oxd-divider />
 
@@ -360,6 +382,7 @@ export default {
       // warning rather than enforced: a large instance may still want them.
       toolCountCeiling: 120,
       search: '',
+      showAdvanced: false,
       config: {
         enabled: false,
         verbs: {read: true, create: false, update: false, delete: false},
@@ -426,6 +449,14 @@ export default {
 
     totalEnabledTools() {
       return VERBS.reduce((sum, v) => sum + this.liveCounts[v.key], 0);
+    },
+
+    /** APIs with at least one verb enabled, for the collapsed summary. */
+    enabledApiCount() {
+      return Object.keys(this.permissions).filter((name) => {
+        const row = this.permissions[name];
+        return row.read || row.create || row.update || row.delete;
+      }).length;
     },
   },
 

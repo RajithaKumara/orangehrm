@@ -25,7 +25,7 @@ What limits exposure:
 - Every call writes a row to `ohrm_mcp_audit_log` with user, session, tool,
   endpoint, status, latency and a SHA-256 digest of the arguments. Raw argument
   values are never stored.
-- Admin, then Configuration, then MCP Access is where all of this is set. It also
+- Admin, then Configuration, then MCP Configuration is where all of this is set. It
   flags which APIs hold personal data (`Personal`) or compensation, immigration,
   evaluation and attachment data (`Highly sensitive`); none of the highly
   sensitive ones ships enabled.
@@ -137,7 +137,7 @@ ship enabled, alongside the four above. Use
 paging the whole catalog.
 
 `tools/list` shows only tools that pass all four gates: the endpoint is not
-excluded in code, the verb is switched on, the API is enabled on the MCP Access
+excluded in code, the verb is switched on, the API is enabled on the MCP Configuration
 screen, and your own role permits it. So an ESS user sees fewer than an admin,
 and an admin sees fewer than the catalog holds.
 

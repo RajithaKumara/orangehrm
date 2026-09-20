@@ -31,7 +31,7 @@ apiv2_mcp_access_config:
     id: 0
     _api: OrangeHRM\Mcp\Api\McpAccessConfigAPI
 
-admin_view_mcp_access:
-  path: /admin/mcpAccess
+admin_view_mcp_configuration:
+  path: /admin/mcpConfiguration
   controller: OrangeHRM\Mcp\Controller\McpAccessController::handle
   methods: [ GET ]

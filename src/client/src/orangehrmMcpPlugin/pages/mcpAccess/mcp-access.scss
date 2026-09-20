@@ -222,3 +222,39 @@
   background: rgba($oxd-feedback-danger-color, 0.12);
   color: $oxd-feedback-danger-color;
 }
+
+/* The advanced disclosure that holds the per-API grid. Same visual language as
+   a module section, one level up. */
+.orangehrm-mcp-advanced {
+  border: 1px solid $oxd-interface-gray-lighten-2-color;
+  border-radius: $oxd-input-control-border-radius;
+  font-family: $oxd-font-family;
+  margin: 0.5rem 0 1rem;
+}
+
+.orangehrm-mcp-advanced__header {
+  align-items: center;
+  background: $oxd-background-light-gray-color;
+  border-radius: $oxd-input-control-border-radius $oxd-input-control-border-radius 0 0;
+  cursor: pointer;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  padding: 0.65rem 0.75rem;
+}
+
+.orangehrm-mcp-advanced__title {
+  color: $oxd-interface-gray-darken-2-color;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.orangehrm-mcp-advanced__summary {
+  color: $oxd-interface-gray-color;
+  font-size: $oxd-input-control-font-size;
+  margin-left: auto;
+}
+
+.orangehrm-mcp-advanced__body {
+  padding: 0.75rem;
+}

@@ -81,7 +81,7 @@ class McpController extends AbstractController implements PublicControllerInterf
             return $this->error(null, ErrorCode::MODULE_DISABLED, 'MCP access is disabled', [
                 'category' => ErrorCode::CATEGORY_AUTHORIZATION,
                 'correlation_id' => $correlationId,
-                'hint' => 'An administrator must enable MCP under Admin > Configuration > MCP Access.',
+                'hint' => 'An administrator must enable MCP under Admin > Configuration > MCP Configuration.',
             ]);
         }
 
@@ -92,7 +92,7 @@ class McpController extends AbstractController implements PublicControllerInterf
             return $this->error(null, ErrorCode::UNAUTHENTICATED, 'Your account is not permitted to use MCP', [
                 'category' => ErrorCode::CATEGORY_AUTHORIZATION,
                 'correlation_id' => $correlationId,
-                'hint' => 'Ask an administrator to allow your role, or you specifically, under MCP Access.',
+                'hint' => 'Ask an administrator to allow your role, or you specifically, under MCP Configuration.',
             ]);
         }
 
@@ -104,7 +104,7 @@ class McpController extends AbstractController implements PublicControllerInterf
                 return $this->error(null, ErrorCode::UNAUTHENTICATED, 'This application is not approved for MCP', [
                     'category' => ErrorCode::CATEGORY_AUTHORIZATION,
                     'correlation_id' => $correlationId,
-                    'hint' => 'An administrator must approve this OAuth client under MCP Access.',
+                    'hint' => 'An administrator must approve this OAuth client under MCP Configuration.',
                 ]);
             }
             $this->getMcpSessionContext()->setClientId($clientId);

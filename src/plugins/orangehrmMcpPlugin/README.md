@@ -834,7 +834,7 @@ once, then `cd src && ../vendor/bin/phpunit --testsuite Mcp` (or the project's u
 | `src/plugins/orangehrmCorePlugin/Controller/Rest/V2/{AbstractRestController,GenericRestController}.php` | REST pipeline (validation lives here) |
 | `src/plugins/orangehrmCorePlugin/Authorization/` | `UserRoleManager`, `ResourcePermission`, data-group DAOs |
 | `src/plugins/orangehrmAuthenticationPlugin/Subscriber/AuthenticationSubscriber.php` | why controllers must implement `PublicControllerInterface` |
-| `installer/Migration/V5_10_0/Migration.php` | MCP schema, targets the 5.10 release (renamed 2026-09-14, 4.7): `ohrm_mcp_audit_log`, `ohrm_mcp_api_permission`, the MCP Access screen, the verb switches |
+| `installer/Migration/V5_10_0/Migration.php` | MCP schema, targets the 5.10 release (renamed 2026-09-14, 4.7): `ohrm_mcp_audit_log`, `ohrm_mcp_api_permission`, the MCP Configuration screen, the verb switches |
 | `installer/Util/AppSetupUtility.php` | `MIGRATIONS_MAP` |
 | `devTools/core/src/Command/GenerateOpenApiDocCommand.php` | writes `build/orangehrm-v2.json` |
 | `docs/POC-REFERENCE.md` | the ohrm-57 proof of concept, annotated |

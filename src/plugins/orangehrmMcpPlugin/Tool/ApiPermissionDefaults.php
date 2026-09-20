@@ -307,7 +307,7 @@ final class ApiPermissionDefaults
      *
      * Not a block. Nothing in code refuses these: if a customer genuinely wants
      * one, inserting a row in `ohrm_mcp_api_permission` makes it work, and it
-     * then appears on the MCP Access screen like any other. The only thing this
+     * then appears on the MCP Configuration screen like any other. The only thing
      * list decides is what the product hands an administrator to start from.
      *
      * They are left out because each is a tool a model must read past to find

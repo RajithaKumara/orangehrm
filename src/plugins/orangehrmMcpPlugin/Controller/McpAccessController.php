@@ -26,7 +26,7 @@ use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Mcp\Controller\OAuthMetadataController as Metadata;
 
 /**
- * Admin > Configuration > MCP Access.
+ * Admin > Configuration > MCP Configuration.
  *
  * Access to this screen is governed by the `ohrm_user_role_screen` grant the
  * V5_10_0 migration installs for the Admin role, the same mechanism every other

@@ -35,8 +35,9 @@ namespace OrangeHRM\Mcp\Tool;
  *  - They configure authentication itself. A write could redirect sign-in to an
  *    attacker-controlled identity provider, or mint an OAuth client, which is a
  *    privilege-escalation path that does not look like one.
- *  - MCP Access is excluded from its own surface deliberately. An assistant that
- *    can widen its own access is not bounded by the policy at all.
+ *  - MCP Configuration is excluded from its own surface deliberately. An
+ *    assistant that can widen its own access is not bounded by the policy at
+ *    all.
  *  - Purge destroys employee data irreversibly under GDPR workflows. There is no
  *    version of "the assistant misunderstood" that is acceptable there.
  *
@@ -81,8 +82,8 @@ final class RestrictedApis
         'OrangeHRM\\WorkspaceNotifications\\Api\\WorkspaceNotificationRegistrationAPI',
         'OrangeHRM\\WorkspaceNotifications\\Api\\WorkspaceNotificationTestWebhookAPI',
 
-        // Admin > Configuration > MCP Access. The assistant must not be able to
-        // read or rewrite the policy that bounds it.
+        // Admin > Configuration > MCP Configuration. The assistant must not be
+        // able to read or rewrite the policy that bounds it.
         'OrangeHRM\\Mcp\\Api\\McpAccessConfigAPI',
 
         // Maintenance > Purge. Irreversible destruction of employee records.

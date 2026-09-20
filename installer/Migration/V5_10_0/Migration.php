@@ -85,7 +85,7 @@ class Migration extends AbstractMigration
     }
 
     /**
-     * Registers the MCP Access screen and API under Admin > Configuration, and
+     * Registers the MCP Configuration screen and API under Admin > Configuration,
      * grants both to the Admin role.
      *
      * Guarded independently of the audit-log block above so that re-running the
@@ -154,7 +154,7 @@ class Migration extends AbstractMigration
                     'status' => ':status',
                 ]
             )
-            ->setParameter('menuTitle', 'MCP Access')
+            ->setParameter('menuTitle', 'MCP Configuration')
             ->setParameter('screenId', $screenId)
             ->setParameter('parentId', $configurationMenuId)
             ->setParameter('level', 3)
@@ -278,8 +278,8 @@ class Migration extends AbstractMigration
      */
     private const CONFIG_KEY_LEGACY_ENABLED_TOOLS = 'mcp.access.enabled_tools';
 
-    private const SCREEN_NAME = 'Admin - MCP Access';
-    private const SCREEN_ACTION = 'mcpAccess';
+    private const SCREEN_NAME = 'Admin - MCP Configuration';
+    private const SCREEN_ACTION = 'mcpConfiguration';
 
     /**
      * @inheritDoc
