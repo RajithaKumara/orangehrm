@@ -15,10 +15,19 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-/* `.orangehrm-sub-title`, `.orangehrm-input-hint` and `.orangehrm-header-container`
-   are global (src/core/styles/global.scss) and deliberately not redefined here:
-   this screen should look like every other admin screen, not like a local
-   interpretation of one. */
+/* `.orangehrm-sub-title` and `.orangehrm-input-hint` are global
+   (src/core/styles/global.scss) and deliberately not redefined here: this
+   screen should look like every other admin screen, not like a local
+   interpretation of one.
+
+   `.orangehrm-header-container` is the exception, and LdapConfiguration makes
+   the same one. Its global rule adds 25px of padding, which is right for a
+   header sitting directly in a paper container but double-pads one inside a
+   card container that already has its own -- leaving the title indented past
+   everything below it. */
+.orangehrm-header-container {
+  padding: 0;
+}
 
 /* A standalone explanatory line, which the product has no class for -- the
    global hint class carries a negative top margin that only makes sense
