@@ -34,6 +34,15 @@
   margin-left: 0;
 }
 
+/* Hints under the four verb switches. The shared hint style is indented to
+   clear a checkbox, which these do not have, so it left them stepped in from
+   their own labels. The min-height keeps the four bottoms level when one
+   wraps to a second line. */
+.orangehrm-mcp-verb-hint {
+  margin-left: 0;
+  min-height: 2.25rem;
+}
+
 /* OXD sets its font on each component selector (.oxd-text, .oxd-button, ...)
    and never on body, so any markup that is not an OXD component falls back to
    the browser default -- a serif, which is why this grid looked foreign. Every
@@ -153,8 +162,29 @@
   white-space: nowrap;
 }
 
+/* The checkbox is a 24px label flush-left inside an 80px input group, so
+   text-align does nothing to it -- the cell has to centre it as a flex item,
+   and the group's form-stacking margins have to go for a table row. */
 .orangehrm-mcp-row__verb {
+  align-items: center;
+  display: flex;
+  justify-content: center;
   text-align: center;
+}
+
+.orangehrm-mcp-row__verb :deep(.oxd-input-field-bottom-space) {
+  margin-bottom: 0;
+}
+
+.orangehrm-mcp-row__verb :deep(.oxd-checkbox-wrapper) {
+  display: flex;
+  justify-content: center;
+  width: auto;
+}
+
+/* The 6px gap belongs next to a label this cell does not render. */
+.orangehrm-mcp-row__verb :deep(.oxd-checkbox-input) {
+  margin-right: 0;
 }
 
 .orangehrm-mcp-row__verb--warn {

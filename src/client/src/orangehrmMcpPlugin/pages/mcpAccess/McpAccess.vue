@@ -70,7 +70,10 @@
                 type="switch"
                 :label="verb.label"
               />
-              <oxd-text tag="p" class="orangehrm-tool-hint">
+              <oxd-text
+                tag="p"
+                class="orangehrm-tool-hint orangehrm-mcp-verb-hint"
+              >
                 {{ verb.hint }}
               </oxd-text>
             </oxd-grid-item>
