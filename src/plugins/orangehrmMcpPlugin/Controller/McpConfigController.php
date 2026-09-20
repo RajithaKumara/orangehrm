@@ -50,6 +50,18 @@ class McpConfigController extends AbstractVueController
             Metadata::getAppOrigin($request) . Metadata::MCP_RESOURCE_PATH
         ));
 
+        // The URL that actually serves the document, which on a subpath install
+        // is not where RFC 8414 says to look: a compliant client strips the path
+        // and asks the host root, and that only answers if the webserver
+        // rewrites it. Showing the working URL is the useful thing here --
+        // an administrator pastes it into a client that cannot discover the
+        // endpoint itself, and pasting one that 404s helps nobody.
+        $component->addProp(new Prop(
+            'oauth-metadata-url',
+            Prop::TYPE_STRING,
+            Metadata::getAppOrigin($request) . Metadata::AUTHORIZATION_SERVER_PATH
+        ));
+
         $this->setComponent($component);
     }
 }

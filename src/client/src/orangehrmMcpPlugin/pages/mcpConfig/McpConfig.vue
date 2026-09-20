@@ -38,19 +38,33 @@
         :show="true"
         message="Connecting an AI assistant gives it the same access to OrangeHRM
           data that the person signing in already has. Every request is still
-          checked against that person's own permissions, and every call is
-          recorded in the MCP audit log. Start with a small group and only the
-          data you need."
+          checked against that person's own permissions."
       ></oxd-alert>
 
       <oxd-form :loading="isLoading" @submit-valid="onSave">
-        <!-- The endpoint an admin hands to the AI client -->
+        <!-- The two URLs an admin hands to an AI client -->
         <oxd-form-row>
           <oxd-input-field
             :model-value="mcpEndpoint"
-            label="MCP server URL (give this to the AI client)"
+            label="MCP server URL"
             readonly
           />
+          <oxd-text tag="p" class="orangehrm-input-hint">
+            Give this to the AI client when adding OrangeHRM as an MCP server.
+          </oxd-text>
+        </oxd-form-row>
+
+        <oxd-form-row>
+          <oxd-input-field
+            :model-value="oauthMetadataUrl"
+            label="OAuth authorization server URL"
+            readonly
+          />
+          <oxd-text tag="p" class="orangehrm-input-hint">
+            Only needed by clients that cannot discover the endpoint themselves.
+            Clients that can will look for it at the host root instead, which
+            needs a webserver rewrite when OrangeHRM runs under a subpath.
+          </oxd-text>
         </oxd-form-row>
 
         <oxd-divider />
@@ -60,7 +74,7 @@
           User Role Permission
         </oxd-text>
         <oxd-form-row>
-          <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+          <oxd-grid :cols="1" class="orangehrm-full-width-grid">
             <oxd-grid-item v-for="role in availableRoles" :key="role.id">
               <oxd-input-field
                 v-model="selectedRoles[role.id]"
@@ -99,18 +113,13 @@
         <oxd-text tag="p" class="orangehrm-sub-title">
           Read/Write Permission
         </oxd-text>
-        <oxd-form-row>
-          <oxd-grid :cols="4" class="orangehrm-full-width-grid">
-            <oxd-grid-item v-for="verb in verbs" :key="verb.key">
-              <div class="orangehrm-mcp-switch">
-                <oxd-text tag="p" class="orangehrm-mcp-switch-text">
-                  {{ verb.label }}
-                </oxd-text>
-                <oxd-switch-input v-model="config.verbs[verb.key]" />
-              </div>
-              <oxd-text tag="p" class="orangehrm-input-hint">
-                {{ verb.hint }}
+        <oxd-form-row v-for="verb in verbs" :key="verb.key">
+          <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+            <oxd-grid-item class="orangehrm-mcp-switch">
+              <oxd-text tag="p" class="orangehrm-mcp-switch-text">
+                {{ verb.label }}
               </oxd-text>
+              <oxd-switch-input v-model="config.verbs[verb.key]" />
             </oxd-grid-item>
           </oxd-grid>
         </oxd-form-row>
@@ -312,25 +321,21 @@ const VERBS = [
     key: 'read',
     label: 'Read',
     risk: 'none',
-    hint: 'Look things up and answer questions. Changes nothing.',
   },
   {
     key: 'create',
     label: 'Create',
     risk: 'warn',
-    hint: 'Add records: a leave request, a candidate, a timesheet entry.',
   },
   {
     key: 'update',
     label: 'Update',
     risk: 'warn',
-    hint: 'Change existing records in place.',
   },
   {
     key: 'delete',
     label: 'Delete',
     risk: 'danger',
-    hint: 'Remove records permanently. There is no undo.',
   },
 ];
 
@@ -368,6 +373,11 @@ export default {
 
   props: {
     mcpEndpoint: {
+      type: String,
+      default: '',
+    },
+
+    oauthMetadataUrl: {
       type: String,
       default: '',
     },
