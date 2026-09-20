@@ -131,7 +131,7 @@ Four are hand-written, for the questions worth phrasing well:
 
 The rest are derived from the REST API, one tool per operation, named after the
 method and path — `GET /api/v2/pim/employees/{empNumber}` becomes
-`rest_get_pim_employees_by_empNumber`. 463 are in the shipped catalog; 66 of them
+`rest_get_pim_employees_by_empNumber`. 430 are in the shipped catalog; 65 of them
 ship enabled, alongside the four above. Use
 `mcp_discover_tools` with a phrase like "leave balance" to find one rather than
 paging the whole catalog.

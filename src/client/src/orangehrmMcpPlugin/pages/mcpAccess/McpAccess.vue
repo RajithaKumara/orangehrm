@@ -203,18 +203,6 @@
               </span>
             </span>
             <span class="orangehrm-mcp-module__actions">
-              <oxd-button
-                display-type="text"
-                label="All reads"
-                size="small"
-                @click.stop="setGroupVerb(group, 'read', true)"
-              />
-              <oxd-button
-                display-type="text"
-                label="None"
-                size="small"
-                @click.stop="clearGroup(group)"
-              />
               <span class="orangehrm-mcp-module__chevron">
                 {{ isExpanded(group.module) ? '−' : '+' }}
               </span>
@@ -516,25 +504,6 @@ export default {
         const row = this.permissions[api.apiName];
         return row && (row.read || row.create || row.update || row.delete);
       }).length;
-    },
-
-    setGroupVerb(group, verb, value) {
-      group.apis.forEach((api) => {
-        if (this.hasVerb(api, verb) && this.permissions[api.apiName]) {
-          this.permissions[api.apiName][verb] = value;
-        }
-      });
-    },
-
-    clearGroup(group) {
-      group.apis.forEach((api) => {
-        const row = this.permissions[api.apiName];
-        if (!row) return;
-        row.read = false;
-        row.create = false;
-        row.update = false;
-        row.delete = false;
-      });
     },
 
     sensitivityLabel(level) {

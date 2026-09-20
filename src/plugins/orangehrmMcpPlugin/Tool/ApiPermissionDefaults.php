@@ -49,7 +49,7 @@ final class ApiPermissionDefaults
      * a row makes it work -- it only decides what an administrator starts with.
      */
     public const ALL = [
-        // pim (35)
+        // pim (34)
         'OrangeHRM\\Pim\\Api\\CustomFieldAPI',
         'OrangeHRM\\Pim\\Api\\EmpEmergencyContactAPI',
         'OrangeHRM\\Pim\\Api\\EmpUsTaxExemptionAPI',
@@ -80,13 +80,12 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Pim\\Api\\EmployeeWorkShiftAPI',
         'OrangeHRM\\Pim\\Api\\EmploymentContractAPI',
         'OrangeHRM\\Pim\\Api\\MyInfoAPI',
-        'OrangeHRM\\Pim\\Api\\OptionalFieldAPI',
         'OrangeHRM\\Pim\\Api\\PimDefinedReportAPI',
         'OrangeHRM\\Pim\\Api\\PimReportAPI',
         'OrangeHRM\\Pim\\Api\\PimReportDataAPI',
         'OrangeHRM\\Pim\\Api\\TerminationReasonConfigurationAPI',
 
-        // admin (30)
+        // admin (26)
         'OrangeHRM\\Admin\\Api\\EducationAPI',
         'OrangeHRM\\Admin\\Api\\EmailSubscriberAPI',
         'OrangeHRM\\Admin\\Api\\EmailSubscriptionAPI',
@@ -95,7 +94,6 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Admin\\Api\\I18NLanguageAPI',
         'OrangeHRM\\Admin\\Api\\I18NTranslationAPI',
         'OrangeHRM\\Admin\\Api\\I18NTranslationBulkAPI',
-        'OrangeHRM\\Admin\\Api\\I18NTranslationImportAPI',
         'OrangeHRM\\Admin\\Api\\JobCategoryAPI',
         'OrangeHRM\\Admin\\Api\\JobSpecificationAPI',
         'OrangeHRM\\Admin\\Api\\JobTitleAPI',
@@ -104,16 +102,13 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Admin\\Api\\LocalizationAPI',
         'OrangeHRM\\Admin\\Api\\LocationAPI',
         'OrangeHRM\\Admin\\Api\\MembershipAPI',
-        'OrangeHRM\\Admin\\Api\\ModulesAPI',
         'OrangeHRM\\Admin\\Api\\NationalityAPI',
-        'OrangeHRM\\Admin\\Api\\OrganizationAPI',
         'OrangeHRM\\Admin\\Api\\PayGradeAPI',
         'OrangeHRM\\Admin\\Api\\PayGradeAllowedCurrencyAPI',
         'OrangeHRM\\Admin\\Api\\PayGradeCurrencyAPI',
         'OrangeHRM\\Admin\\Api\\SkillAPI',
         'OrangeHRM\\Admin\\Api\\SubunitAPI',
         'OrangeHRM\\Admin\\Api\\UserAPI',
-        'OrangeHRM\\Admin\\Api\\ValidationUserNameAPI',
         'OrangeHRM\\Admin\\Api\\WorkShiftAPI',
         'OrangeHRM\\Admin\\Api\\WorkShiftEmployeeAPI',
         'OrangeHRM\\CorporateBranding\\Api\\ThemeAPI',
@@ -141,7 +136,7 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Leave\\Api\\ValidationLeaveEntitlementValueAPI',
         'OrangeHRM\\Leave\\Api\\WorkWeekAPI',
 
-        // time (16)
+        // time (15)
         'OrangeHRM\\Time\\Api\\CopyProjectActivityAPI',
         'OrangeHRM\\Time\\Api\\CustomerAPI',
         'OrangeHRM\\Time\\Api\\DefaultTimesheetAPI',
@@ -153,7 +148,6 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Time\\Api\\ProjectAPI',
         'OrangeHRM\\Time\\Api\\ProjectActivityAPI',
         'OrangeHRM\\Time\\Api\\ProjectAdminAPI',
-        'OrangeHRM\\Time\\Api\\TimeConfigPeriodAPI',
         'OrangeHRM\\Time\\Api\\TimeReportAPI',
         'OrangeHRM\\Time\\Api\\TimeReportDataAPI',
         'OrangeHRM\\Time\\Api\\TimesheetActionLogAPI',
@@ -209,17 +203,6 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Attendance\\Api\\MyAttendanceRecordAPI',
         'OrangeHRM\\Attendance\\Api\\TimezonesAPI',
 
-        // buzz (9)
-        'OrangeHRM\\Buzz\\Api\\BuzzCommentAPI',
-        'OrangeHRM\\Buzz\\Api\\BuzzFeedAPI',
-        'OrangeHRM\\Buzz\\Api\\BuzzLikeOnCommentAPI',
-        'OrangeHRM\\Buzz\\Api\\BuzzLikeOnShareAPI',
-        'OrangeHRM\\Buzz\\Api\\BuzzPostAPI',
-        'OrangeHRM\\Buzz\\Api\\BuzzPostShareAPI',
-        'OrangeHRM\\Buzz\\Api\\BuzzShareAPI',
-        'OrangeHRM\\Buzz\\Api\\BuzzVideoURLValidationAPI',
-        'OrangeHRM\\Buzz\\Api\\EmployeeAnniversaryAPI',
-
         // claim (7)
         'OrangeHRM\\Claim\\Api\\ClaimAttachmentAPI',
         'OrangeHRM\\Claim\\Api\\ClaimEventAPI',
@@ -236,10 +219,6 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Dashboard\\Api\\EmployeeOnLeaveAPI',
         'OrangeHRM\\Dashboard\\Api\\EmployeeTimeAtWorkAPI',
 
-        // core (2)
-        'OrangeHRM\\Core\\Api\\Rest\\AboutOrganizationAPI',
-        'OrangeHRM\\SystemCheck\\PublicApi\\SystemCheckAPI',
-
         // directory (1)
         'OrangeHRM\\CorporateDirectory\\Api\\EmployeeDirectoryAPI',
 
@@ -254,7 +233,7 @@ final class ApiPermissionDefaults
      * classes enabled would hand a model hundreds of tools and measurably
      * degrade which one it picks.
      *
-     * Selection rules, applied to the readable surface to reach these 43:
+     * Selection rules, applied to the readable surface to reach these 42:
      *
      *  - Drop the remaining form plumbing. The worst of it never reaches this
      *    list at all -- InternalApis excludes validation oracles and UI
@@ -273,7 +252,7 @@ final class ApiPermissionDefaults
      * which is exactly what the screen is for.
      *
      * Per-class granularity is slightly coarser than the per-path list it
-     * replaces: these 43 classes cover the 48 paths that shipped enabled and
+     * replaces: these 42 classes cover the paths that shipped enabled and
      * pull in 18 single-item variants (`.../{id}`) alongside the collections
      * they belong to. That is the trade -- an administrator reviews 43 rows
      * instead of 250 checkboxes, and gets the by-id read of a list they already
@@ -286,7 +265,6 @@ final class ApiPermissionDefaults
         'OrangeHRM\\Admin\\Api\\LanguageAPI',
         'OrangeHRM\\Admin\\Api\\LocationAPI',
         'OrangeHRM\\Admin\\Api\\NationalityAPI',
-        'OrangeHRM\\Admin\\Api\\OrganizationAPI',
         'OrangeHRM\\Admin\\Api\\PayGradeAPI',
         'OrangeHRM\\Admin\\Api\\SkillAPI',
         'OrangeHRM\\Admin\\Api\\SubunitAPI',
@@ -383,6 +361,38 @@ final class ApiPermissionDefaults
 
         // Configuration behind a single dropdown on one PIM screen
         'OrangeHRM\\Pim\\Api\\ReportingMethodConfigurationAPI',
+
+        // The Buzz social feed. Nobody asks an HR assistant what was posted,
+        // the likes and comments are pure catalog padding, and a post written
+        // by an assistant under someone's name is broadcast org-wide with no
+        // approval step and no way to un-see it. It is also the one place where
+        // any employee can publish free text to everyone, which makes it the
+        // obvious place to plant instructions aimed at an assistant -- a reason
+        // that applies to the reads, not just the writes.
+        'OrangeHRM\\Buzz\\Api\\BuzzFeedAPI',
+        'OrangeHRM\\Buzz\\Api\\BuzzPostAPI',
+        'OrangeHRM\\Buzz\\Api\\BuzzPostShareAPI',
+        'OrangeHRM\\Buzz\\Api\\BuzzShareAPI',
+        'OrangeHRM\\Buzz\\Api\\BuzzCommentAPI',
+        'OrangeHRM\\Buzz\\Api\\BuzzLikeOnShareAPI',
+        'OrangeHRM\\Buzz\\Api\\BuzzLikeOnCommentAPI',
+        'OrangeHRM\\Buzz\\Api\\BuzzVideoURLValidationAPI',
+        'OrangeHRM\\Buzz\\Api\\EmployeeAnniversaryAPI',
+
+        // Core internals: an installation health probe and the "about this
+        // organisation" box. Neither is HR data.
+        'OrangeHRM\\Core\\Api\\Rest\\AboutOrganizationAPI',
+        'OrangeHRM\\SystemCheck\\PublicApi\\SystemCheckAPI',
+
+        // Administrative configuration. These set up the product rather than
+        // describe the people in it, and an assistant editing them changes how
+        // OrangeHRM behaves for everyone.
+        'OrangeHRM\\Admin\\Api\\I18NTranslationImportAPI',
+        'OrangeHRM\\Admin\\Api\\ModulesAPI',
+        'OrangeHRM\\Admin\\Api\\OrganizationAPI',
+        'OrangeHRM\\Admin\\Api\\ValidationUserNameAPI',
+        'OrangeHRM\\Time\\Api\\TimeConfigPeriodAPI',
+        'OrangeHRM\\Pim\\Api\\OptionalFieldAPI',
     ];
 
     /**

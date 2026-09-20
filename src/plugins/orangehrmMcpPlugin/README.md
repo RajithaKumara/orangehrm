@@ -58,11 +58,11 @@ with 28 skills, bridged into `.claude/skills/` by `.agents/SETUP.md`. That bridg
 | Area | Files | Notes |
 |---|---|---|
 | Protocol | `JsonRpc/`, `Method/{Initialize,Ping,ToolsList,ToolsCall}Handler.php` | protocol version `2025-06-18`, cursor pagination at 50 tools a page, tool annotations published |
-| Generic router | `Tool/Rest/{RouteMap,RestRoute,GenericTool,GenericToolFactory,OpenApiLoader}.php` | one tool per REST operation, **463 operations** across **170 API classes**, names derived from method + path |
+| Generic router | `Tool/Rest/{RouteMap,RestRoute,GenericTool,GenericToolFactory,OpenApiLoader}.php` | one tool per REST operation, **430 operations** across **153 API classes**, names derived from method + path |
 | Discovery meta-tool | `Method/DiscoverToolsHandler.php` | ranked keyword search over the catalog, filtered by the same gate as `tools/list` |
 | Product exclusions | `Tool/RestrictedApis.php` | the one code-level block, for security: credential, authentication, purge and password areas, plus user writes. Everything else is decided by rows in the permission table (4.18) |
 | Access policy | `Service/McpAccessPolicy.php`, `Api/McpAccessConfigAPI.php`, `pages/mcpAccess/McpAccess.vue` | who may connect, and the four verb switches |
-| Per-API permissions | `ohrm_mcp_api_permission`, `Tool/{ApiPermissionDefaults,ApiSensitivity,ApiVerb,ApiCatalog}.php`, `Dao/McpApiPermissionDao.php` | the grid: which verbs MCP may use against each API class. 170 rows shipped of 190 routable classes (4.17, 4.18) |
+| Per-API permissions | `ohrm_mcp_api_permission`, `Tool/{ApiPermissionDefaults,ApiSensitivity,ApiVerb,ApiCatalog}.php`, `Dao/McpApiPermissionDao.php` | the grid: which verbs MCP may use against each API class. 153 rows shipped of 190 routable classes (4.17, 4.18) |
 
 **Not started:** write discipline with propose/confirm (Epic 3), resources and
 prompts (Epic 5), rate limiting and the daily cap (the config keys exist, nothing
@@ -602,7 +602,7 @@ success. `RestDispatcher::dispatch()` now sends the tool's own method, puts
 parameters in the query for reads and the body for writes, and checks the matching
 grant (`canCreate`/`canUpdate`/`canDelete`). `RestDispatcherTest` covers all four.
 
-### 4.18 The table is the catalog — twenty classes ship no row (2026-09-15)
+### 4.18 The table is the catalog — 37 classes ship no row (2026-09-15, extended 2026-09-20)
 
 Rajitha's call, and it settles how exclusion works in general:
 
@@ -621,12 +621,15 @@ wants `Version` or a validation endpoint had no way to get it and no way to ask.
 
 **How it works now:**
 
-- `ApiPermissionDefaults::ALL` — 170 classes we ship a row for.
-- `ApiPermissionDefaults::NOT_SEEDED` — 20 routable classes we deliberately do
+- `ApiPermissionDefaults::ALL` — 153 classes we ship a row for.
+- `ApiPermissionDefaults::NOT_SEEDED` — 37 routable classes we deliberately do
   not: validation oracles, UI scaffolding (menus, quick launch, data groups,
   theme preview, I18N groups, timesheet time format, on-leave-today config),
-  environment metadata (`Version`, `CurrentDateTime`), file plumbing
-  (`EmployeeCSVImport`) and one single-dropdown config.
+  environment metadata (`Version`, `CurrentDateTime`, `SystemCheck`,
+  `AboutOrganization`), file plumbing (`EmployeeCSVImport`), administrative
+  configuration (`Organization`, `Modules`, `I18NTranslationImport`,
+  `TimeConfigPeriod`, `OptionalField`, `ValidationUserName`,
+  `ReportingMethodConfiguration`) and the whole **Buzz** module.
 - `RouteMap` still builds tools for all 190 routable classes. The gate refuses
   them because there is no row, not because code says no.
 - `ApiCatalog` renders the **join** of routes and rows, so a class with no row is
@@ -634,24 +637,29 @@ wants `Version` or a validation endpoint had no way to get it and no way to ask.
   with no code change and no release.
 - The migration never deletes rows, so a hand-added one survives an upgrade.
 
-The reason to leave them out of the shipped set is attention, not safety: 27
-fewer tools in front of every model, and 20 fewer rows an administrator has to
-form an opinion about. Tool-selection accuracy falls as the catalog grows.
+The reason to leave most of them out is attention, not safety: 60 fewer tools
+in front of every model, and 37 fewer rows an administrator has to form an
+opinion about. Tool-selection accuracy falls as the catalog grows.
+
+Buzz is the one entry with a second reason. It is the only place in OrangeHRM
+where any employee can publish free text to everyone, so it is the obvious place
+to plant instructions aimed at an assistant — which argues against the reads, not
+just against an assistant posting under someone's name. `EmployeeAnniversary`
+went with the rest of the module: it is ordinary HR data and the argument above
+does not apply to it, so say the word if it should come back.
 
 `ApiPermissionDefaultsTest` asserts ALL and NOT_SEEDED partition the routable
 surface exactly, so an endpoint family added by a future release cannot go
 unseeded — and therefore unreachable — without a failing test.
 
-Catalog after this: **170 shipped classes, 463 operations** (220 GET, 75 POST,
-101 PUT, 67 DELETE) out of 190 routable, in 12 module groups. Default-on is
-unchanged at 43 classes and 66 read tools.
+Catalog after this: **153 shipped classes, 430 operations** (204 GET, 69 POST,
+94 PUT, 63 DELETE) out of 190 routable, in 10 module groups. Default-on is 42
+classes and 65 read tools — `Organization` was the one default that went.
 
-**Close siblings deliberately left in the shipped set**, for a later decision
-rather than assumed: `Admin\Api\ValidationUserNameAPI`,
-`Buzz\Api\BuzzVideoURLValidationAPI`,
-`Leave\Api\ValidationLeaveEntitlementValueAPI`,
-`SystemCheck\PublicApi\SystemCheckAPI`, and the `…Allowed…` helpers in PIM,
-Recruitment, Performance and Admin.
+**Still in the shipped set and arguably of the same shape**, left for a later
+decision rather than assumed: `Leave\Api\ValidationLeaveEntitlementValueAPI`
+and the `…Allowed…` dropdown helpers in PIM, Recruitment, Performance and
+Admin (13 tools between them).
 
 ## 5. Development plan
 

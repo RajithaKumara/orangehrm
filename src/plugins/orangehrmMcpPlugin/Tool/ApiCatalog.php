@@ -202,7 +202,7 @@ class ApiCatalog
 
     /**
      * How many tools each verb would contribute if every class were enabled,
-     * against how many are enabled now. Lets the screen say "66 of 463" rather
+     * against how many are enabled now. Lets the screen say "65 of 430" rather
      * than leaving an administrator to count checkboxes.
      *
      * @param array<string,array<string,mixed>> $permissionMap
