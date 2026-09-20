@@ -16,13 +16,16 @@
  */
 
 .orangehrm-sub-title {
+  font-family: $oxd-font-family;
   font-weight: 700;
+  color: $oxd-interface-gray-darken-2-color;
   margin: 1rem 0 0.5rem;
 }
 
 .orangehrm-tool-hint {
-  color: rgba(0, 0, 0, 0.6);
-  font-size: 0.75rem;
+  font-family: $oxd-font-family;
+  color: $oxd-interface-gray-darken-1-color;
+  font-size: $oxd-input-control-font-size;
   line-height: 1.3;
   margin: 0.15rem 0 0.75rem 1.75rem;
 }
@@ -31,45 +34,53 @@
   margin-left: 0;
 }
 
+/* OXD sets its font on each component selector (.oxd-text, .oxd-button, ...)
+   and never on body, so any markup that is not an OXD component falls back to
+   the browser default -- a serif, which is why this grid looked foreign. Every
+   custom block below therefore states the family explicitly. */
+
 /* Summary bar: how big the surface currently is, per verb. */
 .orangehrm-mcp-summary {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
+  font-family: $oxd-font-family;
   gap: 1rem;
   margin: 0.25rem 0 0.75rem;
 }
 
 .orangehrm-mcp-summary__item {
-  color: rgba(0, 0, 0, 0.7);
-  font-size: 0.8rem;
+  color: $oxd-interface-gray-darken-1-color;
+  font-size: $oxd-input-control-font-size;
 }
 
 /* The verb carries the risk, so it carries the colour -- consistently in the
    summary, the column heading and nowhere else. */
 .orangehrm-mcp-summary__item--warn {
-  color: #f1a204;
+  color: $oxd-feedback-warn-color;
 }
 
 .orangehrm-mcp-summary__item--danger {
-  color: #e44d69;
+  color: $oxd-feedback-danger-color;
 }
 
 .orangehrm-mcp-summary__total {
-  color: rgba(0, 0, 0, 0.6);
-  font-size: 0.8rem;
+  color: $oxd-interface-gray-color;
+  font-size: $oxd-input-control-font-size;
   margin-left: auto;
 }
 
 .orangehrm-mcp-module {
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 4px;
+  border: 1px solid $oxd-interface-gray-lighten-2-color;
+  border-radius: $oxd-input-control-border-radius;
+  font-family: $oxd-font-family;
   margin-bottom: 0.5rem;
 }
 
 .orangehrm-mcp-module__header {
   align-items: center;
-  background: rgba(0, 0, 0, 0.02);
+  background: $oxd-background-light-gray-color;
+  border-radius: $oxd-input-control-border-radius $oxd-input-control-border-radius 0 0;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -77,13 +88,14 @@
 }
 
 .orangehrm-mcp-module__title {
-  font-size: 0.9rem;
+  color: $oxd-interface-gray-darken-2-color;
+  font-size: 0.875rem;
   font-weight: 700;
 }
 
 .orangehrm-mcp-module__count {
-  color: rgba(0, 0, 0, 0.55);
-  font-size: 0.75rem;
+  color: $oxd-interface-gray-color;
+  font-size: $oxd-input-control-font-size;
   font-weight: 400;
   margin-left: 0.5rem;
 }
@@ -95,7 +107,7 @@
 }
 
 .orangehrm-mcp-module__chevron {
-  color: rgba(0, 0, 0, 0.45);
+  color: $oxd-interface-gray-color;
   font-size: 1rem;
   margin-left: 0.5rem;
   width: 1rem;
@@ -107,29 +119,35 @@
 
 .orangehrm-mcp-row {
   align-items: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid $oxd-interface-gray-lighten-2-color;
   display: grid;
   gap: 0.5rem;
   grid-template-columns: minmax(0, 1fr) repeat(4, 5rem);
-  padding: 0.35rem 0;
+  padding: 0.5rem 0;
+}
+
+.orangehrm-mcp-row:last-child {
+  border-bottom: 0;
 }
 
 .orangehrm-mcp-row--head {
-  color: rgba(0, 0, 0, 0.6);
-  font-size: 0.75rem;
+  color: $oxd-interface-gray-color;
+  font-size: 0.6875rem;
   font-weight: 700;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
 .orangehrm-mcp-row__api {
-  font-size: 0.85rem;
+  color: $oxd-interface-gray-darken-2-color;
+  font-size: 0.8125rem;
   min-width: 0;
 }
 
 .orangehrm-mcp-row__paths {
-  color: rgba(0, 0, 0, 0.45);
+  color: $oxd-interface-gray-color;
   display: block;
-  font-size: 0.7rem;
+  font-size: 0.6875rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -140,34 +158,37 @@
 }
 
 .orangehrm-mcp-row__verb--warn {
-  color: #f1a204;
+  color: $oxd-feedback-warn-color;
 }
 
 .orangehrm-mcp-row__verb--danger {
-  color: #e44d69;
+  color: $oxd-feedback-danger-color;
 }
 
 .orangehrm-mcp-row__na {
-  color: rgba(0, 0, 0, 0.25);
+  color: $oxd-interface-gray-lighten-1-color;
 }
 
 /* Data sensitivity, which is about what the endpoint touches rather than what
    the call does -- so it is a badge on the row, not a colour on a column. */
 .orangehrm-mcp-badge {
-  border-radius: 2px;
-  font-size: 0.65rem;
+  border-radius: 0.2rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   margin-left: 0.4rem;
-  padding: 0.05rem 0.3rem;
+  padding: 0.1rem 0.35rem;
   text-transform: uppercase;
   vertical-align: middle;
+  white-space: nowrap;
 }
 
 .orangehrm-mcp-badge--elevated {
-  background: rgba(241, 162, 4, 0.15);
-  color: #b37a00;
+  background: rgba($oxd-feedback-warn-color, 0.16);
+  color: darken($oxd-feedback-warn-color, 18%);
 }
 
 .orangehrm-mcp-badge--high {
-  background: rgba(228, 77, 105, 0.15);
-  color: #c62b49;
+  background: rgba($oxd-feedback-danger-color, 0.12);
+  color: $oxd-feedback-danger-color;
 }
