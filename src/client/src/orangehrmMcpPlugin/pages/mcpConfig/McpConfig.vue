@@ -157,8 +157,16 @@
               Advanced Permission
             </span>
             <span class="orangehrm-mcp-advanced__summary">
-              {{ totalEnabledTools }} tools enabled across
-              {{ enabledApiCount }} APIs
+              <span
+                v-for="verb in verbs"
+                :key="verb.key"
+                class="orangehrm-mcp-summary__item"
+                :class="'orangehrm-mcp-summary__item--' + verb.risk"
+              >
+                {{ verb.label }}:
+                <strong>{{ liveCounts[verb.key] }}</strong>
+                of {{ availableFor(verb.key) }} tools
+              </span>
             </span>
             <span class="orangehrm-mcp-module__chevron">
               {{ showAdvanced ? '−' : '+' }}
@@ -166,31 +174,6 @@
           </div>
 
           <div v-show="showAdvanced" class="orangehrm-mcp-advanced__body">
-            <oxd-text tag="p" class="orangehrm-mcp-note">
-              One row per API. A row decides what the assistant may do with that
-              part of OrangeHRM; the switches above decide whether that kind of
-              action is allowed at all. Anything a person's own role forbids
-              stays forbidden either way.
-            </oxd-text>
-
-            <oxd-form-row>
-              <div class="orangehrm-mcp-summary">
-                <span
-                  v-for="verb in verbs"
-                  :key="verb.key"
-                  class="orangehrm-mcp-summary__item"
-                  :class="'orangehrm-mcp-summary__item--' + verb.risk"
-                >
-                  {{ verb.label }}:
-                  <strong>{{ liveCounts[verb.key] }}</strong>
-                  of {{ availableFor(verb.key) }} tools
-                </span>
-                <span class="orangehrm-mcp-summary__total">
-                  {{ totalEnabledTools }} tools enabled
-                </span>
-              </div>
-            </oxd-form-row>
-
             <oxd-form-row v-if="totalEnabledTools > toolCountCeiling">
               <oxd-alert
                 type="warn"
@@ -205,16 +188,8 @@
               ></oxd-alert>
             </oxd-form-row>
 
-            <oxd-form-row>
-              <oxd-input-field
-                v-model="search"
-                label="Find an API"
-                placeholder="employee, leave balance, salary..."
-              />
-            </oxd-form-row>
-
             <div
-              v-for="group in filteredModules"
+              v-for="group in modules"
               :key="group.module"
               class="orangehrm-mcp-module"
             >
@@ -287,12 +262,6 @@
                 </div>
               </div>
             </div>
-
-            <oxd-form-row v-if="search.trim() && !filteredModules.length">
-              <oxd-text tag="p" class="orangehrm-mcp-note">
-                Nothing matches "{{ search }}".
-              </oxd-text>
-            </oxd-form-row>
           </div>
         </div>
 
@@ -398,7 +367,6 @@ export default {
       // Past this many tools, tool selection measurably degrades. Shown as a
       // warning rather than enforced: a large instance may still want them.
       toolCountCeiling: 120,
-      search: '',
       showAdvanced: false,
       config: {
         enabled: false,
@@ -421,30 +389,6 @@ export default {
 
   computed: {
     /**
-     * Modules and rows matching the search box. An empty search shows
-     * everything; a search auto-expands what it matched, because a hit inside a
-     * collapsed section is the same as no hit at all.
-     */
-    filteredModules() {
-      const term = this.search.trim().toLowerCase();
-      if (!term) return this.modules;
-
-      return this.modules
-        .map((group) => {
-          const apis = group.apis.filter((api) => {
-            return (
-              api.label.toLowerCase().includes(term) ||
-              api.apiName.toLowerCase().includes(term) ||
-              group.label.toLowerCase().includes(term) ||
-              api.paths.some((p) => p.toLowerCase().includes(term))
-            );
-          });
-          return {...group, apis};
-        })
-        .filter((group) => group.apis.length > 0);
-    },
-
-    /**
      * Tools enabled right now, per verb, counted from the unsaved state so the
      * numbers move as the administrator clicks.
      */
@@ -466,14 +410,6 @@ export default {
 
     totalEnabledTools() {
       return VERBS.reduce((sum, v) => sum + this.liveCounts[v.key], 0);
-    },
-
-    /** APIs with at least one verb enabled, for the collapsed summary. */
-    enabledApiCount() {
-      return Object.keys(this.permissions).filter((name) => {
-        const row = this.permissions[name];
-        return row.read || row.create || row.update || row.delete;
-      }).length;
     },
   },
 
@@ -542,8 +478,7 @@ export default {
     },
 
     isExpanded(module) {
-      // A search result is always shown expanded, whatever the saved state.
-      return this.search.trim() ? true : !!this.expanded[module];
+      return !!this.expanded[module];
     },
 
     toggleModule(module) {
