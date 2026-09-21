@@ -240,3 +240,60 @@
 .orangehrm-mcp-advanced__body {
   padding: 0.75rem;
 }
+
+/* Readiness panel: the mcp:doctor checks, for an administrator who will never
+   run mcp:doctor. */
+.orangehrm-mcp-health {
+  border: 1px solid $oxd-interface-gray-lighten-2-color;
+  border-radius: $oxd-input-control-border-radius;
+  font-family: $oxd-font-family;
+  margin: 0.5rem 0 1rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.orangehrm-mcp-health__summary {
+  align-items: center;
+  color: $oxd-interface-gray-darken-2-color;
+  display: flex;
+  font-size: 0.875rem;
+  font-weight: 700;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.orangehrm-mcp-health.--ready .orangehrm-mcp-health__summary {
+  color: $oxd-feedback-success-color;
+}
+
+.orangehrm-mcp-health.--blocked .orangehrm-mcp-health__summary {
+  color: $oxd-feedback-danger-color;
+}
+
+.orangehrm-mcp-health__row {
+  align-items: baseline;
+  color: $oxd-interface-gray-darken-1-color;
+  display: flex;
+  font-size: $oxd-input-control-font-size;
+  gap: 0.4rem;
+  padding: 0.15rem 0;
+}
+
+.orangehrm-mcp-health__row.--pass .orangehrm-mcp-health__icon {
+  color: $oxd-feedback-success-color;
+}
+
+.orangehrm-mcp-health__row.--fail .orangehrm-mcp-health__icon {
+  color: $oxd-feedback-danger-color;
+}
+
+.orangehrm-mcp-health__row.--skip .orangehrm-mcp-health__icon {
+  color: $oxd-interface-gray-color;
+}
+
+.orangehrm-mcp-health__name {
+  min-width: 13rem;
+}
+
+.orangehrm-mcp-health__detail {
+  color: $oxd-interface-gray-color;
+}

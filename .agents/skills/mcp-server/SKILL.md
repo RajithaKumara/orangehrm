@@ -114,7 +114,7 @@ Regenerate the OpenAPI document so the generic tool gets a description and param
 
 ## Things that bite
 
-- **The tool is missing from the listing.** Work down the three gates in order: restricted in code, verb switched off, or the API class not enabled in `ohrm_mcp_api_permission`. `php bin/console mcp:doctor` prints the enabled counts per verb. Only then check the permission chain as the *calling* user, not as an administrator.
+- **The tool is missing from the listing.** Work down the three gates in order: restricted in code, verb switched off, or the API class not enabled in `ohrm_mcp_api_permission`. `php bin/console mcp:doctor` prints the enabled counts per verb, and the same checks appear on the MCP Configuration screen — both render `Service/McpHealthCheck`, so add a check there and it shows up in both. Only then check the permission chain as the *calling* user, not as an administrator.
 - **A whole area is missing and the grid looks right.** Check the class has a row at all. Absence is refusal, and an upgrade that added endpoints without seeding rows leaves them invisible.
 - **"Unknown tool" rather than a permission error.** The tool was never built. Either it is restricted, or its route has no `_api` class.
 - **The endpoint answers "not implemented".** The route's `defaults` were not replayed, so the dispatcher asked for a list from an endpoint that only serves one record.

@@ -42,6 +42,45 @@
       ></oxd-alert>
 
       <oxd-form :loading="isLoading" @submit-valid="onSave">
+        <div
+          v-if="health.results.length"
+          class="orangehrm-mcp-health"
+          :class="health.ready ? '--ready' : '--blocked'"
+        >
+          <div class="orangehrm-mcp-health__summary">
+            <oxd-icon
+              :name="
+                health.ready ? 'check-circle-fill' : 'exclamation-triangle-fill'
+              "
+              class="orangehrm-mcp-health__icon"
+            />
+            <span class="orangehrm-mcp-health__headline">
+              {{
+                health.ready
+                  ? 'Ready to connect an AI assistant'
+                  : failedCheckCount +
+                    ' of these needs attention before a client can connect'
+              }}
+            </span>
+          </div>
+
+          <div
+            v-for="check in health.results"
+            :key="check.name"
+            class="orangehrm-mcp-health__row"
+            :class="'--' + check.status"
+          >
+            <oxd-icon
+              :name="checkIcon(check.status)"
+              class="orangehrm-mcp-health__icon"
+            />
+            <span class="orangehrm-mcp-health__name">{{ check.name }}</span>
+            <span class="orangehrm-mcp-health__detail">{{
+              check.message
+            }}</span>
+          </div>
+        </div>
+
         <!-- The two URLs an admin hands to an AI client -->
         <oxd-form-row>
           <oxd-input-field
@@ -284,7 +323,7 @@
 </template>
 
 <script>
-import {OxdAlert, OxdSwitchInput} from '@ohrm/oxd';
+import {OxdAlert, OxdIcon, OxdSwitchInput} from '@ohrm/oxd';
 import {APIService} from '@/core/util/services/api.service';
 
 const VERBS = [
@@ -335,6 +374,7 @@ export default {
     // at all -- which is how the delete and write warnings on this screen were
     // invisible from the day they were written.
     'oxd-alert': OxdAlert,
+    'oxd-icon': OxdIcon,
     'oxd-switch-input': OxdSwitchInput,
   },
 
@@ -372,6 +412,7 @@ export default {
         userOverrides: [],
       },
       modules: [],
+      health: {ready: true, results: []},
       // Shaped like the loaded payload, because the first render happens before
       // the GET resolves. An empty object here means the summary bar reads
       // `undefined.available` and takes the whole screen down.
@@ -409,6 +450,10 @@ export default {
     totalEnabledTools() {
       return VERBS.reduce((sum, v) => sum + this.liveCounts[v.key], 0);
     },
+
+    failedCheckCount() {
+      return this.health.results.filter((c) => c.status === 'fail').length;
+    },
   },
 
   beforeMount() {
@@ -427,6 +472,7 @@ export default {
           this.config.userOverrides = d.userOverrides || [];
           this.availableRoles = d.availableRoles || [];
           this.modules = d.modules || [];
+          this.health = d.healthChecks || {ready: true, results: []};
           this.counts = {
             tools: {...emptyCounts(), ...((d.counts || {}).tools || {})},
             classes: (d.counts || {}).classes || 0,
@@ -465,6 +511,11 @@ export default {
         .finally(() => {
           this.isLoading = false;
         });
+    },
+
+    checkIcon(status) {
+      if (status === 'fail') return 'x-circle-fill';
+      return status === 'skip' ? 'dash-circle-fill' : 'check-circle-fill';
     },
 
     availableFor(verb) {

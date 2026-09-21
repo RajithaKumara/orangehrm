@@ -31,6 +31,8 @@ use OrangeHRM\Core\Api\V2\Validator\ParamRuleCollection;
 use OrangeHRM\Core\Api\V2\Validator\Rule;
 use OrangeHRM\Core\Api\V2\Validator\Rules;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
+use OrangeHRM\Mcp\Controller\OAuthMetadataController;
+use OrangeHRM\Mcp\Service\McpHealthCheck;
 use OrangeHRM\Mcp\Tool\ApiCatalog;
 use OrangeHRM\Mcp\Tool\ApiSensitivity;
 use OrangeHRM\Mcp\Tool\ApiVerb;
@@ -84,6 +86,10 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
             'modules' => $catalog->getGroupedByModule($permissionMap),
             'counts' => $catalog->getCounts($permissionMap),
             'sensitivityLevels' => ApiSensitivity::levels(),
+            // The same checks `mcp:doctor` prints. An HR administrator should
+            // not need a terminal to find out whether this instance can serve
+            // a client at all.
+            'healthChecks' => $this->getHealthChecks(),
             'availableRoles' => $this->getSelectableRoles(),
         ]);
     }
@@ -245,6 +251,21 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
     public function getValidationRuleForDelete(): ParamRuleCollection
     {
         throw $this->getNotImplementedException();
+    }
+
+    /**
+     * @return array{ready:bool,results:array<int,array<string,string>>}
+     */
+    private function getHealthChecks(): array
+    {
+        // The origin the administrator is actually using, rather than the
+        // command's guess: the TLS check is about how this instance is
+        // reached, and the request knows that exactly.
+        $host = OAuthMetadataController::getHostOrigin($this->getRequest()->getHttpRequest());
+
+        $results = (new McpHealthCheck())->all($host);
+
+        return ['ready' => McpHealthCheck::isReady($results), 'results' => $results];
     }
 
     /**

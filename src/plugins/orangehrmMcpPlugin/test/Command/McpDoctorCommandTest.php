@@ -176,7 +176,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $output = $tester->getDisplay();
 
         $this->assertSame(1, $exit);
-        $this->assertStringContainsString('[FAIL]  Module enabled', $output);
+        $this->assertStringContainsString('[FAIL]  MCP module enabled', $output);
         $this->assertStringContainsString('Enable the MCP module', $output);
     }
 
@@ -187,7 +187,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $output = $tester->getDisplay();
 
         $this->assertSame(1, $exit);
-        $this->assertStringContainsString('[FAIL]  OAuth dependency', $output);
+        $this->assertStringContainsString('[FAIL]  OAuth sign-in configured', $output);
         $this->assertStringContainsString('oauth.encryption_key', $output);
     }
 
@@ -198,7 +198,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $output = $tester->getDisplay();
 
         $this->assertSame(1, $exit);
-        $this->assertStringContainsString('[FAIL]  OAuth dependency', $output);
+        $this->assertStringContainsString('[FAIL]  OAuth sign-in configured', $output);
         $this->assertStringContainsString('oauth.token_encryption_key', $output);
     }
 
@@ -209,7 +209,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $output = $tester->getDisplay();
 
         $this->assertSame(1, $exit);
-        $this->assertStringContainsString('[FAIL]  OAuth dependency', $output);
+        $this->assertStringContainsString('[FAIL]  OAuth sign-in configured', $output);
         $this->assertStringContainsString('ohrm_oauth2_client', $output);
     }
 
@@ -220,7 +220,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $tester = $this->buildCommand(['enabled' => ['mcp']]);
         $tester->execute(['--host' => 'localhost']);
 
-        $this->assertStringContainsString('[PASS]  OAuth dependency', $tester->getDisplay());
+        $this->assertStringContainsString('[PASS]  OAuth sign-in configured', $tester->getDisplay());
     }
 
     public function testAuditWriteFailsCarriesErrorMessage(): void
@@ -230,7 +230,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $output = $tester->getDisplay();
 
         $this->assertSame(1, $exit);
-        $this->assertStringContainsString('[FAIL]  Audit log write path', $output);
+        $this->assertStringContainsString('[FAIL]  Audit log writable', $output);
         $this->assertStringContainsString('SQLSTATE', $output);
         $this->assertNotEmpty($this->rollbackCalls, 'rollback must run on failure path too');
     }
@@ -242,7 +242,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $output = $tester->getDisplay();
 
         $this->assertSame(1, $exit);
-        $this->assertStringContainsString('[FAIL]  TLS / localhost', $output);
+        $this->assertStringContainsString('[FAIL]  Secure connection', $output);
         $this->assertStringContainsString('TLS is required', $output);
     }
 
@@ -252,7 +252,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $exit = $tester->execute(['--host' => 'https://hr.example.com']);
 
         $this->assertSame(0, $exit);
-        $this->assertStringContainsString('[PASS]  TLS / localhost', $tester->getDisplay());
+        $this->assertStringContainsString('[PASS]  Secure connection', $tester->getDisplay());
     }
 
     public function testIpv6LocalhostPasses(): void
@@ -261,7 +261,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $exit = $tester->execute(['--host' => '::1']);
 
         $this->assertSame(0, $exit);
-        $this->assertStringContainsString('[PASS]  TLS / localhost', $tester->getDisplay());
+        $this->assertStringContainsString('[PASS]  Secure connection', $tester->getDisplay());
     }
 
     public function testOpenApiCheckReportsCoverage(): void
@@ -273,9 +273,9 @@ class McpDoctorCommandTest extends KernelTestCase
         // The document ships in the repo, so this build describes most
         // operations. A missing document is a SKIP, never a failure: an endpoint
         // it does not describe is still exposed, just with a thinner schema.
-        $this->assertStringContainsString('OpenAPI loaded', $output);
+        $this->assertStringContainsString('Tool descriptions available', $output);
         $this->assertMatchesRegularExpression(
-            '/OpenAPI loaded -- \\d+ of \\d+ readable operations described/',
+            '/Tool descriptions available -- \\d+ of \\d+ readable operations described/',
             $output
         );
     }
@@ -292,7 +292,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $output = $tester->getDisplay();
 
         $this->assertSame(1, $exit);
-        $this->assertStringContainsString('[FAIL]  API permissions', $output);
+        $this->assertStringContainsString('[FAIL]  API permissions installed', $output);
         $this->assertStringContainsString('Run the migrations', $output);
     }
 
@@ -302,7 +302,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $tester->execute(['--host' => 'localhost']);
 
         $this->assertMatchesRegularExpression(
-            '/API permissions -- \\d+ of \\d+ API classes configured; tools: read \\d+\\/\\d+/',
+            '/API permissions installed -- \\d+ of \\d+ API classes configured; tools: read \\d+\\/\\d+/',
             $tester->getDisplay()
         );
     }
