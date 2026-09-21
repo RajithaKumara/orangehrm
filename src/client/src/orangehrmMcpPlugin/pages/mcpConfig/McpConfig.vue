@@ -167,8 +167,9 @@
           <oxd-alert
             type="error"
             :show="true"
-            message="Delete is on. Records the assistant removes cannot be
-              recovered."
+            message="Records the assistant removes cannot be recovered.
+              Deletion is limited to the APIs you enable under Advanced
+              Permission."
           ></oxd-alert>
         </oxd-form-row>
         <oxd-form-row v-else-if="config.verbs.create || config.verbs.update">
