@@ -118,6 +118,10 @@ final class ApiLabels
         'OrangeHRM\\Leave\\Api\\LeaveBalanceAPI' => 'Leave Balance (by leave type)',
         'OrangeHRM\\Performance\\Api\\ReviewEmployeeSupervisorAPI' => 'Performance Review Supervisor',
 
+        // Named after the class rather than the route it serves: one endpoint,
+        // /recruitment/interviewers, feeding the interviewer picker.
+        'OrangeHRM\\Recruitment\\Api\\EmployeeListAPI' => 'Interviewer',
+
         // Plain English for the rest.
         'OrangeHRM\\Attendance\\Api\\TimezonesAPI' => 'Time Zone',
         'OrangeHRM\\Time\\Api\\TimesheetActionLogAPI' => 'Timesheet Action History',
