@@ -167,11 +167,8 @@
           <oxd-alert
             type="error"
             :show="true"
-            message="Delete is on. OrangeHRM has no undo and no recycle bin: a
-              leave entitlement, an attendance record or an employee removed by
-              mistake is gone, and anything worked out from it, such as a leave
-              balance, changes with it. Turn this on only for a workflow that
-              needs it, and on as few APIs as possible."
+            message="Delete is on. Records the assistant removes cannot be
+              recovered."
           ></oxd-alert>
         </oxd-form-row>
         <oxd-form-row v-else-if="config.verbs.create || config.verbs.update">
