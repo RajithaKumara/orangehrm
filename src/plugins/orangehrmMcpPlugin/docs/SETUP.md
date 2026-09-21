@@ -141,6 +141,43 @@ excluded in code, the verb is switched on, the API is enabled on the MCP Configu
 screen, and your own role permits it. So an ESS user sees fewer than an admin,
 and an admin sees fewer than the catalog holds.
 
+## Prompts
+
+Prompts are stored in `ohrm_mcp_prompt`, not in code, so they can be changed on
+a running instance without a release. Four ship enabled.
+
+```sql
+-- what a client is being offered
+SELECT name, title, is_enabled FROM ohrm_mcp_prompt;
+
+-- reword one
+UPDATE ohrm_mcp_prompt
+   SET template = 'Show my leave balance and flag anything expiring this period.'
+ WHERE name = 'my_leave_balance';
+
+-- stop offering one, without losing it
+UPDATE ohrm_mcp_prompt SET is_enabled = 0 WHERE name = 'attendance_this_week';
+
+-- add your own
+INSERT INTO ohrm_mcp_prompt (name, title, description, arguments, template, is_enabled)
+VALUES (
+  'probation_due',
+  'Probation reviews due',
+  'List employees whose probation ends in the next month.',
+  '[{"name":"month","description":"Month to check, e.g. 2026-10.","required":false}]',
+  'List employees whose probation period ends in {{month}}, with their supervisor and job title.',
+  1
+);
+```
+
+`template` is plain text. `{{name}}` placeholders are replaced with the
+arguments the client supplies; one with no matching argument is left visible in
+the text, so a typo shows up rather than silently changing the request.
+`arguments` is a JSON array of `{name, description, required}` — if it is
+malformed the prompt still lists, just without arguments.
+
+Clients cache the list, so reconnect after editing.
+
 ## Troubleshooting
 
 **401 on every call.** Expected before authorizing. Confirm the pointer is

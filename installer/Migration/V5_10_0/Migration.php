@@ -84,6 +84,8 @@ class Migration extends AbstractMigration
         $this->seedApiPermissions();
         $this->seedSwitches();
         $this->seedAllowedRoles();
+        $this->createPromptTable();
+        $this->seedPrompts();
     }
 
     /**
@@ -282,6 +284,123 @@ class Migration extends AbstractMigration
 
     private const SCREEN_NAME = 'Admin - MCP Configuration';
     private const SCREEN_ACTION = 'mcpConfig';
+
+    /**
+     * Prompts are data, not code.
+     *
+     * A prompt is wording whose value is only known once people use it, and
+     * wording that can only change in a release does not change. A customer --
+     * or support, on their behalf -- edits one, disables one or adds their own
+     * with a few statements and no deployment. The template is plain text with
+     * `{{argument}}` placeholders so it stays legible in a SQL client.
+     */
+    private function createPromptTable(): void
+    {
+        if ($this->getSchemaHelper()->tableExists(['ohrm_mcp_prompt'])) {
+            return;
+        }
+
+        $this->getSchemaHelper()->createTable('ohrm_mcp_prompt')
+            ->addColumn('id', Types::INTEGER, ['Autoincrement' => true, 'Notnull' => true])
+            ->addColumn('name', Types::STRING, ['Length' => 100, 'Notnull' => true])
+            ->addColumn('title', Types::STRING, ['Length' => 200, 'Notnull' => false])
+            ->addColumn('description', Types::STRING, ['Length' => 500, 'Notnull' => false])
+            ->addColumn('arguments', Types::TEXT, ['Notnull' => false])
+            ->addColumn('template', Types::TEXT, ['Notnull' => true])
+            ->addColumn('is_enabled', Types::BOOLEAN, ['Notnull' => true, 'Default' => true])
+            ->setPrimaryKey(['id'])
+            // The name is what a client passes back to prompts/get, so it is
+            // the row's identity.
+            ->addUniqueIndex(['name'], 'uk_mcp_prompt_name')
+            ->create();
+    }
+
+    /**
+     * Four starters, so the capability is visible rather than theoretical.
+     *
+     * Seeded only when the table is completely empty, which means a customer
+     * who deletes one does not get it back on the next upgrade. That is the
+     * opposite rule from the permission grid, and deliberately so: a missing
+     * permission row silently removes access, while a missing prompt is just a
+     * phrasing somebody decided against.
+     */
+    private function seedPrompts(): void
+    {
+        $existing = $this->createQueryBuilder()
+            ->select('COUNT(prompt.id)')
+            ->from('ohrm_mcp_prompt', 'prompt')
+            ->executeQuery()
+            ->fetchOne();
+
+        if ((int) $existing > 0) {
+            return;
+        }
+
+        foreach (self::STARTER_PROMPTS as $prompt) {
+            $this->createQueryBuilder()
+                ->insert('ohrm_mcp_prompt')
+                ->values([
+                    'name' => ':name',
+                    'title' => ':title',
+                    'description' => ':description',
+                    'arguments' => ':arguments',
+                    'template' => ':template',
+                    'is_enabled' => ':isEnabled',
+                ])
+                ->setParameter('name', $prompt['name'])
+                ->setParameter('title', $prompt['title'])
+                ->setParameter('description', $prompt['description'])
+                ->setParameter('arguments', $prompt['arguments'])
+                ->setParameter('template', $prompt['template'])
+                ->setParameter('isEnabled', 1)
+                ->executeStatement();
+        }
+    }
+
+    /**
+     * Written against tools that ship enabled, so a starter prompt works on a
+     * fresh install rather than asking for something switched off.
+     */
+    private const STARTER_PROMPTS = [
+        [
+            'name' => 'my_leave_balance',
+            'title' => 'My leave balance',
+            'description' => 'Summarise the signed-in employee\'s leave entitlement and balance by leave type.',
+            'arguments' => null,
+            'template' => 'Show my leave balance for each leave type I am eligible for. '
+                . 'Resolve who I am first, then list entitlement, used and remaining days, '
+                . 'and say which leave period the figures cover.',
+        ],
+        [
+            'name' => 'team_on_leave',
+            'title' => 'Who is on leave',
+            'description' => 'List the people away on a given date, for planning cover.',
+            'arguments' => '[{"name":"date","description":"Date to check, e.g. 2026-09-30. Defaults to today.","required":false}]',
+            'template' => 'List the employees on approved leave on {{date}}. '
+                . 'Group them by subunit, give the leave type and whether it is a full or half day, '
+                . 'and say plainly if nobody is away.',
+        ],
+        [
+            'name' => 'employee_profile',
+            'title' => 'Employee profile summary',
+            'description' => 'Pull one employee\'s core record together into a short briefing.',
+            'arguments' => '[{"name":"employee","description":"Employee name or ID to look up.","required":true}]',
+            'template' => 'Find the employee {{employee}} and summarise their record: '
+                . 'job title, sub unit, employment status, supervisor and joined date. '
+                . 'If more than one person matches, list the matches and stop rather than guessing.',
+        ],
+        [
+            'name' => 'attendance_this_week',
+            'title' => 'Attendance this week',
+            'description' => 'Report punch-in and punch-out activity for an employee over a date range.',
+            'arguments' => '[{"name":"employee","description":"Employee name or ID.","required":true},'
+                . '{"name":"from","description":"Start date, e.g. 2026-09-21.","required":false},'
+                . '{"name":"to","description":"End date, e.g. 2026-09-27.","required":false}]',
+            'template' => 'Report attendance for {{employee}} between {{from}} and {{to}}. '
+                . 'Give total hours per day, flag any day with no record, '
+                . 'and note anything that looks like a missed punch out.',
+        ],
+    ];
 
     /**
      * Ships with both assignable roles allowed to connect.

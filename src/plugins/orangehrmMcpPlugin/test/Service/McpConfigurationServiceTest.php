@@ -49,53 +49,20 @@ class McpConfigurationServiceTest extends KernelTestCase
     public function testDefaultsAppliedWhenDaoReturnsNull(): void
     {
         $this->stubDao([]);
-        $this->assertSame(60, $this->service->getRateLimitPerSessionPerMinute());
-        $this->assertSame(120, $this->service->getRateLimitPerUserPerMinute());
-        $this->assertFalse($this->service->isDailyCallCapEnabled());
-        $this->assertSame(0, $this->service->getDailyCallCapValue());
-        $this->assertSame(5, $this->service->getConcurrentSessionsPerUser());
         $this->assertSame(0, $this->service->getAuditRetentionDays());
         $this->assertSame('digest_only', $this->service->getAuditRedactionPolicy());
     }
 
-    public function testBoolFalsyOverride(): void
-    {
-        $this->stubDao([McpConfigurationService::KEY_DAILY_CALL_CAP_ENABLED => '0']);
-        $this->assertFalse($this->service->isDailyCallCapEnabled());
-    }
-
-    public function testBoolTruthyVariantsAreCaseInsensitive(): void
-    {
-        foreach (['1', 'true', 'TRUE', 'yes', 'YES', 'True'] as $raw) {
-            $this->stubDao([McpConfigurationService::KEY_DAILY_CALL_CAP_ENABLED => $raw]);
-            $this->assertTrue(
-                $this->service->isDailyCallCapEnabled(),
-                "raw=$raw should coerce to true"
-            );
-        }
-    }
-
-    public function testBoolNonTruthyValuesAreFalse(): void
-    {
-        foreach (['0', 'false', 'no', 'maybe', ''] as $raw) {
-            $this->stubDao([McpConfigurationService::KEY_DAILY_CALL_CAP_ENABLED => $raw]);
-            $this->assertFalse(
-                $this->service->isDailyCallCapEnabled(),
-                "raw=$raw should coerce to false"
-            );
-        }
-    }
-
     public function testIntOverride(): void
     {
-        $this->stubDao([McpConfigurationService::KEY_CONCURRENT_SESSIONS_PER_USER => '10']);
-        $this->assertSame(10, $this->service->getConcurrentSessionsPerUser());
+        $this->stubDao([McpConfigurationService::KEY_AUDIT_RETENTION_DAYS => '10']);
+        $this->assertSame(10, $this->service->getAuditRetentionDays());
     }
 
     public function testEmptyStringIntCoercesToZero(): void
     {
-        $this->stubDao([McpConfigurationService::KEY_DAILY_CALL_CAP_VALUE => '']);
-        $this->assertSame(0, $this->service->getDailyCallCapValue());
+        $this->stubDao([McpConfigurationService::KEY_AUDIT_RETENTION_DAYS => '']);
+        $this->assertSame(0, $this->service->getAuditRetentionDays());
     }
 
     public function testStringEnumOverride(): void

@@ -30,12 +30,15 @@ use OrangeHRM\Mcp\JsonRpc\Dispatcher;
 use OrangeHRM\Mcp\Method\DiscoverToolsHandler;
 use OrangeHRM\Mcp\Method\InitializeHandler;
 use OrangeHRM\Mcp\Method\PingHandler;
+use OrangeHRM\Mcp\Method\PromptsGetHandler;
+use OrangeHRM\Mcp\Method\PromptsListHandler;
 use OrangeHRM\Mcp\Method\ToolsCallHandler;
 use OrangeHRM\Mcp\Method\ToolsListHandler;
 use OrangeHRM\Mcp\Service\McpConfigPolicy;
 use OrangeHRM\Mcp\Service\McpApiPermissionService;
 use OrangeHRM\Mcp\Service\McpConfigurationService;
 use OrangeHRM\Mcp\Service\McpOperatorLogger;
+use OrangeHRM\Mcp\Service\McpPromptService;
 use OrangeHRM\Mcp\Service\TokenClientResolver;
 use OrangeHRM\Mcp\Session\SessionContext;
 use OrangeHRM\Mcp\Subscriber\McpModuleStatusChangeSubscriber;
@@ -107,9 +110,13 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
 
         $discovery = new DiscoverToolsHandler($registry, $restDispatcher, $gate);
 
+        $promptService = new McpPromptService();
+
         $dispatcher = new Dispatcher([
             new InitializeHandler(),
             new PingHandler(),
+            new PromptsListHandler($promptService),
+            new PromptsGetHandler($promptService),
             new ToolsListHandler($registry, $restDispatcher, $gate, $apiPermissions, $discovery),
             new ToolsCallHandler(
                 $registry,

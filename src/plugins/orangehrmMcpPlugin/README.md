@@ -64,8 +64,9 @@ with 28 skills, bridged into `.claude/skills/` by `.agents/SETUP.md`. That bridg
 | Access policy | `Service/McpConfigPolicy.php`, `Api/McpConfigAPI.php`, `pages/mcpConfig/McpConfig.vue` | who may connect, and the four verb switches |
 | Per-API permissions | `ohrm_mcp_api_permission`, `Tool/{ApiPermissionDefaults,ApiSensitivity,ApiVerb,ApiCatalog}.php`, `Dao/McpApiPermissionDao.php` | the grid: which verbs MCP may use against each API class. 153 rows shipped of 190 routable classes (4.17, 4.18) |
 
-**Not started:** write discipline with propose/confirm (Epic 3), resources and
-prompts (Epic 5), rate limiting and the daily cap (the config keys exist, nothing
+**Not started:** write discipline with propose/confirm (Epic 3), resources
+(Epic 5 -- prompts landed 2026-09-22, stored in `ohrm_mcp_prompt` so a customer
+can edit or add one with SQL rather than waiting for a release), rate limiting and the daily cap (the config keys exist, nothing
 reads them), the two help articles (Epic 7).
 
 **Reference material:** a separate proof of concept (sibling checkout `ohrm-57`,

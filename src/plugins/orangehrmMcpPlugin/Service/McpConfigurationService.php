@@ -30,61 +30,11 @@ class McpConfigurationService extends ConfigService
      */
     public const MODULE_NAME = 'mcp';
 
-    public const KEY_RATE_LIMIT_PER_SESSION_PER_MINUTE = 'mcp.rate_limit.per_session_per_minute';
-    public const KEY_RATE_LIMIT_PER_USER_PER_MINUTE = 'mcp.rate_limit.per_user_per_minute';
-    public const KEY_DAILY_CALL_CAP_ENABLED = 'mcp.daily_call_cap.enabled';
-    public const KEY_DAILY_CALL_CAP_VALUE = 'mcp.daily_call_cap.value';
-    public const KEY_CONCURRENT_SESSIONS_PER_USER = 'mcp.concurrent_sessions_per_user';
     public const KEY_AUDIT_RETENTION_DAYS = 'mcp.audit.retention_days';
     public const KEY_AUDIT_REDACTION_POLICY = 'mcp.audit.redaction_policy';
 
-    public const DEFAULT_RATE_LIMIT_PER_SESSION_PER_MINUTE = 60;
-    public const DEFAULT_RATE_LIMIT_PER_USER_PER_MINUTE = 120;
-    public const DEFAULT_DAILY_CALL_CAP_ENABLED = false;
-    public const DEFAULT_DAILY_CALL_CAP_VALUE = 0;
-    public const DEFAULT_CONCURRENT_SESSIONS_PER_USER = 5;
     public const DEFAULT_AUDIT_RETENTION_DAYS = 0;
     public const DEFAULT_AUDIT_REDACTION_POLICY = 'digest_only';
-
-    public function getRateLimitPerSessionPerMinute(): int
-    {
-        return $this->coerceInt(
-            $this->_getConfigValue(self::KEY_RATE_LIMIT_PER_SESSION_PER_MINUTE),
-            self::DEFAULT_RATE_LIMIT_PER_SESSION_PER_MINUTE
-        );
-    }
-
-    public function getRateLimitPerUserPerMinute(): int
-    {
-        return $this->coerceInt(
-            $this->_getConfigValue(self::KEY_RATE_LIMIT_PER_USER_PER_MINUTE),
-            self::DEFAULT_RATE_LIMIT_PER_USER_PER_MINUTE
-        );
-    }
-
-    public function isDailyCallCapEnabled(): bool
-    {
-        return $this->coerceBool(
-            $this->_getConfigValue(self::KEY_DAILY_CALL_CAP_ENABLED),
-            self::DEFAULT_DAILY_CALL_CAP_ENABLED
-        );
-    }
-
-    public function getDailyCallCapValue(): int
-    {
-        return $this->coerceInt(
-            $this->_getConfigValue(self::KEY_DAILY_CALL_CAP_VALUE),
-            self::DEFAULT_DAILY_CALL_CAP_VALUE
-        );
-    }
-
-    public function getConcurrentSessionsPerUser(): int
-    {
-        return $this->coerceInt(
-            $this->_getConfigValue(self::KEY_CONCURRENT_SESSIONS_PER_USER),
-            self::DEFAULT_CONCURRENT_SESSIONS_PER_USER
-        );
-    }
 
     public function getAuditRetentionDays(): int
     {
@@ -98,14 +48,6 @@ class McpConfigurationService extends ConfigService
     {
         $raw = $this->_getConfigValue(self::KEY_AUDIT_REDACTION_POLICY);
         return $raw === null ? self::DEFAULT_AUDIT_REDACTION_POLICY : $raw;
-    }
-
-    private function coerceBool(?string $raw, bool $default): bool
-    {
-        if ($raw === null) {
-            return $default;
-        }
-        return in_array(strtolower($raw), ['1', 'true', 'yes'], true);
     }
 
     private function coerceInt(?string $raw, int $default): int

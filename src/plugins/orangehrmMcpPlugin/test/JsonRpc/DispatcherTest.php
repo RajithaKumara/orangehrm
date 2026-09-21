@@ -102,7 +102,9 @@ class DispatcherTest extends TestCase
 
     /**
      * Advertising a capability the server does not implement makes clients call
-     * methods that do not exist. Only `tools` is real today.
+     * methods that do not exist, and a -32601 reads as a broken server rather
+     * than a missing feature. `tools` and `prompts` are real; `resources` is
+     * not, and must stay unadvertised until it is.
      */
     public function testInitializeAdvertisesOnlyImplementedCapabilities(): void
     {
@@ -110,8 +112,8 @@ class DispatcherTest extends TestCase
         $result = $dispatcher->dispatch($this->envelope('initialize'));
 
         $this->assertArrayHasKey('tools', $result['capabilities']);
+        $this->assertArrayHasKey('prompts', $result['capabilities']);
         $this->assertArrayNotHasKey('resources', $result['capabilities']);
-        $this->assertArrayNotHasKey('prompts', $result['capabilities']);
         $this->assertSame('OrangeHRM-MCP', $result['serverInfo']['name']);
     }
 }

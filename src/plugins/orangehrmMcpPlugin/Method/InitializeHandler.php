@@ -60,9 +60,14 @@ class InitializeHandler implements MethodHandlerInterface
         return [
             'protocolVersion' => $negotiated,
             'capabilities' => [
-                // Only tools in this prototype. resources/ and prompts/ arrive
-                // with Epic 5 and must not be advertised before they work.
                 'tools' => ['listChanged' => false],
+                // Prompts live in ohrm_mcp_prompt, so the set can change under
+                // a running server when someone edits the table. Advertised
+                // without listChanged because there is nothing watching the
+                // table to send the notification.
+                'prompts' => ['listChanged' => false],
+                // resources/ arrives with Epic 5 and must not be advertised
+                // before it works.
             ],
             'serverInfo' => [
                 'name' => self::SERVER_NAME,
