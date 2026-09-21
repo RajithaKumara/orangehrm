@@ -197,12 +197,7 @@
   white-space: nowrap;
 }
 
-.orangehrm-mcp-badge--elevated {
-  background: rgba($oxd-feedback-warn-color, 0.16);
-  color: darken($oxd-feedback-warn-color, 18%);
-}
-
-.orangehrm-mcp-badge--high {
+.orangehrm-mcp-badge--sensitive {
   background: rgba($oxd-feedback-danger-color, 0.12);
   color: $oxd-feedback-danger-color;
 }

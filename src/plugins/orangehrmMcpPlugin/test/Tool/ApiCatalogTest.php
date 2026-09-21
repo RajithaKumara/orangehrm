@@ -131,7 +131,7 @@ class ApiCatalogTest extends KernelTestCase
                 ApiVerb::CREATE => false,
                 ApiVerb::UPDATE => false,
                 ApiVerb::DELETE => true,
-                'sensitivity' => ApiSensitivity::HIGH,
+                'sensitivity' => ApiSensitivity::SENSITIVE,
             ],
         ]);
 
@@ -145,7 +145,7 @@ class ApiCatalogTest extends KernelTestCase
         }
 
         $this->assertNotNull($row, 'LocationAPI should be in the catalog');
-        $this->assertSame(ApiSensitivity::HIGH, $row['sensitivity']);
+        $this->assertSame(ApiSensitivity::SENSITIVE, $row['sensitivity']);
 
         $enabled = [];
         foreach ($row['verbs'] as $verb) {

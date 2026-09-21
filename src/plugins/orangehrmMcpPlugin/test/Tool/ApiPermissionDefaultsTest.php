@@ -140,12 +140,11 @@ class ApiPermissionDefaultsTest extends KernelTestCase
     }
 
     /**
-     * Sensitivity is only useful if it points at the things that are actually
-     * sensitive. These are the categories the classification exists for, so a
-     * refactor that renames one of them should fail here rather than silently
+     * The flag is only useful if it points at the things it exists for, so a
+     * refactor that renames one of these should fail here rather than silently
      * downgrade it to `normal`.
      */
-    public function testTheCategoriesThatMatterAreClassifiedHigh(): void
+    public function testTheCategoriesThatMatterAreFlagged(): void
     {
         $rows = ApiPermissionDefaults::rows();
 
@@ -161,9 +160,9 @@ class ApiPermissionDefaultsTest extends KernelTestCase
         ) {
             $this->assertArrayHasKey($apiClass, $rows, sprintf('`%s` is no longer in the catalog', $apiClass));
             $this->assertSame(
-                ApiSensitivity::HIGH,
+                ApiSensitivity::SENSITIVE,
                 $rows[$apiClass]['sensitivity'],
-                sprintf('`%s` must be classified as highly sensitive', $apiClass)
+                sprintf('`%s` must be flagged sensitive', $apiClass)
             );
         }
     }
@@ -173,10 +172,10 @@ class ApiPermissionDefaultsTest extends KernelTestCase
      * They are reachable -- an administrator can enable them -- but inheriting
      * them is a decision nobody made.
      */
-    public function testNoHighlySensitiveClassShipsEnabled(): void
+    public function testNoSensitiveClassShipsEnabled(): void
     {
         foreach (ApiPermissionDefaults::rows() as $apiClass => $row) {
-            if ($row['sensitivity'] !== ApiSensitivity::HIGH) {
+            if ($row['sensitivity'] !== ApiSensitivity::SENSITIVE) {
                 continue;
             }
             $this->assertFalse(

@@ -92,7 +92,7 @@ class McpApiPermission
     private bool $canDelete = false;
 
     /**
-     * `normal`, `elevated` or `high`; see ApiSensitivity.
+     * `normal` or `sensitive`; see ApiSensitivity.
      *
      * Product-authored and seeded by the migration. Nothing in the UI writes it,
      * because a warning an administrator can turn off is not a warning.

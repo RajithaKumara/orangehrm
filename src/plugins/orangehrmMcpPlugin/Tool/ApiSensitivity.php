@@ -40,25 +40,31 @@ namespace OrangeHRM\Mcp\Tool;
  * could downgrade a warning would make every warning meaningless, and the
  * classification is a product judgement rather than a local preference.
  *
- * Anything unlisted is NORMAL, which is right for the bulk of the catalog --
- * job titles, locations, currencies, workflow master data.
+ * There is one flag, not a scale. An earlier version had a middle tier called
+ * "personal", and it was wrong: in an HRIS almost everything about an employee
+ * is personal data -- a job title and an attendance record included -- so the
+ * label was true of most of the catalog and implied the rows it was missing
+ * from were not personal. A flag that says nothing is noise; one that says
+ * something false is worse.
+ *
+ * What is left flags the endpoints whose name does not announce what they
+ * hold. "Employee US Tax Exemption" does not read as compensation data, and
+ * verb risk cannot help an administrator here: reading a salary and reading a
+ * job title are both GET.
  */
 final class ApiSensitivity
 {
-    /** Master data and routine operational records. */
+    /** Everything the flag below does not cover. */
     public const NORMAL = 'normal';
 
-    /** Personal data about an identifiable person. Ordinary HR, still personal. */
-    public const ELEVATED = 'elevated';
-
     /** Compensation, legal status, exit, evaluation, attachments, accounts. */
-    public const HIGH = 'high';
+    public const SENSITIVE = 'sensitive';
 
     /**
      * The categories a leak of which is materially worse than a leak of someone's
      * job title, and several of which are special-category data under privacy law.
      */
-    public const HIGH_SENSITIVITY = [
+    public const SENSITIVE_APIS = [
         // Compensation and tax
         'OrangeHRM\\Pim\\Api\\EmployeeSalaryComponentAPI',
         'OrangeHRM\\Pim\\Api\\EmpUsTaxExemptionAPI',
@@ -95,65 +101,19 @@ final class ApiSensitivity
         'OrangeHRM\\Pim\\Api\\PimReportDataAPI',
     ];
 
-    /**
-     * Personal data about an identifiable person: ordinary HR work, but not
-     * master data. An administrator switching one of these on should see that it
-     * exposes people rather than reference lists.
-     */
-    public const ELEVATED_SENSITIVITY = [
-        // PIM personal records
-        'OrangeHRM\\Pim\\Api\\EmployeePersonalDetailAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeeContactDetailsAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeeDependentAPI',
-        'OrangeHRM\\Pim\\Api\\EmpEmergencyContactAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeeEducationAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeeLicenseAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeeMembershipAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeeWorkExperienceAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeeSkillAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeeLanguageAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeeCustomFieldAPI',
-        'OrangeHRM\\Pim\\Api\\EmployeePictureAPI',
-        'OrangeHRM\\Pim\\Api\\PimReportAPI',
-        'OrangeHRM\\Pim\\Api\\PimDefinedReportAPI',
-
-        // Candidates. A candidate is a person outside the organisation who never
-        // agreed to anything beyond being considered for a job.
-        'OrangeHRM\\Recruitment\\Api\\CandidateAPI',
-        'OrangeHRM\\Recruitment\\Api\\CandidateHistoryAPI',
-        'OrangeHRM\\Recruitment\\Api\\CandidateJobOfferingAPI',
-
-        // Performance trackers: running commentary about a named employee.
-        'OrangeHRM\\Performance\\Api\\PerformanceTrackerAPI',
-        'OrangeHRM\\Performance\\Api\\PerformanceTrackerLogAPI',
-        'OrangeHRM\\Performance\\Api\\EmployeeTrackerAPI',
-        'OrangeHRM\\Performance\\Api\\MyTrackerAPI',
-
-        // Expense claims: amounts, dates and what someone spent money on.
-        'OrangeHRM\\Claim\\Api\\ClaimExpenseAPI',
-        'OrangeHRM\\Claim\\Api\\EmployeeClaimRequestAPI',
-        'OrangeHRM\\Claim\\Api\\MyClaimRequestAPI',
-    ];
-
     public static function of(string $apiClass): string
     {
         $class = ltrim($apiClass, '\\');
 
-        if (in_array($class, self::HIGH_SENSITIVITY, true)) {
-            return self::HIGH;
-        }
-        if (in_array($class, self::ELEVATED_SENSITIVITY, true)) {
-            return self::ELEVATED;
-        }
-        return self::NORMAL;
+        return in_array($class, self::SENSITIVE_APIS, true) ? self::SENSITIVE : self::NORMAL;
     }
 
     /**
-     * @return string[] the three levels, least sensitive first
+     * @return string[] the two levels, least sensitive first
      */
     public static function levels(): array
     {
-        return [self::NORMAL, self::ELEVATED, self::HIGH];
+        return [self::NORMAL, self::SENSITIVE];
     }
 
     public static function isValid(string $level): bool

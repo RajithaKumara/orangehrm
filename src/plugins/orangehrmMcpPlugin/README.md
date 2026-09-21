@@ -580,9 +580,11 @@ read tools, zero writes.** Every write is available and one checkbox away.
 **Two axes of warning, kept separate.** Verb risk is about what a call *does*
 (delete red, create/update amber, read neutral) and is derived from the verb alone.
 Data sensitivity is about what a call *touches* and applies even to a read:
-`normal` (129 classes), `elevated` (24: identifiable personal data), `high` (17:
-compensation, tax, immigration, termination, contracts, evaluations, uploaded
-attachments, PIM report data, user accounts). Collapsing them would get the
+one flag, `sensitive`, on 17 classes: compensation, tax, immigration,
+termination, contracts, evaluations, uploaded attachments, PIM report data and
+user accounts. An earlier middle tier called "personal" was dropped -- in an
+HRIS almost everything about an employee is personal data, so the label was
+true of most of the catalog and implied the rows it was missing from were not. Collapsing them would get the
 important case backwards — reading a salary matters more than updating a job title,
 yet one is a GET and the other a PUT. Sensitivity is authored in
 `Tool/ApiSensitivity.php`, seeded to the table, shown on the screen, and published

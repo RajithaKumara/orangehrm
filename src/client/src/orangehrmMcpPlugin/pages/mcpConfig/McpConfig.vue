@@ -317,12 +317,8 @@ function emptyCounts() {
 }
 
 const SENSITIVITY = {
-  elevated: {
-    label: 'Personal',
-    hint: 'Identifiable personal data about an employee or candidate.',
-  },
-  high: {
-    label: 'Highly sensitive',
+  sensitive: {
+    label: 'Sensitive',
     hint:
       'Compensation, immigration status, termination, evaluations, uploaded ' +
       'documents or account control. Enable only with a specific reason.',
