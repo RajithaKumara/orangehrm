@@ -237,28 +237,10 @@ class ApiCatalog
     }
 
     /**
-     * `OrangeHRM\Pim\Api\EmployeeSalaryComponentAPI` -> `Employee Salary Component`.
-     *
-     * The class name is the most accurate short description available: the
-     * OpenAPI summary describes one operation, not the family, and the route
-     * path is full of plurals and ids.
+     * What this API class is called on screen; see ApiLabels.
      */
     public static function toLabel(string $apiClass): string
     {
-        $short = substr((string) strrchr('\\' . ltrim($apiClass, '\\'), '\\'), 1);
-        $short = preg_replace('/API$/', '', $short);
-
-        // Split on camel-case boundaries only, never after a digit, so
-        // `I18NGroup` stays `I18N Group` and `EmployeeCSVImport` stays
-        // `Employee CSV Import`.
-        $words = preg_split('/(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])/', (string) $short) ?: [];
-        $words = array_values(array_filter(array_map('trim', $words)));
-        if ($words === []) {
-            return $apiClass;
-        }
-
-        // Original casing is kept, so `I18NGroup` stays `I18N Group` and an
-        // acronym is not lower-cased into something unrecognisable.
-        return implode(' ', $words);
+        return ApiLabels::of($apiClass);
     }
 }

@@ -20,6 +20,7 @@
 namespace OrangeHRM\Tests\Mcp\Tool;
 
 use OrangeHRM\Mcp\Tool\ApiCatalog;
+use OrangeHRM\Mcp\Tool\ApiLabels;
 use OrangeHRM\Mcp\Tool\ApiSensitivity;
 use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
 use OrangeHRM\Mcp\Tool\ApiVerb;
@@ -228,5 +229,55 @@ class ApiCatalogTest extends KernelTestCase
         // Acronyms keep their casing rather than being split letter by letter.
         $this->assertSame('I18N Group', ApiCatalog::toLabel('OrangeHRM\\Admin\\Api\\I18NGroupAPI'));
         $this->assertSame('Employee CSV Import', ApiCatalog::toLabel('OrangeHRM\\Pim\\Api\\EmployeeCSVImportAPI'));
+    }
+
+    /**
+     * The abbreviations a class name carries and an administrator does not know.
+     */
+    public function testAbbreviationsAreExpanded(): void
+    {
+        $this->assertSame(
+            'Employee Emergency Contact',
+            ApiCatalog::toLabel('OrangeHRM\\Pim\\Api\\EmpEmergencyContactAPI')
+        );
+        $this->assertSame(
+            'Employee US Tax Exemption',
+            ApiCatalog::toLabel('OrangeHRM\\Pim\\Api\\EmpUsTaxExemptionAPI')
+        );
+        $this->assertSame('PIM Report', ApiCatalog::toLabel('OrangeHRM\\Pim\\Api\\PimReportAPI'));
+        $this->assertSame('KPI', ApiCatalog::toLabel('OrangeHRM\\Performance\\Api\\KpiAPI'));
+    }
+
+    /**
+     * A hand-written name for a class that no longer exists is invisible: the
+     * screen quietly falls back to the derived label and nobody notices the
+     * wording decision was lost.
+     */
+    public function testEveryHandWrittenLabelTargetsAShippedClass(): void
+    {
+        $shipped = array_flip(ApiPermissionDefaults::ALL);
+
+        foreach (array_keys(ApiLabels::overrides()) as $apiClass) {
+            $this->assertArrayHasKey(
+                $apiClass,
+                $shipped,
+                sprintf('`%s` has a hand-written label but is not in the shipped catalog', $apiClass)
+            );
+        }
+    }
+
+    /**
+     * Whatever the source, a label has to be something a person can read.
+     */
+    public function testNoShippedLabelKeepsADeveloperAbbreviation(): void
+    {
+        foreach (ApiPermissionDefaults::ALL as $apiClass) {
+            $label = ApiCatalog::toLabel($apiClass);
+            $this->assertDoesNotMatchRegularExpression(
+                '/\\b(Emp|Pim|Kpi|Us|Csv|Api|I18N)\\b/',
+                $label,
+                sprintf('`%s` still reads as `%s`', $apiClass, $label)
+            );
+        }
     }
 }
