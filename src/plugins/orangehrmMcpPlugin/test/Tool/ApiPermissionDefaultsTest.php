@@ -152,7 +152,6 @@ class ApiPermissionDefaultsTest extends KernelTestCase
             [
                 'OrangeHRM\\Pim\\Api\\EmployeeSalaryComponentAPI',
                 'OrangeHRM\\Pim\\Api\\EmpUsTaxExemptionAPI',
-                'OrangeHRM\\Pim\\Api\\EmployeeTerminationAPI',
                 'OrangeHRM\\Pim\\Api\\EmployeeImmigrationRecordAPI',
                 'OrangeHRM\\Pim\\Api\\EmployeeAttachmentAPI',
                 'OrangeHRM\\Admin\\Api\\UserAPI',

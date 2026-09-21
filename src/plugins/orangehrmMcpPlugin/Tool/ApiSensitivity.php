@@ -57,7 +57,7 @@ final class ApiSensitivity
     /** Everything the flag below does not cover. */
     public const NORMAL = 'normal';
 
-    /** Compensation, legal status, exit, evaluation, attachments, accounts. */
+    /** Compensation, legal status, evaluation, attachments, accounts. */
     public const SENSITIVE = 'sensitive';
 
     /**
@@ -69,9 +69,6 @@ final class ApiSensitivity
         'OrangeHRM\\Pim\\Api\\EmployeeSalaryComponentAPI',
         'OrangeHRM\\Pim\\Api\\EmpUsTaxExemptionAPI',
         'OrangeHRM\\Pim\\Api\\EmploymentContractAPI',
-
-        // Exit
-        'OrangeHRM\\Pim\\Api\\EmployeeTerminationAPI',
 
         // Immigration and legal status
         'OrangeHRM\\Pim\\Api\\EmployeeImmigrationRecordAPI',

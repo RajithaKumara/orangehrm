@@ -128,19 +128,21 @@
           <oxd-alert
             type="error"
             :show="true"
-            message="Delete is on. An assistant that misreads a request can
-              remove records permanently, and OrangeHRM has no undo. Leave this
-              off unless a specific workflow needs it, and keep the enabled
-              delete list as short as possible."
+            message="Delete is on. OrangeHRM has no undo and no recycle bin: a
+              leave entitlement, an attendance record or an employee removed by
+              mistake is gone, and anything worked out from it, such as a leave
+              balance, changes with it. Turn this on only for a workflow that
+              needs it, and on as few APIs as possible."
           ></oxd-alert>
         </oxd-form-row>
         <oxd-form-row v-else-if="config.verbs.create || config.verbs.update">
           <oxd-alert
             type="warn"
             :show="true"
-            message="The assistant can change data. Written records look
-              identical to ones a person entered, so make sure the audit log is
-              being reviewed."
+            message="The assistant can add and change records as the person
+              signed in. A leave request, timesheet or employee record it
+              creates is indistinguishable from one they entered themselves,
+              and goes through the same approvals and notifications."
           ></oxd-alert>
         </oxd-form-row>
 
