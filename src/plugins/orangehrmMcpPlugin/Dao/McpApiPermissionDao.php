@@ -21,7 +21,6 @@ namespace OrangeHRM\Mcp\Dao;
 
 use OrangeHRM\Core\Dao\BaseDao;
 use OrangeHRM\Entity\McpApiPermission;
-use OrangeHRM\Mcp\Tool\ApiSensitivity;
 use OrangeHRM\Mcp\Tool\ApiVerb;
 
 class McpApiPermissionDao extends BaseDao
@@ -34,7 +33,7 @@ class McpApiPermissionDao extends BaseDao
      * them comes from these ~190 rows. Hydrating 190 objects to read five
      * scalars off each is work nobody needs.
      *
-     * @return array<string,array{label:?string,read:bool,create:bool,update:bool,delete:bool,sensitivity:string}>
+     * @return array<string,array{label:?string,read:bool,create:bool,update:bool,delete:bool,sensitivity:int}>
      */
     public function getPermissionMap(): array
     {
@@ -59,9 +58,10 @@ class McpApiPermissionDao extends BaseDao
                 ApiVerb::CREATE => (bool) $row['canCreate'],
                 ApiVerb::UPDATE => (bool) $row['canUpdate'],
                 ApiVerb::DELETE => (bool) $row['canDelete'],
-                'sensitivity' => is_string($row['sensitivity']) && ApiSensitivity::isValid($row['sensitivity'])
-                    ? $row['sensitivity']
-                    : ApiSensitivity::NORMAL,
+                // Kept as stored rather than validated away: a level this
+                // build does not know is a newer release's, and nameOf()
+                // degrades it to the nearest one below.
+                'sensitivity' => (int) $row['sensitivity'],
             ];
         }
         return $map;

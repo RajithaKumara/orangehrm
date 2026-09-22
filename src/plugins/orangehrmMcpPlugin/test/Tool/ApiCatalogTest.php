@@ -24,7 +24,6 @@ use OrangeHRM\Mcp\Tool\ApiSensitivity;
 use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
 use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Tests\Util\KernelTestCase;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * @group Mcp
@@ -262,10 +261,11 @@ class ApiCatalogTest extends KernelTestCase
      */
     private function seededLabels(): array
     {
-        $parsed = Yaml::parseFile(
-            __DIR__ . '/../../../../../installer/Migration/V5_10_0/api-label.yaml'
-        );
-        return is_array($parsed) ? $parsed : [];
+        $labels = [];
+        foreach (ApiCatalogSeedTest::seed() as $apiClass => $entry) {
+            $labels[$apiClass] = (string) ($entry['label'] ?? '');
+        }
+        return $labels;
     }
 
     /**

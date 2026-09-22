@@ -85,7 +85,12 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
             // one list nobody will read.
             'modules' => $catalog->getGroupedByModule($permissionMap),
             'counts' => $catalog->getCounts($permissionMap),
-            'sensitivityLevels' => ApiSensitivity::levels(),
+            'sensitivityLevels' => array_map(
+                static function (int $level): array {
+                    return ['level' => $level, 'name' => ApiSensitivity::nameOf($level)];
+                },
+                ApiSensitivity::levels()
+            ),
             // The same checks `mcp:doctor` prints. An HR administrator should
             // not need a terminal to find out whether this instance can serve
             // a client at all.

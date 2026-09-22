@@ -143,10 +143,13 @@ class ToolsListHandler implements MethodHandlerInterface
         // the description: a model choosing between tools should not have to
         // read a warning to find out what an endpoint does.
         $sensitivity = $this->permissions->getSensitivity($tool->getApiClass());
-        if ($sensitivity !== ApiSensitivity::NORMAL) {
+        if ($sensitivity > ApiSensitivity::NORMAL) {
             $described['_meta'] = [
                 'orangehrm' => [
-                    'sensitivity' => $sensitivity,
+                    // The name, not the level: a client reading 10 learns
+                    // nothing, and the numbers exist for ordering, not wire
+                    // format.
+                    'sensitivity' => ApiSensitivity::nameOf($sensitivity),
                     'module' => $tool->getModule(),
                 ],
             ];

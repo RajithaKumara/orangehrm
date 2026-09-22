@@ -111,7 +111,7 @@ class McpApiPermission
     private ?string $label = null;
 
     /**
-     * `normal` or `sensitive`; see ApiSensitivity.
+     * A level, not a name: 0 ordinary, 10 sensitive. See ApiSensitivity.
      *
      * Product-authored and seeded by the migration. Nothing in the UI writes it,
      * because a warning an administrator can turn off is not a warning.
@@ -192,12 +192,12 @@ class McpApiPermission
         $this->label = $label;
     }
 
-    public function getSensitivity(): string
+    public function getSensitivity(): int
     {
         return $this->sensitivity;
     }
 
-    public function setSensitivity(string $sensitivity): void
+    public function setSensitivity(int $sensitivity): void
     {
         $this->sensitivity = $sensitivity;
     }

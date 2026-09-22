@@ -26,6 +26,7 @@ use OrangeHRM\Installer\Util\V1\AbstractMigration;
 use Symfony\Component\Yaml\Yaml;
 use OrangeHRM\Mcp\Service\McpConfigPolicy;
 use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
+use OrangeHRM\Mcp\Tool\ApiSensitivity;
 
 class Migration extends AbstractMigration
 {
@@ -83,7 +84,7 @@ class Migration extends AbstractMigration
         $this->registerMcpConfigScreen();
         $this->createApiPermissionTable();
         $this->addApiPermissionLabelColumn();
-        $this->constrainSensitivityColumn();
+        $this->convertSensitivityToLevel();
         $this->seedApiPermissions();
         $this->seedSwitches();
         $this->seedAllowedRoles();
@@ -193,7 +194,7 @@ class Migration extends AbstractMigration
             ->addColumn('can_create', Types::BOOLEAN, ['Notnull' => true, 'Default' => false])
             ->addColumn('can_update', Types::BOOLEAN, ['Notnull' => true, 'Default' => false])
             ->addColumn('can_delete', Types::BOOLEAN, ['Notnull' => true, 'Default' => false])
-            ->addColumn('sensitivity', Types::STRING, ['Length' => 20, 'Notnull' => true, 'Default' => 'normal'])
+            ->addColumn('sensitivity', Types::INTEGER, ['Notnull' => true, 'Default' => 0])
             ->setPrimaryKey(['id'])
             // Unique because the API class is the identity of a row. Without it
             // a re-run could double every row and the screen would show each
@@ -223,19 +224,41 @@ class Migration extends AbstractMigration
     }
 
     /**
-     * Narrows `sensitivity` to the two values that mean anything.
+     * Converts `sensitivity` to the integer level it is today.
      *
-     * PHP enums need 8.1 and this product still supports 7.4, so the constraint
-     * has to live in the schema. It earns its keep now that rows are edited by
-     * hand: a typo used to read back as `normal` through the Dao's fallback and
-     * quietly drop the flag, and the database now refuses it outright.
-     * `hs_hr_emp_dependents.ed_relationship_type` is the same idea.
+     * An earlier build of this migration made the column
+     * ENUM('normal','sensitive'). That was a mistake twice over: DBAL has no
+     * `enum` type, so introspecting this table could throw, and adding a level
+     * would have meant a schema change rather than a line in a seed file.
+     * Levels are spaced by ten so one can be inserted between without
+     * renumbering.
+     *
+     * Detected through information_schema rather than the schema manager,
+     * precisely because the column may still be the enum that trips it.
      */
-    private function constrainSensitivityColumn(): void
+    private function convertSensitivityToLevel(): void
     {
+        $type = $this->getConnection()->fetchOne(
+            "SELECT DATA_TYPE FROM information_schema.COLUMNS "
+            . "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ohrm_mcp_api_permission' "
+            . "AND COLUMN_NAME = 'sensitivity'"
+        );
+
+        if ($type === false || $type === null || strtolower((string) $type) === 'int') {
+            return;
+        }
+
+        // Widen first: the enum cannot hold '10', so the values have to pass
+        // through a plain string on the way to an integer.
         $this->getConnection()->executeStatement(
-            "ALTER TABLE ohrm_mcp_api_permission "
-            . "MODIFY sensitivity ENUM('normal','sensitive') NOT NULL DEFAULT 'normal'"
+            'ALTER TABLE ohrm_mcp_api_permission MODIFY sensitivity VARCHAR(20) NOT NULL DEFAULT \'0\''
+        );
+        $this->getConnection()->executeStatement(
+            'UPDATE ohrm_mcp_api_permission SET sensitivity = '
+            . "CASE WHEN sensitivity IN ('sensitive', '10') THEN '10' ELSE '0' END"
+        );
+        $this->getConnection()->executeStatement(
+            'ALTER TABLE ohrm_mcp_api_permission MODIFY sensitivity INT NOT NULL DEFAULT 0'
         );
     }
 
@@ -261,8 +284,7 @@ class Migration extends AbstractMigration
             ->executeQuery()
             ->fetchAllKeyValue();
 
-        $labels = $this->getApiLabels();
-        $sensitive = $this->getSensitiveApis();
+        $catalog = $this->getApiCatalog();
 
         $unlabelled = $this->createQueryBuilder()
             ->select('p.api_name')
@@ -282,13 +304,13 @@ class Migration extends AbstractMigration
                     $this->createQueryBuilder()
                         ->update('ohrm_mcp_api_permission', 'p')
                         ->set('p.label', ':label')
-                        ->setParameter('label', $labels[$apiName] ?? null)
+                        ->setParameter('label', $catalog[$apiName]['label'] ?? null)
                         ->where('p.api_name = :apiName')
                         ->setParameter('apiName', $apiName)
                         ->executeStatement();
                 }
-                $sensitivity = isset($sensitive[$apiName]) ? 'sensitive' : 'normal';
-                if ($existing[$apiName] !== $sensitivity) {
+                $sensitivity = $catalog[$apiName]['sensitivity'] ?? ApiSensitivity::NORMAL;
+                if ((int) $existing[$apiName] !== $sensitivity) {
                     $this->createQueryBuilder()
                         ->update('ohrm_mcp_api_permission', 'p')
                         ->set('p.sensitivity', ':sensitivity')
@@ -312,43 +334,43 @@ class Migration extends AbstractMigration
                     'sensitivity' => ':sensitivity',
                 ])
                 ->setParameter('apiName', $apiName)
-                ->setParameter('label', $labels[$apiName] ?? null)
+                ->setParameter('label', $catalog[$apiName]['label'] ?? null)
                 ->setParameter('canRead', $row['read'] ? 1 : 0)
                 ->setParameter('canCreate', $row['create'] ? 1 : 0)
                 ->setParameter('canUpdate', $row['update'] ? 1 : 0)
                 ->setParameter('canDelete', $row['delete'] ? 1 : 0)
-                ->setParameter('sensitivity', isset($sensitive[$apiName]) ? 'sensitive' : 'normal')
+                ->setParameter('sensitivity', $catalog[$apiName]['sensitivity'] ?? ApiSensitivity::NORMAL)
                 ->executeStatement();
         }
     }
 
     /**
-     * The API classes flagged sensitive, keyed for lookup.
+     * The shipped catalog: a label and a sensitivity level per API class.
      *
-     * @return array<string,true>
+     * One file rather than two, because they describe the same row and are
+     * edited in the same sitting. Read once at install time; nothing consults
+     * it afterwards.
+     *
+     * @return array<string,array{label:string,sensitivity:int}>
      */
-    private function getSensitiveApis(): array
+    private function getApiCatalog(): array
     {
-        $parsed = Yaml::parseFile(__DIR__ . '/api-sensitivity.yaml');
-        $classes = is_array($parsed) && isset($parsed['sensitive']) ? (array) $parsed['sensitive'] : [];
+        $parsed = Yaml::parseFile(__DIR__ . '/api-catalog.yaml');
+        if (!is_array($parsed)) {
+            return [];
+        }
 
-        return array_fill_keys($classes, true);
-    }
-
-    /**
-     * The shipped wording for each API, read once at install time.
-     *
-     * A YAML file beside this migration rather than a class in the plugin: it
-     * is seed data for one version, it is never consulted at runtime, and the
-     * screen reads the column it populates. `permission/api.yaml` and
-     * `permission/screen.yaml` next to it work the same way.
-     *
-     * @return array<string,string>
-     */
-    private function getApiLabels(): array
-    {
-        $parsed = Yaml::parseFile(__DIR__ . '/api-label.yaml');
-        return is_array($parsed) ? $parsed : [];
+        $catalog = [];
+        foreach ($parsed as $apiClass => $entry) {
+            if (!is_array($entry)) {
+                continue;
+            }
+            $catalog[$apiClass] = [
+                'label' => isset($entry['label']) ? (string) $entry['label'] : null,
+                'sensitivity' => (int) ($entry['sensitivity'] ?? ApiSensitivity::NORMAL),
+            ];
+        }
+        return $catalog;
     }
 
     /**

@@ -70,7 +70,7 @@ The grid is keyed on the API class rather than the tool name, so a route rename 
 
 Curated tools carry no special status here — they are governed by the row for the API class behind them, exactly like a generic tool.
 
-Rows also carry a product-authored `sensitivity` (`normal` or `sensitive`) from `Tool/ApiSensitivity.php`, seeded by the migration and **not editable in the UI**. It is a separate axis from verb risk: verb risk is about what a call does, sensitivity is about what it touches and applies even to a read. The screen shows it as a badge; `tools/list` publishes it under `_meta.orangehrm.sensitivity`.
+Rows also carry a product-authored `sensitivity` — an integer level, `0` ordinary and `10` sensitive, spaced so a tier can be added between without renumbering. It is seeded from `installer/Migration/V5_10_0/api-catalog.yaml` alongside the label, rewritten on upgrade, and **not editable in the UI**. `Tool/ApiSensitivity.php` holds only the constants; a plain integer column rather than a database ENUM, because DBAL has no `enum` type and introspecting such a table can fail. It is a separate axis from verb risk: verb risk is about what a call does, sensitivity is about what it touches and applies even to a read. The screen shows it as a badge; `tools/list` publishes it under `_meta.orangehrm.sensitivity`.
 
 ## Audit
 

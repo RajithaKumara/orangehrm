@@ -182,8 +182,7 @@ class ApiCatalog
                 'label' => is_string($row['label'] ?? null) && $row['label'] !== ''
                     ? $row['label']
                     : $entry['label'],
-                'sensitivity' => is_array($row) && isset($row['sensitivity'])
-                    ? $row['sensitivity']
+                'sensitivity' => is_array($row) ? (int) ($row['sensitivity'] ?? ApiSensitivity::NORMAL)
                     : ApiSensitivity::NORMAL,
                 'verbs' => $verbs,
                 'paths' => array_keys($entry['paths']),

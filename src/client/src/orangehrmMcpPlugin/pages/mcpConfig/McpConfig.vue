@@ -274,9 +274,12 @@
                   <span class="orangehrm-mcp-row__api">
                     {{ api.label }}
                     <span
-                      v-if="api.sensitivity !== 'normal'"
+                      v-if="api.sensitivity > 0"
                       class="orangehrm-mcp-badge"
-                      :class="'orangehrm-mcp-badge--' + api.sensitivity"
+                      :class="
+                        'orangehrm-mcp-badge--' +
+                        sensitivityName(api.sensitivity)
+                      "
                       :title="sensitivityHint(api.sensitivity)"
                     >
                       {{ sensitivityLabel(api.sensitivity) }}
@@ -355,12 +358,18 @@ function emptyCounts() {
   return counts;
 }
 
+// Keyed by the stored level. The numbers are spaced so a tier can be added
+// between without renumbering the rows, and anything at or above SENSITIVE
+// carries the badge.
+const SENSITIVITY_NORMAL = 0;
+const SENSITIVITY_SENSITIVE = 10;
+
 const SENSITIVITY = {
-  sensitive: {
+  [SENSITIVITY_SENSITIVE]: {
     label: 'Sensitive',
     hint:
-      'Compensation, immigration status, termination, evaluations, uploaded ' +
-      'documents or account control. Enable only with a specific reason.',
+      'Compensation, immigration status, evaluations, uploaded documents or ' +
+      'account control. Enable only with a specific reason.',
   },
 };
 
@@ -539,12 +548,23 @@ export default {
       }).length;
     },
 
+    /** The nearest defined tier at or below this level. */
+    sensitivityTier(level) {
+      return level >= SENSITIVITY_SENSITIVE
+        ? SENSITIVITY[SENSITIVITY_SENSITIVE]
+        : SENSITIVITY[SENSITIVITY_NORMAL];
+    },
+
+    sensitivityName(level) {
+      return level >= SENSITIVITY_SENSITIVE ? 'sensitive' : 'normal';
+    },
+
     sensitivityLabel(level) {
-      return (SENSITIVITY[level] || {}).label || level;
+      return (this.sensitivityTier(level) || {}).label || '';
     },
 
     sensitivityHint(level) {
-      return (SENSITIVITY[level] || {}).hint || '';
+      return (this.sensitivityTier(level) || {}).hint || '';
     },
 
     onSave() {

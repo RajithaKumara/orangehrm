@@ -24,7 +24,6 @@ use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Mcp\Tool\Rest\RouteMap;
 use OrangeHRM\Mcp\Tool\RestrictedApis;
 use OrangeHRM\Tests\Util\KernelTestCase;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * @group Mcp
@@ -130,16 +129,19 @@ class ApiPermissionDefaultsTest extends KernelTestCase
     }
 
     /**
-     * The sensitivity seed, as the migration reads it.
+     * The API classes the seed file puts above the ordinary level.
      *
      * @return string[]
      */
     private function sensitiveApis(): array
     {
-        $parsed = Yaml::parseFile(
-            __DIR__ . '/../../../../../installer/Migration/V5_10_0/api-sensitivity.yaml'
-        );
-        return is_array($parsed) && isset($parsed['sensitive']) ? (array) $parsed['sensitive'] : [];
+        $sensitive = [];
+        foreach (ApiCatalogSeedTest::seed() as $apiClass => $entry) {
+            if ((int) ($entry['sensitivity'] ?? 0) > 0) {
+                $sensitive[] = $apiClass;
+            }
+        }
+        return $sensitive;
     }
 
     /**

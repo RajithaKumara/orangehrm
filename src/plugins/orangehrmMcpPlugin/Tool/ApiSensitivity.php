@@ -20,42 +20,66 @@
 namespace OrangeHRM\Mcp\Tool;
 
 /**
- * The two values `ohrm_mcp_api_permission.sensitivity` can hold.
+ * How sensitive the data behind an API class is, as a level.
  *
- * A native PHP enum is what this wants to be, and it cannot be one: enums need
- * PHP 8.1 and `src/composer.json` still declares `^7.4|^8.0`. The codebase has
- * no native enum anywhere for the same reason, and has been bitten before by a
- * language feature that looked available -- constants in traits, which need
- * 8.2. So the enumeration lives where it can be enforced today: the column is
- * `ENUM('normal','sensitive')`, and these constants are the names the runtime
- * compares against.
+ * Stored as an integer in `ohrm_mcp_api_permission.sensitivity`, spaced so a
+ * level can be added between the two without renumbering the rows that already
+ * exist -- a middle tier would be 5, and every comparison below still holds.
  *
- * **Which classes are sensitive is not here.** That is seed data, and it lives
- * with the migration that seeds it, in
- * `installer/Migration/V5_10_0/api-sensitivity.yaml`. Nothing reads it at
- * runtime: the screen and `tools/list` read the column.
+ * A plain integer column rather than a database ENUM on purpose: DBAL has no
+ * `enum` type, so introspecting a table with one can fail outright, and the
+ * set of levels then lives in a schema change rather than in a seed file.
+ * Validation belongs here, where a bad value is a programming error, not in
+ * the column, where it is a portability problem.
  *
- * Unlike a label, an upgrade rewrites this column. A warning a tenant can
- * quietly downgrade is not a warning.
+ * These constants are the whole enumeration. **Which class sits at which level
+ * is not here** -- that is seed data, in
+ * `installer/Migration/V5_10_0/api-catalog.yaml`, and the runtime reads the
+ * column rather than the file.
  */
 final class ApiSensitivity
 {
-    /** Everything the flag below does not cover. */
-    public const NORMAL = 'normal';
+    /** Ordinary HR data: the name on the screen says what it is. */
+    public const NORMAL = 0;
 
     /** Compensation, legal status, evaluation, attachments, accounts. */
-    public const SENSITIVE = 'sensitive';
+    public const SENSITIVE = 10;
 
     /**
-     * @return string[] both values, least sensitive first
+     * Names for the levels, for the screen and for `tools/list` -- a client
+     * reading `"sensitivity": 10` learns nothing.
+     */
+    private const NAMES = [
+        self::NORMAL => 'normal',
+        self::SENSITIVE => 'sensitive',
+    ];
+
+    /**
+     * @return int[] every level, least sensitive first
      */
     public static function levels(): array
     {
-        return [self::NORMAL, self::SENSITIVE];
+        return array_keys(self::NAMES);
     }
 
-    public static function isValid(string $level): bool
+    public static function isValid(int $level): bool
     {
-        return in_array($level, self::levels(), true);
+        return array_key_exists($level, self::NAMES);
+    }
+
+    /**
+     * An unknown level reads as the nearest known one below it, so a row
+     * carrying a level from a newer release degrades to the closest thing this
+     * build understands rather than disappearing.
+     */
+    public static function nameOf(int $level): string
+    {
+        $name = self::NAMES[self::NORMAL];
+        foreach (self::NAMES as $value => $candidate) {
+            if ($level >= $value) {
+                $name = $candidate;
+            }
+        }
+        return $name;
     }
 }

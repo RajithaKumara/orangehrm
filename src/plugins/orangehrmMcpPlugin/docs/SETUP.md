@@ -158,9 +158,13 @@ UPDATE ohrm_mcp_api_permission SET label = NULL WHERE api_name = '...';
 
 A NULL label falls back to a name derived from the API class, which is close to
 the shipped wording but not always identical -- the shipped list lives in
-`installer/Migration/V5_10_0/api-label.yaml`. Upgrades only fill labels that are
-still NULL, so an edit survives, at the cost of not receiving later rewording
-from us.
+`installer/Migration/V5_10_0/api-catalog.yaml`. Upgrades only fill labels that
+are still NULL, so an edit survives, at the cost of not receiving later
+rewording from us.
+
+The same row carries `sensitivity`, a level rather than a name: `0` ordinary,
+`10` sensitive. The numbers are spaced so a tier can be added between them
+later without renumbering. Unlike the label, an upgrade rewrites this one.
 
 ## Prompts
 

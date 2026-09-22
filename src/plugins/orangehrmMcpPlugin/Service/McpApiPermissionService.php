@@ -56,7 +56,7 @@ class McpApiPermissionService
     }
 
     /**
-     * @return array<string,array{read:bool,create:bool,update:bool,delete:bool,sensitivity:string}>
+     * @return array<string,array{read:bool,create:bool,update:bool,delete:bool,sensitivity:int}>
      */
     public function getPermissionMap(): array
     {
@@ -82,13 +82,11 @@ class McpApiPermissionService
         return (bool) ($row[$verb] ?? false);
     }
 
-    public function getSensitivity(string $apiClass): string
+    public function getSensitivity(string $apiClass): int
     {
         $row = $this->getPermissionMap()[ltrim($apiClass, '\\')] ?? null;
-        if ($row === null) {
-            return ApiSensitivity::NORMAL;
-        }
-        return is_string($row['sensitivity'] ?? null) ? $row['sensitivity'] : ApiSensitivity::NORMAL;
+
+        return $row === null ? ApiSensitivity::NORMAL : (int) ($row['sensitivity'] ?? ApiSensitivity::NORMAL);
     }
 
     /**
