@@ -66,7 +66,7 @@ Every default fails closed. Policy can only ever narrow — the per-call permiss
 2. **Is the verb switched on?** Four switches, `read` / `create` / `update` / `delete`, stored as `mcp.access.verb.*`. Only Read ships on. This is the circuit breaker: Delete off refuses every delete tool whatever any row says, and switching it back on restores exactly what was enabled before.
 3. **Is the API class enabled for that verb?** One row per API class in `ohrm_mcp_api_permission` — `can_read`, `can_create`, `can_update`, `can_delete`.
 
-The grid is keyed on the API class rather than the tool name, so a route rename cannot orphan a decision and a new endpoint in an existing family inherits the one already made. **Absence is refusal**: a class with no row is unreachable. `ApiPermissionDefaults::ALL` is the shipped list and a test asserts it matches the live route collection exactly.
+The grid is keyed on the API class rather than the tool name, so a route rename cannot orphan a decision and a new endpoint in an existing family inherits the one already made. **Absence is refusal**: a class with no row is unreachable. The shipped list is `installer/Migration/V5_10_0/api-catalog.yaml` — `apis` for the classes that get a row, `notSeeded` for the ones deliberately left out — and `ApiCatalogSeedTest` asserts the two together match the live route collection exactly.
 
 Curated tools carry no special status here — they are governed by the row for the API class behind them, exactly like a generic tool.
 
@@ -97,7 +97,7 @@ Decide two things:
 - Should it be reachable at all? If it touches credentials, authentication config, or irreversible destruction, add its API class to `RestrictedApis`.
 - Does it deserve a curated tool? Only if an assistant will be asked for it by name and the generated description would not be enough.
 
-If the endpoint introduces a **new** API class, add it to `ApiPermissionDefaults::ALL` and seed a row in a migration, or it is silently unreachable — the drift test will tell you. Classify its sensitivity in `ApiSensitivity` at the same time. If it is a validation oracle or UI scaffolding, put it in `NOT_SEEDED` instead — the tests require every routable class to be in one list or the other.
+If the endpoint introduces a **new** API class, add it to the release's `api-catalog.yaml` — under `apis` with a label and a sensitivity level, or under `notSeeded` if it is a validation oracle or UI scaffolding — or it is silently unreachable. The tests require every routable class to be in one list or the other.
 
 Regenerate the OpenAPI document so the generic tool gets a description and parameter schema — see `rest-openapi`.
 

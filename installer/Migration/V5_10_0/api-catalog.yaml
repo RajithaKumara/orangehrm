@@ -1,171 +1,228 @@
-# The MCP catalog as 5.10 ships it: what each API is called, and how sensitive
-# the data behind it is.
+# The MCP catalog as 5.10 ships it.
 #
 # Seeded once into ohrm_mcp_api_permission. Nothing reads this file at runtime;
 # the screen and tools/list read the columns it populates.
 #
-# label       what an administrator sees. Mostly the class name made readable;
-#             the rest are written out because the class name describes the
-#             route rather than the thing -- "Employee Allowed Skill" is what
-#             the endpoint is called, while what it does is list the skills you
-#             may pick from. Editable afterwards, and an upgrade leaves an
-#             edited one alone.
+# apis        one entry per API class the product ships a row for. Being listed
+#             here is what creates the row.
 #
-# sensitivity 0 for ordinary data, 10 for the endpoints whose name does not
-#             announce what they hold. Deliberately spaced: a level between the
-#             two lands at 5 without renumbering anything. An upgrade rewrites
-#             this, because a warning a tenant can quietly downgrade is not a
-#             warning.
-'OrangeHRM\Pim\Api\CustomFieldAPI': { label: 'Custom Field Definition', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmpEmergencyContactAPI': { label: 'Employee Emergency Contact', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmpUsTaxExemptionAPI': { label: 'Employee US Tax Exemption', sensitivity: 10 }
-'OrangeHRM\Pim\Api\EmployeeAPI': { label: 'Employee', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeAllowedLanguageAPI': { label: 'Employee Language Options', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeAllowedLicenseAPI': { label: 'Employee License Options', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeAllowedReportToEmployeeAPI': { label: 'Employee Report-To Options', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeAllowedSkillAPI': { label: 'Employee Skill Options', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeAttachmentAPI': { label: 'Employee Attachment', sensitivity: 10 }
-'OrangeHRM\Pim\Api\EmployeeContactDetailsAPI': { label: 'Employee Contact Details', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeCountAPI': { label: 'Employee Count', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeCustomFieldAPI': { label: 'Employee Custom Field Value', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeDependentAPI': { label: 'Employee Dependent', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeEducationAPI': { label: 'Employee Education', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeImmigrationRecordAPI': { label: 'Employee Immigration Record', sensitivity: 10 }
-'OrangeHRM\Pim\Api\EmployeeJobDetailAPI': { label: 'Employee Job Detail', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeLanguageAPI': { label: 'Employee Language', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeLicenseAPI': { label: 'Employee License', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeMembershipAPI': { label: 'Employee Membership', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeePersonalDetailAPI': { label: 'Employee Personal Detail', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeePictureAPI': { label: 'Employee Picture', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeSalaryComponentAPI': { label: 'Employee Salary Component', sensitivity: 10 }
-'OrangeHRM\Pim\Api\EmployeeSkillAPI': { label: 'Employee Skill', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeSubordinateAPI': { label: 'Employee Subordinate', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeSupervisorAPI': { label: 'Employee Supervisor', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeTerminationAPI': { label: 'Employee Termination', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeWorkExperienceAPI': { label: 'Employee Work Experience', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmployeeWorkShiftAPI': { label: 'Employee Work Shift', sensitivity: 0 }
-'OrangeHRM\Pim\Api\EmploymentContractAPI': { label: 'Employment Contract', sensitivity: 10 }
-'OrangeHRM\Pim\Api\MyInfoAPI': { label: 'My Info', sensitivity: 0 }
-'OrangeHRM\Pim\Api\PimDefinedReportAPI': { label: 'PIM Defined Report', sensitivity: 0 }
-'OrangeHRM\Pim\Api\PimReportAPI': { label: 'PIM Report', sensitivity: 0 }
-'OrangeHRM\Pim\Api\PimReportDataAPI': { label: 'PIM Report Results', sensitivity: 10 }
-'OrangeHRM\Pim\Api\TerminationReasonConfigurationAPI': { label: 'Termination Reason Configuration', sensitivity: 0 }
-'OrangeHRM\Admin\Api\EducationAPI': { label: 'Education', sensitivity: 0 }
-'OrangeHRM\Admin\Api\EmailSubscriberAPI': { label: 'Email Subscriber', sensitivity: 0 }
-'OrangeHRM\Admin\Api\EmailSubscriptionAPI': { label: 'Email Subscription', sensitivity: 0 }
-'OrangeHRM\Admin\Api\EmploymentStatusAPI': { label: 'Employment Status', sensitivity: 0 }
-'OrangeHRM\Admin\Api\I18NImportErrorAPI': { label: 'Language Import Error', sensitivity: 0 }
-'OrangeHRM\Admin\Api\I18NLanguageAPI': { label: 'Language', sensitivity: 0 }
-'OrangeHRM\Admin\Api\I18NTranslationAPI': { label: 'Language Translation', sensitivity: 0 }
-'OrangeHRM\Admin\Api\I18NTranslationBulkAPI': { label: 'Language Translation (bulk)', sensitivity: 0 }
-'OrangeHRM\Admin\Api\JobCategoryAPI': { label: 'Job Category', sensitivity: 0 }
-'OrangeHRM\Admin\Api\JobSpecificationAPI': { label: 'Job Specification', sensitivity: 0 }
-'OrangeHRM\Admin\Api\JobTitleAPI': { label: 'Job Title', sensitivity: 0 }
-'OrangeHRM\Admin\Api\LanguageAPI': { label: 'Language', sensitivity: 0 }
-'OrangeHRM\Admin\Api\LicenseAPI': { label: 'License', sensitivity: 0 }
-'OrangeHRM\Admin\Api\LocalizationAPI': { label: 'Localization', sensitivity: 0 }
-'OrangeHRM\Admin\Api\LocationAPI': { label: 'Location', sensitivity: 0 }
-'OrangeHRM\Admin\Api\MembershipAPI': { label: 'Membership', sensitivity: 0 }
-'OrangeHRM\Admin\Api\NationalityAPI': { label: 'Nationality', sensitivity: 0 }
-'OrangeHRM\Admin\Api\PayGradeAPI': { label: 'Pay Grade', sensitivity: 0 }
-'OrangeHRM\Admin\Api\PayGradeAllowedCurrencyAPI': { label: 'Pay Grade Currency Options', sensitivity: 0 }
-'OrangeHRM\Admin\Api\PayGradeCurrencyAPI': { label: 'Pay Grade Currency', sensitivity: 0 }
-'OrangeHRM\Admin\Api\SkillAPI': { label: 'Skill', sensitivity: 0 }
-'OrangeHRM\Admin\Api\SubunitAPI': { label: 'Subunit', sensitivity: 0 }
-'OrangeHRM\Admin\Api\UserAPI': { label: 'User', sensitivity: 10 }
-'OrangeHRM\Admin\Api\WorkShiftAPI': { label: 'Work Shift', sensitivity: 0 }
-'OrangeHRM\Admin\Api\WorkShiftEmployeeAPI': { label: 'Work Shift Employee', sensitivity: 0 }
-'OrangeHRM\CorporateBranding\Api\ThemeAPI': { label: 'Theme', sensitivity: 0 }
-'OrangeHRM\Leave\Api\BulkLeaveAPI': { label: 'Leave (bulk)', sensitivity: 0 }
-'OrangeHRM\Leave\Api\EligibleLeaveTypeAPI': { label: 'Eligible Leave Type', sensitivity: 0 }
-'OrangeHRM\Leave\Api\EmployeeBulkLeaveRequestAPI': { label: 'Employee Leave Request (bulk)', sensitivity: 0 }
-'OrangeHRM\Leave\Api\EmployeeLeaveAPI': { label: 'Employee Leave', sensitivity: 0 }
-'OrangeHRM\Leave\Api\EmployeeLeaveBalanceAPI': { label: 'Employee Leave Balance', sensitivity: 0 }
-'OrangeHRM\Leave\Api\EmployeeLeaveEntitlementAPI': { label: 'Employee Leave Entitlement', sensitivity: 0 }
-'OrangeHRM\Leave\Api\EmployeeLeaveRequestAPI': { label: 'Employee Leave Request', sensitivity: 0 }
-'OrangeHRM\Leave\Api\HolidayAPI': { label: 'Holiday', sensitivity: 0 }
-'OrangeHRM\Leave\Api\LeaveAPI': { label: 'Leave', sensitivity: 0 }
-'OrangeHRM\Leave\Api\LeaveBalanceAPI': { label: 'Leave Balance (by leave type)', sensitivity: 0 }
-'OrangeHRM\Leave\Api\LeaveCommentAPI': { label: 'Leave Comment', sensitivity: 0 }
-'OrangeHRM\Leave\Api\LeaveEntitlementAPI': { label: 'Leave Entitlement', sensitivity: 0 }
-'OrangeHRM\Leave\Api\LeaveOverlapAPI': { label: 'Leave Overlap Check', sensitivity: 0 }
-'OrangeHRM\Leave\Api\LeavePeriodAPI': { label: 'Leave Period', sensitivity: 0 }
-'OrangeHRM\Leave\Api\LeaveReportAPI': { label: 'Leave Report', sensitivity: 0 }
-'OrangeHRM\Leave\Api\LeaveReportDataAPI': { label: 'Leave Report Results', sensitivity: 0 }
-'OrangeHRM\Leave\Api\LeaveRequestCommentAPI': { label: 'Leave Request Comment', sensitivity: 0 }
-'OrangeHRM\Leave\Api\LeaveTypeAPI': { label: 'Leave Type', sensitivity: 0 }
-'OrangeHRM\Leave\Api\MyLeaveRequestAPI': { label: 'My Leave Request', sensitivity: 0 }
-'OrangeHRM\Leave\Api\ValidationLeaveEntitlementValueAPI': { label: 'Leave Entitlement Value Check', sensitivity: 0 }
-'OrangeHRM\Leave\Api\WorkWeekAPI': { label: 'Work Week', sensitivity: 0 }
-'OrangeHRM\Time\Api\CopyProjectActivityAPI': { label: 'Copy Project Activities', sensitivity: 0 }
-'OrangeHRM\Time\Api\CustomerAPI': { label: 'Customer', sensitivity: 0 }
-'OrangeHRM\Time\Api\DefaultTimesheetAPI': { label: 'Default Timesheet', sensitivity: 0 }
-'OrangeHRM\Time\Api\EmployeeTimesheetAPI': { label: 'Employee Timesheet', sensitivity: 0 }
-'OrangeHRM\Time\Api\EmployeeTimesheetItemAPI': { label: 'Employee Timesheet Entry', sensitivity: 0 }
-'OrangeHRM\Time\Api\EmployeeTimesheetListAPI': { label: 'Employee Timesheet List', sensitivity: 0 }
-'OrangeHRM\Time\Api\MyTimesheetAPI': { label: 'My Timesheet', sensitivity: 0 }
-'OrangeHRM\Time\Api\MyTimesheetItemAPI': { label: 'My Timesheet Entry', sensitivity: 0 }
-'OrangeHRM\Time\Api\ProjectAPI': { label: 'Project', sensitivity: 0 }
-'OrangeHRM\Time\Api\ProjectActivityAPI': { label: 'Project Activity', sensitivity: 0 }
-'OrangeHRM\Time\Api\ProjectAdminAPI': { label: 'Project Admin', sensitivity: 0 }
-'OrangeHRM\Time\Api\TimeReportAPI': { label: 'Time Report', sensitivity: 0 }
-'OrangeHRM\Time\Api\TimeReportDataAPI': { label: 'Time Report Results', sensitivity: 0 }
-'OrangeHRM\Time\Api\TimesheetActionLogAPI': { label: 'Timesheet Action History', sensitivity: 0 }
-'OrangeHRM\Time\Api\TimesheetCommentAPI': { label: 'Timesheet Comment', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateAPI': { label: 'Candidate', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateAllowedActionAPI': { label: 'Candidate Available Actions', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateAttachmentAPI': { label: 'Candidate Attachment', sensitivity: 10 }
-'OrangeHRM\Recruitment\Api\CandidateHiringAPI': { label: 'Candidate Hiring', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateHistoryAPI': { label: 'Candidate History', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateInterviewSchedulingAPI': { label: 'Candidate Interview Scheduling', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateJobOfferingAPI': { label: 'Candidate Job Offering', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateMarkingInterviewFailAPI': { label: 'Candidate Marking Interview Fail', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateMarkingInterviewPassAPI': { label: 'Candidate Marking Interview Pass', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateOfferDecliningAPI': { label: 'Candidate Offer Declining', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateRejectionAPI': { label: 'Candidate Rejection', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateShortlistingAPI': { label: 'Candidate Shortlisting', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\CandidateStatusAPI': { label: 'Candidate Status', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\EmployeeListAPI': { label: 'Interviewer', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\HiringManagerAPI': { label: 'Hiring Manager', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\InterviewAttachmentAPI': { label: 'Interview Attachment', sensitivity: 10 }
-'OrangeHRM\Recruitment\Api\VacancyAPI': { label: 'Vacancy', sensitivity: 0 }
-'OrangeHRM\Recruitment\Api\VacancyAttachmentAPI': { label: 'Vacancy Attachment', sensitivity: 0 }
-'OrangeHRM\Performance\Api\EmployeeEvaluationAPI': { label: 'Employee Evaluation', sensitivity: 10 }
-'OrangeHRM\Performance\Api\EmployeeTrackerAPI': { label: 'Employee Tracker', sensitivity: 0 }
-'OrangeHRM\Performance\Api\KpiAPI': { label: 'KPI', sensitivity: 0 }
-'OrangeHRM\Performance\Api\MyReviewAPI': { label: 'My Review', sensitivity: 10 }
-'OrangeHRM\Performance\Api\MyTrackerAPI': { label: 'My Tracker', sensitivity: 0 }
-'OrangeHRM\Performance\Api\PerformanceReviewAPI': { label: 'Performance Review', sensitivity: 10 }
-'OrangeHRM\Performance\Api\PerformanceReviewAllowedActionsAPI': { label: 'Performance Review Available Actions', sensitivity: 0 }
-'OrangeHRM\Performance\Api\PerformanceReviewFinalEvaluationAPI': { label: 'Performance Review Final Evaluation', sensitivity: 10 }
-'OrangeHRM\Performance\Api\PerformanceTrackerAPI': { label: 'Performance Tracker', sensitivity: 0 }
-'OrangeHRM\Performance\Api\PerformanceTrackerLogAPI': { label: 'Performance Tracker Log', sensitivity: 0 }
-'OrangeHRM\Performance\Api\PerformanceTrackerReviewerAPI': { label: 'Performance Tracker Reviewer', sensitivity: 0 }
-'OrangeHRM\Performance\Api\ReviewEmployeeSupervisorAPI': { label: 'Performance Review Supervisor', sensitivity: 0 }
-'OrangeHRM\Performance\Api\ReviewKpiAPI': { label: 'Review KPI', sensitivity: 0 }
-'OrangeHRM\Performance\Api\ReviewListAPI': { label: 'Review List', sensitivity: 10 }
-'OrangeHRM\Performance\Api\SupervisorEvaluationAPI': { label: 'Supervisor Evaluation', sensitivity: 10 }
-'OrangeHRM\Attendance\Api\AttendanceConfigurationAPI': { label: 'Attendance Configuration', sensitivity: 0 }
-'OrangeHRM\Attendance\Api\AttendanceEditPunchInRecordOverlapAPI': { label: 'Punch In Overlap Check (editing)', sensitivity: 0 }
-'OrangeHRM\Attendance\Api\AttendanceEditPunchOutRecordOverlapAPI': { label: 'Punch Out Overlap Check (editing)', sensitivity: 0 }
-'OrangeHRM\Attendance\Api\AttendancePunchInRecordOverlapAPI': { label: 'Punch In Overlap Check', sensitivity: 0 }
-'OrangeHRM\Attendance\Api\AttendancePunchOutRecordOverlapAPI': { label: 'Punch Out Overlap Check', sensitivity: 0 }
-'OrangeHRM\Attendance\Api\AttendanceRecordAPI': { label: 'Attendance Record', sensitivity: 0 }
-'OrangeHRM\Attendance\Api\EmployeeAttendanceRecordAPI': { label: 'Employee Attendance Record', sensitivity: 0 }
-'OrangeHRM\Attendance\Api\EmployeeAttendanceSummaryAPI': { label: 'Employee Attendance Summary', sensitivity: 0 }
-'OrangeHRM\Attendance\Api\EmployeeLatestAttendanceRecordAPI': { label: 'Latest Attendance Record', sensitivity: 0 }
-'OrangeHRM\Attendance\Api\MyAttendanceRecordAPI': { label: 'My Attendance Record', sensitivity: 0 }
-'OrangeHRM\Attendance\Api\TimezonesAPI': { label: 'Time Zone', sensitivity: 0 }
-'OrangeHRM\Claim\Api\ClaimAttachmentAPI': { label: 'Claim Attachment', sensitivity: 10 }
-'OrangeHRM\Claim\Api\ClaimEventAPI': { label: 'Claim Event', sensitivity: 0 }
-'OrangeHRM\Claim\Api\ClaimExpenseAPI': { label: 'Claim Expense', sensitivity: 0 }
-'OrangeHRM\Claim\Api\ClaimExpenseTypeAPI': { label: 'Claim Expense Type', sensitivity: 0 }
-'OrangeHRM\Claim\Api\ClaimRequestActionAPI': { label: 'Claim Request Action', sensitivity: 0 }
-'OrangeHRM\Claim\Api\EmployeeClaimRequestAPI': { label: 'Employee Claim Request', sensitivity: 0 }
-'OrangeHRM\Claim\Api\MyClaimRequestAPI': { label: 'My Claim Request', sensitivity: 0 }
-'OrangeHRM\Dashboard\Api\EmployeeActionSummaryAPI': { label: 'Employee Action Summary', sensitivity: 0 }
-'OrangeHRM\Dashboard\Api\EmployeeDistributionByLocationAPI': { label: 'Employee Distribution By Location', sensitivity: 0 }
-'OrangeHRM\Dashboard\Api\EmployeeDistributionBySubunitAPI': { label: 'Employee Distribution By Subunit', sensitivity: 0 }
-'OrangeHRM\Dashboard\Api\EmployeeOnLeaveAPI': { label: 'Employee On Leave', sensitivity: 0 }
-'OrangeHRM\Dashboard\Api\EmployeeTimeAtWorkAPI': { label: 'Employee Time At Work', sensitivity: 0 }
-'OrangeHRM\CorporateDirectory\Api\EmployeeDirectoryAPI': { label: 'Employee Directory', sensitivity: 0 }
+#   label       what an administrator sees. Mostly the class name made
+#               readable; the rest are written out because the class name
+#               describes the route rather than the thing -- "Employee Allowed
+#               Skill" is what the endpoint is called, while what it does is
+#               list the skills you may pick from. Editable afterwards, and an
+#               upgrade leaves an edited one alone.
+#
+#   sensitivity 0 for ordinary data, 10 for the endpoints whose name does not
+#               announce what they hold. Spaced deliberately: a level between
+#               the two lands at 5 without renumbering anything. An upgrade
+#               rewrites this, because a warning a tenant can quietly downgrade
+#               is not a warning.
+#
+#   read        present and true on the classes whose reads ship switched on.
+#               Absent means off, which is also the only setting any write ever
+#               ships with. This is a starting point, not a floor or a ceiling:
+#               once an administrator saves the screen their choices are the
+#               only thing that counts, and upgrades do not revisit them.
+#
+# notSeeded   routable classes the product deliberately ships no row for:
+#             validation oracles, UI scaffolding, environment metadata, file
+#             plumbing, administrative configuration and the Buzz module.
+#             Nothing blocks them -- inserting a row makes one work -- they are
+#             simply not what the product hands an administrator to start from.
+#             Listed so the tests can prove every routable class is accounted
+#             for as either shipped or deliberately not.
+
+apis:
+  'OrangeHRM\Pim\Api\CustomFieldAPI': { label: 'Custom Field Definition', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmpEmergencyContactAPI': { label: 'Employee Emergency Contact', sensitivity: 0, read: true }
+  'OrangeHRM\Pim\Api\EmpUsTaxExemptionAPI': { label: 'Employee US Tax Exemption', sensitivity: 10 }
+  'OrangeHRM\Pim\Api\EmployeeAPI': { label: 'Employee', sensitivity: 0, read: true }
+  'OrangeHRM\Pim\Api\EmployeeAllowedLanguageAPI': { label: 'Employee Language Options', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeAllowedLicenseAPI': { label: 'Employee License Options', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeAllowedReportToEmployeeAPI': { label: 'Employee Report-To Options', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeAllowedSkillAPI': { label: 'Employee Skill Options', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeAttachmentAPI': { label: 'Employee Attachment', sensitivity: 10 }
+  'OrangeHRM\Pim\Api\EmployeeContactDetailsAPI': { label: 'Employee Contact Details', sensitivity: 0, read: true }
+  'OrangeHRM\Pim\Api\EmployeeCountAPI': { label: 'Employee Count', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeCustomFieldAPI': { label: 'Employee Custom Field Value', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeDependentAPI': { label: 'Employee Dependent', sensitivity: 0, read: true }
+  'OrangeHRM\Pim\Api\EmployeeEducationAPI': { label: 'Employee Education', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeImmigrationRecordAPI': { label: 'Employee Immigration Record', sensitivity: 10 }
+  'OrangeHRM\Pim\Api\EmployeeJobDetailAPI': { label: 'Employee Job Detail', sensitivity: 0, read: true }
+  'OrangeHRM\Pim\Api\EmployeeLanguageAPI': { label: 'Employee Language', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeLicenseAPI': { label: 'Employee License', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeMembershipAPI': { label: 'Employee Membership', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeePersonalDetailAPI': { label: 'Employee Personal Detail', sensitivity: 0, read: true }
+  'OrangeHRM\Pim\Api\EmployeePictureAPI': { label: 'Employee Picture', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeSalaryComponentAPI': { label: 'Employee Salary Component', sensitivity: 10 }
+  'OrangeHRM\Pim\Api\EmployeeSkillAPI': { label: 'Employee Skill', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeSubordinateAPI': { label: 'Employee Subordinate', sensitivity: 0, read: true }
+  'OrangeHRM\Pim\Api\EmployeeSupervisorAPI': { label: 'Employee Supervisor', sensitivity: 0, read: true }
+  'OrangeHRM\Pim\Api\EmployeeTerminationAPI': { label: 'Employee Termination', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeWorkExperienceAPI': { label: 'Employee Work Experience', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\EmployeeWorkShiftAPI': { label: 'Employee Work Shift', sensitivity: 0, read: true }
+  'OrangeHRM\Pim\Api\EmploymentContractAPI': { label: 'Employment Contract', sensitivity: 10 }
+  'OrangeHRM\Pim\Api\MyInfoAPI': { label: 'My Info', sensitivity: 0, read: true }
+  'OrangeHRM\Pim\Api\PimDefinedReportAPI': { label: 'PIM Defined Report', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\PimReportAPI': { label: 'PIM Report', sensitivity: 0 }
+  'OrangeHRM\Pim\Api\PimReportDataAPI': { label: 'PIM Report Results', sensitivity: 10 }
+  'OrangeHRM\Pim\Api\TerminationReasonConfigurationAPI': { label: 'Termination Reason Configuration', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\EducationAPI': { label: 'Education', sensitivity: 0, read: true }
+  'OrangeHRM\Admin\Api\EmailSubscriberAPI': { label: 'Email Subscriber', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\EmailSubscriptionAPI': { label: 'Email Subscription', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\EmploymentStatusAPI': { label: 'Employment Status', sensitivity: 0, read: true }
+  'OrangeHRM\Admin\Api\I18NImportErrorAPI': { label: 'Language Import Error', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\I18NLanguageAPI': { label: 'Language', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\I18NTranslationAPI': { label: 'Language Translation', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\I18NTranslationBulkAPI': { label: 'Language Translation (bulk)', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\JobCategoryAPI': { label: 'Job Category', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\JobSpecificationAPI': { label: 'Job Specification', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\JobTitleAPI': { label: 'Job Title', sensitivity: 0, read: true }
+  'OrangeHRM\Admin\Api\LanguageAPI': { label: 'Language', sensitivity: 0, read: true }
+  'OrangeHRM\Admin\Api\LicenseAPI': { label: 'License', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\LocalizationAPI': { label: 'Localization', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\LocationAPI': { label: 'Location', sensitivity: 0, read: true }
+  'OrangeHRM\Admin\Api\MembershipAPI': { label: 'Membership', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\NationalityAPI': { label: 'Nationality', sensitivity: 0, read: true }
+  'OrangeHRM\Admin\Api\PayGradeAPI': { label: 'Pay Grade', sensitivity: 0, read: true }
+  'OrangeHRM\Admin\Api\PayGradeAllowedCurrencyAPI': { label: 'Pay Grade Currency Options', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\PayGradeCurrencyAPI': { label: 'Pay Grade Currency', sensitivity: 0 }
+  'OrangeHRM\Admin\Api\SkillAPI': { label: 'Skill', sensitivity: 0, read: true }
+  'OrangeHRM\Admin\Api\SubunitAPI': { label: 'Subunit', sensitivity: 0, read: true }
+  'OrangeHRM\Admin\Api\UserAPI': { label: 'User', sensitivity: 10 }
+  'OrangeHRM\Admin\Api\WorkShiftAPI': { label: 'Work Shift', sensitivity: 0, read: true }
+  'OrangeHRM\Admin\Api\WorkShiftEmployeeAPI': { label: 'Work Shift Employee', sensitivity: 0 }
+  'OrangeHRM\CorporateBranding\Api\ThemeAPI': { label: 'Theme', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\BulkLeaveAPI': { label: 'Leave (bulk)', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\EligibleLeaveTypeAPI': { label: 'Eligible Leave Type', sensitivity: 0, read: true }
+  'OrangeHRM\Leave\Api\EmployeeBulkLeaveRequestAPI': { label: 'Employee Leave Request (bulk)', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\EmployeeLeaveAPI': { label: 'Employee Leave', sensitivity: 0, read: true }
+  'OrangeHRM\Leave\Api\EmployeeLeaveBalanceAPI': { label: 'Employee Leave Balance', sensitivity: 0, read: true }
+  'OrangeHRM\Leave\Api\EmployeeLeaveEntitlementAPI': { label: 'Employee Leave Entitlement', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\EmployeeLeaveRequestAPI': { label: 'Employee Leave Request', sensitivity: 0, read: true }
+  'OrangeHRM\Leave\Api\HolidayAPI': { label: 'Holiday', sensitivity: 0, read: true }
+  'OrangeHRM\Leave\Api\LeaveAPI': { label: 'Leave', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\LeaveBalanceAPI': { label: 'Leave Balance (by leave type)', sensitivity: 0, read: true }
+  'OrangeHRM\Leave\Api\LeaveCommentAPI': { label: 'Leave Comment', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\LeaveEntitlementAPI': { label: 'Leave Entitlement', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\LeaveOverlapAPI': { label: 'Leave Overlap Check', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\LeavePeriodAPI': { label: 'Leave Period', sensitivity: 0, read: true }
+  'OrangeHRM\Leave\Api\LeaveReportAPI': { label: 'Leave Report', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\LeaveReportDataAPI': { label: 'Leave Report Results', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\LeaveRequestCommentAPI': { label: 'Leave Request Comment', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\LeaveTypeAPI': { label: 'Leave Type', sensitivity: 0, read: true }
+  'OrangeHRM\Leave\Api\MyLeaveRequestAPI': { label: 'My Leave Request', sensitivity: 0, read: true }
+  'OrangeHRM\Leave\Api\ValidationLeaveEntitlementValueAPI': { label: 'Leave Entitlement Value Check', sensitivity: 0 }
+  'OrangeHRM\Leave\Api\WorkWeekAPI': { label: 'Work Week', sensitivity: 0, read: true }
+  'OrangeHRM\Time\Api\CopyProjectActivityAPI': { label: 'Copy Project Activities', sensitivity: 0 }
+  'OrangeHRM\Time\Api\CustomerAPI': { label: 'Customer', sensitivity: 0 }
+  'OrangeHRM\Time\Api\DefaultTimesheetAPI': { label: 'Default Timesheet', sensitivity: 0 }
+  'OrangeHRM\Time\Api\EmployeeTimesheetAPI': { label: 'Employee Timesheet', sensitivity: 0, read: true }
+  'OrangeHRM\Time\Api\EmployeeTimesheetItemAPI': { label: 'Employee Timesheet Entry', sensitivity: 0 }
+  'OrangeHRM\Time\Api\EmployeeTimesheetListAPI': { label: 'Employee Timesheet List', sensitivity: 0, read: true }
+  'OrangeHRM\Time\Api\MyTimesheetAPI': { label: 'My Timesheet', sensitivity: 0 }
+  'OrangeHRM\Time\Api\MyTimesheetItemAPI': { label: 'My Timesheet Entry', sensitivity: 0 }
+  'OrangeHRM\Time\Api\ProjectAPI': { label: 'Project', sensitivity: 0 }
+  'OrangeHRM\Time\Api\ProjectActivityAPI': { label: 'Project Activity', sensitivity: 0 }
+  'OrangeHRM\Time\Api\ProjectAdminAPI': { label: 'Project Admin', sensitivity: 0 }
+  'OrangeHRM\Time\Api\TimeReportAPI': { label: 'Time Report', sensitivity: 0 }
+  'OrangeHRM\Time\Api\TimeReportDataAPI': { label: 'Time Report Results', sensitivity: 0 }
+  'OrangeHRM\Time\Api\TimesheetActionLogAPI': { label: 'Timesheet Action History', sensitivity: 0 }
+  'OrangeHRM\Time\Api\TimesheetCommentAPI': { label: 'Timesheet Comment', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateAPI': { label: 'Candidate', sensitivity: 0, read: true }
+  'OrangeHRM\Recruitment\Api\CandidateAllowedActionAPI': { label: 'Candidate Available Actions', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateAttachmentAPI': { label: 'Candidate Attachment', sensitivity: 10 }
+  'OrangeHRM\Recruitment\Api\CandidateHiringAPI': { label: 'Candidate Hiring', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateHistoryAPI': { label: 'Candidate History', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateInterviewSchedulingAPI': { label: 'Candidate Interview Scheduling', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateJobOfferingAPI': { label: 'Candidate Job Offering', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateMarkingInterviewFailAPI': { label: 'Candidate Marking Interview Fail', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateMarkingInterviewPassAPI': { label: 'Candidate Marking Interview Pass', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateOfferDecliningAPI': { label: 'Candidate Offer Declining', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateRejectionAPI': { label: 'Candidate Rejection', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateShortlistingAPI': { label: 'Candidate Shortlisting', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateStatusAPI': { label: 'Candidate Status', sensitivity: 0, read: true }
+  'OrangeHRM\Recruitment\Api\EmployeeListAPI': { label: 'Interviewer', sensitivity: 0, read: true }
+  'OrangeHRM\Recruitment\Api\HiringManagerAPI': { label: 'Hiring Manager', sensitivity: 0, read: true }
+  'OrangeHRM\Recruitment\Api\InterviewAttachmentAPI': { label: 'Interview Attachment', sensitivity: 10 }
+  'OrangeHRM\Recruitment\Api\VacancyAPI': { label: 'Vacancy', sensitivity: 0, read: true }
+  'OrangeHRM\Recruitment\Api\VacancyAttachmentAPI': { label: 'Vacancy Attachment', sensitivity: 0 }
+  'OrangeHRM\Performance\Api\EmployeeEvaluationAPI': { label: 'Employee Evaluation', sensitivity: 10 }
+  'OrangeHRM\Performance\Api\EmployeeTrackerAPI': { label: 'Employee Tracker', sensitivity: 0 }
+  'OrangeHRM\Performance\Api\KpiAPI': { label: 'KPI', sensitivity: 0 }
+  'OrangeHRM\Performance\Api\MyReviewAPI': { label: 'My Review', sensitivity: 10 }
+  'OrangeHRM\Performance\Api\MyTrackerAPI': { label: 'My Tracker', sensitivity: 0 }
+  'OrangeHRM\Performance\Api\PerformanceReviewAPI': { label: 'Performance Review', sensitivity: 10 }
+  'OrangeHRM\Performance\Api\PerformanceReviewAllowedActionsAPI': { label: 'Performance Review Available Actions', sensitivity: 0 }
+  'OrangeHRM\Performance\Api\PerformanceReviewFinalEvaluationAPI': { label: 'Performance Review Final Evaluation', sensitivity: 10 }
+  'OrangeHRM\Performance\Api\PerformanceTrackerAPI': { label: 'Performance Tracker', sensitivity: 0 }
+  'OrangeHRM\Performance\Api\PerformanceTrackerLogAPI': { label: 'Performance Tracker Log', sensitivity: 0 }
+  'OrangeHRM\Performance\Api\PerformanceTrackerReviewerAPI': { label: 'Performance Tracker Reviewer', sensitivity: 0 }
+  'OrangeHRM\Performance\Api\ReviewEmployeeSupervisorAPI': { label: 'Performance Review Supervisor', sensitivity: 0 }
+  'OrangeHRM\Performance\Api\ReviewKpiAPI': { label: 'Review KPI', sensitivity: 0 }
+  'OrangeHRM\Performance\Api\ReviewListAPI': { label: 'Review List', sensitivity: 10 }
+  'OrangeHRM\Performance\Api\SupervisorEvaluationAPI': { label: 'Supervisor Evaluation', sensitivity: 10 }
+  'OrangeHRM\Attendance\Api\AttendanceConfigurationAPI': { label: 'Attendance Configuration', sensitivity: 0 }
+  'OrangeHRM\Attendance\Api\AttendanceEditPunchInRecordOverlapAPI': { label: 'Punch In Overlap Check (editing)', sensitivity: 0 }
+  'OrangeHRM\Attendance\Api\AttendanceEditPunchOutRecordOverlapAPI': { label: 'Punch Out Overlap Check (editing)', sensitivity: 0 }
+  'OrangeHRM\Attendance\Api\AttendancePunchInRecordOverlapAPI': { label: 'Punch In Overlap Check', sensitivity: 0 }
+  'OrangeHRM\Attendance\Api\AttendancePunchOutRecordOverlapAPI': { label: 'Punch Out Overlap Check', sensitivity: 0 }
+  'OrangeHRM\Attendance\Api\AttendanceRecordAPI': { label: 'Attendance Record', sensitivity: 0 }
+  'OrangeHRM\Attendance\Api\EmployeeAttendanceRecordAPI': { label: 'Employee Attendance Record', sensitivity: 0, read: true }
+  'OrangeHRM\Attendance\Api\EmployeeAttendanceSummaryAPI': { label: 'Employee Attendance Summary', sensitivity: 0, read: true }
+  'OrangeHRM\Attendance\Api\EmployeeLatestAttendanceRecordAPI': { label: 'Latest Attendance Record', sensitivity: 0, read: true }
+  'OrangeHRM\Attendance\Api\MyAttendanceRecordAPI': { label: 'My Attendance Record', sensitivity: 0, read: true }
+  'OrangeHRM\Attendance\Api\TimezonesAPI': { label: 'Time Zone', sensitivity: 0 }
+  'OrangeHRM\Claim\Api\ClaimAttachmentAPI': { label: 'Claim Attachment', sensitivity: 10 }
+  'OrangeHRM\Claim\Api\ClaimEventAPI': { label: 'Claim Event', sensitivity: 0 }
+  'OrangeHRM\Claim\Api\ClaimExpenseAPI': { label: 'Claim Expense', sensitivity: 0 }
+  'OrangeHRM\Claim\Api\ClaimExpenseTypeAPI': { label: 'Claim Expense Type', sensitivity: 0 }
+  'OrangeHRM\Claim\Api\ClaimRequestActionAPI': { label: 'Claim Request Action', sensitivity: 0 }
+  'OrangeHRM\Claim\Api\EmployeeClaimRequestAPI': { label: 'Employee Claim Request', sensitivity: 0 }
+  'OrangeHRM\Claim\Api\MyClaimRequestAPI': { label: 'My Claim Request', sensitivity: 0 }
+  'OrangeHRM\Dashboard\Api\EmployeeActionSummaryAPI': { label: 'Employee Action Summary', sensitivity: 0 }
+  'OrangeHRM\Dashboard\Api\EmployeeDistributionByLocationAPI': { label: 'Employee Distribution By Location', sensitivity: 0 }
+  'OrangeHRM\Dashboard\Api\EmployeeDistributionBySubunitAPI': { label: 'Employee Distribution By Subunit', sensitivity: 0 }
+  'OrangeHRM\Dashboard\Api\EmployeeOnLeaveAPI': { label: 'Employee On Leave', sensitivity: 0 }
+  'OrangeHRM\Dashboard\Api\EmployeeTimeAtWorkAPI': { label: 'Employee Time At Work', sensitivity: 0 }
+  'OrangeHRM\CorporateDirectory\Api\EmployeeDirectoryAPI': { label: 'Employee Directory', sensitivity: 0, read: true }
+
+notSeeded:
+  - 'OrangeHRM\Pim\Api\ValidationEmployeeEmailAPI'
+  - 'OrangeHRM\Pim\Api\ValidationEmployeeOtherEmailAPI'
+  - 'OrangeHRM\Time\Api\ValidateProjectNameAPI'
+  - 'OrangeHRM\Time\Api\ValidationCustomerNameAPI'
+  - 'OrangeHRM\Time\Api\ValidationProjectActivityNameAPI'
+  - 'OrangeHRM\Time\Api\TimesheetProjectActivityUniqueValidationAPI'
+  - 'OrangeHRM\Admin\Api\I18NTranslationValidationAPI'
+  - 'OrangeHRM\Core\Api\Rest\ValidationUniqueAPI'
+  - 'OrangeHRM\Authentication\PublicApi\PasswordStrengthValidationAPI'
+  - 'OrangeHRM\Dashboard\Api\QuickLaunchAPI'
+  - 'OrangeHRM\Dashboard\Api\EmployeeOnLeaveTodayConfigAPI'
+  - 'OrangeHRM\Mobile\Api\MenuItemAPI'
+  - 'OrangeHRM\Core\Api\Rest\DataGroupAPI'
+  - 'OrangeHRM\CorporateBranding\Api\PreviewThemeAPI'
+  - 'OrangeHRM\Admin\Api\I18NGroupAPI'
+  - 'OrangeHRM\Time\Api\TimesheetTimeFormatAPI'
+  - 'OrangeHRM\Core\PublicApi\VersionAPI'
+  - 'OrangeHRM\Attendance\Api\CurrentDateTimeAPI'
+  - 'OrangeHRM\Pim\Api\EmployeeCSVImportAPI'
+  - 'OrangeHRM\Pim\Api\ReportingMethodConfigurationAPI'
+  - 'OrangeHRM\Buzz\Api\BuzzFeedAPI'
+  - 'OrangeHRM\Buzz\Api\BuzzPostAPI'
+  - 'OrangeHRM\Buzz\Api\BuzzPostShareAPI'
+  - 'OrangeHRM\Buzz\Api\BuzzShareAPI'
+  - 'OrangeHRM\Buzz\Api\BuzzCommentAPI'
+  - 'OrangeHRM\Buzz\Api\BuzzLikeOnShareAPI'
+  - 'OrangeHRM\Buzz\Api\BuzzLikeOnCommentAPI'
+  - 'OrangeHRM\Buzz\Api\BuzzVideoURLValidationAPI'
+  - 'OrangeHRM\Buzz\Api\EmployeeAnniversaryAPI'
+  - 'OrangeHRM\Core\Api\Rest\AboutOrganizationAPI'
+  - 'OrangeHRM\SystemCheck\PublicApi\SystemCheckAPI'
+  - 'OrangeHRM\Admin\Api\I18NTranslationImportAPI'
+  - 'OrangeHRM\Admin\Api\ModulesAPI'
+  - 'OrangeHRM\Admin\Api\OrganizationAPI'
+  - 'OrangeHRM\Admin\Api\ValidationUserNameAPI'
+  - 'OrangeHRM\Time\Api\TimeConfigPeriodAPI'
+  - 'OrangeHRM\Pim\Api\OptionalFieldAPI'

@@ -30,8 +30,8 @@ use OrangeHRM\Core\Service\ModuleService;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\Mcp\Command\McpDoctorCommand;
 use OrangeHRM\Mcp\Service\McpApiPermissionService;
-use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
 use OrangeHRM\Mcp\Tool\ApiSensitivity;
+use OrangeHRM\Tests\Mcp\Tool\ApiCatalogSeedTest;
 use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Tests\Util\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -145,13 +145,13 @@ class McpDoctorCommandTest extends KernelTestCase
     private function fullPermissionMap(): array
     {
         $map = [];
-        foreach (ApiPermissionDefaults::rows() as $apiClass => $row) {
+        foreach (ApiCatalogSeedTest::seed() as $apiClass => $entry) {
             $map[$apiClass] = [
-                ApiVerb::READ => $row['read'],
+                ApiVerb::READ => !empty($entry['read']),
                 ApiVerb::CREATE => false,
                 ApiVerb::UPDATE => false,
                 ApiVerb::DELETE => false,
-                'sensitivity' => ApiSensitivity::NORMAL,
+                'sensitivity' => (int) ($entry['sensitivity'] ?? ApiSensitivity::NORMAL),
             ];
         }
         return $map;
@@ -303,7 +303,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $tester->execute(['--host' => 'localhost']);
 
         $this->assertMatchesRegularExpression(
-            '/API permissions installed -- \\d+ of \\d+ API classes configured; tools: read \\d+\\/\\d+/',
+            '/API permissions installed -- \\d+ API classes configured; tools: read \\d+\\/\\d+/',
             $tester->getDisplay()
         );
     }

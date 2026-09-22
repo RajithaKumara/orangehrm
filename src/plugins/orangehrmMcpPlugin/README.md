@@ -624,8 +624,9 @@ wants `Version` or a validation endpoint had no way to get it and no way to ask.
 
 **How it works now:**
 
-- `ApiPermissionDefaults::ALL` — 153 classes we ship a row for.
-- `ApiPermissionDefaults::NOT_SEEDED` — 37 routable classes we deliberately do
+- `api-catalog.yaml` → `apis` — 153 classes we ship a row for, each with its
+  label, sensitivity level and whether its reads ship on.
+- `api-catalog.yaml` → `notSeeded` — 37 routable classes we deliberately do
   not: validation oracles, UI scaffolding (menus, quick launch, data groups,
   theme preview, I18N groups, timesheet time format, on-leave-today config),
   environment metadata (`Version`, `CurrentDateTime`, `SystemCheck`,

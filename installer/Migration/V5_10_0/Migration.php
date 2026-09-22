@@ -25,7 +25,6 @@ use Doctrine\DBAL\Types\Types;
 use OrangeHRM\Installer\Util\V1\AbstractMigration;
 use Symfony\Component\Yaml\Yaml;
 use OrangeHRM\Mcp\Service\McpConfigPolicy;
-use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
 use OrangeHRM\Mcp\Tool\ApiSensitivity;
 
 class Migration extends AbstractMigration
@@ -270,7 +269,8 @@ class Migration extends AbstractMigration
      * if they switched PIM reads off, they stay off -- while a genuinely new
      * endpoint family added by this release still arrives with its shipped
      * default. A row a customer added by hand for an endpoint we do not ship
-     * (ApiPermissionDefaults::NOT_SEEDED) is left alone for the same reason.
+     * (the `notSeeded` list in api-catalog.yaml) is left alone for the same
+     * reason.
      *
      * Sensitivity is the exception that proves the rule: it is written on insert
      * and is product-owned, because a warning a tenant can downgrade is not a
@@ -294,7 +294,7 @@ class Migration extends AbstractMigration
             ->fetchFirstColumn();
         $unlabelled = array_flip($unlabelled);
 
-        foreach (ApiPermissionDefaults::rows() as $apiName => $row) {
+        foreach ($catalog as $apiName => $entry) {
             if (array_key_exists($apiName, $existing)) {
                 // Only where the label was never set. A customer who renamed
                 // one keeps their wording; the cost is that our later
@@ -304,12 +304,12 @@ class Migration extends AbstractMigration
                     $this->createQueryBuilder()
                         ->update('ohrm_mcp_api_permission', 'p')
                         ->set('p.label', ':label')
-                        ->setParameter('label', $catalog[$apiName]['label'] ?? null)
+                        ->setParameter('label', $entry['label'])
                         ->where('p.api_name = :apiName')
                         ->setParameter('apiName', $apiName)
                         ->executeStatement();
                 }
-                $sensitivity = $catalog[$apiName]['sensitivity'] ?? ApiSensitivity::NORMAL;
+                $sensitivity = $entry['sensitivity'];
                 if ((int) $existing[$apiName] !== $sensitivity) {
                     $this->createQueryBuilder()
                         ->update('ohrm_mcp_api_permission', 'p')
@@ -334,40 +334,44 @@ class Migration extends AbstractMigration
                     'sensitivity' => ':sensitivity',
                 ])
                 ->setParameter('apiName', $apiName)
-                ->setParameter('label', $catalog[$apiName]['label'] ?? null)
-                ->setParameter('canRead', $row['read'] ? 1 : 0)
-                ->setParameter('canCreate', $row['create'] ? 1 : 0)
-                ->setParameter('canUpdate', $row['update'] ? 1 : 0)
-                ->setParameter('canDelete', $row['delete'] ? 1 : 0)
-                ->setParameter('sensitivity', $catalog[$apiName]['sensitivity'] ?? ApiSensitivity::NORMAL)
+                ->setParameter('label', $entry['label'])
+                ->setParameter('canRead', $entry['read'] ? 1 : 0)
+                // No write ships enabled, ever. Enabling one is an
+                // administrator's deliberate act against a screen that says
+                // what it does.
+                ->setParameter('canCreate', 0)
+                ->setParameter('canUpdate', 0)
+                ->setParameter('canDelete', 0)
+                ->setParameter('sensitivity', $entry['sensitivity'])
                 ->executeStatement();
         }
     }
 
     /**
-     * The shipped catalog: a label and a sensitivity level per API class.
+     * The shipped catalog: one entry per API class the product seeds a row
+     * for, carrying its label, its sensitivity level and whether its reads
+     * ship switched on.
      *
-     * One file rather than two, because they describe the same row and are
-     * edited in the same sitting. Read once at install time; nothing consults
-     * it afterwards.
+     * Read once at install time; nothing consults it afterwards. Being listed
+     * is what creates the row, so this file is also the answer to "which APIs
+     * does 5.10 ship".
      *
-     * @return array<string,array{label:string,sensitivity:int}>
+     * @return array<string,array{label:?string,sensitivity:int,read:bool}>
      */
     private function getApiCatalog(): array
     {
         $parsed = Yaml::parseFile(__DIR__ . '/api-catalog.yaml');
-        if (!is_array($parsed)) {
-            return [];
-        }
+        $apis = is_array($parsed) && isset($parsed['apis']) ? (array) $parsed['apis'] : [];
 
         $catalog = [];
-        foreach ($parsed as $apiClass => $entry) {
+        foreach ($apis as $apiClass => $entry) {
             if (!is_array($entry)) {
                 continue;
             }
             $catalog[$apiClass] = [
                 'label' => isset($entry['label']) ? (string) $entry['label'] : null,
                 'sensitivity' => (int) ($entry['sensitivity'] ?? ApiSensitivity::NORMAL),
+                'read' => !empty($entry['read']),
             ];
         }
         return $catalog;

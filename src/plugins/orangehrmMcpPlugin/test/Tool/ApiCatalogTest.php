@@ -21,7 +21,6 @@ namespace OrangeHRM\Tests\Mcp\Tool;
 
 use OrangeHRM\Mcp\Tool\ApiCatalog;
 use OrangeHRM\Mcp\Tool\ApiSensitivity;
-use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
 use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Tests\Util\KernelTestCase;
 
@@ -39,16 +38,14 @@ class ApiCatalogTest extends KernelTestCase
     private function shippedMap(): array
     {
         $map = [];
-        foreach (ApiPermissionDefaults::rows() as $apiClass => $row) {
+        foreach (ApiCatalogSeedTest::seed() as $apiClass => $entry) {
             $map[$apiClass] = [
-                ApiVerb::READ => $row['read'],
-                ApiVerb::CREATE => $row['create'],
-                ApiVerb::UPDATE => $row['update'],
-                ApiVerb::DELETE => $row['delete'],
-                // Sensitivity is seeded from the migration's own file, so a row
-                // built from the defaults alone carries none.
-                'sensitivity' => ApiSensitivity::NORMAL,
-                'label' => null,
+                'label' => $entry['label'] ?? null,
+                'sensitivity' => (int) ($entry['sensitivity'] ?? ApiSensitivity::NORMAL),
+                ApiVerb::READ => !empty($entry['read']),
+                ApiVerb::CREATE => false,
+                ApiVerb::UPDATE => false,
+                ApiVerb::DELETE => false,
             ];
         }
         return $map;
@@ -73,7 +70,7 @@ class ApiCatalogTest extends KernelTestCase
             }
         }
 
-        $this->assertCount(count(ApiPermissionDefaults::ALL), $seen);
+        $this->assertCount(count(ApiCatalogSeedTest::seed()), $seen);
     }
 
     /**
@@ -193,7 +190,7 @@ class ApiCatalogTest extends KernelTestCase
             $available += $pair['available'];
         }
 
-        $this->assertSame(count(ApiPermissionDefaults::ALL), $counts['classes']);
+        $this->assertSame(count(ApiCatalogSeedTest::seed()), $counts['classes']);
         $this->assertGreaterThan(
             $counts['classes'],
             $available,
@@ -275,7 +272,7 @@ class ApiCatalogTest extends KernelTestCase
     {
         $labels = $this->seededLabels();
 
-        foreach (ApiPermissionDefaults::ALL as $apiClass) {
+        foreach (array_keys(ApiCatalogSeedTest::seed()) as $apiClass) {
             $this->assertArrayHasKey($apiClass, $labels, sprintf('`%s` has no seeded label', $apiClass));
             $this->assertNotSame('', trim($labels[$apiClass]));
         }
@@ -287,7 +284,7 @@ class ApiCatalogTest extends KernelTestCase
      */
     public function testNoSeededLabelIsOrphaned(): void
     {
-        $shipped = array_flip(ApiPermissionDefaults::ALL);
+        $shipped = array_flip(array_keys(ApiCatalogSeedTest::seed()));
 
         foreach (array_keys($this->seededLabels()) as $apiClass) {
             $this->assertArrayHasKey(

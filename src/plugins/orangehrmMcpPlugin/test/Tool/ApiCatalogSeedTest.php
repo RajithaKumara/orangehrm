@@ -20,7 +20,9 @@
 namespace OrangeHRM\Tests\Mcp\Tool;
 
 use OrangeHRM\Mcp\Tool\ApiSensitivity;
-use PHPUnit\Framework\TestCase;
+use OrangeHRM\Mcp\Tool\Rest\RouteMap;
+use OrangeHRM\Mcp\Tool\RestrictedApis;
+use OrangeHRM\Tests\Util\KernelTestCase;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -31,17 +33,135 @@ use Symfony\Component\Yaml\Yaml;
  * @group Mcp
  * @group Tool
  */
-class ApiCatalogSeedTest extends TestCase
+class ApiCatalogSeedTest extends KernelTestCase
 {
     public const SEED_FILE = __DIR__ . '/../../../../../installer/Migration/V5_10_0/api-catalog.yaml';
 
     /**
+     * The API classes the product seeds a row for.
+     *
      * @return array<string,array<string,mixed>>
      */
     public static function seed(): array
     {
         $parsed = Yaml::parseFile(self::SEED_FILE);
-        return is_array($parsed) ? $parsed : [];
+        return is_array($parsed) && isset($parsed['apis']) ? (array) $parsed['apis'] : [];
+    }
+
+    /**
+     * Routable classes the product deliberately ships no row for.
+     *
+     * @return string[]
+     */
+    public static function notSeeded(): array
+    {
+        $parsed = Yaml::parseFile(self::SEED_FILE);
+        return is_array($parsed) && isset($parsed['notSeeded']) ? (array) $parsed['notSeeded'] : [];
+    }
+
+    /**
+     * @return string[] API classes the live route collection exposes to MCP
+     */
+    private function liveClasses(): array
+    {
+        $classes = [];
+        foreach ((new RouteMap())->all() as $route) {
+            $classes[$route->getApiClass()] = true;
+        }
+        $classes = array_keys($classes);
+        sort($classes);
+        return $classes;
+    }
+
+    /**
+     * The seed is authored by hand, so it can fall behind the routes. A class
+     * missing from it ships no row and is therefore unreachable until someone
+     * adds one -- which degrades safely, but silently. This turns it into a
+     * failure.
+     *
+     * Every routable class must be accounted for as either seeded or
+     * deliberately not.
+     */
+    public function testEveryRoutableClassIsAccountedFor(): void
+    {
+        $live = $this->liveClasses();
+        $accounted = array_merge(array_keys(self::seed()), self::notSeeded());
+
+        $this->assertSame(
+            [],
+            array_values(array_diff($live, $accounted)),
+            'these API classes are routable but are in neither apis nor notSeeded'
+        );
+        $this->assertSame(
+            [],
+            array_values(array_diff($accounted, $live)),
+            'these listed classes no longer match any route'
+        );
+    }
+
+    /**
+     * The two lists are a partition, not overlapping sets. A class in both
+     * makes "does this ship a row" unanswerable from the file.
+     */
+    public function testSeededAndNotSeededDoNotOverlap(): void
+    {
+        $this->assertSame(
+            [],
+            array_values(array_intersect(array_keys(self::seed()), self::notSeeded())),
+            'these classes are listed as both seeded and not seeded'
+        );
+    }
+
+    /**
+     * Seeding a restricted class would quietly reverse a decision taken on
+     * security grounds, and would put a row on the screen for something that
+     * can never be enabled.
+     */
+    public function testNoSeededClassIsRestricted(): void
+    {
+        foreach (array_keys(self::seed()) as $apiClass) {
+            $this->assertFalse(
+                RestrictedApis::isForbidden($apiClass),
+                sprintf('`%s` is excluded on product grounds and must not be seeded', $apiClass)
+            );
+        }
+    }
+
+    /**
+     * No write ships enabled, ever, and the file has no way to say otherwise:
+     * only `read` is honoured. This proves nobody added a create/update/delete
+     * key expecting it to work.
+     */
+    public function testTheSeedCannotShipAWriteEnabled(): void
+    {
+        foreach (self::seed() as $apiClass => $entry) {
+            foreach (['create', 'update', 'delete'] as $verb) {
+                $this->assertArrayNotHasKey(
+                    $verb,
+                    $entry,
+                    sprintf('`%s` carries a `%s` key, which the migration ignores', $apiClass, $verb)
+                );
+            }
+        }
+    }
+
+    /**
+     * None of the sensitive classes ships switched on. They are reachable --
+     * an administrator can enable them -- but inheriting them is a decision
+     * nobody made.
+     */
+    public function testNoSensitiveClassShipsEnabled(): void
+    {
+        foreach (self::seed() as $apiClass => $entry) {
+            if ((int) ($entry['sensitivity'] ?? 0) <= ApiSensitivity::NORMAL) {
+                continue;
+            }
+            $this->assertArrayNotHasKey(
+                'read',
+                $entry,
+                sprintf('`%s` is sensitive and must not ship enabled', $apiClass)
+            );
+        }
     }
 
     public function testEveryEntryCarriesALabelAndALevel(): void

@@ -24,7 +24,6 @@ use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
 use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
 use OrangeHRM\Mcp\Tool\ApiCatalog;
-use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
 use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Mcp\Tool\Rest\GenericToolFactory;
 use OrangeHRM\Mcp\Tool\Rest\OpenApiLoader;
@@ -194,6 +193,12 @@ class McpHealthCheck
      * The grid is what decides which endpoints are offered, so an operator
      * asking "why does the assistant not see X" should be able to see the state
      * of it without opening the database.
+     *
+     * Reports what is configured rather than checking it against an expected
+     * number: the shipped list is seed data in the migration folder, and
+     * reading an installer file at runtime to second-guess the migration is
+     * worse than the problem it detects. A catalog that drifts from the routes
+     * is caught in CI by ApiCatalogSeedTest, which is where it can be fixed.
      */
     public function checkApiPermissions(): array
     {
@@ -221,18 +226,11 @@ class McpHealthCheck
         }
 
         $message = sprintf(
-            '%d of %d API classes configured; tools: %s (%d enabled)',
+            '%d API classes configured; tools: %s (%d enabled)',
             count($map),
-            ApiPermissionDefaults::count(),
             implode(', ', $parts),
             $enabledTools
         );
-
-        // A shortfall means the migration ran against an older catalog: those
-        // classes are refused rather than misbehaving, but nobody would guess.
-        if (count($map) < ApiPermissionDefaults::count()) {
-            return $this->result('API permissions installed', self::STATUS_FAIL, $message . ' -- rows are missing.');
-        }
 
         return $this->result('API permissions installed', self::STATUS_PASS, $message);
     }
