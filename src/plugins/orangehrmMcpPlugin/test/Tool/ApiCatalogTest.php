@@ -46,7 +46,10 @@ class ApiCatalogTest extends KernelTestCase
                 ApiVerb::CREATE => $row['create'],
                 ApiVerb::UPDATE => $row['update'],
                 ApiVerb::DELETE => $row['delete'],
-                'sensitivity' => $row['sensitivity'],
+                // Sensitivity is seeded from the migration's own file, so a row
+                // built from the defaults alone carries none.
+                'sensitivity' => ApiSensitivity::NORMAL,
+                'label' => null,
             ];
         }
         return $map;

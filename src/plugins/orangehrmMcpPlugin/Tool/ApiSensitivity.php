@@ -20,37 +20,23 @@
 namespace OrangeHRM\Mcp\Tool;
 
 /**
- * How sensitive the data behind an API class is, independent of the verb used to
- * reach it.
+ * The two values `ohrm_mcp_api_permission.sensitivity` can hold.
  *
- * Two axes, deliberately kept apart:
+ * A native PHP enum is what this wants to be, and it cannot be one: enums need
+ * PHP 8.1 and `src/composer.json` still declares `^7.4|^8.0`. The codebase has
+ * no native enum anywhere for the same reason, and has been bitten before by a
+ * language feature that looked available -- constants in traits, which need
+ * 8.2. So the enumeration lives where it can be enforced today: the column is
+ * `ENUM('normal','sensitive')`, and these constants are the names the runtime
+ * compares against.
  *
- *  - **Verb risk** is about what a call *does*. Delete is worse than update,
- *    update worse than read. The admin screen derives that from the verb alone
- *    and needs nothing from this class.
- *  - **Data sensitivity**, below, is about what a call *touches*, and applies
- *    even to a read.
+ * **Which classes are sensitive is not here.** That is seed data, and it lives
+ * with the migration that seeds it, in
+ * `installer/Migration/V5_10_0/api-sensitivity.yaml`. Nothing reads it at
+ * runtime: the screen and `tools/list` read the column.
  *
- * Collapsing the two would get the important case backwards: reading an
- * employee's salary is more sensitive than updating a job title, yet one is a
- * GET and the other a PUT.
- *
- * These values are authored here and seeded into `ohrm_mcp_api_permission` by
- * the migration. The screen displays them; it does not edit them. A tenant who
- * could downgrade a warning would make every warning meaningless, and the
- * classification is a product judgement rather than a local preference.
- *
- * There is one flag, not a scale. An earlier version had a middle tier called
- * "personal", and it was wrong: in an HRIS almost everything about an employee
- * is personal data -- a job title and an attendance record included -- so the
- * label was true of most of the catalog and implied the rows it was missing
- * from were not personal. A flag that says nothing is noise; one that says
- * something false is worse.
- *
- * What is left flags the endpoints whose name does not announce what they
- * hold. "Employee US Tax Exemption" does not read as compensation data, and
- * verb risk cannot help an administrator here: reading a salary and reading a
- * job title are both GET.
+ * Unlike a label, an upgrade rewrites this column. A warning a tenant can
+ * quietly downgrade is not a warning.
  */
 final class ApiSensitivity
 {
@@ -61,52 +47,7 @@ final class ApiSensitivity
     public const SENSITIVE = 'sensitive';
 
     /**
-     * The categories a leak of which is materially worse than a leak of someone's
-     * job title, and several of which are special-category data under privacy law.
-     */
-    public const SENSITIVE_APIS = [
-        // Compensation and tax
-        'OrangeHRM\\Pim\\Api\\EmployeeSalaryComponentAPI',
-        'OrangeHRM\\Pim\\Api\\EmpUsTaxExemptionAPI',
-        'OrangeHRM\\Pim\\Api\\EmploymentContractAPI',
-
-        // Immigration and legal status
-        'OrangeHRM\\Pim\\Api\\EmployeeImmigrationRecordAPI',
-
-        // Account control
-        'OrangeHRM\\Admin\\Api\\UserAPI',
-
-        // Performance evaluation: ratings and free-text judgements about a person.
-        'OrangeHRM\\Performance\\Api\\PerformanceReviewAPI',
-        'OrangeHRM\\Performance\\Api\\PerformanceReviewFinalEvaluationAPI',
-        'OrangeHRM\\Performance\\Api\\EmployeeEvaluationAPI',
-        'OrangeHRM\\Performance\\Api\\SupervisorEvaluationAPI',
-        'OrangeHRM\\Performance\\Api\\MyReviewAPI',
-        'OrangeHRM\\Performance\\Api\\ReviewListAPI',
-
-        // Uploaded files. The contents are unknown to us and in practice hold
-        // identity documents, medical notes and signed contracts, so the ceiling
-        // is the highest thing anyone has ever attached.
-        'OrangeHRM\\Pim\\Api\\EmployeeAttachmentAPI',
-        'OrangeHRM\\Recruitment\\Api\\CandidateAttachmentAPI',
-        'OrangeHRM\\Recruitment\\Api\\InterviewAttachmentAPI',
-        'OrangeHRM\\Claim\\Api\\ClaimAttachmentAPI',
-
-        // A PIM report returns whatever field groups its definition selects,
-        // which includes salary. The endpoint cannot be classified by anything
-        // milder than the most sensitive field it can carry.
-        'OrangeHRM\\Pim\\Api\\PimReportDataAPI',
-    ];
-
-    public static function of(string $apiClass): string
-    {
-        $class = ltrim($apiClass, '\\');
-
-        return in_array($class, self::SENSITIVE_APIS, true) ? self::SENSITIVE : self::NORMAL;
-    }
-
-    /**
-     * @return string[] the two levels, least sensitive first
+     * @return string[] both values, least sensitive first
      */
     public static function levels(): array
     {

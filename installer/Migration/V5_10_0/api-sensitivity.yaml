@@ -1,0 +1,28 @@
+# API classes flagged `sensitive` on the MCP Configuration screen.
+#
+# Seeded into ohrm_mcp_api_permission.sensitivity, which is an ENUM of
+# ('normal','sensitive'). Anything not listed here is normal.
+#
+# These are the endpoints whose name does not announce what they hold.
+# "Employee US Tax Exemption" does not read as compensation data, and the
+# verb cannot help: reading a salary and reading a job title are both GET.
+#
+# Unlike the labels beside them, an upgrade rewrites these: a warning a
+# tenant can downgrade is not a warning.
+sensitive:
+  - 'OrangeHRM\Pim\Api\EmployeeSalaryComponentAPI'
+  - 'OrangeHRM\Pim\Api\EmpUsTaxExemptionAPI'
+  - 'OrangeHRM\Pim\Api\EmploymentContractAPI'
+  - 'OrangeHRM\Pim\Api\EmployeeImmigrationRecordAPI'
+  - 'OrangeHRM\Admin\Api\UserAPI'
+  - 'OrangeHRM\Performance\Api\PerformanceReviewAPI'
+  - 'OrangeHRM\Performance\Api\PerformanceReviewFinalEvaluationAPI'
+  - 'OrangeHRM\Performance\Api\EmployeeEvaluationAPI'
+  - 'OrangeHRM\Performance\Api\SupervisorEvaluationAPI'
+  - 'OrangeHRM\Performance\Api\MyReviewAPI'
+  - 'OrangeHRM\Performance\Api\ReviewListAPI'
+  - 'OrangeHRM\Pim\Api\EmployeeAttachmentAPI'
+  - 'OrangeHRM\Recruitment\Api\CandidateAttachmentAPI'
+  - 'OrangeHRM\Recruitment\Api\InterviewAttachmentAPI'
+  - 'OrangeHRM\Claim\Api\ClaimAttachmentAPI'
+  - 'OrangeHRM\Pim\Api\PimReportDataAPI'

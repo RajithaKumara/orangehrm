@@ -20,11 +20,11 @@
 namespace OrangeHRM\Tests\Mcp\Tool;
 
 use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
-use OrangeHRM\Mcp\Tool\ApiSensitivity;
 use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Mcp\Tool\Rest\RouteMap;
 use OrangeHRM\Mcp\Tool\RestrictedApis;
 use OrangeHRM\Tests\Util\KernelTestCase;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * @group Mcp
@@ -129,24 +129,27 @@ class ApiPermissionDefaultsTest extends KernelTestCase
         }
     }
 
-    public function testEveryRowCarriesAValidSensitivity(): void
+    /**
+     * The sensitivity seed, as the migration reads it.
+     *
+     * @return string[]
+     */
+    private function sensitiveApis(): array
     {
-        foreach (ApiPermissionDefaults::rows() as $apiClass => $row) {
-            $this->assertTrue(
-                ApiSensitivity::isValid($row['sensitivity']),
-                sprintf('`%s` has an unknown sensitivity `%s`', $apiClass, $row['sensitivity'])
-            );
-        }
+        $parsed = Yaml::parseFile(
+            __DIR__ . '/../../../../../installer/Migration/V5_10_0/api-sensitivity.yaml'
+        );
+        return is_array($parsed) && isset($parsed['sensitive']) ? (array) $parsed['sensitive'] : [];
     }
 
     /**
      * The flag is only useful if it points at the things it exists for, so a
      * refactor that renames one of these should fail here rather than silently
-     * downgrade it to `normal`.
+     * downgrade it to normal.
      */
     public function testTheCategoriesThatMatterAreFlagged(): void
     {
-        $rows = ApiPermissionDefaults::rows();
+        $sensitive = array_flip($this->sensitiveApis());
 
         foreach (
             [
@@ -157,11 +160,27 @@ class ApiPermissionDefaultsTest extends KernelTestCase
                 'OrangeHRM\\Admin\\Api\\UserAPI',
             ] as $apiClass
         ) {
-            $this->assertArrayHasKey($apiClass, $rows, sprintf('`%s` is no longer in the catalog', $apiClass));
-            $this->assertSame(
-                ApiSensitivity::SENSITIVE,
-                $rows[$apiClass]['sensitivity'],
+            $this->assertArrayHasKey(
+                $apiClass,
+                $sensitive,
                 sprintf('`%s` must be flagged sensitive', $apiClass)
+            );
+        }
+    }
+
+    /**
+     * A flag on a class nobody ships is dead weight, and usually means the
+     * class was renamed while the seed file was not.
+     */
+    public function testNoSensitiveEntryIsOrphaned(): void
+    {
+        $shipped = array_flip(ApiPermissionDefaults::ALL);
+
+        foreach ($this->sensitiveApis() as $apiClass) {
+            $this->assertArrayHasKey(
+                $apiClass,
+                $shipped,
+                sprintf('`%s` is flagged sensitive but is not in the shipped catalog', $apiClass)
             );
         }
     }
@@ -173,13 +192,12 @@ class ApiPermissionDefaultsTest extends KernelTestCase
      */
     public function testNoSensitiveClassShipsEnabled(): void
     {
-        foreach (ApiPermissionDefaults::rows() as $apiClass => $row) {
-            if ($row['sensitivity'] !== ApiSensitivity::SENSITIVE) {
-                continue;
-            }
+        $rows = ApiPermissionDefaults::rows();
+
+        foreach ($this->sensitiveApis() as $apiClass) {
             $this->assertFalse(
-                $row['read'],
-                sprintf('`%s` is highly sensitive and must not ship enabled', $apiClass)
+                $rows[$apiClass]['read'] ?? false,
+                sprintf('`%s` is sensitive and must not ship enabled', $apiClass)
             );
         }
     }

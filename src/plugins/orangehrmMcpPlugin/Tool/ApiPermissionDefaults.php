@@ -398,7 +398,11 @@ final class ApiPermissionDefaults
     /**
      * The rows to seed, keyed by API class.
      *
-     * @return array<string,array{read:bool,create:bool,update:bool,delete:bool,sensitivity:string}>
+     * Sensitivity is not here: it is seeded from the migration's own
+     * api-sensitivity.yaml, because which classes are sensitive is install-time
+     * data rather than something the runtime decides.
+     *
+     * @return array<string,array{read:bool,create:bool,update:bool,delete:bool}>
      */
     public static function rows(): array
     {
@@ -413,7 +417,6 @@ final class ApiPermissionDefaults
                 'create' => false,
                 'update' => false,
                 'delete' => false,
-                'sensitivity' => ApiSensitivity::of($apiClass),
             ];
         }
         return $rows;

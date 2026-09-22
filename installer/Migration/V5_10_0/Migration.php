@@ -83,6 +83,7 @@ class Migration extends AbstractMigration
         $this->registerMcpConfigScreen();
         $this->createApiPermissionTable();
         $this->addApiPermissionLabelColumn();
+        $this->constrainSensitivityColumn();
         $this->seedApiPermissions();
         $this->seedSwitches();
         $this->seedAllowedRoles();
@@ -222,6 +223,23 @@ class Migration extends AbstractMigration
     }
 
     /**
+     * Narrows `sensitivity` to the two values that mean anything.
+     *
+     * PHP enums need 8.1 and this product still supports 7.4, so the constraint
+     * has to live in the schema. It earns its keep now that rows are edited by
+     * hand: a typo used to read back as `normal` through the Dao's fallback and
+     * quietly drop the flag, and the database now refuses it outright.
+     * `hs_hr_emp_dependents.ed_relationship_type` is the same idea.
+     */
+    private function constrainSensitivityColumn(): void
+    {
+        $this->getConnection()->executeStatement(
+            "ALTER TABLE ohrm_mcp_api_permission "
+            . "MODIFY sensitivity ENUM('normal','sensitive') NOT NULL DEFAULT 'normal'"
+        );
+    }
+
+    /**
      * Seeds one row per API class.
      *
      * Rows are inserted only when absent, never updated, and never deleted. An
@@ -244,6 +262,7 @@ class Migration extends AbstractMigration
             ->fetchAllKeyValue();
 
         $labels = $this->getApiLabels();
+        $sensitive = $this->getSensitiveApis();
 
         $unlabelled = $this->createQueryBuilder()
             ->select('p.api_name')
@@ -268,11 +287,12 @@ class Migration extends AbstractMigration
                         ->setParameter('apiName', $apiName)
                         ->executeStatement();
                 }
-                if ($existing[$apiName] !== $row['sensitivity']) {
+                $sensitivity = isset($sensitive[$apiName]) ? 'sensitive' : 'normal';
+                if ($existing[$apiName] !== $sensitivity) {
                     $this->createQueryBuilder()
                         ->update('ohrm_mcp_api_permission', 'p')
                         ->set('p.sensitivity', ':sensitivity')
-                        ->setParameter('sensitivity', $row['sensitivity'])
+                        ->setParameter('sensitivity', $sensitivity)
                         ->where('p.api_name = :apiName')
                         ->setParameter('apiName', $apiName)
                         ->executeStatement();
@@ -297,9 +317,22 @@ class Migration extends AbstractMigration
                 ->setParameter('canCreate', $row['create'] ? 1 : 0)
                 ->setParameter('canUpdate', $row['update'] ? 1 : 0)
                 ->setParameter('canDelete', $row['delete'] ? 1 : 0)
-                ->setParameter('sensitivity', $row['sensitivity'])
+                ->setParameter('sensitivity', isset($sensitive[$apiName]) ? 'sensitive' : 'normal')
                 ->executeStatement();
         }
+    }
+
+    /**
+     * The API classes flagged sensitive, keyed for lookup.
+     *
+     * @return array<string,true>
+     */
+    private function getSensitiveApis(): array
+    {
+        $parsed = Yaml::parseFile(__DIR__ . '/api-sensitivity.yaml');
+        $classes = is_array($parsed) && isset($parsed['sensitive']) ? (array) $parsed['sensitive'] : [];
+
+        return array_fill_keys($classes, true);
     }
 
     /**

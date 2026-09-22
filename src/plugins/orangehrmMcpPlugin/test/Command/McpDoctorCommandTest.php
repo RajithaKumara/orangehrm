@@ -31,6 +31,7 @@ use OrangeHRM\Framework\Services;
 use OrangeHRM\Mcp\Command\McpDoctorCommand;
 use OrangeHRM\Mcp\Service\McpApiPermissionService;
 use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
+use OrangeHRM\Mcp\Tool\ApiSensitivity;
 use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Tests\Util\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -150,7 +151,7 @@ class McpDoctorCommandTest extends KernelTestCase
                 ApiVerb::CREATE => false,
                 ApiVerb::UPDATE => false,
                 ApiVerb::DELETE => false,
-                'sensitivity' => $row['sensitivity'],
+                'sensitivity' => ApiSensitivity::NORMAL,
             ];
         }
         return $map;
