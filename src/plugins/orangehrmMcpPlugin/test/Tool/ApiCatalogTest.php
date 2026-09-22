@@ -20,11 +20,11 @@
 namespace OrangeHRM\Tests\Mcp\Tool;
 
 use OrangeHRM\Mcp\Tool\ApiCatalog;
-use OrangeHRM\Mcp\Tool\ApiLabels;
 use OrangeHRM\Mcp\Tool\ApiSensitivity;
 use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
 use OrangeHRM\Mcp\Tool\ApiVerb;
 use OrangeHRM\Tests\Util\KernelTestCase;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * @group Mcp
@@ -253,47 +253,75 @@ class ApiCatalogTest extends KernelTestCase
     }
 
     /**
-     * The abbreviations a class name carries and an administrator does not know.
+     * The shipped wording, as the migration seeds it.
+     *
+     * @return array<string,string>
      */
-    public function testAbbreviationsAreExpanded(): void
+    private function seededLabels(): array
     {
-        $this->assertSame(
-            'Employee Emergency Contact',
-            ApiCatalog::toLabel('OrangeHRM\\Pim\\Api\\EmpEmergencyContactAPI')
+        $parsed = Yaml::parseFile(
+            __DIR__ . '/../../../../../installer/Migration/V5_10_0/api-label.yaml'
         );
-        $this->assertSame(
-            'Employee US Tax Exemption',
-            ApiCatalog::toLabel('OrangeHRM\\Pim\\Api\\EmpUsTaxExemptionAPI')
-        );
-        $this->assertSame('PIM Report', ApiCatalog::toLabel('OrangeHRM\\Pim\\Api\\PimReportAPI'));
-        $this->assertSame('KPI', ApiCatalog::toLabel('OrangeHRM\\Performance\\Api\\KpiAPI'));
+        return is_array($parsed) ? $parsed : [];
     }
 
     /**
-     * A hand-written name for a class that no longer exists is invisible: the
-     * screen quietly falls back to the derived label and nobody notices the
-     * wording decision was lost.
+     * Every class the migration inserts a row for needs a name to put in it.
      */
-    public function testEveryHandWrittenLabelTargetsAShippedClass(): void
+    public function testEveryShippedClassHasASeededLabel(): void
+    {
+        $labels = $this->seededLabels();
+
+        foreach (ApiPermissionDefaults::ALL as $apiClass) {
+            $this->assertArrayHasKey($apiClass, $labels, sprintf('`%s` has no seeded label', $apiClass));
+            $this->assertNotSame('', trim($labels[$apiClass]));
+        }
+    }
+
+    /**
+     * A label for a class nobody ships is dead weight, and usually means a
+     * class was renamed while the seed file was not.
+     */
+    public function testNoSeededLabelIsOrphaned(): void
     {
         $shipped = array_flip(ApiPermissionDefaults::ALL);
 
-        foreach (array_keys(ApiLabels::overrides()) as $apiClass) {
+        foreach (array_keys($this->seededLabels()) as $apiClass) {
             $this->assertArrayHasKey(
                 $apiClass,
                 $shipped,
-                sprintf('`%s` has a hand-written label but is not in the shipped catalog', $apiClass)
+                sprintf('`%s` has a label but is not in the shipped catalog', $apiClass)
             );
         }
     }
 
     /**
+     * The abbreviations a class name carries and an administrator does not know.
+     */
+    public function testSeededLabelsExpandAbbreviations(): void
+    {
+        $labels = $this->seededLabels();
+
+        $this->assertSame(
+            'Employee Emergency Contact',
+            $labels['OrangeHRM\\Pim\\Api\\EmpEmergencyContactAPI']
+        );
+        $this->assertSame(
+            'Employee US Tax Exemption',
+            $labels['OrangeHRM\\Pim\\Api\\EmpUsTaxExemptionAPI']
+        );
+        $this->assertSame('PIM Report', $labels['OrangeHRM\\Pim\\Api\\PimReportAPI']);
+        $this->assertSame('KPI', $labels['OrangeHRM\\Performance\\Api\\KpiAPI']);
+        // Named after the route it serves rather than the class it lives in.
+        $this->assertSame('Interviewer', $labels['OrangeHRM\\Recruitment\\Api\\EmployeeListAPI']);
+    }
+
+    /**
      * Whatever the source, a label has to be something a person can read.
      */
-    public function testNoShippedLabelKeepsADeveloperAbbreviation(): void
+    public function testNoSeededLabelKeepsADeveloperAbbreviation(): void
     {
-        foreach (ApiPermissionDefaults::ALL as $apiClass) {
-            $label = ApiCatalog::toLabel($apiClass);
+        foreach ($this->seededLabels() as $apiClass => $label) {
             $this->assertDoesNotMatchRegularExpression(
                 '/\\b(Emp|Pim|Kpi|Us|Csv|Api|I18N)\\b/',
                 $label,

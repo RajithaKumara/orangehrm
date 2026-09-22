@@ -94,7 +94,8 @@ class McpApiPermission
     /**
      * What this API is called on the MCP Configuration screen.
      *
-     * Seeded from ApiLabels and editable afterwards, which is the point: a
+     * Seeded once from the version's own seed file and editable afterwards,
+     * which is the point: a
      * customer who calls something else internally can say so with one
      * statement. NULL means "use the derived name", so clearing the column
      * resets a row to the shipped wording.

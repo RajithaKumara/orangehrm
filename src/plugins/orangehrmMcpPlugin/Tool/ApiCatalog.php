@@ -175,10 +175,10 @@ class ApiCatalog
 
             $groups[$module]['apis'][] = [
                 'apiName' => $apiClass,
-                // The row's label wins. It is seeded from ApiLabels and
-                // editable afterwards, so a customer's wording survives; a
-                // null column falls back to the derived name, which is also
-                // how a row is reset to the shipped wording.
+                // The row's label wins. It is seeded by the migration from
+                // api-label.yaml and editable afterwards, so a customer's
+                // wording survives an upgrade; a null column falls back to the
+                // derived name.
                 'label' => is_string($row['label'] ?? null) && $row['label'] !== ''
                     ? $row['label']
                     : $entry['label'],
@@ -243,10 +243,27 @@ class ApiCatalog
     }
 
     /**
-     * What this API class is called on screen; see ApiLabels.
+     * Fallback name for an API whose row carries no label.
+     *
+     * The shipped wording lives in `ohrm_mcp_api_permission.label`, seeded once
+     * from `installer/Migration/V5_10_0/api-label.yaml`. This only runs for a
+     * class with no row or a label somebody cleared, and it says what the class
+     * name says: `EmployeeSalaryComponentAPI` becomes "Employee Salary
+     * Component". It makes no attempt to be the shipped wording, because
+     * keeping a second copy of 153 names in step with the seed file is a
+     * promise nobody can keep.
      */
     public static function toLabel(string $apiClass): string
     {
-        return ApiLabels::of($apiClass);
+        $short = substr((string) strrchr('\\' . ltrim($apiClass, '\\'), '\\'), 1);
+        $short = preg_replace('/API$/', '', $short);
+
+        // Split on camel-case boundaries only, never after a digit, so
+        // `I18NGroup` stays `I18N Group` and `EmployeeCSVImport` stays
+        // `Employee CSV Import`.
+        $words = preg_split('/(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])/', (string) $short) ?: [];
+        $words = array_values(array_filter(array_map('trim', $words)));
+
+        return $words === [] ? $apiClass : implode(' ', $words);
     }
 }

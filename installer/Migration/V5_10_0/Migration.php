@@ -23,8 +23,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Types\Types;
 use OrangeHRM\Installer\Util\V1\AbstractMigration;
+use Symfony\Component\Yaml\Yaml;
 use OrangeHRM\Mcp\Service\McpConfigPolicy;
-use OrangeHRM\Mcp\Tool\ApiLabels;
 use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
 
 class Migration extends AbstractMigration
@@ -243,6 +243,8 @@ class Migration extends AbstractMigration
             ->executeQuery()
             ->fetchAllKeyValue();
 
+        $labels = $this->getApiLabels();
+
         $unlabelled = $this->createQueryBuilder()
             ->select('p.api_name')
             ->from('ohrm_mcp_api_permission', 'p')
@@ -261,7 +263,7 @@ class Migration extends AbstractMigration
                     $this->createQueryBuilder()
                         ->update('ohrm_mcp_api_permission', 'p')
                         ->set('p.label', ':label')
-                        ->setParameter('label', ApiLabels::of($apiName))
+                        ->setParameter('label', $labels[$apiName] ?? null)
                         ->where('p.api_name = :apiName')
                         ->setParameter('apiName', $apiName)
                         ->executeStatement();
@@ -290,7 +292,7 @@ class Migration extends AbstractMigration
                     'sensitivity' => ':sensitivity',
                 ])
                 ->setParameter('apiName', $apiName)
-                ->setParameter('label', ApiLabels::of($apiName))
+                ->setParameter('label', $labels[$apiName] ?? null)
                 ->setParameter('canRead', $row['read'] ? 1 : 0)
                 ->setParameter('canCreate', $row['create'] ? 1 : 0)
                 ->setParameter('canUpdate', $row['update'] ? 1 : 0)
@@ -298,6 +300,22 @@ class Migration extends AbstractMigration
                 ->setParameter('sensitivity', $row['sensitivity'])
                 ->executeStatement();
         }
+    }
+
+    /**
+     * The shipped wording for each API, read once at install time.
+     *
+     * A YAML file beside this migration rather than a class in the plugin: it
+     * is seed data for one version, it is never consulted at runtime, and the
+     * screen reads the column it populates. `permission/api.yaml` and
+     * `permission/screen.yaml` next to it work the same way.
+     *
+     * @return array<string,string>
+     */
+    private function getApiLabels(): array
+    {
+        $parsed = Yaml::parseFile(__DIR__ . '/api-label.yaml');
+        return is_array($parsed) ? $parsed : [];
     }
 
     /**

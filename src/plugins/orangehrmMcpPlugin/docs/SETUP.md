@@ -156,9 +156,11 @@ UPDATE ohrm_mcp_api_permission
 UPDATE ohrm_mcp_api_permission SET label = NULL WHERE api_name = '...';
 ```
 
-A NULL label falls back to a name derived from the API class, so clearing the
-column is how you reset a row. Upgrades only fill labels that are still NULL,
-so an edit survives -- at the cost of not receiving later rewording from us.
+A NULL label falls back to a name derived from the API class, which is close to
+the shipped wording but not always identical -- the shipped list lives in
+`installer/Migration/V5_10_0/api-label.yaml`. Upgrades only fill labels that are
+still NULL, so an edit survives, at the cost of not receiving later rewording
+from us.
 
 ## Prompts
 
