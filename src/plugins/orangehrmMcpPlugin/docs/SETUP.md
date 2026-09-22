@@ -141,6 +141,25 @@ excluded in code, the verb is switched on, the API is enabled on the MCP Configu
 screen, and your own role permits it. So an ESS user sees fewer than an admin,
 and an admin sees fewer than the catalog holds.
 
+## Renaming an API
+
+The names on the MCP Configuration screen live in `ohrm_mcp_api_permission.label`,
+seeded from the shipped wording and editable afterwards.
+
+```sql
+-- call it whatever your organisation calls it
+UPDATE ohrm_mcp_api_permission
+   SET label = 'Compensation Record'
+ WHERE api_name = 'OrangeHRM\\Pim\\Api\\EmployeeSalaryComponentAPI';
+
+-- back to the shipped wording
+UPDATE ohrm_mcp_api_permission SET label = NULL WHERE api_name = '...';
+```
+
+A NULL label falls back to a name derived from the API class, so clearing the
+column is how you reset a row. Upgrades only fill labels that are still NULL,
+so an edit survives -- at the cost of not receiving later rewording from us.
+
 ## Prompts
 
 Prompts are stored in `ohrm_mcp_prompt`, not in code, so they can be changed on

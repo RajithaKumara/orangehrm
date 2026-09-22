@@ -24,6 +24,7 @@ use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Types\Types;
 use OrangeHRM\Installer\Util\V1\AbstractMigration;
 use OrangeHRM\Mcp\Service\McpConfigPolicy;
+use OrangeHRM\Mcp\Tool\ApiLabels;
 use OrangeHRM\Mcp\Tool\ApiPermissionDefaults;
 
 class Migration extends AbstractMigration
@@ -81,6 +82,7 @@ class Migration extends AbstractMigration
 
         $this->registerMcpConfigScreen();
         $this->createApiPermissionTable();
+        $this->addApiPermissionLabelColumn();
         $this->seedApiPermissions();
         $this->seedSwitches();
         $this->seedAllowedRoles();
@@ -185,6 +187,7 @@ class Migration extends AbstractMigration
         $this->getSchemaHelper()->createTable('ohrm_mcp_api_permission')
             ->addColumn('id', Types::INTEGER, ['Autoincrement' => true, 'Notnull' => true])
             ->addColumn('api_name', Types::STRING, ['Length' => 255, 'Notnull' => true])
+            ->addColumn('label', Types::STRING, ['Length' => 200, 'Notnull' => false])
             ->addColumn('can_read', Types::BOOLEAN, ['Notnull' => true, 'Default' => false])
             ->addColumn('can_create', Types::BOOLEAN, ['Notnull' => true, 'Default' => false])
             ->addColumn('can_update', Types::BOOLEAN, ['Notnull' => true, 'Default' => false])
@@ -196,6 +199,26 @@ class Migration extends AbstractMigration
             // endpoint family twice.
             ->addUniqueIndex(['api_name'], 'uk_mcp_api_permission_api_name')
             ->create();
+    }
+
+    /**
+     * For a database created before the label column existed.
+     *
+     * 5.10 is unreleased, so this only covers instances that ran an earlier
+     * build of this same migration -- but leaving them with a table the entity
+     * does not match is a worse thing to ship than four lines.
+     */
+    private function addApiPermissionLabelColumn(): void
+    {
+        if ($this->getSchemaHelper()->getTableColumn('ohrm_mcp_api_permission', 'label') !== null) {
+            return;
+        }
+        $this->getSchemaHelper()->addColumn(
+            'ohrm_mcp_api_permission',
+            'label',
+            Types::STRING,
+            ['Length' => 200, 'Notnull' => false]
+        );
     }
 
     /**
@@ -220,8 +243,29 @@ class Migration extends AbstractMigration
             ->executeQuery()
             ->fetchAllKeyValue();
 
+        $unlabelled = $this->createQueryBuilder()
+            ->select('p.api_name')
+            ->from('ohrm_mcp_api_permission', 'p')
+            ->where('p.label IS NULL')
+            ->executeQuery()
+            ->fetchFirstColumn();
+        $unlabelled = array_flip($unlabelled);
+
         foreach (ApiPermissionDefaults::rows() as $apiName => $row) {
             if (array_key_exists($apiName, $existing)) {
+                // Only where the label was never set. A customer who renamed
+                // one keeps their wording; the cost is that our later
+                // rewordings do not reach them, which is the same bargain the
+                // prompt table makes.
+                if (isset($unlabelled[$apiName])) {
+                    $this->createQueryBuilder()
+                        ->update('ohrm_mcp_api_permission', 'p')
+                        ->set('p.label', ':label')
+                        ->setParameter('label', ApiLabels::of($apiName))
+                        ->where('p.api_name = :apiName')
+                        ->setParameter('apiName', $apiName)
+                        ->executeStatement();
+                }
                 if ($existing[$apiName] !== $row['sensitivity']) {
                     $this->createQueryBuilder()
                         ->update('ohrm_mcp_api_permission', 'p')
@@ -238,6 +282,7 @@ class Migration extends AbstractMigration
                 ->insert('ohrm_mcp_api_permission')
                 ->values([
                     'api_name' => ':apiName',
+                    'label' => ':label',
                     'can_read' => ':canRead',
                     'can_create' => ':canCreate',
                     'can_update' => ':canUpdate',
@@ -245,6 +290,7 @@ class Migration extends AbstractMigration
                     'sensitivity' => ':sensitivity',
                 ])
                 ->setParameter('apiName', $apiName)
+                ->setParameter('label', ApiLabels::of($apiName))
                 ->setParameter('canRead', $row['read'] ? 1 : 0)
                 ->setParameter('canCreate', $row['create'] ? 1 : 0)
                 ->setParameter('canUpdate', $row['update'] ? 1 : 0)

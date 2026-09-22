@@ -75,6 +75,27 @@ class ApiCatalogTest extends KernelTestCase
     }
 
     /**
+     * A label stored on the row wins over the derived one, and clearing it
+     * falls back. Without a test the fallback hides a broken read: the screen
+     * would show sensible names either way.
+     */
+    public function testRowLabelOverridesTheDerivedName(): void
+    {
+        $catalog = new ApiCatalog();
+        $apiClass = 'OrangeHRM\\Admin\\Api\\LocationAPI';
+
+        $renamed = $catalog->getGroupedByModule([
+            $apiClass => ['label' => 'Office', ApiVerb::READ => true, 'sensitivity' => ApiSensitivity::NORMAL],
+        ]);
+        $this->assertSame('Office', $renamed[0]['apis'][0]['label']);
+
+        $cleared = $catalog->getGroupedByModule([
+            $apiClass => ['label' => null, ApiVerb::READ => true, 'sensitivity' => ApiSensitivity::NORMAL],
+        ]);
+        $this->assertSame('Location', $cleared[0]['apis'][0]['label']);
+    }
+
+    /**
      * The table is the catalog. A routable class with no row is not a row the
      * administrator can see, and a row for a class this build no longer serves
      * is not one either.

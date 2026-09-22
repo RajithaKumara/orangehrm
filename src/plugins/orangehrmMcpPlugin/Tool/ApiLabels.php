@@ -37,9 +37,14 @@ namespace OrangeHRM\Mcp\Tool;
  * Anything not named here keeps its derived label, which is the case for about
  * two thirds of the catalog.
  *
- * These are English-only today, like the rest of this screen. When the screen is
- * translated, this map is where the language keys belong -- one per API class,
- * which is exactly the shape `ohrm_i18n_lang_string` wants.
+ * **This class is the seed, not the source.** The migration writes these into
+ * `ohrm_mcp_api_permission.label`, and the screen reads the column, so a
+ * customer can rename anything with one statement. A NULL column falls back
+ * here, which is also how a row is reset to the shipped wording.
+ *
+ * English, like `ohrm_menu_item.menu_title`: the product translates DB-held
+ * text by source string through `ohrm_i18n_lang_string`, so a label living in
+ * a table is no less translatable than one living here.
  */
 final class ApiLabels
 {

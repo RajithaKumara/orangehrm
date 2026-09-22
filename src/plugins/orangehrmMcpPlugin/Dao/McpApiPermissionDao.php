@@ -34,18 +34,27 @@ class McpApiPermissionDao extends BaseDao
      * them comes from these ~190 rows. Hydrating 190 objects to read five
      * scalars off each is work nobody needs.
      *
-     * @return array<string,array{read:bool,create:bool,update:bool,delete:bool,sensitivity:string}>
+     * @return array<string,array{label:?string,read:bool,create:bool,update:bool,delete:bool,sensitivity:string}>
      */
     public function getPermissionMap(): array
     {
         $rows = $this->createQueryBuilder(McpApiPermission::class, 'p')
-            ->select('p.apiName', 'p.canRead', 'p.canCreate', 'p.canUpdate', 'p.canDelete', 'p.sensitivity')
+            ->select(
+                'p.apiName',
+                'p.label',
+                'p.canRead',
+                'p.canCreate',
+                'p.canUpdate',
+                'p.canDelete',
+                'p.sensitivity'
+            )
             ->getQuery()
             ->getArrayResult();
 
         $map = [];
         foreach ($rows as $row) {
             $map[$row['apiName']] = [
+                'label' => is_string($row['label']) && $row['label'] !== '' ? $row['label'] : null,
                 ApiVerb::READ => (bool) $row['canRead'],
                 ApiVerb::CREATE => (bool) $row['canCreate'],
                 ApiVerb::UPDATE => (bool) $row['canUpdate'],

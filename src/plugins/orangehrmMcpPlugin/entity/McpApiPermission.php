@@ -92,6 +92,24 @@ class McpApiPermission
     private bool $canDelete = false;
 
     /**
+     * What this API is called on the MCP Configuration screen.
+     *
+     * Seeded from ApiLabels and editable afterwards, which is the point: a
+     * customer who calls something else internally can say so with one
+     * statement. NULL means "use the derived name", so clearing the column
+     * resets a row to the shipped wording.
+     *
+     * English, like `ohrm_menu_item.menu_title` -- the product translates
+     * DB-held text by source string through `ohrm_i18n_lang_string`, so
+     * storing it here does not put it out of reach of translation.
+     *
+     * @var string|null
+     *
+     * @ORM\Column(name="label", type="string", length=200, nullable=true)
+     */
+    private ?string $label = null;
+
+    /**
      * `normal` or `sensitive`; see ApiSensitivity.
      *
      * Product-authored and seeded by the migration. Nothing in the UI writes it,
@@ -161,6 +179,16 @@ class McpApiPermission
     public function setCanDelete(bool $canDelete): void
     {
         $this->canDelete = $canDelete;
+    }
+
+    public function getLabel(): ?string
+    {
+        return $this->label;
+    }
+
+    public function setLabel(?string $label): void
+    {
+        $this->label = $label;
     }
 
     public function getSensitivity(): string

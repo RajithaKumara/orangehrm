@@ -175,7 +175,13 @@ class ApiCatalog
 
             $groups[$module]['apis'][] = [
                 'apiName' => $apiClass,
-                'label' => $entry['label'],
+                // The row's label wins. It is seeded from ApiLabels and
+                // editable afterwards, so a customer's wording survives; a
+                // null column falls back to the derived name, which is also
+                // how a row is reset to the shipped wording.
+                'label' => is_string($row['label'] ?? null) && $row['label'] !== ''
+                    ? $row['label']
+                    : $entry['label'],
                 'sensitivity' => is_array($row) && isset($row['sensitivity'])
                     ? $row['sensitivity']
                     : ApiSensitivity::NORMAL,
