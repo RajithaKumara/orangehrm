@@ -75,7 +75,7 @@ class InitializeHandler implements MethodHandlerInterface
             ],
             'instructions' => 'OrangeHRM HR data. Every tool runs as the authenticated '
                 . 'OrangeHRM user and returns only what that user is permitted to see. '
-                . 'Call mcp_get_current_employee first to resolve who the user is.',
+                . 'Call rest_get_pim_myself first to resolve who the user is.',
         ];
     }
 }

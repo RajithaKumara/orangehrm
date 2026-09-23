@@ -29,7 +29,7 @@ use OrangeHRM\Mcp\Tool\ToolInterface;
  * The trade-off against a curated tool is description quality. This one can only
  * say what the route and the OpenAPI summary say, which is written for a human
  * reading reference documentation rather than for a model choosing between two
- * hundred options. Curated tools exist precisely where that difference matters.
+ * hundred options. That gap is what a curated intent would close.
  */
 class GenericTool implements ToolInterface
 {

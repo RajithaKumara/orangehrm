@@ -27,9 +27,10 @@ namespace OrangeHRM\Mcp\Tool\Rest;
  * same OrangeHRM build always yields the same tool names -- which matters
  * because a model's prompt may reference them.
  *
- * Curated tools win on name collision. That is what lets a curated intent
+ * A curated tool wins on name collision. That is what lets a curated intent
  * supersede the generic tool for the same endpoint without the generic router
- * knowing anything about the curated layer (NFR-M1).
+ * knowing anything about the curated layer (NFR-M1). No curated tool exists
+ * today, so every name in tools/list comes from here.
  */
 class GenericToolFactory
 {

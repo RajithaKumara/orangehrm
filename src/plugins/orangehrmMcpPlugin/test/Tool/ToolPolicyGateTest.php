@@ -22,7 +22,6 @@ namespace OrangeHRM\Tests\Mcp\Tool;
 use OrangeHRM\Mcp\Service\McpConfigPolicy;
 use OrangeHRM\Mcp\Service\McpApiPermissionService;
 use OrangeHRM\Mcp\Tool\ApiVerb;
-use OrangeHRM\Mcp\Tool\Curated\CurrentEmployeeTool;
 use OrangeHRM\Mcp\Tool\Rest\GenericTool;
 use OrangeHRM\Mcp\Tool\Rest\RestRoute;
 use OrangeHRM\Mcp\Tool\ToolPolicyGate;
@@ -149,24 +148,6 @@ class ToolPolicyGateTest extends TestCase
         );
         $this->assertTrue($on->isAllowed($this->genericTool('DELETE')));
         $this->assertFalse($on->isBlockedByVerbSwitch($this->genericTool('DELETE')));
-    }
-
-    /**
-     * Curated tools carry no special status: they are governed by the row for
-     * the API class behind them, exactly like a generic tool.
-     */
-    public function testCuratedToolsFollowTheirBackingApiClass(): void
-    {
-        $curated = new CurrentEmployeeTool();
-
-        $off = new ToolPolicyGate($this->policy([ApiVerb::READ => true]), $this->permissions([]));
-        $this->assertFalse($off->isAllowed($curated));
-
-        $on = new ToolPolicyGate(
-            $this->policy([ApiVerb::READ => true]),
-            $this->permissions([$curated->getApiClass() => $this->row([ApiVerb::READ => true])])
-        );
-        $this->assertTrue($on->isAllowed($curated));
     }
 
     /**

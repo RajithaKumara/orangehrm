@@ -19,10 +19,8 @@
 
 namespace OrangeHRM\Tests\Mcp\Tool;
 
-use OrangeHRM\Mcp\Tool\Curated\CurrentEmployeeTool;
-use OrangeHRM\Mcp\Tool\Curated\ListEmployeesTool;
-use OrangeHRM\Mcp\Tool\Curated\ListJobTitlesTool;
-use OrangeHRM\Mcp\Tool\Curated\ListLeaveTypesTool;
+use OrangeHRM\Mcp\Tool\Rest\GenericTool;
+use OrangeHRM\Mcp\Tool\Rest\RestRoute;
 use OrangeHRM\Mcp\Tool\ToolInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -32,33 +30,21 @@ use PHPUnit\Framework\TestCase;
  */
 class ToolAnnotationsTest extends TestCase
 {
+    private const LOCATION_API = 'OrangeHRM\\Admin\\Api\\LocationAPI';
+
     /**
+     * One tool per verb, which is what the annotations vary on. Built from hand
+     * made routes rather than from the route collection so the test stays a unit
+     * test: the framework's routes are not loaded here, and the contract under
+     * test belongs to the tool, not to any particular endpoint.
+     *
      * @return ToolInterface[]
      */
     private function allTools(): array
     {
-        return [
-            new CurrentEmployeeTool(),
-            new ListEmployeesTool(),
-            new ListJobTitlesTool(),
-            new ListLeaveTypesTool(),
-        ];
-    }
-
-    /**
-     * The curated layer is read-only by design: a hand-written tool exists to
-     * phrase a question well, and writes go through the generic layer where the
-     * grid and the verb switches govern them.
-     */
-    public function testEveryCuratedToolIsReadOnly(): void
-    {
-        foreach ($this->allTools() as $tool) {
-            $this->assertFalse(
-                $tool->isWriteOperation(),
-                $tool->getName() . ' is a curated tool, which must not write'
-            );
-            $this->assertFalse($tool->isDestructive(), $tool->getName() . ' must not be destructive');
-        }
+        return array_map(function (string $method): GenericTool {
+            return new GenericTool(new RestRoute($method, '/api/v2/admin/locations', self::LOCATION_API, []));
+        }, ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
     }
 
     /**
@@ -68,12 +54,25 @@ class ToolAnnotationsTest extends TestCase
     public function testDestructiveImpliesWrite(): void
     {
         foreach ($this->allTools() as $tool) {
-            // Asserted unconditionally rather than inside an `if ($tool->isDestructive())`:
-            // no tool is destructive today, so a guarded assertion would never run
-            // and the test would silently prove nothing.
             $this->assertTrue(
                 !$tool->isDestructive() || $tool->isWriteOperation(),
                 $tool->getName() . ' is marked destructive but not marked as a write'
+            );
+        }
+    }
+
+    /**
+     * Only DELETE is destructive. A client uses this hint to decide what to put
+     * in front of a human, so a PUT wrongly marked destructive trains people to
+     * click through the confirmations that matter.
+     */
+    public function testOnlyDeleteIsDestructive(): void
+    {
+        foreach ($this->allTools() as $tool) {
+            $this->assertSame(
+                $tool->getVerb() === 'DELETE',
+                $tool->isDestructive(),
+                $tool->getName() . ' disagrees with its verb about being destructive'
             );
         }
     }
@@ -107,10 +106,10 @@ class ToolAnnotationsTest extends TestCase
      * Tool names are part of the public contract: a model's prompt may reference
      * them, so they must stay stable and predictable.
      */
-    public function testToolNamesFollowTheMcpPrefixConvention(): void
+    public function testToolNamesFollowTheRestPrefixConvention(): void
     {
         foreach ($this->allTools() as $tool) {
-            $this->assertMatchesRegularExpression('/^mcp_[a-z0-9_]+$/', $tool->getName());
+            $this->assertMatchesRegularExpression('/^rest_[a-z0-9_]+$/', $tool->getName());
         }
     }
 }

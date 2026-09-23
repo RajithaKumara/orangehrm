@@ -42,10 +42,6 @@ use OrangeHRM\Mcp\Service\McpPromptService;
 use OrangeHRM\Mcp\Service\TokenClientResolver;
 use OrangeHRM\Mcp\Session\SessionContext;
 use OrangeHRM\Mcp\Subscriber\McpModuleStatusChangeSubscriber;
-use OrangeHRM\Mcp\Tool\Curated\CurrentEmployeeTool;
-use OrangeHRM\Mcp\Tool\Curated\ListEmployeesTool;
-use OrangeHRM\Mcp\Tool\Curated\ListJobTitlesTool;
-use OrangeHRM\Mcp\Tool\Curated\ListLeaveTypesTool;
 use OrangeHRM\Mcp\Tool\Rest\GenericToolFactory;
 use OrangeHRM\Mcp\Tool\Rest\OpenApiLoader;
 use OrangeHRM\Mcp\Tool\Rest\RouteMap;
@@ -83,14 +79,10 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
         $this->getContainer()->register(Services::MCP_API_PERMISSION_SERVICE, McpApiPermissionService::class);
         $this->getContainer()->register(Services::MCP_AUDIT_WRITER, AuditWriter::class);
 
-        // Curated read-only tool catalog. Adding a tool is a registration here,
-        // never an edit to the protocol code.
-        $registry = new ToolRegistry([
-            new CurrentEmployeeTool(),
-            new ListEmployeesTool(),
-            new ListJobTitlesTool(),
-            new ListLeaveTypesTool(),
-        ]);
+        // The curated overlay is empty: every tool the server offers today is
+        // derived from a REST route below. A curated intent is registered here
+        // when Epic 4 adds one, never by editing the protocol code.
+        $registry = new ToolRegistry();
         $this->getContainer()->set(Services::MCP_TOOL_REGISTRY, $registry);
 
         $restDispatcher = new RestDispatcher();
@@ -99,8 +91,7 @@ class McpPluginConfiguration implements PluginConfigurationInterface, ConsoleCon
 
         // The generic surface is always attached: every non-restricted endpoint
         // is *available*, and the per-class permission rows decide which are
-        // actually offered. Registry merges it behind the curated tools, which
-        // win on name.
+        // actually offered.
         $registry->setGenericFactory(new GenericToolFactory(new RouteMap(), new OpenApiLoader()));
 
         // One gate for the whole request. It reads the permission table once,

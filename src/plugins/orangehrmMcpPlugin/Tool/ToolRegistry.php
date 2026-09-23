@@ -22,11 +22,16 @@ namespace OrangeHRM\Mcp\Tool;
 use OrangeHRM\Mcp\Tool\Rest\GenericToolFactory;
 
 /**
- * In-memory catalog of curated tools. Populated from McpPluginConfiguration so
- * adding a tool is a DI registration, not an edit to the protocol code.
+ * The tool catalog, merged from two sources: the generic REST router, which
+ * supplies every tool the server offers today, and a curated overlay populated
+ * from McpPluginConfiguration.
  *
- * When the generic OpenAPI router (Story 2.6) lands it becomes a second source
- * merged here; the curated overlay must not reach into the router's internals.
+ * The overlay is empty. The four tools that used to fill it came from the proof
+ * of concept and each wrapped an endpoint the router already serves, so a model
+ * saw two tools for one endpoint and no way to choose between them. Epic 4
+ * refills it with intents that earn their place. The seam stays because that is
+ * the two-layer boundary (NFR-M1): the overlay must not reach into the router's
+ * internals, and the router must not know which endpoints are curated.
  */
 class ToolRegistry
 {

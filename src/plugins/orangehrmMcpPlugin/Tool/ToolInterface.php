@@ -22,15 +22,15 @@ namespace OrangeHRM\Mcp\Tool;
 /**
  * One MCP tool, backed by exactly one REST operation.
  *
- * Curated tools implement this by hand; generic tools are derived from the route
- * collection. Everything downstream -- the policy gate, the dispatcher, the
- * annotations published in tools/list -- works through this interface and knows
- * nothing about which of the two it is holding.
+ * Generic tools are derived from the route collection; a curated tool would
+ * implement this by hand. Everything downstream -- the policy gate, the
+ * dispatcher, the annotations published in tools/list -- works through this
+ * interface and knows nothing about which of the two it is holding.
  */
 interface ToolInterface
 {
     /**
-     * Stable tool name exposed to the AI client, e.g. `mcp_get_current_employee`.
+     * Stable tool name exposed to the AI client, e.g. `rest_get_pim_myself`.
      */
     public function getName(): string;
 

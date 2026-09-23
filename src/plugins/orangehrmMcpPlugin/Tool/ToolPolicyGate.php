@@ -41,9 +41,9 @@ use OrangeHRM\Mcp\Service\McpApiPermissionService;
  * asking may actually use it.
  *
  * Curated and generic tools go through exactly this path. A curated tool is
- * governed by its backing API class like any other, so enabling PIM reads
- * enables both `mcp_list_employees` and the generic employee reads, and an
- * administrator has one thing to reason about rather than two lists.
+ * governed by its backing API class like any other, so a curated PIM intent and
+ * the generic employee reads are enabled by the same row, and an administrator
+ * has one thing to reason about rather than two lists.
  */
 class ToolPolicyGate
 {
