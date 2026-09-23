@@ -130,7 +130,17 @@ apis:
   'OrangeHRM\Time\Api\TimeReportDataAPI': { label: 'Time Report Results', sensitivity: 0 }
   'OrangeHRM\Time\Api\TimesheetActionLogAPI': { label: 'Timesheet Action History', sensitivity: 0 }
   'OrangeHRM\Time\Api\TimesheetCommentAPI': { label: 'Timesheet Comment', sensitivity: 0 }
-  'OrangeHRM\Recruitment\Api\CandidateAPI': { label: 'Candidate', sensitivity: 0, read: true }
+  # Read ships off, and not because of who may see the data. A candidate's
+  # `comment` and `keywords` are written by the applicant: ApplicantController
+  # is a PublicControllerInterface on the unauthenticated route
+  # /recruitment/public/applicants and writes both straight from the request
+  # body. CandidateDetailedModel then hands them to whatever reads this
+  # endpoint. Turning it on means every assistant listing candidates reads text
+  # composed by someone outside the company, which is the one source of
+  # instructions an attacker can place in front of a model without any access
+  # at all. Buzz was excluded for a weaker version of this, where the author is
+  # at least an employee. An administrator can still enable it deliberately.
+  'OrangeHRM\Recruitment\Api\CandidateAPI': { label: 'Candidate', sensitivity: 0 }
   'OrangeHRM\Recruitment\Api\CandidateAllowedActionAPI': { label: 'Candidate Available Actions', sensitivity: 0 }
   'OrangeHRM\Recruitment\Api\CandidateAttachmentAPI': { label: 'Candidate Attachment', sensitivity: 10 }
   'OrangeHRM\Recruitment\Api\CandidateHiringAPI': { label: 'Candidate Hiring', sensitivity: 0 }

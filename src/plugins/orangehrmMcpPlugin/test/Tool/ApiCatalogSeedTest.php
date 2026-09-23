@@ -206,4 +206,34 @@ class ApiCatalogSeedTest extends KernelTestCase
             );
         }
     }
+
+    /**
+     * Classes whose payload carries text an unauthenticated outsider composed.
+     * `ApplicantController` is a PublicControllerInterface on
+     * /recruitment/public/applicants and writes `comment` and `keywords`
+     * straight from the request body onto the candidate; CandidateDetailedModel
+     * exposes both.
+     *
+     * Enabling a read here puts attacker-chosen prose in front of every model
+     * that lists candidates, with no account and no access needed to place it.
+     * A tenant may still switch it on deliberately -- shipping it on is the
+     * part that is not a decision anyone made.
+     */
+    public function testClassesCarryingExternallyAuthoredTextDoNotShipReadEnabled(): void
+    {
+        $externallyAuthored = [
+            'OrangeHRM\\Recruitment\\Api\\CandidateAPI',
+            'OrangeHRM\\Recruitment\\Api\\CandidateAttachmentAPI',
+            'OrangeHRM\\Recruitment\\Api\\CandidateHistoryAPI',
+        ];
+
+        $seed = self::seed();
+        foreach ($externallyAuthored as $apiClass) {
+            $this->assertArrayHasKey($apiClass, $seed, $apiClass . ' left the catalog; this guard needs revisiting');
+            $this->assertEmpty(
+                $seed[$apiClass]['read'] ?? false,
+                $apiClass . ' must not ship with read enabled: applicants author its free text'
+            );
+        }
+    }
 }
