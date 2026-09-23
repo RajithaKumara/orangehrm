@@ -19,6 +19,7 @@
 
 namespace OrangeHRM\Mcp\Controller;
 
+use OrangeHRM\Authentication\Auth\User as AuthUser;
 use OrangeHRM\Core\Controller\AbstractController;
 use OrangeHRM\Core\Controller\PublicControllerInterface;
 use OrangeHRM\Core\Traits\Auth\AuthUserTrait;
@@ -70,8 +71,60 @@ class McpController extends AbstractController implements PublicControllerInterf
             );
         }
 
-        if (!$this->getAuthUser()->isAuthenticated()) {
+        // Bearer only. Not merely "is someone logged in": AuthUser is session
+        // backed, so a cookie from an ordinary browser login satisfies
+        // isAuthenticated() and would make any signed-in HR admin's browser an
+        // MCP client, outside the OAuth consent model entirely.
+        //
+        // Nor is "carries an Authorization header" enough. OAuthSubscriber
+        // validates a token only `if (!isAuthenticated() && has authorization)`,
+        // and SessionSubscriber runs before it, so a request holding both a
+        // cookie and a bearer is never token-validated and proceeds as the
+        // *session* user -- possibly a different person from the token's.
+        //
+        // OAUTH_CLIENT_ID is set only where a token was actually validated, so
+        // its presence is the one honest marker that this request came in over
+        // OAuth. A cookie-only caller gets the same 401 a fresh client does,
+        // which is also the response that bootstraps discovery for them.
+        if (!$this->getAuthUser()->isAuthenticated()
+            || $this->getAuthUser()->getAttribute(AuthUser::OAUTH_CLIENT_ID) === null) {
             return $this->unauthenticated($request, $correlationId);
+        }
+
+        if (!$this->isTransportSecure($request)) {
+            return $this->error(
+                null,
+                ErrorCode::INSECURE_TRANSPORT,
+                'MCP requires TLS on non-localhost deployments',
+                [
+                    'category' => ErrorCode::CATEGORY_AUTHORIZATION,
+                    'correlation_id' => $correlationId,
+                    'hint' => 'Terminate TLS at your reverse proxy and forward X-Forwarded-Proto.',
+                ]
+            );
+        }
+
+        // The spec requires Origin validation to stop DNS rebinding. A real MCP
+        // client is not a browser and sends no Origin at all; a browser always
+        // does. Anything from another origin is refused outright rather than
+        // parsed.
+        $origin = $request->headers->get('Origin');
+        if (is_string($origin) && $origin !== ''
+            && rtrim($origin, '/') !== OAuthMetadataController::getHostOrigin($request)) {
+            return $this->error(null, ErrorCode::UNAUTHENTICATED, 'Cross-origin request refused', [
+                'category' => ErrorCode::CATEGORY_AUTHORIZATION,
+                'correlation_id' => $correlationId,
+            ]);
+        }
+
+        // A JSON content type is what the spec sends and what keeps the body out
+        // of reach of a form post, which needs no preflight and would otherwise
+        // be parsed just as happily as a real request.
+        if (!$this->isJsonRequest($request)) {
+            return $this->error(null, ErrorCode::INVALID_REQUEST, 'Content-Type must be application/json', [
+                'category' => ErrorCode::CATEGORY_VALIDATION,
+                'correlation_id' => $correlationId,
+            ]);
         }
 
         // Organisation policy gate. Distinct from the per-call RBAC that
@@ -98,30 +151,19 @@ class McpController extends AbstractController implements PublicControllerInterf
 
         // Token audience (README 4.13): a token minted for another OrangeHRM
         // application must not be replayable against the AI surface.
-        if ($this->getMcpConfigPolicy()->isClientApprovalEnforced()) {
-            $clientId = $this->getMcpTokenClientResolver()->resolveClientId($request);
-            if (!$this->getMcpConfigPolicy()->isClientApproved($clientId)) {
-                return $this->error(null, ErrorCode::UNAUTHENTICATED, 'This application is not approved for MCP', [
-                    'category' => ErrorCode::CATEGORY_AUTHORIZATION,
-                    'correlation_id' => $correlationId,
-                    'hint' => 'An administrator must approve this OAuth client under MCP Configuration.',
-                ]);
-            }
-            $this->getMcpSessionContext()->setClientId($clientId);
+        $clientId = $this->getMcpTokenClientResolver()->resolveClientId();
+        if ($this->getMcpConfigPolicy()->isClientApprovalEnforced()
+            && !$this->getMcpConfigPolicy()->isClientApproved($clientId)) {
+            return $this->error(null, ErrorCode::UNAUTHENTICATED, 'This application is not approved for MCP', [
+                'category' => ErrorCode::CATEGORY_AUTHORIZATION,
+                'correlation_id' => $correlationId,
+                'hint' => 'An administrator must approve this OAuth client under MCP Configuration.',
+            ]);
         }
-
-        if (!$this->isTransportSecure($request)) {
-            return $this->error(
-                null,
-                ErrorCode::INSECURE_TRANSPORT,
-                'MCP requires TLS on non-localhost deployments',
-                [
-                    'category' => ErrorCode::CATEGORY_AUTHORIZATION,
-                    'correlation_id' => $correlationId,
-                    'hint' => 'Terminate TLS at your reverse proxy and forward X-Forwarded-Proto.',
-                ]
-            );
-        }
+        // Recorded whether or not approval is enforced: the audit trail should
+        // name the application behind a call even on an instance that admits
+        // every client.
+        $this->getMcpSessionContext()->setClientId($clientId);
 
         $this->getMcpSessionContext()->setSessionId($request->headers->get(SessionContext::HEADER));
 
@@ -227,6 +269,20 @@ class McpController extends AbstractController implements PublicControllerInterf
             'resource_metadata' => $metadataUrl,
         ]));
         return $response;
+    }
+
+    /**
+     * `application/json`, with or without parameters such as a charset.
+     */
+    private function isJsonRequest(Request $request): bool
+    {
+        $contentType = strtolower(trim((string) $request->headers->get('Content-Type')));
+        if ($contentType === '') {
+            return false;
+        }
+        $mime = trim(explode(';', $contentType)[0]);
+
+        return $mime === 'application/json';
     }
 
     /**

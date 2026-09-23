@@ -24,6 +24,7 @@ use OrangeHRM\Core\Dao\ModuleDao;
 use OrangeHRM\Core\Service\ModuleService;
 use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Framework\Services;
+use OrangeHRM\Mcp\Service\McpConfigPolicy;
 use OrangeHRM\Mcp\Controller\McpController;
 use OrangeHRM\Tests\Util\KernelTestCase;
 
@@ -35,7 +36,9 @@ class McpControllerTest extends KernelTestCase
 {
     private function buildControllerWithEnabledList(
         array $enabledNames,
-        bool $authenticated = false
+        bool $authenticated = false,
+        ?int $oauthClientRowId = null,
+        ?McpConfigPolicy $policy = null
     ): McpController {
         $dao = $this->getMockBuilder(ModuleDao::class)->disableOriginalConstructor()->getMock();
         $dao->method('getEnabledModuleNameList')->willReturn($enabledNames);
@@ -45,13 +48,45 @@ class McpControllerTest extends KernelTestCase
 
         $authUser = $this->getMockBuilder(AuthUser::class)->disableOriginalConstructor()->getMock();
         $authUser->method('isAuthenticated')->willReturn($authenticated);
+        // A session login leaves this unset; only OAuthSubscriber sets it. The
+        // default here is therefore "logged in through a browser", which is
+        // exactly what the MCP endpoint must refuse.
+        $authUser->method('getAttribute')->willReturnCallback(
+            static function (string $name) use ($oauthClientRowId) {
+                return $name === AuthUser::OAUTH_CLIENT_ID ? $oauthClientRowId : null;
+            }
+        );
 
-        $this->createKernelWithMockServices([
+        $services = [
             Services::MODULE_SERVICE => $service,
             Services::AUTH_USER => $authUser,
-        ]);
+        ];
+        if ($policy !== null) {
+            $services[Services::MCP_CONFIG_POLICY] = $policy;
+        }
+        $this->createKernelWithMockServices($services);
 
         return new McpController();
+    }
+
+    /**
+     * A policy that refuses everything, used to prove a request reached the
+     * policy gate -- i.e. that it got past the gates before it.
+     */
+    private function disabledPolicy(): McpConfigPolicy
+    {
+        $policy = $this->getMockBuilder(McpConfigPolicy::class)->disableOriginalConstructor()->getMock();
+        $policy->method('isEnabled')->willReturn(false);
+
+        return $policy;
+    }
+
+    private function jsonRequest(string $body = '{}', array $server = []): Request
+    {
+        return Request::create('/api/mcp', 'POST', [], [], [], array_merge(
+            ['CONTENT_TYPE' => 'application/json'],
+            $server
+        ), $body);
     }
 
     private function decode(string $body): array
@@ -120,5 +155,91 @@ class McpControllerTest extends KernelTestCase
         $body = $this->decode($response->getContent());
         $this->assertSame(-32000, $body['error']['code']);
         $this->assertSame('module_disabled', $body['error']['data']['reason']);
+    }
+
+    /**
+     * R-09. AuthUser is session backed, so an HR admin logged into the web UI
+     * satisfies isAuthenticated(). Without this the browser of anyone signed
+     * into OrangeHRM is an MCP client, outside the OAuth consent model, and
+     * SameSite=Lax is the only thing standing in the way.
+     *
+     * The refusal is the discovery 401 rather than a flat error, so a real
+     * client that somehow arrives this way is still told where to authenticate.
+     */
+    public function testCookieOnlySessionIsRefusedWithTheDiscovery401(): void
+    {
+        $controller = $this->buildControllerWithEnabledList(['mcp', 'admin'], true, null);
+        $response = $controller->handle($this->jsonRequest());
+
+        $this->assertSame(401, $response->getStatusCode());
+        $this->assertStringContainsString(
+            'resource_metadata=',
+            $response->headers->get('WWW-Authenticate'),
+            'a refused cookie session must still be told where to authenticate'
+        );
+    }
+
+    /**
+     * The counterpart: a request OAuthSubscriber authenticated carries the
+     * client it was issued to, and reaches the policy gate behind the auth gate.
+     */
+    public function testOAuthAuthenticatedRequestPassesTheAuthGate(): void
+    {
+        $controller = $this->buildControllerWithEnabledList(['mcp', 'admin'], true, 7, $this->disabledPolicy());
+        $response = $controller->handle($this->jsonRequest());
+
+        $body = $this->decode($response->getContent());
+        $this->assertSame(
+            'MCP access is disabled',
+            $body['error']['message'],
+            'an OAuth authenticated request must reach the policy gate, not stop at the auth gate'
+        );
+    }
+
+    /**
+     * A browser always sends Origin; a real MCP client never does. The spec
+     * requires this check against DNS rebinding.
+     */
+    public function testCrossOriginRequestIsRefused(): void
+    {
+        $controller = $this->buildControllerWithEnabledList(['mcp', 'admin'], true, 7, $this->disabledPolicy());
+        $response = $controller->handle($this->jsonRequest('{}', ['HTTP_ORIGIN' => 'https://evil.example']));
+
+        $body = $this->decode($response->getContent());
+        $this->assertSame('Cross-origin request refused', $body['error']['message']);
+    }
+
+    public function testSameOriginRequestIsAllowed(): void
+    {
+        $controller = $this->buildControllerWithEnabledList(['mcp', 'admin'], true, 7, $this->disabledPolicy());
+        $request = $this->jsonRequest();
+        $request->headers->set('Origin', 'http://' . $request->getHttpHost());
+
+        $body = $this->decode($controller->handle($request)->getContent());
+        $this->assertSame('MCP access is disabled', $body['error']['message']);
+    }
+
+    /**
+     * A form post needs no CORS preflight, and the body was previously decoded
+     * whatever the content type said.
+     */
+    public function testNonJsonContentTypeIsRefused(): void
+    {
+        $controller = $this->buildControllerWithEnabledList(['mcp', 'admin'], true, 7, $this->disabledPolicy());
+        $request = $this->jsonRequest('{}', ['CONTENT_TYPE' => 'application/x-www-form-urlencoded']);
+
+        $response = $controller->handle($request);
+        $body = $this->decode($response->getContent());
+        $this->assertSame(-32600, $body['error']['code']);
+        $this->assertSame('Content-Type must be application/json', $body['error']['message']);
+    }
+
+    public function testJsonContentTypeWithACharsetIsAccepted(): void
+    {
+        $controller = $this->buildControllerWithEnabledList(['mcp', 'admin'], true, 7, $this->disabledPolicy());
+        $request = $this->jsonRequest('{}', ['CONTENT_TYPE' => 'application/json; charset=utf-8']);
+
+        $body = $this->decode($controller->handle($request)->getContent());
+        $this->assertSame('MCP access is disabled', $body['error']['message']);
     }
 }
