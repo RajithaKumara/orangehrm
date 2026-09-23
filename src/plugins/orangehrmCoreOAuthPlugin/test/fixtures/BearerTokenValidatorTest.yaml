@@ -23,6 +23,9 @@ OAuthAccessToken:
   - { "id": 3,"access_token": "random_id","client_id": 1,"user_id": 5,"expiryDateTime": "2023-03-17 11:44:54","revoked": 0 }
   - { "id": 4,"access_token": "a2701f403815ee476ab1fc0aaa1f17b5c51fe50e0ba323b7b94696ca737eebf8c25af5ad5562f654","client_id": 1,"user_id": 5,"expiryDateTime": "2023-05-05 10:18:14","revoked": 1 } # def502000c8aa98c7a00aed824a3b6003762930f43079e209179c3fcec118d042a12af3b7d7f5c3a523e2da51342b8437d1f71346372250680679aae9292e22786b2ef324fd2f92db35acb8030f919a82c4b61e051fcd1eba386b4a97da572a3dfa270605541d751301709cf3299afac0e53e288f3325123ebb950a89649968bd2dc461b64e7c6c8e79f6203cb0124fe03bdc17d00999d678ede85d6af14db97a0ad0089
   - { "id": 5,"access_token": "ddd1d9b88fac8d670b3024dbf6417b5eb4dbcccea9eb51520595772615d33f9f540ccc3c4d3a51c6","client_id": 1,"user_id": 5,"expiryDateTime": "2023-05-06 11:44:54","revoked": 0 } # def5020037757aeb15535f4b3defb02a6345565e08dffdac5851bd0959ee4bc34b257723a77be408fba5d3045fa5593db074b6b9db30b538089ee98895d810521c8527e9bc822a412303a8c52f4ad9cecebd87c6dab01b78a51836e09cd6deccb9acacca354bfbab63c5d8da05f33b3665b42e71ddc797d3c7a111ef1bf0e9e4ff02fe9a118a8790f115073e690fb63dfb64800a652f9df7992d7f60d630b3eb17024a94
+  # Issued to client 3, which is disabled. Neither revoked nor expired, so the
+  # only reason to refuse it is the state of the application it belongs to.
+  - { "id": 6,"access_token": "c1f0ae9d5b7e4a2c8d3f6b1a9e4c7d20f5a8b3e6c9d2f4a7b1e8c5d3f6a9b2e4","client_id": 3,"user_id": 5,"expiryDateTime": "2023-05-06 11:44:54","revoked": 0 }
 
 OAuthRefreshToken:
   - { "id": 1,"refresh_token": "571420fd098500e2e14023c1a088f7cecc4ad285a35c1efbae96bfb1e76630c4e56c244b61b52825","access_token": "05a81084f60f6440c8bd2555200836584e365210aee54ffee8e9dc04c7ec0068a6cde45ef5999e47","expiryDateTime": "2023-04-17 11:13:35","revoked": 1 }

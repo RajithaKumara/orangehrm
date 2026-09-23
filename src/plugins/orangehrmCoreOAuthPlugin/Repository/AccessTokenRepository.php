@@ -26,7 +26,9 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Exception\UniqueTokenIdentifierConstraintViolationException;
 use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
 use OrangeHRM\Core\Dao\BaseDao;
+use Doctrine\ORM\Query\Expr\Join;
 use OrangeHRM\Entity\OAuthAccessToken;
+use OrangeHRM\Entity\OAuthClient;
 use OrangeHRM\OAuth\Dto\Entity\AccessTokenEntity;
 
 class AccessTokenRepository extends BaseDao implements AccessTokenRepositoryInterface
@@ -106,5 +108,45 @@ class AccessTokenRepository extends BaseDao implements AccessTokenRepositoryInte
         return $this->getEntityManager()
             ->getRepository(OAuthAccessToken::class)
             ->findOneBy(['accessToken' => $tokenId]);
+    }
+
+    /**
+     * The token, but only while the client it was issued to is still enabled.
+     *
+     * Disabling a client already stops it obtaining or refreshing a token --
+     * ClientRepository filters on `enabled` for both grants -- but nothing
+     * looked at the client again once a token was in hand, so an access token
+     * kept working for the rest of its life after an administrator switched the
+     * application off. For an AI client that is the one lever an incident
+     * leaves you, and it did not work.
+     *
+     * Checked here rather than in the validator so it costs nothing: the client
+     * is joined onto a query that was already being run. `clientId` is a plain
+     * column rather than an association, hence the WITH join.
+     *
+     * Revocation and expiry are deliberately *not* filtered here. The caller
+     * distinguishes them to say which one happened, and folding them in would
+     * collapse three different answers into "could not be verified".
+     *
+     * @param string $tokenId
+     * @return OAuthAccessToken|null
+     */
+    public function getAccessTokenForEnabledClient(string $tokenId): ?OAuthAccessToken
+    {
+        $q = $this->createQueryBuilder(OAuthAccessToken::class, 'accessToken')
+            ->innerJoin(
+                OAuthClient::class,
+                'client',
+                Join::WITH,
+                'client.id = accessToken.clientId'
+            );
+        $q->andWhere($q->expr()->eq('accessToken.accessToken', ':accessToken'))
+            ->setParameter('accessToken', $tokenId);
+        $q->andWhere($q->expr()->eq('client.enabled', ':enabled'))
+            ->setParameter('enabled', true);
+
+        // `ohrm_oauth2_access_token.access_token` is uniquely indexed, so this
+        // cannot match more than one row.
+        return $q->getQuery()->getOneOrNullResult();
     }
 }

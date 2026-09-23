@@ -338,4 +338,41 @@ class BearerTokenValidatorTest extends KernelTestCase
         $this->assertEquals(5, $accessToken->getUserId());
         $this->assertEquals('2023-05-06 11:44:54', $accessToken->getExpiryDateTime()->format('Y-m-d H:i:s'));
     }
+
+    /**
+     * Disabling a client already stops it getting a new token or refreshing an
+     * old one, but nothing looked at the client again once a token was issued,
+     * so an access token outlived the application it belonged to for the rest
+     * of its life. That is the one lever an administrator has in an incident.
+     *
+     * Access token 6 belongs to client 3, which the fixture disables. It is
+     * neither revoked nor expired, so the client is the only thing that can
+     * refuse it.
+     */
+    public function testValidateAuthorizationWithTokenOfDisabledClient(): void
+    {
+        $dateTimeHelper = $this->getMockBuilder(DateTimeHelperService::class)
+            ->onlyMethods(['getNow'])
+            ->getMock();
+        $dateTimeHelper->expects($this->never())
+            ->method('getNow');
+        $this->createKernelWithMockServices([Services::DATETIME_HELPER_SERVICE => $dateTimeHelper]);
+        $request = Request::create(
+            '/api/v2/pim/employees',
+            'GET',
+            [],
+            [],
+            [],
+            ['HTTP_AUTHORIZATION' => 'Bearer def502000a745420343fe44f43a7e4db7c0b45d85c0d64a973be45e36f061b3d2bbb5c7d8b96d288cb91dcff4f12aced07dfa313085db9f3a798b05c26290494c1835ae9cb288875f17a7398b28f3979b563a1357664f8f11cb3ab1d3df1127212395376b9f837b9ee15e2d08308d2feddd857c0e5c0f4e351a2321aa18a8fd6f670b4da8eca5159f4ec116d41d3a2eb007cba06']
+        );
+        $psrHttpFactory = new PsrHttpFactoryHelper();
+
+        $tokenValidator = new BearerTokenValidator($this->accessTokenRepository, $this->encryptionKey);
+        try {
+            $tokenValidator->validateAuthorization($psrHttpFactory->createPsr7Request($request));
+            $this->fail('a token whose client is disabled must not be accepted');
+        } catch (OAuthServerException $e) {
+            $this->assertEquals('Access token could not be verified', $e->getHint());
+        }
+    }
 }

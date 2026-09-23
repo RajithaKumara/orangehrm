@@ -63,13 +63,17 @@ class BearerTokenValidator implements AuthorizationValidatorInterface
             throw OAuthServerException::accessDenied();
         }
 
-        $accessToken = $this->accessTokenRepository->getAccessToken($tokenId);
+        // Joined to the client, so a token whose application has been disabled
+        // is refused from this moment rather than for the rest of its life.
+        // Same single query that used to fetch the token alone.
+        $accessToken = $this->accessTokenRepository->getAccessTokenForEnabledClient($tokenId);
         if (!$accessToken instanceof OAuthAccessToken) {
             throw OAuthServerException::accessDenied('Access token could not be verified');
         }
 
-        // Check if token has been revoked
-        if ($this->accessTokenRepository->isAccessTokenRevoked($tokenId)) {
+        // Read off the entity already in hand. This used to be a second query
+        // against the row that had just been loaded.
+        if ($accessToken->isRevoked()) {
             throw OAuthServerException::accessDenied('Access token has been revoked');
         }
 
