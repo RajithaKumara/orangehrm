@@ -20,6 +20,7 @@
 namespace OrangeHRM\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use OrangeHRM\Mcp\Tool\ApiSensitivity;
 
 /**
  * Which verbs MCP may use against one API class, and how sensitive that class's
@@ -116,11 +117,11 @@ class McpApiPermission
      * Product-authored and seeded by the migration. Nothing in the UI writes it,
      * because a warning an administrator can turn off is not a warning.
      *
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="sensitivity", type="string", length=20, options={"default" : "normal"})
+     * @ORM\Column(name="sensitivity", type="integer", options={"default" : 0})
      */
-    private string $sensitivity = 'normal';
+    private int $sensitivity = ApiSensitivity::NORMAL;
 
     public function getId(): int
     {
