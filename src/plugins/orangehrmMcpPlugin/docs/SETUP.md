@@ -51,6 +51,27 @@ What does not limit it:
   There is no screen for this yet: OAuth clients are managed on the OAuth screen
   and MCP approval is configured here, deliberately kept apart for now.
 
+## Cutting off an assistant
+
+In order of bluntness.
+
+- **Disable the OAuth client** (Admin, then Configuration, then the OAuth screen).
+  Takes effect on the next request: it can no longer obtain or refresh a token,
+  and the tokens it already holds stop working immediately. Reversible -- enable
+  it again and existing tokens resume, because nothing was destroyed.
+- **Disable the user, or terminate their employee record.** Also takes effect on
+  the next request, and covers every application that user has authorised, not
+  just the assistant.
+- **Delete the OAuth client.** Destroys its tokens outright, through a cascade on
+  `ohrm_oauth2_access_token`. Not reversible: every user has to authorise again
+  from scratch once you re-register it.
+- **Turn MCP off entirely** with the switch on the MCP Configuration screen. The
+  tokens stay valid for the REST API; only the AI surface closes.
+
+What none of these do yet is revoke a single leaked token while leaving the rest
+alone, and **changing a password does not invalidate existing tokens**. If you
+believe one token specifically has leaked, disable or delete its client.
+
 ## 1. Requirements
 
 - OrangeHRM 5.10 (this branch). Confirm with `php bin/console mcp:doctor`.
