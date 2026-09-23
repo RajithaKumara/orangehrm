@@ -123,6 +123,22 @@ class McpApiPermission
      */
     private int $sensitivity = ApiSensitivity::NORMAL;
 
+    /**
+     * Whether the data behind this class carries text composed by someone with
+     * no OrangeHRM account -- an applicant on the public careers form.
+     *
+     * Not a sensitivity level, because it answers a different question. That
+     * one is who may see the data; this is who wrote it, and so whether a model
+     * reading it may be reading instructions. A class can be both.
+     *
+     * Product-authored and refreshed on upgrade, like sensitivity.
+     *
+     * @var bool
+     *
+     * @ORM\Column(name="external_content", type="boolean", options={"default" : false})
+     */
+    private bool $externalContent = false;
+
     public function getId(): int
     {
         return $this->id;
@@ -201,5 +217,15 @@ class McpApiPermission
     public function setSensitivity(int $sensitivity): void
     {
         $this->sensitivity = $sensitivity;
+    }
+
+    public function hasExternalContent(): bool
+    {
+        return $this->externalContent;
+    }
+
+    public function setExternalContent(bool $externalContent): void
+    {
+        $this->externalContent = $externalContent;
     }
 }

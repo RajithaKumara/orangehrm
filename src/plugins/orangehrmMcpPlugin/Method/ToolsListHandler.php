@@ -143,16 +143,24 @@ class ToolsListHandler implements MethodHandlerInterface
         // the description: a model choosing between tools should not have to
         // read a warning to find out what an endpoint does.
         $sensitivity = $this->permissions->getSensitivity($tool->getApiClass());
-        if ($sensitivity > ApiSensitivity::NORMAL) {
-            $described['_meta'] = [
-                'orangehrm' => [
-                    // The name, not the level: a client reading 10 learns
-                    // nothing, and the numbers exist for ordering, not wire
-                    // format.
-                    'sensitivity' => ApiSensitivity::nameOf($sensitivity),
-                    'module' => $tool->getModule(),
-                ],
-            ];
+        $externalContent = $this->permissions->hasExternalContent($tool->getApiClass());
+        if ($sensitivity > ApiSensitivity::NORMAL || $externalContent) {
+            $meta = ['module' => $tool->getModule()];
+            if ($sensitivity > ApiSensitivity::NORMAL) {
+                // The name, not the level: a client reading 10 learns
+                // nothing, and the numbers exist for ordering, not wire
+                // format.
+                $meta['sensitivity'] = ApiSensitivity::nameOf($sensitivity);
+            }
+            if ($externalContent) {
+                // Says that the result may contain text written outside the
+                // company, so a client that wants to frame it as data rather
+                // than instruction can. Advisory only -- the server does not
+                // yet wrap the payload itself, which is the half of R-04 that
+                // waits for the tool-result shape to settle.
+                $meta['externalContent'] = true;
+            }
+            $described['_meta'] = ['orangehrm' => $meta];
         }
 
         return $described;

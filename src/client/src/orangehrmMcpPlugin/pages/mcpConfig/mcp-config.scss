@@ -202,6 +202,14 @@
   color: $oxd-feedback-danger-color;
 }
 
+/* Who wrote the data, not who may read it -- a different question from
+   sensitivity, so a different colour, and a row can carry both badges. Warning
+   rather than danger: the data is not more confidential, it is less trustworthy. */
+.orangehrm-mcp-badge--external {
+  background: rgba($oxd-feedback-warn-color, 0.14);
+  color: $oxd-feedback-warn-color;
+}
+
 /* The advanced disclosure that holds the per-API grid. Same visual language as
    a module section, one level up. */
 .orangehrm-mcp-advanced {

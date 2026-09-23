@@ -19,6 +19,15 @@
 #               rewrites this, because a warning a tenant can quietly downgrade
 #               is not a warning.
 #
+#   external    present and true where the payload carries text composed by
+#               someone with no OrangeHRM account -- an applicant filling in
+#               the public careers form, not an employee. Orthogonal to
+#               sensitivity, which is about who may see the data: a class can
+#               be both, and the candidate attachment is. It is the one place
+#               an attacker can put words in front of a model without any
+#               access at all, so it is product-owned and an upgrade rewrites
+#               it, exactly like sensitivity.
+#
 #   read        present and true on the classes whose reads ship switched on.
 #               Absent means off, which is also the only setting any write ever
 #               ships with. This is a starting point, not a floor or a ceiling:
@@ -140,11 +149,11 @@ apis:
   # instructions an attacker can place in front of a model without any access
   # at all. Buzz was excluded for a weaker version of this, where the author is
   # at least an employee. An administrator can still enable it deliberately.
-  'OrangeHRM\Recruitment\Api\CandidateAPI': { label: 'Candidate', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateAPI': { label: 'Candidate', sensitivity: 0, external: true }
   'OrangeHRM\Recruitment\Api\CandidateAllowedActionAPI': { label: 'Candidate Available Actions', sensitivity: 0 }
-  'OrangeHRM\Recruitment\Api\CandidateAttachmentAPI': { label: 'Candidate Attachment', sensitivity: 10 }
+  'OrangeHRM\Recruitment\Api\CandidateAttachmentAPI': { label: 'Candidate Attachment', sensitivity: 10, external: true }
   'OrangeHRM\Recruitment\Api\CandidateHiringAPI': { label: 'Candidate Hiring', sensitivity: 0 }
-  'OrangeHRM\Recruitment\Api\CandidateHistoryAPI': { label: 'Candidate History', sensitivity: 0 }
+  'OrangeHRM\Recruitment\Api\CandidateHistoryAPI': { label: 'Candidate History', sensitivity: 0, external: true }
   'OrangeHRM\Recruitment\Api\CandidateInterviewSchedulingAPI': { label: 'Candidate Interview Scheduling', sensitivity: 0 }
   'OrangeHRM\Recruitment\Api\CandidateJobOfferingAPI': { label: 'Candidate Job Offering', sensitivity: 0 }
   'OrangeHRM\Recruitment\Api\CandidateMarkingInterviewFailAPI': { label: 'Candidate Marking Interview Fail', sensitivity: 0 }

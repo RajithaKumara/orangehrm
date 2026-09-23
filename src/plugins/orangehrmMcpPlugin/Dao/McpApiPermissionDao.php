@@ -45,7 +45,8 @@ class McpApiPermissionDao extends BaseDao
                 'p.canCreate',
                 'p.canUpdate',
                 'p.canDelete',
-                'p.sensitivity'
+                'p.sensitivity',
+                'p.externalContent'
             )
             ->getQuery()
             ->getArrayResult();
@@ -62,6 +63,7 @@ class McpApiPermissionDao extends BaseDao
                 // build does not know is a newer release's, and nameOf()
                 // degrades it to the nearest one below.
                 'sensitivity' => (int) $row['sensitivity'],
+                'externalContent' => (bool) $row['externalContent'],
             ];
         }
         return $map;

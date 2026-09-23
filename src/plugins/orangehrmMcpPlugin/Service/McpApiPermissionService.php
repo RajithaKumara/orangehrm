@@ -90,6 +90,20 @@ class McpApiPermissionService
     }
 
     /**
+     * Whether this class's payload carries text written outside the company.
+     *
+     * Unknown classes answer false. That is the safe direction here: the flag
+     * adds a warning, and inventing one for an endpoint nobody has classified
+     * would teach administrators to ignore it.
+     */
+    public function hasExternalContent(string $apiClass): bool
+    {
+        $row = $this->getPermissionMap()[ltrim($apiClass, '\\')] ?? null;
+
+        return $row !== null && !empty($row['externalContent']);
+    }
+
+    /**
      * How many classes have at least one verb enabled, and how many verbs are
      * enabled in total. Shown on the admin screen so the size of the surface is
      * visible without counting checkboxes.

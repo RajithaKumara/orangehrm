@@ -86,6 +86,7 @@ class Migration extends AbstractMigration
         $this->registerMcpConfigScreen();
         $this->createApiPermissionTable();
         $this->addApiPermissionLabelColumn();
+        $this->addApiPermissionExternalContentColumn();
         $this->convertSensitivityToLevel();
         $this->seedApiPermissions();
         $this->seedSwitches();
@@ -197,6 +198,12 @@ class Migration extends AbstractMigration
             ->addColumn('can_update', Types::BOOLEAN, ['Notnull' => true, 'Default' => false])
             ->addColumn('can_delete', Types::BOOLEAN, ['Notnull' => true, 'Default' => false])
             ->addColumn('sensitivity', Types::INTEGER, ['Notnull' => true, 'Default' => 0])
+            // Whether the payload carries text an outsider wrote. A separate
+            // column rather than a sensitivity level because the two are
+            // different questions -- sensitivity is who may see the data, this
+            // is who composed it -- and a class can be both, as the candidate
+            // attachment is.
+            ->addColumn('external_content', Types::BOOLEAN, ['Notnull' => true, 'Default' => false])
             ->setPrimaryKey(['id'])
             // Unique because the API class is the identity of a row. Without it
             // a re-run could double every row and the screen would show each
@@ -222,6 +229,26 @@ class Migration extends AbstractMigration
             'label',
             Types::STRING,
             ['Length' => 200, 'Notnull' => false]
+        );
+    }
+
+    /**
+     * For a database created before the external_content column existed.
+     *
+     * Same bargain as the label column: 5.10 is unreleased, so this only covers
+     * instances that ran an earlier build of this migration, and seedApiPermissions
+     * fills the value straight afterwards.
+     */
+    private function addApiPermissionExternalContentColumn(): void
+    {
+        if ($this->getSchemaHelper()->getTableColumn('ohrm_mcp_api_permission', 'external_content') !== null) {
+            return;
+        }
+        $this->getSchemaHelper()->addColumn(
+            'ohrm_mcp_api_permission',
+            'external_content',
+            Types::BOOLEAN,
+            ['Notnull' => true, 'Default' => false]
         );
     }
 
@@ -282,10 +309,10 @@ class Migration extends AbstractMigration
     private function seedApiPermissions(): void
     {
         $existing = $this->createQueryBuilder()
-            ->select('p.api_name', 'p.sensitivity')
+            ->select('p.api_name', 'p.sensitivity', 'p.external_content')
             ->from('ohrm_mcp_api_permission', 'p')
             ->executeQuery()
-            ->fetchAllKeyValue();
+            ->fetchAllAssociativeIndexed();
 
         $catalog = $this->getApiCatalog();
 
@@ -313,11 +340,23 @@ class Migration extends AbstractMigration
                         ->executeStatement();
                 }
                 $sensitivity = $entry['sensitivity'];
-                if ((int) $existing[$apiName] !== $sensitivity) {
+                if ((int) $existing[$apiName]['sensitivity'] !== $sensitivity) {
                     $this->createQueryBuilder()
                         ->update('ohrm_mcp_api_permission', 'p')
                         ->set('p.sensitivity', ':sensitivity')
                         ->setParameter('sensitivity', $sensitivity)
+                        ->where('p.api_name = :apiName')
+                        ->setParameter('apiName', $apiName)
+                        ->executeStatement();
+                }
+                // Refreshed for the same reason as sensitivity: a tenant may
+                // decide to read this data, but not to be told it is safe.
+                $external = $entry['external'];
+                if ((bool) $existing[$apiName]['external_content'] !== $external) {
+                    $this->createQueryBuilder()
+                        ->update('ohrm_mcp_api_permission', 'p')
+                        ->set('p.external_content', ':external')
+                        ->setParameter('external', $external ? 1 : 0)
                         ->where('p.api_name = :apiName')
                         ->setParameter('apiName', $apiName)
                         ->executeStatement();
@@ -335,6 +374,7 @@ class Migration extends AbstractMigration
                     'can_update' => ':canUpdate',
                     'can_delete' => ':canDelete',
                     'sensitivity' => ':sensitivity',
+                    'external_content' => ':external',
                 ])
                 ->setParameter('apiName', $apiName)
                 ->setParameter('label', $entry['label'])
@@ -346,6 +386,7 @@ class Migration extends AbstractMigration
                 ->setParameter('canUpdate', 0)
                 ->setParameter('canDelete', 0)
                 ->setParameter('sensitivity', $entry['sensitivity'])
+                ->setParameter('external', $entry['external'] ? 1 : 0)
                 ->executeStatement();
         }
     }
@@ -359,7 +400,7 @@ class Migration extends AbstractMigration
      * is what creates the row, so this file is also the answer to "which APIs
      * does 5.10 ship".
      *
-     * @return array<string,array{label:?string,sensitivity:int,read:bool}>
+     * @return array<string,array{label:?string,sensitivity:int,external:bool,read:bool}>
      */
     private function getApiCatalog(): array
     {
@@ -374,6 +415,7 @@ class Migration extends AbstractMigration
             $catalog[$apiClass] = [
                 'label' => isset($entry['label']) ? (string) $entry['label'] : null,
                 'sensitivity' => (int) ($entry['sensitivity'] ?? ApiSensitivity::NORMAL),
+                'external' => !empty($entry['external']),
                 'read' => !empty($entry['read']),
             ];
         }

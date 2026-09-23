@@ -184,6 +184,9 @@ class ApiCatalog
                     : $entry['label'],
                 'sensitivity' => is_array($row) ? (int) ($row['sensitivity'] ?? ApiSensitivity::NORMAL)
                     : ApiSensitivity::NORMAL,
+                // Separate from sensitivity on purpose: one says who may see
+                // the data, the other who wrote it. The screen shows both.
+                'externalContent' => is_array($row) && !empty($row['externalContent']),
                 'verbs' => $verbs,
                 'paths' => array_keys($entry['paths']),
             ];

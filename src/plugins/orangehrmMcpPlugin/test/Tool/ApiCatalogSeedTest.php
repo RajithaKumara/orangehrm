@@ -234,6 +234,47 @@ class ApiCatalogSeedTest extends KernelTestCase
                 $seed[$apiClass]['read'] ?? false,
                 $apiClass . ' must not ship with read enabled: applicants author its free text'
             );
+            $this->assertTrue(
+                (bool) ($seed[$apiClass]['external'] ?? false),
+                $apiClass . ' must be flagged external so the screen and tools/list say so'
+            );
         }
+    }
+
+    /**
+     * The flag is a separate axis from sensitivity, and the candidate
+     * attachment is the case that proves it: a CV is both confidential and
+     * written outside the company. Collapsing the two onto one scale would
+     * force a choice between those facts.
+     */
+    public function testExternalContentIsIndependentOfSensitivity(): void
+    {
+        $seed = self::seed();
+        $attachment = $seed['OrangeHRM\\Recruitment\\Api\\CandidateAttachmentAPI'] ?? null;
+
+        $this->assertNotNull($attachment);
+        $this->assertSame(ApiSensitivity::SENSITIVE, (int) ($attachment['sensitivity'] ?? 0));
+        $this->assertTrue((bool) ($attachment['external'] ?? false));
+    }
+
+    /**
+     * Nothing else claims the flag by accident. It exists to make a specific
+     * warning mean something, and a flag on everything means nothing.
+     */
+    public function testOnlyTheKnownClassesAreFlaggedExternal(): void
+    {
+        $flagged = [];
+        foreach (self::seed() as $apiClass => $entry) {
+            if (!empty($entry['external'])) {
+                $flagged[] = $apiClass;
+            }
+        }
+        sort($flagged);
+
+        $this->assertSame([
+            'OrangeHRM\\Recruitment\\Api\\CandidateAPI',
+            'OrangeHRM\\Recruitment\\Api\\CandidateAttachmentAPI',
+            'OrangeHRM\\Recruitment\\Api\\CandidateHistoryAPI',
+        ], $flagged);
     }
 }

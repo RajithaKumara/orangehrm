@@ -284,6 +284,13 @@
                     >
                       {{ sensitivityLabel(api.sensitivity) }}
                     </span>
+                    <span
+                      v-if="api.externalContent"
+                      class="orangehrm-mcp-badge orangehrm-mcp-badge--external"
+                      :title="EXTERNAL_CONTENT_HINT"
+                    >
+                      Outside authors
+                    </span>
                     <span class="orangehrm-mcp-row__paths">
                       {{ api.paths.join(', ') }}
                     </span>
@@ -364,6 +371,13 @@ function emptyCounts() {
 const SENSITIVITY_NORMAL = 0;
 const SENSITIVITY_SENSITIVE = 10;
 
+// Not a sensitivity tier. Sensitivity says who may see the data; this says who
+// wrote it, and a class can carry both badges.
+const EXTERNAL_CONTENT_HINT =
+  'Contains text written by people outside your organisation, such as job ' +
+  'applicants. An assistant reading it may be reading their instructions as ' +
+  'well as their application.';
+
 const SENSITIVITY = {
   [SENSITIVITY_SENSITIVE]: {
     label: 'Sensitive',
@@ -434,6 +448,11 @@ export default {
   },
 
   computed: {
+    /** Module-level constant, surfaced so the template can read it. */
+    EXTERNAL_CONTENT_HINT() {
+      return EXTERNAL_CONTENT_HINT;
+    },
+
     /**
      * Tools enabled right now, per verb, counted from the unsaved state so the
      * numbers move as the administrator clicks.
