@@ -20,7 +20,6 @@
 namespace OrangeHRM\Installer\Migration\V5_10_0;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Types\Types;
 use OrangeHRM\Installer\Util\V1\AbstractMigration;
 use Symfony\Component\Yaml\Yaml;
@@ -56,14 +55,18 @@ class Migration extends AbstractMigration
                 ->addIndex(['response_status'], 'idx_mcp_audit_response_status')
                 ->create();
 
-            $foreignKey = new ForeignKeyConstraint(
-                ['user_id'],
-                'ohrm_user',
-                ['id'],
-                'fk_mcp_audit_user',
-                ['onDelete' => 'RESTRICT']
-            );
-            $this->getSchemaHelper()->addForeignKey('ohrm_mcp_audit_log', $foreignKey);
+            // No foreign key on user_id, deliberately. An access log has to
+            // outlive the account it records: the GDPR purge in Maintenance
+            // hard-deletes `ohrm_user`, and every ON DELETE option would either
+            // block that purge (RESTRICT), erase the actor (SET NULL) or take
+            // the log row with it (CASCADE). Keeping the id costs referential
+            // integrity -- nothing stops a write naming a user that never
+            // existed -- and it means a purged user's id remains here, which is
+            // a retention decision the product has taken knowingly.
+            //
+            // Reading the column therefore means an outer join: a row whose
+            // user_id no longer resolves is expected, not corrupt. The index
+            // below stays, since lookups by user are the point of the table.
 
             $this->getConnection()->createQueryBuilder()
                 ->insert('ohrm_module')
