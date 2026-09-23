@@ -22,6 +22,7 @@ namespace OrangeHRM\OAuth\Subscriber;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\ResourceServer;
 use OrangeHRM\Admin\Traits\Service\UserServiceTrait;
+use OrangeHRM\Authentication\Auth\User as AuthUser;
 use OrangeHRM\Authentication\Exception\SessionExpiredException;
 use OrangeHRM\Authentication\Exception\UnauthorizedException;
 use OrangeHRM\Authentication\Service\AuthenticationService;
@@ -97,6 +98,12 @@ class OAuthSubscriber extends AbstractEventSubscriber
 
                 $this->getAuthenticationService()->setCredentialsForUser($user);
                 $this->getAuthUser()->setIsAuthenticated(true);
+                // Which client presented the token is part of the identity this
+                // request was authenticated with, and the only place it is known
+                // is here -- the PSR-7 request carrying it is local to this
+                // method. A consumer that must not serve tokens minted for
+                // another application has no other way to find out.
+                $this->getAuthUser()->setAttribute(AuthUser::OAUTH_CLIENT_ID, $accessToken->getClientId());
             } catch (Throwable $e) {
                 $this->getLogger()->error($e->getMessage(), $e instanceof OAuthServerException ? [$e->getHint()] : []);
                 $this->handleException($event, $e);

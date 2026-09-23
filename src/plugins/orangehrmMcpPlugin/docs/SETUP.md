@@ -34,12 +34,22 @@ What does not limit it:
 
 - No per-tool consent, and no way to grant an assistant less authority than the
   user has.
-- **Token audience is not checked.** Any valid OrangeHRM OAuth token is accepted
-  on the MCP endpoint, including one issued to a different application such as
-  the mobile app. The MCP specification requires servers to reject tokens not
-  issued for them; this server does not yet. A token still carries only its own
-  user's authority, so this is not privilege escalation, but a token granted to
-  another app can be replayed here. Tracked in `../README.md` section 4.13.
+- **Token audience is not checked until you approve a client.** Out of the box
+  any valid OrangeHRM OAuth token is accepted, including one issued to a
+  different application such as the mobile app. A token carries only its own
+  user's authority, so this is not privilege escalation, but a token a user
+  granted to another app can be replayed against the AI surface. Approving even
+  one client turns the check on and refuses every client but those approved:
+
+  ```sql
+  -- a JSON array of `client_id` values, exactly as shown on the OAuth screen
+  INSERT INTO hs_hr_config (`name`, `value`)
+  VALUES ('mcp.config.approved_client_ids', '["claude_desktop"]')
+  ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);
+  ```
+
+  There is no screen for this yet: OAuth clients are managed on the OAuth screen
+  and MCP approval is configured here, deliberately kept apart for now.
 
 ## 1. Requirements
 
@@ -110,7 +120,7 @@ servers and need a publicly resolvable HTTPS URL with a real certificate.
 Ask the assistant: "who am I in OrangeHRM?"
 ```
 
-It should call `mcp_get_current_employee` and answer with your own employee
+It should call `rest_get_pim_myself` and answer with your own employee
 record. Then confirm the audit trail:
 
 ```sql
@@ -120,21 +130,20 @@ FROM ohrm_mcp_audit_log ORDER BY id DESC LIMIT 5;
 
 ## Available tools
 
-Four are hand-written, for the questions worth phrasing well:
+Every tool is derived from the REST API, one per operation, named after the
+method and path — `GET /api/v2/pim/employees/{empNumber}` becomes
+`rest_get_pim_employees_by_empNumber`. 430 are in the shipped catalog and 65 of
+them ship enabled. Use `mcp_discover_tools` with a phrase like "leave balance"
+to find one rather than paging the whole catalog.
+
+A few useful starting points:
 
 | Tool | Returns |
 |---|---|
-| `mcp_get_current_employee` | the authenticated user's employee record |
-| `mcp_list_employees` | employees visible to you, optional name filter |
-| `mcp_list_job_titles` | job titles with ids |
-| `mcp_list_leave_types` | leave types with ids |
-
-The rest are derived from the REST API, one tool per operation, named after the
-method and path — `GET /api/v2/pim/employees/{empNumber}` becomes
-`rest_get_pim_employees_by_empNumber`. 430 are in the shipped catalog; 65 of them
-ship enabled, alongside the four above. Use
-`mcp_discover_tools` with a phrase like "leave balance" to find one rather than
-paging the whole catalog.
+| `rest_get_pim_myself` | the authenticated user's employee record |
+| `rest_get_pim_employees` | employees visible to you |
+| `rest_get_admin_job_titles` | job titles with ids |
+| `rest_get_leave_leave_types` | leave types with ids |
 
 `tools/list` shows only tools that pass all four gates: the endpoint is not
 excluded in code, the verb is switched on, the API is enabled on the MCP Configuration

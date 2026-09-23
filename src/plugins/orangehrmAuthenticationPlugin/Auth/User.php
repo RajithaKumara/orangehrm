@@ -38,6 +38,11 @@ class User
     public const USER_EMPLOYEE_NUMBER = 'user.user_employee_number';
     public const USER_LAST_MODIFIED = 'user.last_modified';
     public const OPENID_PROVIDER_ID = 'openid.provider_id';
+    /**
+     * Row id of the OAuth client whose access token authenticated this request,
+     * set by OAuthSubscriber. Null for a session login.
+     */
+    public const OAUTH_CLIENT_ID = 'oauth.client_id';
 
     public const FLASH_LOGIN_ERROR = 'flash.login_error';
     public const FLASH_PASSWORD_ENFORCE_ERROR = 'flash.password_enforce_error';

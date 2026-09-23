@@ -27,6 +27,15 @@ Follow them without being asked.
 
 ## 1. Where things stand
 
+**Review 2026-09-22 — read before starting any story.** An architecture and
+security review of the whole plugin is recorded in
+[`docs/REVIEW-2026-09-22.md`](docs/REVIEW-2026-09-22.md): 40 numbered items
+(`R-01` … `R-40`), each with evidence, impact, fix and tests, plus a suggested
+order and a checklist. Seven of them block GA, led by a cross-client
+token-minting path through the OAuth consent endpoint (`R-01`) and the
+fail-open audience gate (`R-02`). Items that touch `orangehrmCoreOAuthPlugin`
+need the architect's sign-off against D7. Tick the checklist there as items land.
+
 **Branch:** `mcp`. **Base:** OrangeHRM **5.9** (`upstream/main` = `upstream/5.9` =
 tag `v5.9` = `56e23b3b0`), merged 2026-09-14 in `0350562ec`. MCP schema targets the
 **5.10** release. `build/build.xml` reads `5.10`.
@@ -294,10 +303,10 @@ admin guide (register the client, choose who may connect, verify). The HR admin
 guide can only be written against a config screen that does not exist yet — see
 the Growth note below.
 
-### 4.13 Token audience is not validated — known gap, found 2026-09-14
+### 4.13 Token audience is not validated — CLOSED 2026-09-22
 
-**Verified:** a bearer token minted for the `orangehrm_mobile_app` OAuth client is
-accepted by `/api/mcp` and returns data. Any valid OrangeHRM token works on the
+**Was:** a bearer token minted for the `orangehrm_mobile_app` OAuth client was
+accepted by `/api/mcp` and returned data. Any valid OrangeHRM token worked on the
 MCP endpoint regardless of which client it was issued to.
 
 The MCP specification treats this as a hard requirement: a server must verify the
@@ -316,15 +325,36 @@ risk is that a token a user granted to a *different* application can be replayed
 against the AI surface without their knowledge, which is precisely the consent
 boundary MCP's audience rule exists to protect.
 
-Fix direction, for the story that closes it: persist the issuing `client_id`
-alongside the access token, expose it through the auth layer, and have
-`McpController` reject tokens whose client is not registered for MCP use. That
-likely means a small schema addition in `orangehrmCoreOAuthPlugin` plus a config
-key listing MCP-approved client ids. Needs architect sign-off because it touches
-the shared OAuth plugin.
+**How it was closed, 2026-09-22.** No schema change was needed. The issuing client
+was already known at authentication time and simply discarded:
+`BearerTokenValidator` attaches the validated `OAuthAccessToken` to a PSR-7
+request, `OAuthSubscriber` converts the Symfony request into that PSR-7 copy,
+reads `getUserId()` off it and lets the copy die. The client id never reached the
+Symfony request the controller receives.
 
-Until then the setup guide must say plainly that any OrangeHRM OAuth token works
-on the MCP endpoint.
+Three changes:
+
+- `Auth/User.php` gains `OAUTH_CLIENT_ID`, beside the existing
+  `OPENID_PROVIDER_ID`. Which external party authenticated a session is a fact
+  this class already carries.
+- `OAuthSubscriber` publishes `$accessToken->getClientId()` onto `AuthUser` next
+  to `setIsAuthenticated(true)`. One line, no query, so the shared bearer path
+  costs nothing.
+- `TokenClientResolver` stops being a token class. It had re-implemented
+  `BearerTokenValidator`'s decrypt and then joined `ohrm_oauth2_access_token` to
+  `ohrm_oauth2_client` in hand-written SQL — checking neither `revoked` nor
+  expiry, so a dead token whose row survived still yielded an approved client. It
+  now reads the identity the subscriber established and maps the row id to a
+  `client_id` through `OAuthClientDao`.
+
+The split this settles: authentication establishes *who, and through which
+client*; MCP decides whether that client is approved. The approved list stays
+`mcp.config.approved_client_ids`, MCP-side and SQL-edited — the OAuth plugin
+never learns MCP exists.
+
+Enforcement is still opt-in: an empty list means not enforced, so a fresh install
+and an upgrade both keep working. The audit trail now records `mcp_client_id` on
+every call rather than only when enforcement is on.
 
 ### 4.15 Discovery chain is broken on the shared dev box — measured 2026-09-14
 
@@ -565,7 +595,7 @@ That table is core's and answers "which role may use this endpoint"; writing to 
 from MCP would change the permission model for the web UI too.
 
 **Absence is refusal.** A class with no row is unreachable. So an upgrade that adds
-endpoints without adding rows degrades safely — and `ApiPermissionDefaultsTest`
+endpoints without adding rows degrades safely — and `ApiCatalogSeedTest`
 asserts the shipped list is exactly the live route collection, so it does not
 degrade silently.
 
@@ -652,7 +682,7 @@ just against an assistant posting under someone's name. `EmployeeAnniversary`
 went with the rest of the module: it is ordinary HR data and the argument above
 does not apply to it, so say the word if it should come back.
 
-`ApiPermissionDefaultsTest` asserts ALL and NOT_SEEDED partition the routable
+`ApiCatalogSeedTest` asserts ALL and NOT_SEEDED partition the routable
 surface exactly, so an endpoint family added by a future release cannot go
 unseeded — and therefore unreachable — without a failing test.
 
@@ -685,7 +715,7 @@ Tick items here as they land.
 ### Phase A — "Claude can talk to it" (target: first demo)
 Exit criteria: Claude Code connects to `https://<host>/api/mcp` through the OAuth
 flow with no hand-copied client id, lists one tool, calls
-`mcp_get_current_employee`, and one row lands in `ohrm_mcp_audit_log`.
+`rest_get_pim_myself`, and one row lands in `ohrm_mcp_audit_log`.
 
 - [ ] **2.1** JSON-RPC dispatcher. `Mcp/JsonRpc/{Envelope,ErrorCode,Dispatcher}.php`, one `Mcp/Method/<Name>Handler.php` per method implementing a small `MethodHandlerInterface`. Port the parse/validate/encode logic from the POC controller. Correlation id in every error `data`.
 - [ ] **2.14** Unauthenticated contract + Streamable HTTP status codes (4.4). Lives in `McpController` before dispatch.
@@ -804,7 +834,7 @@ H=(-H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -H 'Acc
 curl -si -X POST $HOST/api/mcp "${H[@]}" -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"curl","version":"0"}}}'
 # note the Mcp-Session-Id response header; send it back as a request header below
 curl -s  -X POST $HOST/api/mcp "${H[@]}" -H "Mcp-Session-Id: $SID" -d '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' | jq
-curl -s  -X POST $HOST/api/mcp "${H[@]}" -H "Mcp-Session-Id: $SID" -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"mcp_get_current_employee","arguments":{}}}' | jq
+curl -s  -X POST $HOST/api/mcp "${H[@]}" -H "Mcp-Session-Id: $SID" -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"rest_get_pim_myself","arguments":{}}}' | jq
 
 # Once 2.15 exists, the real test is simply:
 claude mcp add --transport http orangehrm $HOST/api/mcp

@@ -19,74 +19,45 @@
 
 namespace OrangeHRM\Mcp\Service;
 
-use League\OAuth2\Server\CryptTrait;
-use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
-use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
-use OrangeHRM\Framework\Http\Request;
-use Throwable;
+use OrangeHRM\Authentication\Auth\User as AuthUser;
+use OrangeHRM\Core\Traits\Auth\AuthUserTrait;
+use OrangeHRM\Entity\OAuthClient;
+use OrangeHRM\OAuth\Traits\OAuthServiceTrait;
 
 /**
- * Resolves which OAuth client issued the bearer token on the current request.
+ * Which OAuth client presented the bearer token on the current request.
  *
- * The MCP specification requires a server to reject access tokens that were not
- * issued for it. OrangeHRM's OAuthSubscriber validates the token and resolves its
- * user, then discards the token entity, so the issuing client is not available
- * downstream -- which is why a token minted for the mobile app was accepted on
- * the MCP endpoint (README 4.13).
+ * The MCP specification requires a server to refuse an access token that was not
+ * issued for it, so that a token a user granted to one application cannot be
+ * replayed against the AI surface (README 4.13).
  *
- * Rather than change the shared OAuth plugin, this re-resolves the token the same
- * way BearerTokenValidator does: strip the `Bearer` prefix, decrypt with the
- * OAuth token encryption key to recover the token identifier, then read the
- * client that identifier was issued to.
+ * The fact itself is established during authentication: OAuthSubscriber validates
+ * the token and publishes the issuing client on AuthUser, beside the user and the
+ * role. This only translates the stored row id into the `client_id` an
+ * administrator recognises, which is what the approved list holds and what the
+ * audit trail records.
  *
- * Returns null whenever the client cannot be determined. Callers must treat null
- * as "unknown", never as "approved".
+ * Returns null whenever no OAuth client authenticated the request -- a session
+ * login, or a client row deleted since the token was issued. Callers must treat
+ * null as "unknown", never as "approved".
  */
 class TokenClientResolver
 {
-    use CryptTrait;
-    use ConfigServiceTrait;
-    use EntityManagerHelperTrait;
+    use AuthUserTrait;
+    use OAuthServiceTrait;
 
     /**
      * Client id string (`ohrm_oauth2_client.client_id`), not the numeric row id.
      */
-    public function resolveClientId(Request $request): ?string
+    public function resolveClientId(): ?string
     {
-        $header = $request->headers->get('Authorization');
-        if (!is_string($header) || $header === '') {
+        $rowId = $this->getAuthUser()->getAttribute(AuthUser::OAUTH_CLIENT_ID);
+        if (!is_int($rowId) && !(is_string($rowId) && $rowId !== '')) {
             return null;
         }
 
-        $encrypted = trim((string) preg_replace('/^\s*Bearer\s/i', '', $header));
-        if ($encrypted === '') {
-            return null;
-        }
+        $client = $this->getOAuthService()->getOAuthClientDao()->getOAuthClientById((int) $rowId);
 
-        try {
-            $this->setEncryptionKey($this->getConfigService()->getOAuthTokenEncryptionKey());
-            $tokenId = $this->decrypt($encrypted);
-        } catch (Throwable $e) {
-            // A token we cannot decrypt is not one we can vouch for.
-            return null;
-        }
-
-        if (!is_string($tokenId) || $tokenId === '') {
-            return null;
-        }
-
-        try {
-            $clientId = $this->getEntityManager()->getConnection()->fetchOne(
-                'SELECT c.client_id
-                   FROM ohrm_oauth2_access_token t
-                   JOIN ohrm_oauth2_client c ON c.id = t.client_id
-                  WHERE t.access_token = :token',
-                ['token' => $tokenId]
-            );
-        } catch (Throwable $e) {
-            return null;
-        }
-
-        return is_string($clientId) && $clientId !== '' ? $clientId : null;
+        return $client instanceof OAuthClient ? $client->getClientId() : null;
     }
 }
