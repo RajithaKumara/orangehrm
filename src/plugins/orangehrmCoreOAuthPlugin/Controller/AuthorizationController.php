@@ -32,6 +32,7 @@ use OrangeHRM\Core\Vue\Component;
 use OrangeHRM\Core\Vue\Prop;
 use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Framework\Services;
+use OrangeHRM\OAuth\Traits\ConsentGuardTrait;
 use OrangeHRM\OAuth\Traits\OAuthServerTrait;
 use OrangeHRM\OAuth\Traits\PsrHttpFactoryHelperTrait;
 use Symfony\Component\HttpFoundation\UrlHelper;
@@ -43,13 +44,17 @@ class AuthorizationController extends AbstractVueController implements PublicCon
     use PsrHttpFactoryHelperTrait;
     use LoggerTrait;
     use AuthUserTrait;
+    use ConsentGuardTrait;
 
     /**
      * @inheritDoc
      */
     public function preRender(Request $request): void
     {
-        if (!$this->getAuthUser()->isAuthenticated()) {
+        // A bearer is not a browser session, so for this screen it counts as
+        // not being signed in: the visitor is sent to log in properly rather
+        // than shown a consent page they could then submit as an API call.
+        if (!$this->getAuthUser()->isAuthenticated() || $this->isAuthenticatedByAccessToken()) {
             /** @var UrlHelper $urlHelper */
             $urlHelper = $this->getContainer()->get(Services::URL_HELPER);
             $requestUri = $request->getRequestUri();

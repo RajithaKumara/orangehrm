@@ -25,6 +25,7 @@ use OrangeHRM\Core\Traits\LoggerTrait;
 use OrangeHRM\Core\Traits\UserRoleManagerTrait;
 use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\OAuth\Dto\Entity\UserEntity;
+use OrangeHRM\OAuth\Traits\ConsentGuardTrait;
 use OrangeHRM\OAuth\Traits\OAuthServerTrait;
 use OrangeHRM\OAuth\Traits\PsrHttpFactoryHelperTrait;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,6 +34,7 @@ use Throwable;
 class AuthorizationController extends AbstractViewController
 {
     use LoggerTrait;
+    use ConsentGuardTrait;
     use UserRoleManagerTrait;
     use OAuthServerTrait;
     use PsrHttpFactoryHelperTrait;
@@ -44,6 +46,17 @@ class AuthorizationController extends AbstractViewController
     public function handle(Request $request): Response
     {
         try {
+            // Consent must come from a signed-in browser session. A request
+            // carrying a bearer is an API call, and letting one through here
+            // would let an existing token mint another -- for any registered
+            // client, defeating the audience check that decides which
+            // application a token belongs to.
+            if ($this->isAuthenticatedByAccessToken()) {
+                throw OAuthServerException::accessDenied(
+                    'Consent must be granted while signed in to OrangeHRM, not with an access token'
+                );
+            }
+
             $server = $this->getOAuthServer()->getServer();
             $psrRequest = $this->getPsrHttpFactoryHelper()->createPsr7Request($request);
             $authRequest = $server->validateAuthorizationRequest($psrRequest);
