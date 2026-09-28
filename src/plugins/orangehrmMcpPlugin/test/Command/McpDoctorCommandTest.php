@@ -22,11 +22,13 @@ namespace OrangeHRM\Tests\Mcp\Command;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Exception;
 use OrangeHRM\Core\Dao\ConfigDao;
 use OrangeHRM\Core\Dao\ModuleDao;
 use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Core\Service\ModuleService;
+use OrangeHRM\Entity\OAuthClient;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\Mcp\Command\McpDoctorCommand;
 use OrangeHRM\Mcp\Service\McpApiPermissionService;
@@ -114,6 +116,24 @@ class McpDoctorCommandTest extends KernelTestCase
         $em = $this->getMockBuilder(EntityManagerInterface::class)->getMock();
         $em->method('getConnection')->willReturn($connection);
 
+        // Which OAuth clients exist. The mobile app never counts, so the
+        // default here is one real client plus the mobile registration, which
+        // is what a configured instance looks like.
+        $clientIds = $opts['oauthClientIds'] ?? ['orangehrm_mobile_app', 'a-registered-assistant'];
+        $clients = array_map(
+            static function (string $clientId): OAuthClient {
+                $client = new OAuthClient();
+                $client->setClientId($clientId);
+                return $client;
+            },
+            $clientIds
+        );
+        $clientRepository = $this->getMockBuilder(EntityRepository::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $clientRepository->method('findBy')->willReturn($clients);
+        $em->method('getRepository')->willReturn($clientRepository);
+
         $permissionService = new class ($permissionRows) extends McpApiPermissionService {
             private array $rows;
 
@@ -165,7 +185,7 @@ class McpDoctorCommandTest extends KernelTestCase
 
         $this->assertSame(0, $exit);
         $this->assertStringContainsString('[PASS]', $output);
-        $this->assertStringContainsString('6 passed, 0 failed, 0 skipped', $output);
+        $this->assertStringContainsString('7 passed, 0 failed, 0 skipped', $output);
         $this->assertNotEmpty($this->insertCalls, 'audit probe should have been attempted');
         $this->assertCount(1, $this->rollbackCalls, 'rollback must run exactly once on success path');
     }
@@ -306,5 +326,34 @@ class McpDoctorCommandTest extends KernelTestCase
             '/API permissions installed -- \\d+ API classes configured; tools: read \\d+\\/\\d+/',
             $tester->getDisplay()
         );
+    }
+
+    /**
+     * An instance whose only OAuth client is the seeded mobile app has nothing
+     * that can connect: its registration cannot be updated or deleted, so its
+     * redirect URI can never point at an assistant, and McpConfigPolicy refuses
+     * its tokens whatever the approved list says. Better to say so here than to
+     * let an administrator discover it from a client that simply fails to
+     * authorise.
+     */
+    public function testFailsWhenTheOnlyOAuthClientIsTheMobileApp(): void
+    {
+        $command = $this->buildCommand(['oauthClientIds' => ['orangehrm_mobile_app']]);
+        $command->execute([]);
+
+        $output = $command->getDisplay();
+        $this->assertStringContainsString('[FAIL]', $output);
+        $this->assertStringContainsString('Assistant OAuth client registered', $output);
+        $this->assertStringContainsString('Register OAuth Client', $output);
+        $this->assertSame(1, $command->getStatusCode());
+    }
+
+    public function testFailsWhenNoOAuthClientIsRegisteredAtAll(): void
+    {
+        $command = $this->buildCommand(['oauthClientIds' => []]);
+        $command->execute([]);
+
+        $this->assertStringContainsString('Assistant OAuth client registered', $command->getDisplay());
+        $this->assertSame(1, $command->getStatusCode());
     }
 }

@@ -22,6 +22,7 @@ namespace OrangeHRM\Mcp\Service;
 use DateTime;
 use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
+use OrangeHRM\Entity\OAuthClient;
 use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
 use OrangeHRM\Mcp\Tool\ApiCatalog;
 use OrangeHRM\Mcp\Tool\ApiVerb;
@@ -30,6 +31,7 @@ use OrangeHRM\Mcp\Tool\Rest\OpenApiLoader;
 use OrangeHRM\Mcp\Tool\Rest\RouteMap;
 use OrangeHRM\Mcp\Traits\Service\McpApiPermissionServiceTrait;
 use OrangeHRM\Mcp\Traits\Service\ModuleServiceTrait;
+use OrangeHRM\OAuth\Service\OAuthService;
 use Throwable;
 
 /**
@@ -78,6 +80,7 @@ class McpHealthCheck
         return [
             $this->checkModuleEnabled(),
             $this->checkOauthDependency(),
+            $this->checkAssistantClientRegistered(),
             $this->checkAuditWritePath(),
             $this->checkApiPermissions(),
             $this->checkOpenApiLoaded(),
@@ -154,6 +157,52 @@ class McpHealthCheck
                 . '. Run the installer/migrations.';
 
         return $this->result('OAuth sign-in configured', self::STATUS_FAIL, $hint);
+    }
+
+    /**
+     * Whether any OAuth client exists that an AI assistant could actually use.
+     *
+     * The mobile app does not count, and this is the check that says so out
+     * loud. Its registration is seeded by the product and `OAuthClientAPI`
+     * refuses to update or delete it, so its redirect URI cannot be pointed at
+     * an assistant; `McpConfigPolicy` refuses a token issued to it whatever the
+     * approved list says. An instance whose only client is the mobile app
+     * therefore has nothing that can connect, and an administrator would
+     * otherwise find that out from a client that simply fails to authorise.
+     *
+     * A failure rather than a note: an instance in this state cannot serve
+     * anyone, which is the same thing the module-disabled check reports.
+     */
+    public function checkAssistantClientRegistered(): array
+    {
+        $label = 'Assistant OAuth client registered';
+
+        try {
+            // Loaded rather than counted in SQL: an instance has a handful of
+            // these, and the mobile exclusion reads better here than as a
+            // second WHERE clause.
+            $enabled = $this->getRepository(OAuthClient::class)->findBy(['enabled' => true]);
+            $count = count(array_filter($enabled, static function (OAuthClient $client): bool {
+                return $client->getClientId() !== OAuthService::PUBLIC_MOBILE_CLIENT_ID;
+            }));
+        } catch (Throwable $e) {
+            return $this->result($label, self::STATUS_FAIL, 'Could not read ' . self::OAUTH_CLIENT_TABLE . '.');
+        }
+
+        if ($count > 0) {
+            return $this->result(
+                $label,
+                self::STATUS_PASS,
+                $count === 1 ? '1 client may connect' : $count . ' clients may connect'
+            );
+        }
+
+        return $this->result(
+            $label,
+            self::STATUS_FAIL,
+            'Register one under Admin > Configuration > Register OAuth Client, one per AI product. '
+            . 'The mobile app cannot be used: its redirect URI is fixed and MCP refuses its tokens.'
+        );
     }
 
     public function checkAuditWritePath(): array

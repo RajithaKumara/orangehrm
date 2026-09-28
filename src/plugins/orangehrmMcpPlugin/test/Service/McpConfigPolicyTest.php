@@ -171,6 +171,39 @@ class McpConfigPolicyTest extends KernelTestCase
         $this->assertTrue($policy->isClientApproved(null));
     }
 
+    /**
+     * The one exception to the permissive default, and what makes it safe. A
+     * token issued to the mobile app on the AI surface is the replay the
+     * audience rule exists to stop, and on a fresh instance nothing else would
+     * have stopped it.
+     */
+    public function testTheMobileAppIsRefusedEvenWithNoApprovedList(): void
+    {
+        $policy = $this->policyWith([]);
+
+        $this->assertFalse($policy->isClientApproved('orangehrm_mobile_app'));
+        $this->assertTrue(
+            $policy->isClientApproved('some-other-client'),
+            'only the mobile app is singled out; the default stays permissive otherwise'
+        );
+    }
+
+    /**
+     * Not a default that an administrator can override. The mobile
+     * registration is seeded by the product and cannot be updated or deleted,
+     * so its redirect URI can never point at an assistant -- there is no
+     * configuration in which its token belongs here.
+     */
+    public function testTheMobileAppIsRefusedEvenWhenExplicitlyApproved(): void
+    {
+        $policy = $this->policyWith([
+            McpConfigPolicy::KEY_APPROVED_CLIENT_IDS => '["orangehrm_mobile_app","claude-code-id"]',
+        ]);
+
+        $this->assertFalse($policy->isClientApproved('orangehrm_mobile_app'));
+        $this->assertTrue($policy->isClientApproved('claude-code-id'));
+    }
+
     public function testMalformedJsonDegradesToEmptyRatherThanThrowing(): void
     {
         $policy = $this->policyWith([

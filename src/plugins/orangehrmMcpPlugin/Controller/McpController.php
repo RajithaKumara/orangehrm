@@ -151,9 +151,11 @@ class McpController extends AbstractController implements PublicControllerInterf
 
         // Token audience (README 4.13): a token minted for another OrangeHRM
         // application must not be replayable against the AI surface.
+        // Asked on every request, not only when an approved list exists: the
+        // policy refuses the mobile app whatever the list says, and an empty
+        // list is its own answer rather than a reason to skip the question.
         $clientId = $this->getMcpTokenClientResolver()->resolveClientId();
-        if ($this->getMcpConfigPolicy()->isClientApprovalEnforced()
-            && !$this->getMcpConfigPolicy()->isClientApproved($clientId)) {
+        if (!$this->getMcpConfigPolicy()->isClientApproved($clientId)) {
             return $this->error(null, ErrorCode::UNAUTHENTICATED, 'This application is not approved for MCP', [
                 'category' => ErrorCode::CATEGORY_AUTHORIZATION,
                 'correlation_id' => $correlationId,

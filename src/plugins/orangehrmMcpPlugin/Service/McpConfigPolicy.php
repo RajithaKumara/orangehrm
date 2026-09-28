@@ -21,6 +21,7 @@ namespace OrangeHRM\Mcp\Service;
 
 use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
 use OrangeHRM\Mcp\Tool\ApiVerb;
+use OrangeHRM\OAuth\Service\OAuthService;
 
 /**
  * Who may reach the MCP surface, through which client, and which of the four
@@ -234,9 +235,24 @@ class McpConfigPolicy
      * Enforced only once at least one client has been approved. An empty list on
      * a freshly enabled instance would otherwise lock out the very administrator
      * trying to configure it, and the connection gate above still applies.
+     *
+     * The one client that is refused unconditionally is the mobile app; see
+     * below.
      */
     public function isClientApproved(?string $clientId): bool
     {
+        // The mobile app is never an AI client, whatever the list says. Its
+        // registration is seeded by the product and OAuthClientAPI refuses to
+        // update or delete it, so its redirect URI cannot be pointed at an
+        // assistant -- there is no configuration in which a token issued to it
+        // legitimately belongs on this surface. Refusing it here is what makes
+        // the permissive default below safe: the replay everyone worries about
+        // is a mobile token on /api/mcp, and that is now closed whether or not
+        // an administrator has approved anything.
+        if ($clientId === OAuthService::PUBLIC_MOBILE_CLIENT_ID) {
+            return false;
+        }
+
         $approved = $this->getApprovedClientIds();
         if ($approved === []) {
             return true;
@@ -247,6 +263,10 @@ class McpConfigPolicy
         return in_array($clientId, $approved, true);
     }
 
+    /**
+     * Whether an approved list is being applied. The mobile app is refused
+     * regardless, so this being false does not mean "every client may connect".
+     */
     public function isClientApprovalEnforced(): bool
     {
         return $this->getApprovedClientIds() !== [];
