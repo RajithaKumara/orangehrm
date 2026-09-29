@@ -36,6 +36,12 @@ token-minting path through the OAuth consent endpoint (`R-01`) and the
 fail-open audience gate (`R-02`). Items that touch `orangehrmCoreOAuthPlugin`
 need the architect's sign-off against D7. Tick the checklist there as items land.
 
+**Release plan.** [`docs/MVP-RELEASE-PATH.md`](docs/MVP-RELEASE-PATH.md)
+(2026-09-28) triages the open review items against a read-only MVP: seven must-do
+fixes (`M-01` … `M-07`), seven small should-dos, an explicit deferred list, and a
+real-instance release checklist. Work from that document; the review keeps the
+detail and the checklist.
+
 **Branch:** `mcp`. **Base:** OrangeHRM **5.9** (`upstream/main` = `upstream/5.9` =
 tag `v5.9` = `56e23b3b0`), merged 2026-09-14 in `0350562ec`. MCP schema targets the
 **5.10** release. `build/build.xml` reads `5.10`.

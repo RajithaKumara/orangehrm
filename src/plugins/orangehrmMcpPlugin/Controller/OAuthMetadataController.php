@@ -35,7 +35,19 @@ use OrangeHRM\Framework\Http\Response;
  * mounted at. X-Forwarded-* is honoured so installs behind a reverse proxy
  * advertise the public URL rather than the internal one.
  *
- * These documents carry no secrets and are safe to cache publicly.
+ * Cacheable, but `private` rather than `public`. Every OAuth provider caches
+ * discovery -- clients fetch it on each connection and it changes rarely -- and
+ * the ones that mark it `public` can, because their metadata is identical for
+ * every requester. Ours is not: the URLs are built from the caller's own
+ * forwarded headers, so the response genuinely varies by requester and `public`
+ * would be a false claim about it.
+ *
+ * It is also the difference between a theoretical problem and a real one. In a
+ * shared cache these documents are stored under a key that ignores the header
+ * that shaped them, so one crafted request can leave every later client being
+ * told the token endpoint lives on a host the attacker chose. `private` keeps
+ * client-side caching, which is all anyone wanted, and keeps the document out of
+ * caches that would serve it to someone else.
  */
 class OAuthMetadataController extends AbstractController implements PublicControllerInterface
 {
@@ -103,7 +115,7 @@ class OAuthMetadataController extends AbstractController implements PublicContro
         $response = $this->getResponse();
         $response->setStatusCode(Response::HTTP_OK);
         $response->headers->set('Content-Type', 'application/json');
-        $response->headers->set('Cache-Control', 'public, max-age=3600');
+        $response->headers->set('Cache-Control', 'private, max-age=3600');
         $response->setContent(json_encode($data, JSON_UNESCAPED_SLASHES));
         return $response;
     }
