@@ -43,7 +43,7 @@ class DataRegistrationService
     public function sendRegistrationData(array $body): bool
     {
         try {
-            if (Config::PRODUCT_MODE === Config::MODE_PROD) {
+            if (Config::isTelemetryReportingBuild()) {
                 $headers = ['Accept' => 'application/json'];
                 $this->getHttpClient()->post(
                     '/',

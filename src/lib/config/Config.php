@@ -55,6 +55,23 @@ class Config
     public const PRODUCT_VERSION = '5.10';
     public const ORANGEHRM_API_VERSION = '2.8.0';
     public const PRODUCT_MODE = self::MODE_DEV;
+
+    /**
+     * The builds that report telemetry back to OrangeHRM.
+     *
+     * A customer installation and a trial, because both are real deployments
+     * whose install, upgrade and growth are worth knowing about. A demo is
+     * excluded: its numbers are not anyone's actual usage. Dev and test are
+     * excluded because otherwise every developer machine and every CI run would
+     * post on install.
+     *
+     * Both send paths consult this -- the installer's DataRegistrationService
+     * and the application's AbstractRegistrationEventProcessor -- so the set
+     * lives here rather than being spelled out twice.
+     *
+     * @var string[]
+     */
+    public const TELEMETRY_MODES = [self::MODE_PROD, self::MODE_TRIAL];
     public const REGISTRATION_URL = 'https://ospenguin.orangehrm.com';
 
     public const DEFAULT_MAX_SESSION_IDLE_TIME = 1800;
@@ -138,6 +155,16 @@ class Config
     public static function clear(): void
     {
         self::$configs = [];
+    }
+
+    /**
+     * Whether this build reports telemetry. See TELEMETRY_MODES.
+     *
+     * @return bool
+     */
+    public static function isTelemetryReportingBuild(): bool
+    {
+        return in_array(self::PRODUCT_MODE, self::TELEMETRY_MODES, true);
     }
 
     /**

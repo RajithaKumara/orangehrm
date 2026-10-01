@@ -147,7 +147,7 @@ abstract class AbstractRegistrationEventProcessor
 
     public function publishRegistrationEvents(): void
     {
-        if (Config::PRODUCT_MODE === Config::MODE_PROD) {
+        if (Config::isTelemetryReportingBuild()) {
             $eventsToPublish = $this->getRegistrationEventQueueDao()
                 ->getUnpublishedRegistrationEvents(RegistrationEventQueue::PUBLISH_EVENT_BATCH_SIZE);
             if ($eventsToPublish) {

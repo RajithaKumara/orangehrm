@@ -813,7 +813,11 @@ class SystemCheck
             ],
             'server' => $this->getWebServerDetails(),
             'ohrm' => [
-                'version' => Config::PRODUCT_VERSION
+                'version' => Config::PRODUCT_VERSION,
+                // Kept in step with the runtime copy of this payload in
+                // SystemConfigurationHelper::getOHRMDetails(); the installer and
+                // the application report the same shape.
+                'build_type' => Config::PRODUCT_MODE
             ]
         ];
     }

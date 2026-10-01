@@ -88,6 +88,11 @@ class SystemConfigurationHelper
     {
         return [
             'version' => Config::PRODUCT_VERSION,
+            // Which build this instance was packaged as: prod, demo, trial,
+            // dev or test. Reported beside the version because the two together
+            // are what identify a deployment -- a demo and a customer install
+            // can be the same version and are not the same thing.
+            'build_type' => Config::PRODUCT_MODE,
         ];
     }
 
