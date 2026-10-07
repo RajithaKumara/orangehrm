@@ -45,6 +45,36 @@ jobs:
           cd ../../installer/client
           yarn install
 
+      # The MCP tool catalog reads build/orangehrm-v2.json at runtime; without it
+      # every tool is published with "No description is published for this
+      # endpoint". The file is gitignored on purpose -- it is generated, not
+      # authored -- so the build has to produce it rather than carry it.
+      #
+      # It needs zircote/swagger-php, which lives in src's require-dev, and the
+      # devTools console, which has its own composer project. Both are installed
+      # here and then undone: the final --no-dev install restores exactly the
+      # vendor tree the previous step produced, and devTools/** is excluded from
+      # the package by build.xml, so neither set of dev dependencies ships.
+      #
+      # Runs before the product mode is changed so that php-cs-fix -- which the
+      # generator invokes first -- cannot reformat the edited line. On a tree
+      # that already passes lint it is a no-op.
+      - name: Generate OpenAPI document
+        run: |
+          cd src
+          php8.3 -f /usr/bin/composer install
+          cd ../devTools/core
+          php8.3 -f /usr/bin/composer install
+          cd ../..
+          php8.3 devTools/core/console.php generate-open-api-doc
+          test -s build/orangehrm-v2.json
+          # The Swagger UI page the generator also writes is ~1 MB and sits
+          # outside the web root, so nothing can serve it.
+          rm -f build/index.html
+          cd src
+          php8.3 -f /usr/bin/composer install --no-dev
+          php8.3 -f /usr/bin/composer dump-autoload --optimize --no-dev --classmap-authoritative
+
       - name: Dump build file
         env:
           PRODUCT_MODE: ${{ vars.PRODUCT_MODE }}
