@@ -185,7 +185,10 @@ class McpDoctorCommandTest extends KernelTestCase
 
         $this->assertSame(0, $exit);
         $this->assertStringContainsString('[PASS]', $output);
-        $this->assertStringContainsString('7 passed, 0 failed, 0 skipped', $output);
+        // The discovery check skips without a URL to judge: nothing in a CLI
+        // invocation says where the application is mounted, and the command
+        // takes a bare host by default.
+        $this->assertStringContainsString('7 passed, 0 failed, 1 skipped', $output);
         $this->assertNotEmpty($this->insertCalls, 'audit probe should have been attempted');
         $this->assertCount(1, $this->rollbackCalls, 'rollback must run exactly once on success path');
     }
@@ -355,5 +358,45 @@ class McpDoctorCommandTest extends KernelTestCase
 
         $this->assertStringContainsString('Assistant OAuth client registered', $command->getDisplay());
         $this->assertSame(1, $command->getStatusCode());
+    }
+
+    /**
+     * An MCP client drops the path when it builds the discovery URL, so an
+     * instance served from a subpath advertises endpoints nobody can reach.
+     * The only symptom otherwise is a client that will not connect, with
+     * nothing to say why.
+     */
+    public function testFailsWhenTheInstanceIsServedFromASubpath(): void
+    {
+        $command = $this->buildCommand();
+        $command->execute(['--host' => 'https://hr.example.com/orangehrm/web/index.php/api/mcp']);
+
+        $output = $command->getDisplay();
+        $this->assertStringContainsString('[FAIL]', $output);
+        $this->assertStringContainsString('Discovery served from the host root', $output);
+        $this->assertStringContainsString('/orangehrm/web/index.php', $output);
+        $this->assertSame(1, $command->getStatusCode());
+    }
+
+    public function testPassesWhenTheInstanceOwnsTheHostRoot(): void
+    {
+        $command = $this->buildCommand();
+        $command->execute(['--host' => 'https://hr.example.com']);
+
+        $this->assertStringContainsString('8 passed, 0 failed, 0 skipped', $command->getDisplay());
+        $this->assertSame(0, $command->getStatusCode());
+    }
+
+    /**
+     * The /api/mcp suffix is the URL an administrator actually has to hand --
+     * it is what they paste into the client -- so it must not be mistaken for
+     * a subpath.
+     */
+    public function testTheMcpEndpointSuffixIsNotMistakenForASubpath(): void
+    {
+        $command = $this->buildCommand();
+        $command->execute(['--host' => 'https://hr.example.com/api/mcp']);
+
+        $this->assertStringContainsString('8 passed, 0 failed, 0 skipped', $command->getDisplay());
     }
 }

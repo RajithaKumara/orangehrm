@@ -75,12 +75,19 @@ class McpHealthCheck
      *                     the origin the administrator is actually using
      * @return array<int,array{name:string,status:string,message:string}>
      */
-    public function all(string $host): array
+    /**
+     * @param string $host how this instance is reached, as an origin or a URL
+     * @param string|null $basePath whatever sits between the host and the
+     *                              application, which only a real request
+     *                              knows; null skips the discovery check
+     */
+    public function all(string $host, ?string $basePath = null): array
     {
         return [
             $this->checkModuleEnabled(),
             $this->checkOauthDependency(),
             $this->checkAssistantClientRegistered(),
+            $this->checkDiscoveryAtHostRoot($basePath),
             $this->checkAuditWritePath(),
             $this->checkApiPermissions(),
             $this->checkOpenApiLoaded(),
@@ -157,6 +164,54 @@ class McpHealthCheck
                 . '. Run the installer/migrations.';
 
         return $this->result('OAuth sign-in configured', self::STATUS_FAIL, $hint);
+    }
+
+    /**
+     * Whether a client will be able to find this server at all.
+     *
+     * An MCP client drops the path when it builds the discovery URL: told the
+     * server is at `https://host/a/b/api/mcp`, it fetches
+     * `https://host/.well-known/oauth-authorization-server`. So an instance
+     * served from a subpath advertises endpoints nobody can reach -- the
+     * authorization request dies before a token is issued, and the only symptom
+     * an administrator sees is a client that will not connect.
+     *
+     * An empty base URL is exactly the condition: the application answers at
+     * the host root, which also means the webserver sends unmatched paths to
+     * the front controller. Anything else -- a subpath, or `/index.php` because
+     * no rewrite is configured -- fails, and both fail for the same reason.
+     *
+     * The remedy is a hostname of its own with the document root set to `web/`.
+     * That is not a workaround for development: two instances cannot share a
+     * hostname, because they cannot both own its well-known paths.
+     *
+     * @param string|null $basePath
+     * @return array<string,string>
+     */
+    public function checkDiscoveryAtHostRoot(?string $basePath): array
+    {
+        $label = 'Discovery served from the host root';
+
+        if ($basePath === null) {
+            return $this->result(
+                $label,
+                self::STATUS_SKIP,
+                'Only a request knows where this instance is mounted. '
+                . 'Pass the MCP server URL with --host to check it.'
+            );
+        }
+
+        if (rtrim($basePath, '/') === '') {
+            return $this->result($label, self::STATUS_PASS, '');
+        }
+
+        return $this->result(
+            $label,
+            self::STATUS_FAIL,
+            'This instance answers under ' . rtrim($basePath, '/') . ', but a client looks for '
+            . '/.well-known/oauth-authorization-server at the host root and will not find it. '
+            . 'Give this instance its own hostname with the document root set to the web folder.'
+        );
     }
 
     /**

@@ -266,9 +266,13 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
         // The origin the administrator is actually using, rather than the
         // command's guess: the TLS check is about how this instance is
         // reached, and the request knows that exactly.
-        $host = OAuthMetadataController::getHostOrigin($this->getRequest()->getHttpRequest());
+        $httpRequest = $this->getRequest()->getHttpRequest();
+        $host = OAuthMetadataController::getHostOrigin($httpRequest);
 
-        $results = (new McpHealthCheck())->all($host);
+        // The screen is the one place that can answer the discovery question
+        // for certain: this request arrived the way a client's would, so
+        // whatever sits between the host and the application is right here.
+        $results = (new McpHealthCheck())->all($host, $httpRequest->getBaseUrl());
 
         return ['ready' => McpHealthCheck::isReady($results), 'results' => $results];
     }

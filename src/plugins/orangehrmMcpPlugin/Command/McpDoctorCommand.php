@@ -53,7 +53,18 @@ class McpDoctorCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $results = (new McpHealthCheck())->all((string) $input->getOption('host'));
+        $host = (string) $input->getOption('host');
+
+        // Only derivable when the operator passed a URL rather than a bare
+        // host: without one there is nothing to say where the application is
+        // mounted, and guessing would be worse than skipping.
+        $basePath = null;
+        if (strpos($host, '://') !== false) {
+            $path = parse_url($host, PHP_URL_PATH);
+            $basePath = is_string($path) ? preg_replace('#/api/mcp/?$#', '', $path) : '';
+        }
+
+        $results = (new McpHealthCheck())->all($host, $basePath);
 
         $io = $this->getIO();
         $io->title('mcp:doctor');
