@@ -91,7 +91,7 @@ export default {
   },
   methods: {
     onClickBack() {
-      navigate('/welcome');
+      navigate('/installer/welcome');
     },
     onSubmit() {
       navigate('/installer/database-config');

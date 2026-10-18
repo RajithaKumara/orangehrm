@@ -35,6 +35,6 @@ class HomeController extends AbstractInstallerController
             return new RedirectResponse(str_replace('/installer/index.php', '/web/index.php', $request->getBaseUrl()));
         }
 
-        return $this->redirect('/welcome');
+        return $this->redirect('/installer/welcome');
     }
 }

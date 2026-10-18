@@ -55,8 +55,7 @@ $request = Request::createFromGlobals();
  */
 $path = $request->getPathInfo();
 $isInstallerRequest = strpos($path, '/installer') === 0
-    || strpos($path, '/upgrader') === 0
-    || $path === '/welcome';
+    || strpos($path, '/upgrader') === 0;
 
 if ($isInstallerRequest) {
     // Checked here and not at the top of the file: system_requirements.php
@@ -75,7 +74,7 @@ if ($isInstallerRequest) {
 } else {
     $kernel = new Framework($env, $debug);
     $response = new RedirectResponse(
-        $request->getSchemeAndHttpHost() . $request->getBaseUrl() . '/welcome'
+        $request->getSchemeAndHttpHost() . $request->getBaseUrl() . '/installer/welcome'
     );
 }
 

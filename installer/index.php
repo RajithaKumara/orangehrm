@@ -33,4 +33,4 @@
 $script = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '';
 $base = str_replace('/installer/index.php', '', $script);
 
-header('Location: ' . $base . '/web/index.php/welcome', true, 302);
+header('Location: ' . $base . '/web/index.php/installer/welcome', true, 302);

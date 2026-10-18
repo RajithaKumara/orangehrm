@@ -183,7 +183,7 @@ export default {
         });
     },
     navigateUrl() {
-      navigate('/welcome');
+      navigate('/installer/welcome');
     },
   },
 };
