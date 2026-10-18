@@ -23,6 +23,7 @@ use OrangeHRM\Config\Config;
 use OrangeHRM\Framework\Framework;
 use OrangeHRM\Framework\Http\RedirectResponse;
 use OrangeHRM\Framework\Http\Request;
+use OrangeHRM\Installer\Framework\HttpKernel as InstallerKernel;
 use Symfony\Component\ErrorHandler\Debug;
 
 require realpath(__DIR__ . '/../src/vendor/autoload.php');
@@ -35,13 +36,47 @@ if ($debug) {
     Debug::enable();
 }
 
-$kernel = new Framework($env, $debug);
 $request = Request::createFromGlobals();
 
-if (Config::isInstalled()) {
+/**
+ * The single entry point for both applications, so that `web/` can be the
+ * document root. Everything else -- `src/`, `installer/`, `vendor/` and
+ * `lib/confs/Conf.php`, which holds the database credentials -- then sits
+ * outside it and cannot be served, however the webserver is configured.
+ *
+ * The installer is reached by path rather than by install state, because the
+ * upgrader runs against an instance that *is* installed. Install state only
+ * decides where an unrecognised path goes.
+ *
+ * This routes; it does not authorise. Every installer controller still passes
+ * through AbstractInstallerController::handle(), which refuses with 502 once
+ * `lib/confs/Conf.php` is present. Reaching the kernel is not the same as
+ * being allowed to install.
+ */
+$path = $request->getPathInfo();
+$isInstallerRequest = strpos($path, '/installer') === 0
+    || strpos($path, '/upgrader') === 0
+    || $path === '/welcome';
+
+if ($isInstallerRequest) {
+    // Checked here and not at the top of the file: system_requirements.php
+    // caps the supported range, and applying that cap to the application would
+    // take a working instance down the day its host moves past the cap. The
+    // installer is where an unsupported version is worth refusing, and where
+    // the message can be read. Below the floor the application never gets this
+    // far -- composer's platform_check.php reports it from the autoloader.
+    require realpath(__DIR__ . '/../installer/php_version_check.php');
+
+    $kernel = new InstallerKernel($env, $debug);
+    $response = $kernel->handleRequest($request);
+} elseif (Config::isInstalled()) {
+    $kernel = new Framework($env, $debug);
     $response = $kernel->handleRequest($request);
 } else {
-    $response = new RedirectResponse(str_replace('/web/index.php', '', $request->getBaseUrl()));
+    $kernel = new Framework($env, $debug);
+    $response = new RedirectResponse(
+        $request->getSchemeAndHttpHost() . $request->getBaseUrl() . '/welcome'
+    );
 }
 
 $response->send();

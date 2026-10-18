@@ -5,6 +5,7 @@ src/cache/
 src/config/
 src/log/
 web/dist/
+web/installer-dist/
 src/vendor
 apidoc
 logInsatall.log

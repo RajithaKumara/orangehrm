@@ -229,7 +229,12 @@ abstract class AbstractInstallerVueController extends AbstractInstallerControlle
      */
     protected function getAssetsVersion(): string
     {
-        $pathToBuildFile = realpath(__DIR__ . '/../client/dist/build');
+        // Built into the document root, like src/client's output in web/dist,
+        // so that web/ can be the document root and the installer's PHP stays
+        // outside it. Referenced through publicPath, which resolves correctly
+        // whether the root is web/ or -- on an instance that has not moved yet
+        // -- the project directory.
+        $pathToBuildFile = realpath(__DIR__ . '/../../web/installer-dist/build');
         if (!$pathToBuildFile) {
             return (new DateTime())->getTimestamp();
         }
