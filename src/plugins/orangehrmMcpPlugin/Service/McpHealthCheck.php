@@ -19,17 +19,8 @@
 
 namespace OrangeHRM\Mcp\Service;
 
-use DateTime;
-use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
 use OrangeHRM\Entity\OAuthClient;
-use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
-use OrangeHRM\Mcp\Tool\ApiCatalog;
-use OrangeHRM\Mcp\Tool\ApiVerb;
-use OrangeHRM\Mcp\Tool\Rest\GenericToolFactory;
-use OrangeHRM\Mcp\Tool\Rest\OpenApiLoader;
-use OrangeHRM\Mcp\Tool\Rest\RouteMap;
-use OrangeHRM\Mcp\Traits\Service\McpApiPermissionServiceTrait;
 use OrangeHRM\Mcp\Traits\Service\ModuleServiceTrait;
 use OrangeHRM\OAuth\Service\OAuthService;
 use Throwable;
@@ -55,16 +46,13 @@ use Throwable;
 class McpHealthCheck
 {
     use ModuleServiceTrait;
-    use ConfigServiceTrait;
     use EntityManagerHelperTrait;
-    use McpApiPermissionServiceTrait;
 
     public const STATUS_PASS = 'pass';
     public const STATUS_FAIL = 'fail';
     public const STATUS_SKIP = 'skip';
 
     public const OAUTH_CLIENT_TABLE = 'ohrm_oauth2_client';
-    public const PROBE_SESSION_ID = '__doctor_probe__';
 
     /**
      * Every check, in the order a reader should meet them: can the feature run
@@ -85,12 +73,8 @@ class McpHealthCheck
     {
         return [
             $this->checkModuleEnabled(),
-            $this->checkOauthDependency(),
             $this->checkAssistantClientRegistered(),
             $this->checkDiscoveryAtHostRoot($basePath),
-            $this->checkAuditWritePath(),
-            $this->checkApiPermissions(),
-            $this->checkOpenApiLoaded(),
             $this->checkTls($host),
         ];
     }
@@ -122,48 +106,6 @@ class McpHealthCheck
             self::STATUS_FAIL,
             'Enable the MCP module via Admin → Modules.'
         );
-    }
-
-    /**
-     * orangehrmCoreOAuthPlugin is a core plugin, not a row in `ohrm_module` -- there is
-     * no module named 'oauth' to look up. What MCP actually depends on is the OAuth
-     * schema being installed and both encryption keys being set, so check those.
-     */
-    public function checkOauthDependency(): array
-    {
-        $missing = [];
-
-        $key = $this->getConfigService()->getConfigDao()->getValue(ConfigService::KEY_OAUTH_ENCRYPTION_KEY);
-        if ($key === null || $key === '') {
-            $missing[] = ConfigService::KEY_OAUTH_ENCRYPTION_KEY;
-        }
-
-        $tokenKey = $this->getConfigService()->getConfigDao()
-            ->getValue(ConfigService::KEY_OAUTH_TOKEN_ENCRYPTION_KEY);
-        if ($tokenKey === null || $tokenKey === '') {
-            $missing[] = ConfigService::KEY_OAUTH_TOKEN_ENCRYPTION_KEY;
-        }
-
-        $schemaPresent = false;
-        try {
-            $schemaPresent = $this->getEntityManager()
-                ->getConnection()
-                ->createSchemaManager()
-                ->tablesExist([self::OAUTH_CLIENT_TABLE]);
-        } catch (Throwable $e) {
-            $schemaPresent = false;
-        }
-
-        if ($missing === [] && $schemaPresent) {
-            return $this->result('OAuth sign-in configured', self::STATUS_PASS, '');
-        }
-
-        $hint = $schemaPresent
-            ? 'Set the missing OAuth config value(s): ' . implode(', ', $missing) . '.'
-            : 'OAuth schema missing -- expected table ' . self::OAUTH_CLIENT_TABLE
-                . '. Run the installer/migrations.';
-
-        return $this->result('OAuth sign-in configured', self::STATUS_FAIL, $hint);
     }
 
     /**
@@ -257,110 +199,6 @@ class McpHealthCheck
             self::STATUS_FAIL,
             'Register one under Admin > Configuration > Register OAuth Client, one per AI product. '
             . 'The mobile app cannot be used: its redirect URI is fixed and MCP refuses its tokens.'
-        );
-    }
-
-    public function checkAuditWritePath(): array
-    {
-        $connection = $this->getEntityManager()->getConnection();
-        try {
-            $connection->beginTransaction();
-            $connection->insert('ohrm_mcp_audit_log', [
-                'user_id' => null,
-                'mcp_session_id' => self::PROBE_SESSION_ID,
-                'tool_name' => '__probe__',
-                'parameter_digest' => str_repeat('0', 64),
-                'response_status' => 'probe',
-                'created_at' => (new DateTime())->format('Y-m-d H:i:s'),
-            ]);
-            $connection->rollBack();
-            return $this->result('Audit log writable', self::STATUS_PASS, '');
-        } catch (Throwable $e) {
-            if ($connection->isTransactionActive()) {
-                try {
-                    $connection->rollBack();
-                } catch (Throwable $rollbackError) {
-                    // Best-effort cleanup; the original cause is what we report.
-                }
-            }
-            $sanitized = preg_replace('/\s+/', ' ', $e->getMessage());
-            return $this->result(
-                'Audit log writable',
-                self::STATUS_FAIL,
-                'Audit log write path failed -- verify ohrm_mcp_audit_log exists and the DB user has INSERT. ('
-                . $sanitized . ')'
-            );
-        }
-    }
-
-    /**
-     * The grid is what decides which endpoints are offered, so an operator
-     * asking "why does the assistant not see X" should be able to see the state
-     * of it without opening the database.
-     *
-     * Reports what is configured rather than checking it against an expected
-     * number: the shipped list is seed data in the migration folder, and
-     * reading an installer file at runtime to second-guess the migration is
-     * worse than the problem it detects. A catalog that drifts from the routes
-     * is caught in CI by ApiCatalogSeedTest, which is where it can be fixed.
-     */
-    public function checkApiPermissions(): array
-    {
-        try {
-            $map = $this->getMcpApiPermissionService()->getPermissionMap();
-        } catch (Throwable $e) {
-            $map = [];
-        }
-
-        if ($map === []) {
-            return $this->result(
-                'API permissions installed',
-                self::STATUS_FAIL,
-                'No rows in ohrm_mcp_api_permission -- nothing is reachable. Run the migrations.'
-            );
-        }
-
-        $counts = (new ApiCatalog(new RouteMap()))->getCounts($map);
-
-        $parts = [];
-        $enabledTools = 0;
-        foreach (ApiVerb::all() as $verb) {
-            $parts[] = sprintf('%s %d/%d', $verb, $counts['tools'][$verb]['enabled'], $counts['tools'][$verb]['available']);
-            $enabledTools += $counts['tools'][$verb]['enabled'];
-        }
-
-        $message = sprintf(
-            '%d API classes configured; tools: %s (%d enabled)',
-            count($map),
-            implode(', ', $parts),
-            $enabledTools
-        );
-
-        return $this->result('API permissions installed', self::STATUS_PASS, $message);
-    }
-
-    /**
-     * The document is enrichment, never a dependency: an endpoint it fails to
-     * describe is still exposed, with a thinner schema. So a gap is worth
-     * reporting and is not a failure.
-     */
-    public function checkOpenApiLoaded(): array
-    {
-        $stats = (new GenericToolFactory(new RouteMap(), new OpenApiLoader()))->stats();
-
-        if (!$stats['specAvailable']) {
-            return $this->result(
-                'Tool descriptions available',
-                self::STATUS_SKIP,
-                'No OpenAPI document found -- tools work but carry no descriptions. '
-                . 'Generate it with `php devTools/core/console.php api:generate-doc`.'
-            );
-        }
-
-        return $this->result(
-            'Tool descriptions available',
-            self::STATUS_PASS,
-            sprintf('%d of %d readable operations described', $stats['described'], $stats['readOnly'])
         );
     }
 
