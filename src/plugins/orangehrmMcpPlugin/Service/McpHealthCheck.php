@@ -117,22 +117,24 @@ class McpHealthCheck
         $modules = $this->getModuleService()->getModuleDao()->getEnabledModuleNameList();
         if (!in_array(McpConfigurationService::MODULE_NAME, $modules, true)) {
             return $this->result(
+                'enabled',
                 $label,
                 self::STATUS_FAIL,
-                'The mcp row in ohrm_module is disabled. It ships enabled and no screen turns it '
-                . 'back on, so this needs a database change or a repaired install.'
+                'The MCP module is switched off in the database. No screen can turn it back on, '
+                . 'so this needs a repaired install.'
             );
         }
 
         if (!$this->getMcpConfigPolicy()->isEnabled()) {
             return $this->result(
+                'enabled',
                 $label,
                 self::STATUS_FAIL,
-                'Turned off. Use the switch at the top of MCP Configuration to enable it.'
+                'Switched off. Use the switch at the top of the MCP Configuration screen to turn it on.'
             );
         }
 
-        return $this->result($label, self::STATUS_PASS, '');
+        return $this->result('enabled', $label, self::STATUS_PASS, '');
     }
 
     /**
@@ -159,10 +161,11 @@ class McpHealthCheck
      */
     public function checkDiscoveryAtHostRoot(?string $basePath): array
     {
-        $label = 'Discovery served from the host root';
+        $label = 'Assistants can find this server';
 
         if ($basePath === null) {
             return $this->result(
+                'discovery',
                 $label,
                 self::STATUS_SKIP,
                 'Only a request knows where this instance is mounted. '
@@ -171,15 +174,16 @@ class McpHealthCheck
         }
 
         if (rtrim($basePath, '/') === '') {
-            return $this->result($label, self::STATUS_PASS, '');
+            return $this->result('discovery', $label, self::STATUS_PASS, '');
         }
 
         return $this->result(
+            'discovery',
             $label,
             self::STATUS_FAIL,
-            'This instance answers under ' . rtrim($basePath, '/') . ', but a client looks for '
-            . '/.well-known/oauth-authorization-server at the host root and will not find it. '
-            . 'Give this instance its own hostname with the document root set to the web folder.'
+            'An AI assistant will not be able to find this server. It always looks at the start of a '
+            . 'web address, and OrangeHRM is installed under ' . rtrim($basePath, '/') . '. '
+            . 'Ask your IT administrator to set up a web address used only by OrangeHRM.'
         );
     }
 
@@ -202,7 +206,7 @@ class McpHealthCheck
      */
     public function checkAssistantClientRegistered(): array
     {
-        $label = 'OAuth client for the assistant';
+        $label = 'Approved AI application';
 
         try {
             $enabled = [];
@@ -210,7 +214,7 @@ class McpHealthCheck
                 $enabled[$client->getClientId()] = true;
             }
         } catch (Throwable $e) {
-            return $this->result($label, self::STATUS_FAIL, 'Could not read ' . self::OAUTH_CLIENT_TABLE . '.');
+            return $this->result('client', $label, self::STATUS_FAIL, 'Could not read the list of OAuth applications.');
         }
 
         unset($enabled[OAuthService::PUBLIC_MOBILE_CLIENT_ID]);
@@ -219,19 +223,22 @@ class McpHealthCheck
         if ($approved === []) {
             if ($enabled === []) {
                 return $this->result(
+                    'client',
                     $label,
                     self::STATUS_FAIL,
-                    'None registered. Add one under Admin > Configuration > Register OAuth Client, one per AI '
-                    . 'product. The mobile app cannot be used: its redirect URI is fixed and MCP refuses its tokens.'
+                    'No application is registered for an AI assistant to sign in with. Add one under '
+                    . 'Admin > Configuration > Register OAuth Client, one for each AI product. The OrangeHRM '
+                    . 'mobile app cannot be used for this.'
                 );
             }
 
             return $this->result(
+                'client',
                 $label,
                 self::STATUS_SKIP,
-                'No client is approved for MCP, so there is nothing to say which of the '
-                . count($enabled) . ' registered client(s) is the assistant -- and any of them will be accepted. '
-                . 'Approve one to make this specific.'
+                'No AI application has been approved yet, so any of the ' . count($enabled) . ' application(s) '
+                . 'registered on this instance can connect -- including ones set up for something else, such as '
+                . 'a payroll or reporting integration. Approving one limits it to that application.'
             );
         }
 
@@ -245,18 +252,20 @@ class McpHealthCheck
 
         if ($unusable !== []) {
             return $this->result(
+                'client',
                 $label,
                 self::STATUS_FAIL,
-                'Approved but not registered and enabled: ' . implode(', ', $unusable)
-                . '. Approval is enforced as soon as the list is set, so an id that matches no client '
-                . 'refuses every caller.'
+                'These approved applications are missing or switched off: ' . implode(', ', $unusable)
+                . '. Nothing can connect until every approved application exists and is enabled under '
+                . 'Admin > Configuration > OAuth Clients.'
             );
         }
 
         return $this->result(
+            'client',
             $label,
             self::STATUS_PASS,
-            count($approved) === 1 ? '1 approved client' : count($approved) . ' approved clients'
+            count($approved) === 1 ? '1 approved application' : count($approved) . ' approved applications'
         );
     }
 
@@ -267,12 +276,14 @@ class McpHealthCheck
         $isLocal = in_array(strtolower($host), ['localhost', '127.0.0.1', '::1'], true);
         $isHttps = strncasecmp($hostInput, 'https://', 8) === 0;
         if ($isLocal || $isHttps) {
-            return $this->result('Secure connection', self::STATUS_PASS, '');
+            return $this->result('tls', 'Secure connection', self::STATUS_PASS, '');
         }
         return $this->result(
+            'tls',
             'Secure connection',
             self::STATUS_FAIL,
-            'TLS is required for non-localhost deployments. See setup guide (Story 7.1).'
+            'This instance is reached over http. An AI assistant will only connect over https. '
+            . 'Ask your IT administrator to enable https for this web address.'
         );
     }
 
@@ -282,8 +293,12 @@ class McpHealthCheck
     /**
      * @param 'pass'|'fail'|'skip' $status
      */
-    private function result(string $name, string $status, string $message): array
+    /**
+     * @param string $key stable identifier, so the screen can act on a result
+     *                    without matching the display text
+     */
+    private function result(string $key, string $name, string $status, string $message): array
     {
-        return ['name' => $name, 'status' => $status, 'message' => $message];
+        return ['key' => $key, 'name' => $name, 'status' => $status, 'message' => $message];
     }
 }

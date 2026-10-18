@@ -111,7 +111,7 @@ class McpDoctorCommandTest extends KernelTestCase
 
         $this->assertSame(1, $exit);
         $this->assertStringContainsString('[FAIL]  MCP enabled', $output);
-        $this->assertStringContainsString('ohrm_module is disabled', $output);
+        $this->assertStringContainsString('switched off in the database', $output);
     }
 
     /**
@@ -127,7 +127,7 @@ class McpDoctorCommandTest extends KernelTestCase
 
         $this->assertSame(1, $exit);
         $this->assertStringContainsString('[FAIL]  MCP enabled', $output);
-        $this->assertStringContainsString('switch at the top of MCP Configuration', $output);
+        $this->assertStringContainsString('switch at the top of the MCP Configuration screen', $output);
     }
 
     /**
@@ -158,7 +158,7 @@ class McpDoctorCommandTest extends KernelTestCase
 
         $output = $command->getDisplay();
         $this->assertStringContainsString('[SKIP]', $output);
-        $this->assertStringContainsString('nothing to say which', $output);
+        $this->assertStringContainsString('No AI application has been approved yet', $output);
         $this->assertSame(0, $command->getStatusCode(), 'not knowing is not a failure');
     }
 
@@ -170,7 +170,7 @@ class McpDoctorCommandTest extends KernelTestCase
 
         $this->assertSame(1, $exit);
         $this->assertStringContainsString('[FAIL]  Secure connection', $output);
-        $this->assertStringContainsString('TLS is required', $output);
+        $this->assertStringContainsString('only connect over https', $output);
     }
 
     public function testTlsHttpsPasses(): void
@@ -206,7 +206,7 @@ class McpDoctorCommandTest extends KernelTestCase
 
         $output = $command->getDisplay();
         $this->assertStringContainsString('[FAIL]', $output);
-        $this->assertStringContainsString('OAuth client for the assistant', $output);
+        $this->assertStringContainsString('Approved AI application', $output);
         $this->assertStringContainsString('Register OAuth Client', $output);
         $this->assertSame(1, $command->getStatusCode());
     }
@@ -216,7 +216,7 @@ class McpDoctorCommandTest extends KernelTestCase
         $command = $this->buildCommand(['oauthClientIds' => [], 'approvedClientIds' => []]);
         $command->execute([]);
 
-        $this->assertStringContainsString('None registered', $command->getDisplay());
+        $this->assertStringContainsString('No application is registered', $command->getDisplay());
         $this->assertSame(1, $command->getStatusCode());
     }
 
@@ -233,7 +233,7 @@ class McpDoctorCommandTest extends KernelTestCase
 
         $output = $command->getDisplay();
         $this->assertStringContainsString('[FAIL]', $output);
-        $this->assertStringContainsString('Discovery served from the host root', $output);
+        $this->assertStringContainsString('Assistants can find this server', $output);
         $this->assertStringContainsString('/orangehrm/web/index.php', $output);
         $this->assertSame(1, $command->getStatusCode());
     }

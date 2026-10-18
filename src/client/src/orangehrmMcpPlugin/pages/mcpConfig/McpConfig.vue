@@ -43,14 +43,16 @@
 
       <oxd-form :loading="isLoading" @submit-valid="onSave">
         <div
-          v-if="health.results.length"
+          v-if="liveHealth.results.length"
           class="orangehrm-mcp-health"
-          :class="health.ready ? '--ready' : '--blocked'"
+          :class="liveHealth.ready ? '--ready' : '--blocked'"
         >
           <div class="orangehrm-mcp-health__summary">
             <oxd-icon
               :name="
-                health.ready ? 'check-circle-fill' : 'exclamation-triangle-fill'
+                liveHealth.ready
+                  ? 'check-circle-fill'
+                  : 'exclamation-triangle-fill'
               "
               class="orangehrm-mcp-health__icon"
             />
@@ -65,7 +67,7 @@
           </div>
 
           <div
-            v-for="check in health.results"
+            v-for="check in liveHealth.results"
             :key="check.name"
             class="orangehrm-mcp-health__row"
             :class="'--' + check.status"
@@ -454,6 +456,33 @@ export default {
     },
 
     /**
+     * The health results, with the enabled line following the switch rather
+     * than the last save.
+     *
+     * Everything else here describes the server and cannot change until
+     * something is saved. Whether MCP is on is the one thing the administrator
+     * is holding in their hand, and leaving it red while the switch reads on
+     * made the panel look broken. The tool counters above already work this
+     * way.
+     *
+     * The server still decides on reload; this only covers the gap between
+     * flipping the switch and saving.
+     */
+    liveHealth() {
+      const results = this.health.results.map((check) => {
+        if (check.key !== 'enabled' || !this.config.enabled) {
+          return check;
+        }
+        return {...check, status: 'pass', message: ''};
+      });
+
+      return {
+        ready: results.every((c) => c.status !== 'fail'),
+        results,
+      };
+    },
+
+    /**
      * Tools enabled right now, per verb, counted from the unsaved state so the
      * numbers move as the administrator clicks.
      */
@@ -478,7 +507,7 @@ export default {
     },
 
     failedCheckCount() {
-      return this.health.results.filter((c) => c.status === 'fail').length;
+      return this.liveHealth.results.filter((c) => c.status === 'fail').length;
     },
   },
 
