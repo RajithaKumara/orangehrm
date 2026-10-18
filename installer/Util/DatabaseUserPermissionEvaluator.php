@@ -163,7 +163,10 @@ class DatabaseUserPermissionEvaluator
             ->from('_ohrm_temp_table', '_temp_table')
             ->andWhere('_temp_table.id < 3')
             ->orWhere('_temp_table.id > 6')
+            ->groupBy('_temp_table.id')
+            ->addGroupBy('_temp_table.col_bool')
             ->andHaving('_temp_table.col_bool = :valueTrue')
+            ->addOrderBy('_temp_table.id')
             ->setParameter('valueTrue', true, Types::BOOLEAN)
             ->executeQuery();
         $expected = [
