@@ -26,6 +26,7 @@ use OrangeHRM\Core\Service\ModuleService;
 use OrangeHRM\Entity\OAuthClient;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\Mcp\Command\McpDoctorCommand;
+use OrangeHRM\Mcp\Service\McpConfigPolicy;
 use OrangeHRM\Tests\Util\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -36,7 +37,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 class McpDoctorCommandTest extends KernelTestCase
 {
     /**
-     * @param array{enabled?:array<string>,oauthClientIds?:array<string>} $opts
+     * @param array{enabled?:array<string>,oauthClientIds?:array<string>,mcpEnabled?:bool,approvedClientIds?:array<string>} $opts
      */
     private function buildCommand(array $opts = []): CommandTester
     {
@@ -69,9 +70,19 @@ class McpDoctorCommandTest extends KernelTestCase
         $clientRepository->method('findBy')->willReturn($clients);
         $em->method('getRepository')->willReturn($clientRepository);
 
+        // The two switches the policy owns: whether MCP is turned on, and which
+        // clients an administrator has approved. The default is a configured
+        // instance -- on, with the registered assistant approved.
+        $mcpEnabled = $opts['mcpEnabled'] ?? true;
+        $approved = $opts['approvedClientIds'] ?? ['a-registered-assistant'];
+        $policy = $this->getMockBuilder(McpConfigPolicy::class)->disableOriginalConstructor()->getMock();
+        $policy->method('isEnabled')->willReturn($mcpEnabled);
+        $policy->method('getApprovedClientIds')->willReturn($approved);
+
         $this->createKernelWithMockServices([
             Services::MODULE_SERVICE => $moduleService,
             Services::DOCTRINE => $em,
+            Services::MCP_CONFIG_POLICY => $policy,
         ]);
 
         $command = new McpDoctorCommand();
@@ -99,8 +110,56 @@ class McpDoctorCommandTest extends KernelTestCase
         $output = $tester->getDisplay();
 
         $this->assertSame(1, $exit);
-        $this->assertStringContainsString('[FAIL]  MCP module enabled', $output);
-        $this->assertStringContainsString('Enable the MCP module', $output);
+        $this->assertStringContainsString('[FAIL]  MCP enabled', $output);
+        $this->assertStringContainsString('ohrm_module is disabled', $output);
+    }
+
+    /**
+     * The reading that used to be impossible: the module row ships enabled and
+     * no screen turns it off, so reporting only that said "MCP module enabled"
+     * to an administrator who had just switched MCP off.
+     */
+    public function testSwitchedOffReportsAsDisabled(): void
+    {
+        $tester = $this->buildCommand(['mcpEnabled' => false]);
+        $exit = $tester->execute(['--host' => 'localhost']);
+        $output = $tester->getDisplay();
+
+        $this->assertSame(1, $exit);
+        $this->assertStringContainsString('[FAIL]  MCP enabled', $output);
+        $this->assertStringContainsString('switch at the top of MCP Configuration', $output);
+    }
+
+    /**
+     * Approval is enforced the moment the list is non-empty, so an id matching
+     * no client refuses every caller while every other check still passes.
+     */
+    public function testApprovedClientThatDoesNotExistFails(): void
+    {
+        $command = $this->buildCommand(['approvedClientIds' => ['never-registered']]);
+        $command->execute([]);
+
+        $output = $command->getDisplay();
+        $this->assertStringContainsString('[FAIL]', $output);
+        $this->assertStringContainsString('never-registered', $output);
+        $this->assertSame(1, $command->getStatusCode());
+    }
+
+    /**
+     * Registering an OAuth client says nothing about assistants -- customers
+     * create them for payroll syncs and reporting tools. Without an approved
+     * list there is nothing to identify one by, so the check says so rather
+     * than counting unrelated integrations.
+     */
+    public function testWithoutAnApprovedListTheAssistantCannotBeIdentified(): void
+    {
+        $command = $this->buildCommand(['approvedClientIds' => []]);
+        $command->execute([]);
+
+        $output = $command->getDisplay();
+        $this->assertStringContainsString('[SKIP]', $output);
+        $this->assertStringContainsString('nothing to say which', $output);
+        $this->assertSame(0, $command->getStatusCode(), 'not knowing is not a failure');
     }
 
     public function testTlsRequiredForNonLocalhostHttp(): void
@@ -142,22 +201,22 @@ class McpDoctorCommandTest extends KernelTestCase
      */
     public function testFailsWhenTheOnlyOAuthClientIsTheMobileApp(): void
     {
-        $command = $this->buildCommand(['oauthClientIds' => ['orangehrm_mobile_app']]);
+        $command = $this->buildCommand(['oauthClientIds' => ['orangehrm_mobile_app'], 'approvedClientIds' => []]);
         $command->execute([]);
 
         $output = $command->getDisplay();
         $this->assertStringContainsString('[FAIL]', $output);
-        $this->assertStringContainsString('Assistant OAuth client registered', $output);
+        $this->assertStringContainsString('OAuth client for the assistant', $output);
         $this->assertStringContainsString('Register OAuth Client', $output);
         $this->assertSame(1, $command->getStatusCode());
     }
 
     public function testFailsWhenNoOAuthClientIsRegisteredAtAll(): void
     {
-        $command = $this->buildCommand(['oauthClientIds' => []]);
+        $command = $this->buildCommand(['oauthClientIds' => [], 'approvedClientIds' => []]);
         $command->execute([]);
 
-        $this->assertStringContainsString('Assistant OAuth client registered', $command->getDisplay());
+        $this->assertStringContainsString('None registered', $command->getDisplay());
         $this->assertSame(1, $command->getStatusCode());
     }
 

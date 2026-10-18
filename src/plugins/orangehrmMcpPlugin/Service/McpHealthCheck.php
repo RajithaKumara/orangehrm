@@ -21,6 +21,7 @@ namespace OrangeHRM\Mcp\Service;
 
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
 use OrangeHRM\Entity\OAuthClient;
+use OrangeHRM\Mcp\Traits\Service\McpConfigPolicyTrait;
 use OrangeHRM\Mcp\Traits\Service\ModuleServiceTrait;
 use OrangeHRM\OAuth\Service\OAuthService;
 use Throwable;
@@ -46,6 +47,7 @@ use Throwable;
 class McpHealthCheck
 {
     use ModuleServiceTrait;
+    use McpConfigPolicyTrait;
     use EntityManagerHelperTrait;
 
     public const STATUS_PASS = 'pass';
@@ -72,7 +74,7 @@ class McpHealthCheck
     public function all(string $host, ?string $basePath = null): array
     {
         return [
-            $this->checkModuleEnabled(),
+            $this->checkEnabled(),
             $this->checkAssistantClientRegistered(),
             $this->checkDiscoveryAtHostRoot($basePath),
             $this->checkTls($host),
@@ -95,17 +97,42 @@ class McpHealthCheck
         return true;
     }
 
-    public function checkModuleEnabled(): array
+    /**
+     * Whether this instance will answer an MCP request at all.
+     *
+     * Two gates have to be open and they are not the same thing. The module
+     * row in `ohrm_module` is the product's; it ships enabled and is not in
+     * ModulesAPI::CONFIGURABLE_MODULES, so an administrator cannot change it --
+     * which is why the old hint pointing at Admin > Modules was no help. The
+     * switch on this screen is theirs.
+     *
+     * Reporting only the module row said "MCP module enabled" to an
+     * administrator who had just switched MCP off, which is the one reading
+     * that is never useful.
+     */
+    public function checkEnabled(): array
     {
-        $enabled = $this->getModuleService()->getModuleDao()->getEnabledModuleNameList();
-        if (in_array(McpConfigurationService::MODULE_NAME, $enabled, true)) {
-            return $this->result('MCP module enabled', self::STATUS_PASS, '');
+        $label = 'MCP enabled';
+
+        $modules = $this->getModuleService()->getModuleDao()->getEnabledModuleNameList();
+        if (!in_array(McpConfigurationService::MODULE_NAME, $modules, true)) {
+            return $this->result(
+                $label,
+                self::STATUS_FAIL,
+                'The mcp row in ohrm_module is disabled. It ships enabled and no screen turns it '
+                . 'back on, so this needs a database change or a repaired install.'
+            );
         }
-        return $this->result(
-            'MCP module enabled',
-            self::STATUS_FAIL,
-            'Enable the MCP module via Admin → Modules.'
-        );
+
+        if (!$this->getMcpConfigPolicy()->isEnabled()) {
+            return $this->result(
+                $label,
+                self::STATUS_FAIL,
+                'Turned off. Use the switch at the top of MCP Configuration to enable it.'
+            );
+        }
+
+        return $this->result($label, self::STATUS_PASS, '');
     }
 
     /**
@@ -157,48 +184,79 @@ class McpHealthCheck
     }
 
     /**
-     * Whether any OAuth client exists that an AI assistant could actually use.
+     * Whether a client exists that can connect, and whether we can say which.
      *
-     * The mobile app does not count, and this is the check that says so out
-     * loud. Its registration is seeded by the product and `OAuthClientAPI`
-     * refuses to update or delete it, so its redirect URI cannot be pointed at
-     * an assistant; `McpConfigPolicy` refuses a token issued to it whatever the
-     * approved list says. An instance whose only client is the mobile app
-     * therefore has nothing that can connect, and an administrator would
-     * otherwise find that out from a client that simply fails to authorise.
+     * Counting OAuth clients is not the same question. A customer registers
+     * them for other integrations -- a payroll sync, a reporting tool -- and
+     * none of that says anything about an assistant. The approved list is the
+     * only place an administrator states which client MCP is for, so when it
+     * is set this check verifies exactly those and nothing else.
      *
-     * A failure rather than a note: an instance in this state cannot serve
-     * anyone, which is the same thing the module-disabled check reports.
+     * When it is not set, there is nothing to identify an assistant by, and
+     * saying "1 client may connect" about an unrelated integration would be
+     * worse than saying nothing. What can still be said is whether anything at
+     * all could connect: the mobile app never can, whatever the list says, so
+     * an instance whose only registration is the mobile app has nothing.
+     *
+     * @return array<string,string>
      */
     public function checkAssistantClientRegistered(): array
     {
-        $label = 'Assistant OAuth client registered';
+        $label = 'OAuth client for the assistant';
 
         try {
-            // Loaded rather than counted in SQL: an instance has a handful of
-            // these, and the mobile exclusion reads better here than as a
-            // second WHERE clause.
-            $enabled = $this->getRepository(OAuthClient::class)->findBy(['enabled' => true]);
-            $count = count(array_filter($enabled, static function (OAuthClient $client): bool {
-                return $client->getClientId() !== OAuthService::PUBLIC_MOBILE_CLIENT_ID;
-            }));
+            $enabled = [];
+            foreach ($this->getRepository(OAuthClient::class)->findBy(['enabled' => true]) as $client) {
+                $enabled[$client->getClientId()] = true;
+            }
         } catch (Throwable $e) {
             return $this->result($label, self::STATUS_FAIL, 'Could not read ' . self::OAUTH_CLIENT_TABLE . '.');
         }
 
-        if ($count > 0) {
+        unset($enabled[OAuthService::PUBLIC_MOBILE_CLIENT_ID]);
+        $approved = $this->getMcpConfigPolicy()->getApprovedClientIds();
+
+        if ($approved === []) {
+            if ($enabled === []) {
+                return $this->result(
+                    $label,
+                    self::STATUS_FAIL,
+                    'None registered. Add one under Admin > Configuration > Register OAuth Client, one per AI '
+                    . 'product. The mobile app cannot be used: its redirect URI is fixed and MCP refuses its tokens.'
+                );
+            }
+
             return $this->result(
                 $label,
-                self::STATUS_PASS,
-                $count === 1 ? '1 client may connect' : $count . ' clients may connect'
+                self::STATUS_SKIP,
+                'No client is approved for MCP, so there is nothing to say which of the '
+                . count($enabled) . ' registered client(s) is the assistant -- and any of them will be accepted. '
+                . 'Approve one to make this specific.'
+            );
+        }
+
+        // A client id in the list that does not resolve is the failure that
+        // locks everyone out while every other check still passes: approval is
+        // enforced as soon as the list is non-empty, and an id that matches
+        // nothing matches no caller either.
+        $unusable = array_values(array_filter($approved, static function (string $clientId) use ($enabled): bool {
+            return !isset($enabled[$clientId]);
+        }));
+
+        if ($unusable !== []) {
+            return $this->result(
+                $label,
+                self::STATUS_FAIL,
+                'Approved but not registered and enabled: ' . implode(', ', $unusable)
+                . '. Approval is enforced as soon as the list is set, so an id that matches no client '
+                . 'refuses every caller.'
             );
         }
 
         return $this->result(
             $label,
-            self::STATUS_FAIL,
-            'Register one under Admin > Configuration > Register OAuth Client, one per AI product. '
-            . 'The mobile app cannot be used: its redirect URI is fixed and MCP refuses its tokens.'
+            self::STATUS_PASS,
+            count($approved) === 1 ? '1 approved client' : count($approved) . ' approved clients'
         );
     }
 
