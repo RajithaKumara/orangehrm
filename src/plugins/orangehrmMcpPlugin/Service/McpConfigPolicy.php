@@ -57,7 +57,6 @@ class McpConfigPolicy
     public const KEY_ENABLED = 'mcp.config.enabled';
     public const KEY_ALLOWED_ROLE_IDS = 'mcp.config.allowed_role_ids';
     public const KEY_USER_OVERRIDES = 'mcp.config.user_overrides';
-    public const KEY_APPROVED_CLIENT_IDS = 'mcp.config.approved_client_ids';
 
     /**
      * One switch per verb, named so the stored keys read the same way the screen
@@ -92,13 +91,6 @@ class McpConfigPolicy
      * constant only covers the case where that row is missing entirely.
      */
     public const DEFAULT_ALLOWED_ROLE_IDS = [];
-
-    /**
-     * Empty means every approved-client check fails, which would lock everyone
-     * out of a freshly enabled instance. Approved clients are therefore only
-     * enforced once at least one client has been approved; see isClientApproved().
-     */
-    public const DEFAULT_APPROVED_CLIENT_IDS = [];
 
     public function isEnabled(): bool
     {
@@ -191,19 +183,6 @@ class McpConfigPolicy
     }
 
     /**
-     * @return string[] OAuth client ids approved to reach the MCP endpoint
-     */
-    public function getApprovedClientIds(): array
-    {
-        return array_values(array_filter(
-            array_map('strval', $this->decodeList(self::KEY_APPROVED_CLIENT_IDS)),
-            static function (string $id): bool {
-                return $id !== '';
-            }
-        ));
-    }
-
-    /**
      * Role grants the baseline; a per-user override wins in either direction.
      *
      * An explicit deny beats the role because that is the lever an administrator
@@ -229,47 +208,23 @@ class McpConfigPolicy
     }
 
     /**
-     * Closes the token-audience gap (README 4.13): a token minted for some other
-     * OrangeHRM application must not be usable against the AI surface.
+     * Whether a token issued to this OAuth client may be used on the AI
+     * surface.
      *
-     * Enforced only once at least one client has been approved. An empty list on
-     * a freshly enabled instance would otherwise lock out the very administrator
-     * trying to configure it, and the connection gate above still applies.
+     * Any registered client may, with one exception. The mobile app is seeded
+     * by the product and OAuthClientAPI refuses to update or delete it, so its
+     * redirect URI can never be pointed at an assistant -- there is no
+     * configuration in which a token issued to it belongs here, which is why
+     * this is a rule in code rather than something a tenant can set.
      *
-     * The one client that is refused unconditionally is the mobile app; see
-     * below.
+     * There was an approved-client list here. It was dropped: an administrator
+     * registering an OAuth client for an assistant has already made the
+     * decision, and asking them to repeat it in a second place that no screen
+     * exposes only created a way to lock everybody out with a typo.
      */
     public function isClientApproved(?string $clientId): bool
     {
-        // The mobile app is never an AI client, whatever the list says. Its
-        // registration is seeded by the product and OAuthClientAPI refuses to
-        // update or delete it, so its redirect URI cannot be pointed at an
-        // assistant -- there is no configuration in which a token issued to it
-        // legitimately belongs on this surface. Refusing it here is what makes
-        // the permissive default below safe: the replay everyone worries about
-        // is a mobile token on /api/mcp, and that is now closed whether or not
-        // an administrator has approved anything.
-        if ($clientId === OAuthService::PUBLIC_MOBILE_CLIENT_ID) {
-            return false;
-        }
-
-        $approved = $this->getApprovedClientIds();
-        if ($approved === []) {
-            return true;
-        }
-        if ($clientId === null || $clientId === '') {
-            return false;
-        }
-        return in_array($clientId, $approved, true);
-    }
-
-    /**
-     * Whether an approved list is being applied. The mobile app is refused
-     * regardless, so this being false does not mean "every client may connect".
-     */
-    public function isClientApprovalEnforced(): bool
-    {
-        return $this->getApprovedClientIds() !== [];
+        return $clientId !== OAuthService::PUBLIC_MOBILE_CLIENT_ID;
     }
 
     public function setEnabled(bool $enabled): void
@@ -296,15 +251,6 @@ class McpConfigPolicy
             $clean[(string) (int) $userId] = (bool) $allowed;
         }
         $this->setValue(self::KEY_USER_OVERRIDES, (string) json_encode((object) $clean));
-    }
-
-    /**
-     * @param string[] $clientIds
-     */
-    public function setApprovedClientIds(array $clientIds): void
-    {
-        $clean = array_values(array_unique(array_map('strval', $clientIds)));
-        $this->setValue(self::KEY_APPROVED_CLIENT_IDS, (string) json_encode($clean));
     }
 
     /**

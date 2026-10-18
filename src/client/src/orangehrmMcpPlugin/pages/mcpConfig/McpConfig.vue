@@ -621,9 +621,6 @@ export default {
         .request({
           method: 'PUT',
           url: 'api/v2/admin/mcp/config',
-          // `approvedClientIds` is deliberately omitted: OAuth clients are
-          // managed on the OAuth screen, and the API preserves any setting it
-          // is not sent rather than clearing it.
           data: {
             enabled: this.config.enabled,
             verbs: this.config.verbs,

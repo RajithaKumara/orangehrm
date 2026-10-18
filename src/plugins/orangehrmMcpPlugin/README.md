@@ -354,13 +354,19 @@ Three changes:
   `client_id` through `OAuthClientDao`.
 
 The split this settles: authentication establishes *who, and through which
-client*; MCP decides whether that client is approved. The approved list stays
-`mcp.config.approved_client_ids`, MCP-side and SQL-edited — the OAuth plugin
-never learns MCP exists.
+client*; MCP decides whether that client may be used here. That decision is a
+rule rather than a setting — any registered OAuth client may, except the mobile
+app, whose registration cannot be edited and so can never point at an assistant.
 
-Enforcement is still opt-in: an empty list means not enforced, so a fresh install
-and an upgrade both keep working. The audit trail now records `mcp_client_id` on
-every call rather than only when enforcement is on.
+**The approved-client list was dropped (architect, 2026-10-18.)** It lived in
+`mcp.config.approved_client_ids`, had no screen, and asked an administrator to
+state in a second place something they had already said by registering the
+client. Its only practical effect was a way to lock every caller out with a
+typo. Registering a client is the decision; disable the ones that should not
+reach the AI surface.
+
+The audit trail records `mcp_client_id` on every call regardless, so which
+application acted is always on the row.
 
 ### 4.15 Discovery chain is broken on the shared dev box — measured 2026-09-14
 

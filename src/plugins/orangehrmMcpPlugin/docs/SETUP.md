@@ -34,22 +34,17 @@ What does not limit it:
 
 - No per-tool consent, and no way to grant an assistant less authority than the
   user has.
-- **Token audience is not checked until you approve a client.** Out of the box
-  any valid OrangeHRM OAuth token is accepted, including one issued to a
-  different application such as the mobile app. A token carries only its own
-  user's authority, so this is not privilege escalation, but a token a user
-  granted to another app can be replayed against the AI surface. Approving even
-  one client turns the check on and refuses every client but those approved:
+- **Any registered OAuth client can connect.** A token issued to an application
+  you registered for something else -- a payroll sync, a reporting tool -- is
+  accepted here too. The token carries only its own user's authority, so this is
+  not privilege escalation, but it does mean the AI surface is open to every
+  application on the instance rather than the one you had in mind. If that
+  matters, register a client for the assistant and no others, or disable the
+  ones that should not reach it.
 
-  ```sql
-  -- a JSON array of `client_id` values, exactly as shown on the OAuth screen
-  INSERT INTO hs_hr_config (`name`, `value`)
-  VALUES ('mcp.config.approved_client_ids', '["claude_desktop"]')
-  ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);
-  ```
-
-  There is no screen for this yet: OAuth clients are managed on the OAuth screen
-  and MCP approval is configured here, deliberately kept apart for now.
+  The one exception is the OrangeHRM mobile app, whose tokens are always
+  refused: its registration cannot be edited, so its redirect URI can never be
+  pointed at an assistant.
 
 ## Cutting off an assistant
 

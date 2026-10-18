@@ -61,7 +61,6 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
     public const PARAMETER_ALLOWED_ROLE_IDS = 'allowedRoleIds';
     public const PARAMETER_USER_OVERRIDES = 'userOverrides';
     public const PARAMETER_API_PERMISSIONS = 'apiPermissions';
-    public const PARAMETER_APPROVED_CLIENT_IDS = 'approvedClientIds';
 
     /**
      * @inheritDoc
@@ -78,8 +77,6 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
             self::PARAMETER_VERBS => $policy->getVerbSwitches(),
             self::PARAMETER_ALLOWED_ROLE_IDS => $policy->getAllowedRoleIds(),
             self::PARAMETER_USER_OVERRIDES => $this->decorateOverrides($policy->getUserOverrides()),
-            self::PARAMETER_APPROVED_CLIENT_IDS => $policy->getApprovedClientIds(),
-            'clientApprovalEnforced' => $policy->isClientApprovalEnforced(),
             'readOnly' => $policy->isReadOnly(),
             // The grid, grouped so 190 rows arrive as 14 sections rather than
             // one list nobody will read.
@@ -122,9 +119,7 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
 
         // Absent means "leave as it was"; present-but-empty means "clear it".
         // The distinction matters because a caller that does not render a
-        // control must not silently wipe the setting behind it -- notably
-        // approvedClientIds, where wiping it would switch audience enforcement
-        // off without anyone asking.
+        // control must not silently wipe the setting behind it.
         $verbs = $this->getRequestParams()->getArrayOrNull(
             RequestParams::PARAM_TYPE_BODY,
             self::PARAMETER_VERBS
@@ -145,14 +140,6 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
         );
         if ($roleIds !== null) {
             $policy->setAllowedRoleIds($roleIds);
-        }
-
-        $clientIds = $this->getRequestParams()->getArrayOrNull(
-            RequestParams::PARAM_TYPE_BODY,
-            self::PARAMETER_APPROVED_CLIENT_IDS
-        );
-        if ($clientIds !== null) {
-            $policy->setApprovedClientIds($clientIds);
         }
 
         // Overrides arrive as [{userId, allowed}, ...] because a JSON object with
@@ -235,9 +222,6 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
             ),
             $this->getValidationDecorator()->notRequiredParamRule(
                 new ParamRule(self::PARAMETER_API_PERMISSIONS, new Rule(Rules::ARRAY_TYPE))
-            ),
-            $this->getValidationDecorator()->notRequiredParamRule(
-                new ParamRule(self::PARAMETER_APPROVED_CLIENT_IDS, new Rule(Rules::ARRAY_TYPE))
             ),
         );
     }

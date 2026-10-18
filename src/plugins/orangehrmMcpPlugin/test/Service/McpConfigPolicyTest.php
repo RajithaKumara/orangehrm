@@ -142,68 +142,6 @@ class McpConfigPolicyTest extends KernelTestCase
         $this->assertFalse($policy->mayConnect(9, 1), 'the master switch wins over any override');
     }
 
-    /**
-     * Closes README 4.13. Verified against the running instance: before this,
-     * a token minted for the mobile-app client was accepted on /api/mcp.
-     */
-    public function testApprovedClientListGatesTheAudience(): void
-    {
-        $policy = $this->policyWith([
-            McpConfigPolicy::KEY_APPROVED_CLIENT_IDS => '["claude-code-id"]',
-        ]);
-
-        $this->assertTrue($policy->isClientApprovalEnforced());
-        $this->assertTrue($policy->isClientApproved('claude-code-id'));
-        $this->assertFalse($policy->isClientApproved('orangehrm_mobile_app'));
-        $this->assertFalse($policy->isClientApproved(null), 'an unresolvable client is not approved');
-    }
-
-    /**
-     * An empty approved list must not lock out the administrator who is still
-     * configuring the instance; the connection gate already applies.
-     */
-    public function testEmptyApprovedListDoesNotEnforceAudience(): void
-    {
-        $policy = $this->policyWith([]);
-
-        $this->assertFalse($policy->isClientApprovalEnforced());
-        $this->assertTrue($policy->isClientApproved('anything'));
-        $this->assertTrue($policy->isClientApproved(null));
-    }
-
-    /**
-     * The one exception to the permissive default, and what makes it safe. A
-     * token issued to the mobile app on the AI surface is the replay the
-     * audience rule exists to stop, and on a fresh instance nothing else would
-     * have stopped it.
-     */
-    public function testTheMobileAppIsRefusedEvenWithNoApprovedList(): void
-    {
-        $policy = $this->policyWith([]);
-
-        $this->assertFalse($policy->isClientApproved('orangehrm_mobile_app'));
-        $this->assertTrue(
-            $policy->isClientApproved('some-other-client'),
-            'only the mobile app is singled out; the default stays permissive otherwise'
-        );
-    }
-
-    /**
-     * Not a default that an administrator can override. The mobile
-     * registration is seeded by the product and cannot be updated or deleted,
-     * so its redirect URI can never point at an assistant -- there is no
-     * configuration in which its token belongs here.
-     */
-    public function testTheMobileAppIsRefusedEvenWhenExplicitlyApproved(): void
-    {
-        $policy = $this->policyWith([
-            McpConfigPolicy::KEY_APPROVED_CLIENT_IDS => '["orangehrm_mobile_app","claude-code-id"]',
-        ]);
-
-        $this->assertFalse($policy->isClientApproved('orangehrm_mobile_app'));
-        $this->assertTrue($policy->isClientApproved('claude-code-id'));
-    }
-
     public function testMalformedJsonDegradesToEmptyRatherThanThrowing(): void
     {
         $policy = $this->policyWith([
@@ -247,5 +185,23 @@ class McpConfigPolicyTest extends KernelTestCase
         ]);
 
         $this->assertFalse($policy->mayConnect(null, 1));
+    }
+
+    /**
+     * Any registered OAuth client may be used, with one exception that is a
+     * rule rather than a setting.
+     *
+     * The mobile app's registration is seeded by the product and cannot be
+     * updated or deleted, so its redirect URI can never be pointed at an
+     * assistant -- there is no configuration in which a token issued to it
+     * belongs on this surface.
+     */
+    public function testOnlyTheMobileAppIsRefused(): void
+    {
+        $policy = $this->policyWith([]);
+
+        $this->assertFalse($policy->isClientApproved('orangehrm_mobile_app'));
+        $this->assertTrue($policy->isClientApproved('claude-code-id'));
+        $this->assertTrue($policy->isClientApproved('any-other-registered-client'));
     }
 }

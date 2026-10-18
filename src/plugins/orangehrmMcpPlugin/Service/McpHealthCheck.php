@@ -188,76 +188,41 @@ class McpHealthCheck
     }
 
     /**
-     * Whether a client exists that can connect, and whether we can say which.
+     * Whether any OAuth client exists that an assistant could sign in with.
      *
-     * Counting OAuth clients is not the same question. A customer registers
-     * them for other integrations -- a payroll sync, a reporting tool -- and
-     * none of that says anything about an assistant. The approved list is the
-     * only place an administrator states which client MCP is for, so when it
-     * is set this check verifies exactly those and nothing else.
-     *
-     * When it is not set, there is nothing to identify an assistant by, and
-     * saying "1 client may connect" about an unrelated integration would be
-     * worse than saying nothing. What can still be said is whether anything at
-     * all could connect: the mobile app never can, whatever the list says, so
-     * an instance whose only registration is the mobile app has nothing.
+     * Registering one is the decision -- there is no second list to add it to.
+     * The mobile app does not count: its registration is seeded by the product
+     * and OAuthClientAPI refuses to update or delete it, so its redirect URI
+     * can never be pointed at an assistant, and McpConfigPolicy refuses its
+     * tokens. An instance whose only registration is the mobile app therefore
+     * has nothing that can connect, and the administrator would otherwise find
+     * that out from a client that simply fails to authorise.
      *
      * @return array<string,string>
      */
     public function checkAssistantClientRegistered(): array
     {
-        $label = 'Approved AI application';
+        $label = 'Registered AI application';
 
         try {
-            $enabled = [];
-            foreach ($this->getRepository(OAuthClient::class)->findBy(['enabled' => true]) as $client) {
-                $enabled[$client->getClientId()] = true;
-            }
+            $enabled = array_filter(
+                $this->getRepository(OAuthClient::class)->findBy(['enabled' => true]),
+                static function (OAuthClient $client): bool {
+                    return $client->getClientId() !== OAuthService::PUBLIC_MOBILE_CLIENT_ID;
+                }
+            );
         } catch (Throwable $e) {
             return $this->result('client', $label, self::STATUS_FAIL, 'Could not read the list of OAuth applications.');
         }
 
-        unset($enabled[OAuthService::PUBLIC_MOBILE_CLIENT_ID]);
-        $approved = $this->getMcpConfigPolicy()->getApprovedClientIds();
-
-        if ($approved === []) {
-            if ($enabled === []) {
-                return $this->result(
-                    'client',
-                    $label,
-                    self::STATUS_FAIL,
-                    'No application is registered for an AI assistant to sign in with. Add one under '
-                    . 'Admin > Configuration > Register OAuth Client, one for each AI product. The OrangeHRM '
-                    . 'mobile app cannot be used for this.'
-                );
-            }
-
-            return $this->result(
-                'client',
-                $label,
-                self::STATUS_SKIP,
-                'No AI application has been approved yet, so any of the ' . count($enabled) . ' application(s) '
-                . 'registered on this instance can connect -- including ones set up for something else, such as '
-                . 'a payroll or reporting integration. Approving one limits it to that application.'
-            );
-        }
-
-        // A client id in the list that does not resolve is the failure that
-        // locks everyone out while every other check still passes: approval is
-        // enforced as soon as the list is non-empty, and an id that matches
-        // nothing matches no caller either.
-        $unusable = array_values(array_filter($approved, static function (string $clientId) use ($enabled): bool {
-            return !isset($enabled[$clientId]);
-        }));
-
-        if ($unusable !== []) {
+        if ($enabled === []) {
             return $this->result(
                 'client',
                 $label,
                 self::STATUS_FAIL,
-                'These approved applications are missing or switched off: ' . implode(', ', $unusable)
-                . '. Nothing can connect until every approved application exists and is enabled under '
-                . 'Admin > Configuration > OAuth Clients.'
+                'No application is registered for an AI assistant to sign in with. Add one under '
+                . 'Admin > Configuration > Register OAuth Client, one for each AI product. The OrangeHRM '
+                . 'mobile app cannot be used for this.'
             );
         }
 
@@ -265,7 +230,7 @@ class McpHealthCheck
             'client',
             $label,
             self::STATUS_PASS,
-            count($approved) === 1 ? '1 approved application' : count($approved) . ' approved applications'
+            count($enabled) === 1 ? '1 application can connect' : count($enabled) . ' applications can connect'
         );
     }
 

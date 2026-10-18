@@ -37,7 +37,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 class McpDoctorCommandTest extends KernelTestCase
 {
     /**
-     * @param array{enabled?:array<string>,oauthClientIds?:array<string>,mcpEnabled?:bool,approvedClientIds?:array<string>} $opts
+     * @param array{enabled?:array<string>,oauthClientIds?:array<string>,mcpEnabled?:bool} $opts
      */
     private function buildCommand(array $opts = []): CommandTester
     {
@@ -74,10 +74,8 @@ class McpDoctorCommandTest extends KernelTestCase
         // clients an administrator has approved. The default is a configured
         // instance -- on, with the registered assistant approved.
         $mcpEnabled = $opts['mcpEnabled'] ?? true;
-        $approved = $opts['approvedClientIds'] ?? ['a-registered-assistant'];
         $policy = $this->getMockBuilder(McpConfigPolicy::class)->disableOriginalConstructor()->getMock();
         $policy->method('isEnabled')->willReturn($mcpEnabled);
-        $policy->method('getApprovedClientIds')->willReturn($approved);
 
         $this->createKernelWithMockServices([
             Services::MODULE_SERVICE => $moduleService,
@@ -130,38 +128,6 @@ class McpDoctorCommandTest extends KernelTestCase
         $this->assertStringContainsString('switch at the top of the MCP Configuration screen', $output);
     }
 
-    /**
-     * Approval is enforced the moment the list is non-empty, so an id matching
-     * no client refuses every caller while every other check still passes.
-     */
-    public function testApprovedClientThatDoesNotExistFails(): void
-    {
-        $command = $this->buildCommand(['approvedClientIds' => ['never-registered']]);
-        $command->execute([]);
-
-        $output = $command->getDisplay();
-        $this->assertStringContainsString('[FAIL]', $output);
-        $this->assertStringContainsString('never-registered', $output);
-        $this->assertSame(1, $command->getStatusCode());
-    }
-
-    /**
-     * Registering an OAuth client says nothing about assistants -- customers
-     * create them for payroll syncs and reporting tools. Without an approved
-     * list there is nothing to identify one by, so the check says so rather
-     * than counting unrelated integrations.
-     */
-    public function testWithoutAnApprovedListTheAssistantCannotBeIdentified(): void
-    {
-        $command = $this->buildCommand(['approvedClientIds' => []]);
-        $command->execute([]);
-
-        $output = $command->getDisplay();
-        $this->assertStringContainsString('[SKIP]', $output);
-        $this->assertStringContainsString('No AI application has been approved yet', $output);
-        $this->assertSame(0, $command->getStatusCode(), 'not knowing is not a failure');
-    }
-
     public function testTlsRequiredForNonLocalhostHttp(): void
     {
         $tester = $this->buildCommand();
@@ -201,19 +167,19 @@ class McpDoctorCommandTest extends KernelTestCase
      */
     public function testFailsWhenTheOnlyOAuthClientIsTheMobileApp(): void
     {
-        $command = $this->buildCommand(['oauthClientIds' => ['orangehrm_mobile_app'], 'approvedClientIds' => []]);
+        $command = $this->buildCommand(['oauthClientIds' => ['orangehrm_mobile_app']]);
         $command->execute([]);
 
         $output = $command->getDisplay();
         $this->assertStringContainsString('[FAIL]', $output);
-        $this->assertStringContainsString('Approved AI application', $output);
+        $this->assertStringContainsString('Registered AI application', $output);
         $this->assertStringContainsString('Register OAuth Client', $output);
         $this->assertSame(1, $command->getStatusCode());
     }
 
     public function testFailsWhenNoOAuthClientIsRegisteredAtAll(): void
     {
-        $command = $this->buildCommand(['oauthClientIds' => [], 'approvedClientIds' => []]);
+        $command = $this->buildCommand(['oauthClientIds' => []]);
         $command->execute([]);
 
         $this->assertStringContainsString('No application is registered', $command->getDisplay());
