@@ -126,27 +126,6 @@
           </oxd-grid>
         </oxd-form-row>
 
-        <!-- Per-user exceptions on top of the role default -->
-        <oxd-form-row v-if="config.userOverrides.length">
-          <oxd-text tag="p" class="orangehrm-sub-title">
-            Individual exceptions
-          </oxd-text>
-          <oxd-grid :cols="3" class="orangehrm-full-width-grid">
-            <oxd-grid-item
-              v-for="(ovr, i) in config.userOverrides"
-              :key="ovr.userId"
-            >
-              <oxd-input-field
-                v-model="config.userOverrides[i].allowed"
-                type="checkbox"
-                :option-label="
-                  ovr.userName + (ovr.allowed ? ' (allowed)' : ' (blocked)')
-                "
-              />
-            </oxd-grid-item>
-          </oxd-grid>
-        </oxd-form-row>
-
         <oxd-divider />
 
         <!-- Top-level verb switches. These sit above the grid below: turning one
@@ -432,7 +411,6 @@ export default {
       config: {
         enabled: false,
         verbs: {read: true, create: false, update: false, delete: false},
-        userOverrides: [],
       },
       modules: [],
       health: {ready: true, results: []},
@@ -524,7 +502,6 @@ export default {
           const d = data.data;
           this.config.enabled = d.enabled;
           this.config.verbs = {...this.config.verbs, ...(d.verbs || {})};
-          this.config.userOverrides = d.userOverrides || [];
           this.availableRoles = d.availableRoles || [];
           this.modules = d.modules || [];
           this.health = d.healthChecks || {ready: true, results: []};
@@ -627,7 +604,6 @@ export default {
             allowedRoleIds: Object.keys(this.selectedRoles)
               .filter((id) => this.selectedRoles[id])
               .map((id) => parseInt(id, 10)),
-            userOverrides: this.config.userOverrides,
             apiPermissions: Object.keys(this.permissions).map((apiName) => ({
               apiName,
               ...this.permissions[apiName],

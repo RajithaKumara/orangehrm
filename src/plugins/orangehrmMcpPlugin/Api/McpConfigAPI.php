@@ -59,7 +59,6 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
     public const PARAMETER_ENABLED = 'enabled';
     public const PARAMETER_VERBS = 'verbs';
     public const PARAMETER_ALLOWED_ROLE_IDS = 'allowedRoleIds';
-    public const PARAMETER_USER_OVERRIDES = 'userOverrides';
     public const PARAMETER_API_PERMISSIONS = 'apiPermissions';
 
     /**
@@ -76,7 +75,6 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
             self::PARAMETER_ENABLED => $policy->isEnabled(),
             self::PARAMETER_VERBS => $policy->getVerbSwitches(),
             self::PARAMETER_ALLOWED_ROLE_IDS => $policy->getAllowedRoleIds(),
-            self::PARAMETER_USER_OVERRIDES => $this->decorateOverrides($policy->getUserOverrides()),
             'readOnly' => $policy->isReadOnly(),
             // The grid, grouped so 190 rows arrive as 14 sections rather than
             // one list nobody will read.
@@ -142,22 +140,6 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
             $policy->setAllowedRoleIds($roleIds);
         }
 
-        // Overrides arrive as [{userId, allowed}, ...] because a JSON object with
-        // numeric keys is awkward to validate and round-trips badly.
-        $rawOverrides = $this->getRequestParams()->getArrayOrNull(
-            RequestParams::PARAM_TYPE_BODY,
-            self::PARAMETER_USER_OVERRIDES
-        );
-        if ($rawOverrides !== null) {
-            $overrides = [];
-            foreach ($rawOverrides as $entry) {
-                if (is_array($entry) && isset($entry['userId'])) {
-                    $overrides[(int) $entry['userId']] = !empty($entry['allowed']);
-                }
-            }
-            $policy->setUserOverrides($overrides);
-        }
-
         $this->saveApiPermissions();
 
         return $this->getOne();
@@ -216,9 +198,6 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
             ),
             $this->getValidationDecorator()->notRequiredParamRule(
                 new ParamRule(self::PARAMETER_ALLOWED_ROLE_IDS, new Rule(Rules::ARRAY_TYPE))
-            ),
-            $this->getValidationDecorator()->notRequiredParamRule(
-                new ParamRule(self::PARAMETER_USER_OVERRIDES, new Rule(Rules::ARRAY_TYPE))
             ),
             $this->getValidationDecorator()->notRequiredParamRule(
                 new ParamRule(self::PARAMETER_API_PERMISSIONS, new Rule(Rules::ARRAY_TYPE))
@@ -281,37 +260,4 @@ class McpConfigAPI extends Endpoint implements ResourceEndpoint
         }, $rows);
     }
 
-    /**
-     * @param array<int,bool> $overrides
-     * @return array<int,array{userId:int,userName:string,allowed:bool}>
-     */
-    private function decorateOverrides(array $overrides): array
-    {
-        if ($overrides === []) {
-            return [];
-        }
-
-        $rows = $this->getEntityManager()->getConnection()->fetchAllAssociative(
-            'SELECT id, user_name FROM ohrm_user WHERE id IN (:ids)',
-            ['ids' => array_keys($overrides)],
-            ['ids' => \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]
-        );
-
-        $names = [];
-        foreach ($rows as $row) {
-            $names[(int) $row['id']] = $row['user_name'];
-        }
-
-        $decorated = [];
-        foreach ($overrides as $userId => $allowed) {
-            $decorated[] = [
-                'userId' => $userId,
-                // A user deleted after the override was saved still shows, so an
-                // administrator can see and clear the stale entry.
-                'userName' => $names[$userId] ?? ('(deleted user #' . $userId . ')'),
-                'allowed' => $allowed,
-            ];
-        }
-        return $decorated;
-    }
 }

@@ -56,8 +56,6 @@ class McpConfigPolicy
 
     public const KEY_ENABLED = 'mcp.config.enabled';
     public const KEY_ALLOWED_ROLE_IDS = 'mcp.config.allowed_role_ids';
-    public const KEY_USER_OVERRIDES = 'mcp.config.user_overrides';
-
     /**
      * One switch per verb, named so the stored keys read the same way the screen
      * does.
@@ -158,49 +156,20 @@ class McpConfigPolicy
     }
 
     /**
-     * Per-user exceptions on top of the role default, keyed by user id.
-     * true grants access to a user whose role would not; false removes access
-     * from a user whose role would grant it.
+     * Whether this person may reach the AI surface at all.
      *
-     * @return array<int,bool>
-     */
-    public function getUserOverrides(): array
-    {
-        $raw = $this->getConfigService()->getConfigDao()->getValue(self::KEY_USER_OVERRIDES);
-        if ($raw === null || $raw === '') {
-            return [];
-        }
-        $decoded = json_decode($raw, true);
-        if (!is_array($decoded)) {
-            return [];
-        }
-
-        $overrides = [];
-        foreach ($decoded as $userId => $allowed) {
-            $overrides[(int) $userId] = (bool) $allowed;
-        }
-        return $overrides;
-    }
-
-    /**
-     * Role grants the baseline; a per-user override wins in either direction.
+     * Role alone decides it. There were per-user overrides here, allowing or
+     * denying one individual against their role; they were dropped because no
+     * screen could add or remove one, so the only way to create an override was
+     * SQL -- and an override nobody can see is a decision nobody can audit.
      *
-     * An explicit deny beats the role because that is the lever an administrator
-     * reaches for in an incident: revoke one person without disturbing everyone
-     * who shares their role.
+     * The incident lever that leaves is coarser: revoking a role affects
+     * everyone who shares it. Worth revisiting if the screen ever grows a user
+     * picker, and worth knowing in the meantime.
      */
     public function mayConnect(?int $userId, ?int $userRoleId): bool
     {
-        if (!$this->isEnabled() || $userId === null) {
-            return false;
-        }
-
-        $overrides = $this->getUserOverrides();
-        if (array_key_exists($userId, $overrides)) {
-            return $overrides[$userId];
-        }
-
-        if ($userRoleId === null) {
+        if (!$this->isEnabled() || $userId === null || $userRoleId === null) {
             return false;
         }
 
@@ -239,18 +208,6 @@ class McpConfigPolicy
     {
         $clean = array_values(array_unique(array_map('intval', $roleIds)));
         $this->setValue(self::KEY_ALLOWED_ROLE_IDS, (string) json_encode($clean));
-    }
-
-    /**
-     * @param array<int|string,bool> $overrides
-     */
-    public function setUserOverrides(array $overrides): void
-    {
-        $clean = [];
-        foreach ($overrides as $userId => $allowed) {
-            $clean[(string) (int) $userId] = (bool) $allowed;
-        }
-        $this->setValue(self::KEY_USER_OVERRIDES, (string) json_encode((object) $clean));
     }
 
     /**

@@ -115,31 +115,21 @@ class McpConfigPolicyTest extends KernelTestCase
     }
 
     /**
-     * The deny override is the lever an administrator reaches for in an incident:
-     * cut off one person without disturbing everyone who shares their role.
+     * Role is the whole answer now. Per-user overrides were dropped: no screen
+     * could add or remove one, so the only way to create an override was SQL,
+     * and an exception nobody can see is one nobody can audit.
      */
-    public function testUserOverrideBeatsTheRoleInBothDirections(): void
+    public function testRoleAloneDecidesAccess(): void
     {
         $policy = $this->policyWith([
             McpConfigPolicy::KEY_ENABLED => '1',
             McpConfigPolicy::KEY_ALLOWED_ROLE_IDS => '[1]',
-            McpConfigPolicy::KEY_USER_OVERRIDES => '{"7":false,"9":true}',
         ]);
 
-        $this->assertFalse($policy->mayConnect(7, 1), 'explicit deny beats an allowed role');
-        $this->assertTrue($policy->mayConnect(9, 2), 'explicit allow beats a disallowed role');
-        $this->assertTrue($policy->mayConnect(8, 1), 'users without an override follow their role');
-    }
-
-    public function testOverridesCannotReviveADisabledInstance(): void
-    {
-        $policy = $this->policyWith([
-            McpConfigPolicy::KEY_ENABLED => '0',
-            McpConfigPolicy::KEY_ALLOWED_ROLE_IDS => '[1]',
-            McpConfigPolicy::KEY_USER_OVERRIDES => '{"9":true}',
-        ]);
-
-        $this->assertFalse($policy->mayConnect(9, 1), 'the master switch wins over any override');
+        $this->assertTrue($policy->mayConnect(7, 1), 'every holder of an allowed role connects');
+        $this->assertTrue($policy->mayConnect(8, 1));
+        $this->assertFalse($policy->mayConnect(9, 2), 'and nobody else does');
+        $this->assertFalse($policy->mayConnect(null, 1), 'an unidentified user never connects');
     }
 
     public function testMalformedJsonDegradesToEmptyRatherThanThrowing(): void
@@ -147,11 +137,9 @@ class McpConfigPolicyTest extends KernelTestCase
         $policy = $this->policyWith([
             McpConfigPolicy::KEY_ENABLED => '1',
             McpConfigPolicy::KEY_ALLOWED_ROLE_IDS => 'not json',
-            McpConfigPolicy::KEY_USER_OVERRIDES => 'also not json',
         ]);
 
         $this->assertSame([], $policy->getAllowedRoleIds());
-        $this->assertSame([], $policy->getUserOverrides());
         $this->assertFalse($policy->mayConnect(1, 1), 'a corrupt config must fail closed');
     }
 
