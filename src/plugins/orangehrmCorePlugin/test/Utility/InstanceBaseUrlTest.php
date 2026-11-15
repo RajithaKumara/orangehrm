@@ -44,7 +44,7 @@ class InstanceBaseUrlTest extends TestCase
     {
         return [
             ['https://hr.example.com/orangehrm/web/index.php', 'https://hr.example.com/orangehrm/web/index.php'],
-            ['http://php83/os-security/web/index.php', 'http://php83/os-security/web/index.php'],
+            ['http://localhost/orangehrm/web/index.php', 'http://localhost/orangehrm/web/index.php'],
             ['  HTTPS://HR.Example.COM:8443/web/index.php/  ', 'https://hr.example.com:8443/web/index.php'],
             ['https://hr.example.com', 'https://hr.example.com'],
             ['https://hr.example.com/', 'https://hr.example.com'],
