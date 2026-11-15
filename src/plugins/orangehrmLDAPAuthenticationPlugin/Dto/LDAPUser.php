@@ -269,6 +269,14 @@ class LDAPUser
     }
 
     /**
+     * @return LDAPUserLookupSetting|null
+     */
+    public function getUserLookupSetting(): ?LDAPUserLookupSetting
+    {
+        return $this->userLookupSetting ?? null;
+    }
+
+    /**
      * @param Entry $entry
      * @return LDAPUser
      */

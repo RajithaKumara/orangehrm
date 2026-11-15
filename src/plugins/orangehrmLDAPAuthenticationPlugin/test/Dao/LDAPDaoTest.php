@@ -212,6 +212,18 @@ class LDAPDaoTest extends KernelTestCase
         $this->assertNull($authProvider);
     }
 
+    public function testGetAuthProvidersByUserUniqueId(): void
+    {
+        $ldapDao = new LDAPDao();
+        // Provider of deleted user 10 shares the same unique id and is excluded
+        $authProviders = $ldapDao->getAuthProvidersByUserUniqueId('df2567d0-bca1-103c-98f9-f5289009f541');
+        $this->assertCount(1, $authProviders);
+        $this->assertInstanceOf(UserAuthProvider::class, $authProviders[0]);
+        $this->assertEquals(11, $authProviders[0]->getUser()->getId());
+
+        $this->assertEmpty($ldapDao->getAuthProvidersByUserUniqueId('invalid'));
+    }
+
     public function testGetAllLDAPAuthProviders(): void
     {
         $ldapDao = new LDAPDao();

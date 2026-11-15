@@ -112,6 +112,25 @@ class LDAPDao extends BaseDao
     }
 
     /**
+     * @param string $userUniqueId
+     * @return UserAuthProvider[]
+     */
+    public function getAuthProvidersByUserUniqueId(string $userUniqueId): array
+    {
+        $q = $this->createQueryBuilder(UserAuthProvider::class, 'provider')
+            ->leftJoin('provider.user', 'user')
+            ->select('provider', 'user');
+
+        $q->andWhere('provider.ldapUserUniqueId = :userUniqueId')
+            ->setParameter('userUniqueId', $userUniqueId);
+        $q->andWhere('provider.type = :type')
+            ->setParameter('type', UserAuthProvider::TYPE_LDAP);
+        $q->andWhere('user.deleted = :deleted')
+            ->setParameter('deleted', false);
+        return $q->getQuery()->execute();
+    }
+
+    /**
      * @param LDAPEmployeeSearchFilterParams $ldapEmployeeSearchFilterParams
      * @return Employee|null
      * @throws NonUniqueResultException
