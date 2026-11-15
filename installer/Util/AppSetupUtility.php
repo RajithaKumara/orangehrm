@@ -483,6 +483,8 @@ class AppSetupUtility
      * a multibyte encoding (`zend.multibyte` with e.g. SJIS, EUC-JP, BIG5 or GBK), whatever `internal_encoding`
      * is. Script encodings that change the meaning of ASCII bytes themselves (e.g. SJIS-2004, ISO-2022-JP,
      * UTF-7) are not supported.
+     * Conf.php with a non-ASCII value calls `hex2bin()` each time it is loaded, so that function must not be
+     * listed in `disable_functions`; tools that read Conf.php as text see the hex form of such a value.
      *
      * @param mixed $value
      * @param string $placeholder
