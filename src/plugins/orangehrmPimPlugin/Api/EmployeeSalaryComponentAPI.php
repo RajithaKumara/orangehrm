@@ -33,6 +33,7 @@ use OrangeHRM\Core\Api\V2\Validator\ParamRule;
 use OrangeHRM\Core\Api\V2\Validator\ParamRuleCollection;
 use OrangeHRM\Core\Api\V2\Validator\Rule;
 use OrangeHRM\Core\Api\V2\Validator\Rules;
+use OrangeHRM\Core\Api\V2\Validator\Rules\ApiPermissionForEmpNumber;
 use OrangeHRM\Core\Traits\ServiceContainerTrait;
 use OrangeHRM\Entity\EmpDirectDebit;
 use OrangeHRM\Entity\EmployeeSalary;
@@ -145,7 +146,11 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
         return new ParamRuleCollection(
             new ParamRule(
                 CommonParams::PARAMETER_EMP_NUMBER,
-                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS)
+                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS),
+                new Rule(
+                    Rules::API_PERMISSION_FOR_EMP_NUMBER,
+                    [self::class, ApiPermissionForEmpNumber::OPERATION_READ]
+                )
             ),
             new ParamRule(
                 CommonParams::PARAMETER_ID,
@@ -223,7 +228,11 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
         return new ParamRuleCollection(
             new ParamRule(
                 CommonParams::PARAMETER_EMP_NUMBER,
-                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS)
+                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS),
+                new Rule(
+                    Rules::API_PERMISSION_FOR_EMP_NUMBER,
+                    [self::class, ApiPermissionForEmpNumber::OPERATION_READ]
+                )
             ),
             ...$this->getSortingAndPaginationParamsRules(EmployeeSalarySearchFilterParams::ALLOWED_SORT_FIELDS)
         );
@@ -428,10 +437,14 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
      */
     public function getValidationRuleForCreate(): ParamRuleCollection
     {
-        return $this->getCommonBodyValidationRules();
+        return $this->getCommonBodyValidationRules(ApiPermissionForEmpNumber::OPERATION_CREATE);
     }
 
-    private function getCommonBodyValidationRules(): ParamRuleCollection
+    /**
+     * @param string $operation One of ApiPermissionForEmpNumber::OPERATION_*
+     * @return ParamRuleCollection
+     */
+    private function getCommonBodyValidationRules(string $operation): ParamRuleCollection
     {
         $addDirectDeposit = $this->getRequestParams()->getBoolean(
             RequestParams::PARAM_TYPE_BODY,
@@ -441,7 +454,11 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
         $paramRules = new ParamRuleCollection(
             new ParamRule(
                 CommonParams::PARAMETER_EMP_NUMBER,
-                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS)
+                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS),
+                new Rule(
+                    Rules::API_PERMISSION_FOR_EMP_NUMBER,
+                    [self::class, $operation]
+                )
             ),
             $this->getValidationDecorator()->notRequiredParamRule(
                 new ParamRule(
@@ -612,7 +629,7 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
      */
     public function getValidationRuleForUpdate(): ParamRuleCollection
     {
-        $paramRules = $this->getCommonBodyValidationRules();
+        $paramRules = $this->getCommonBodyValidationRules(ApiPermissionForEmpNumber::OPERATION_UPDATE);
         $paramRules->addParamValidation(
             new ParamRule(
                 CommonParams::PARAMETER_ID,
@@ -665,7 +682,11 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
         return new ParamRuleCollection(
             new ParamRule(
                 CommonParams::PARAMETER_EMP_NUMBER,
-                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS)
+                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS),
+                new Rule(
+                    Rules::API_PERMISSION_FOR_EMP_NUMBER,
+                    [self::class, ApiPermissionForEmpNumber::OPERATION_DELETE]
+                )
             ),
             new ParamRule(CommonParams::PARAMETER_IDS),
         );

@@ -21,6 +21,7 @@ namespace OrangeHRM\Tests\Core\Authorization\Service;
 
 use OrangeHRM\Core\Authorization\Dao\DataGroupDao;
 use OrangeHRM\Core\Authorization\Dto\DataGroupPermissionFilterParams;
+use OrangeHRM\Core\Authorization\Dto\ResourcePermission;
 use OrangeHRM\Core\Authorization\Service\DataGroupService;
 use OrangeHRM\Entity\DataGroup;
 use OrangeHRM\Entity\DataGroupPermission;
@@ -288,6 +289,90 @@ class DataGroupServiceTest extends TestCase
                 ]
             ],
             $result->toArray()
+        );
+    }
+
+    /**
+     * @return DataGroupPermission[]
+     */
+    private function getApiPermissionRowsWithSelfAndNonSelf(): array
+    {
+        $selfOnly = new DataGroupPermission();
+        $selfOnly->setCanRead(true);
+        $selfOnly->setCanCreate(false);
+        $selfOnly->setCanUpdate(true);
+        $selfOnly->setCanDelete(false);
+        $selfOnly->setSelf(true);
+
+        $nonSelf = new DataGroupPermission();
+        $nonSelf->setCanRead(false);
+        $nonSelf->setCanCreate(true);
+        $nonSelf->setCanUpdate(false);
+        $nonSelf->setCanDelete(false);
+        $nonSelf->setSelf(false);
+
+        return [$selfOnly, $nonSelf];
+    }
+
+    public function testGetApiPermissionsCountsSelfPermissionsByDefault(): void
+    {
+        $dao = $this->getMockBuilder(DataGroupDao::class)
+            ->onlyMethods(['getApiPermissions'])
+            ->getMock();
+        $dao->expects($this->exactly(2))
+            ->method('getApiPermissions')
+            ->with('OrangeHRM\Pim\Api\EmployeeSalaryComponentAPI', ['ESS', 'Supervisor'])
+            ->willReturn($this->getApiPermissionRowsWithSelfAndNonSelf());
+        $this->service->setDao($dao);
+
+        $expected = new ResourcePermission(true, true, true, false);
+        $this->assertEquals(
+            $expected,
+            $this->service->getApiPermissions('OrangeHRM\Pim\Api\EmployeeSalaryComponentAPI', ['ESS', 'Supervisor'])
+        );
+        $this->assertEquals(
+            $expected,
+            $this->service->getApiPermissions(
+                'OrangeHRM\Pim\Api\EmployeeSalaryComponentAPI',
+                ['ESS', 'Supervisor'],
+                true
+            )
+        );
+    }
+
+    public function testGetApiPermissionsWithoutSelfPermissions(): void
+    {
+        $dao = $this->getMockBuilder(DataGroupDao::class)
+            ->onlyMethods(['getApiPermissions'])
+            ->getMock();
+        $dao->expects($this->once())
+            ->method('getApiPermissions')
+            ->willReturn($this->getApiPermissionRowsWithSelfAndNonSelf());
+        $this->service->setDao($dao);
+
+        $this->assertEquals(
+            new ResourcePermission(false, true, false, false),
+            $this->service->getApiPermissions(
+                'OrangeHRM\Pim\Api\EmployeeSalaryComponentAPI',
+                ['ESS', 'Supervisor'],
+                false
+            )
+        );
+    }
+
+    public function testGetApiPermissionsWithoutSelfPermissionsWhenOnlySelfGranted(): void
+    {
+        $dao = $this->getMockBuilder(DataGroupDao::class)
+            ->onlyMethods(['getApiPermissions'])
+            ->getMock();
+        $dao->expects($this->once())
+            ->method('getApiPermissions')
+            ->willReturn([$this->getApiPermissionRowsWithSelfAndNonSelf()[0]]);
+        $this->service->setDao($dao);
+
+        $this->assertEquals(
+            new ResourcePermission(false, false, false, false),
+            $this->service->getApiPermissions('OrangeHRM\Pim\Api\EmployeeSalaryComponentAPI', ['ESS'], false)
         );
     }
 }

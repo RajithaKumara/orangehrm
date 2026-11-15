@@ -22,6 +22,7 @@ namespace OrangeHRM\Core\Authorization\Manager;
 use OrangeHRM\Core\Authorization\Dto\DataGroupPermissionCollection;
 use OrangeHRM\Core\Authorization\Dto\DataGroupPermissionFilterParams;
 use OrangeHRM\Core\Authorization\Dto\ResourcePermission;
+use OrangeHRM\Core\Authorization\Exception\AuthorizationException;
 use OrangeHRM\Entity\Employee;
 use OrangeHRM\Entity\User;
 use OrangeHRM\Entity\UserRole;
@@ -209,6 +210,22 @@ abstract class AbstractUserRoleManager
      * @since 5.0
      */
     abstract public function getApiPermissions(string $apiClassName): ResourcePermission;
+
+    /**
+     * API permissions for a request on a given employee's record. Permissions granted only for
+     * the user's own record (self) count only when the employee is the logged-in employee.
+     *
+     * Not abstract, so existing user role manager implementations keep working; they refuse
+     * (throw) until they implement it.
+     *
+     * @param string $apiClassName
+     * @param int|null $empNumber
+     * @return ResourcePermission
+     */
+    public function getApiPermissionsForEmployee(string $apiClassName, ?int $empNumber): ResourcePermission
+    {
+        throw AuthorizationException::methodNotImplemented(__METHOD__);
+    }
 
     /**
      * @param string $module

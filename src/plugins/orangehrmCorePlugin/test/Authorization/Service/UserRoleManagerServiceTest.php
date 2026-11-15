@@ -24,6 +24,7 @@ use OrangeHRM\Authentication\Auth\User as AuthUser;
 use OrangeHRM\Core\Authorization\Dto\DataGroupPermissionCollection;
 use OrangeHRM\Core\Authorization\Dto\DataGroupPermissionFilterParams;
 use OrangeHRM\Core\Authorization\Dto\ResourcePermission;
+use OrangeHRM\Core\Authorization\Exception\AuthorizationException;
 use OrangeHRM\Core\Authorization\Manager\AbstractUserRoleManager;
 use OrangeHRM\Core\Authorization\Service\UserRoleManagerService;
 use OrangeHRM\Core\Dao\ConfigDao;
@@ -244,6 +245,13 @@ class UserRoleManagerServiceTest extends KernelTestCase
         } catch (ServiceException $e) {
             $this->assertEquals("No logged in user found.", $e->getMessage());
         }
+    }
+
+    public function testGetApiPermissionsForEmployeeNotImplementedByDefault(): void
+    {
+        // Custom user role managers that predate this method refuse instead of ignoring the self flag
+        $this->expectException(AuthorizationException::class);
+        (new UnitTestUserRoleManager())->getApiPermissionsForEmployee('OrangeHRM\Pim\Api\EmployeeSalaryComponentAPI', 1);
     }
 }
 

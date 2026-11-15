@@ -33,6 +33,7 @@ final class Rules
     public const NOT_REQUIRED = OHRMRules\NotRequired::class;
     public const ZERO_OR_POSITIVE = OHRMRules\ZeroOrPositive::class;
     public const IN_ACCESSIBLE_EMP_NUMBERS = OHRMRules\InAccessibleEmpNumbers::class;
+    public const API_PERMISSION_FOR_EMP_NUMBER = OHRMRules\ApiPermissionForEmpNumber::class;
     public const BASE_64_ATTACHMENT = OHRMRules\Base64Attachment::class;
     public const COUNTRY_CODE = OHRMRules\CountryCode::class;
     public const PROVINCE_CODE = OHRMRules\ProvinceCode::class;
