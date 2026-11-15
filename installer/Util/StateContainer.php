@@ -50,6 +50,7 @@ class StateContainer
     public const INSTANCE_TIMEZONE = 'timezone';
     public const INSTANCE_BASE_URL = 'instanceBaseUrl';
     public const INSTANCE_BASE_URL_DB = 'instanceBaseUrlDb';
+    public const INSTANCE_BASE_URL_STORED = 'instanceBaseUrlStored';
 
     public const ADMIN_FIRST_NAME = 'firstName';
     public const ADMIN_LAST_NAME = 'lastName';
@@ -335,6 +336,24 @@ class StateContainer
     public function getInstanceBaseUrl(): ?string
     {
         return $this->getSession()->get(self::INSTANCE_BASE_URL);
+    }
+
+    /**
+     * Records whether a valid application URL is stored in the database after the config-file step.
+     *
+     * @param bool $stored
+     */
+    public function setInstanceBaseUrlStored(bool $stored): void
+    {
+        $this->getSession()->set(self::INSTANCE_BASE_URL_STORED, $stored);
+    }
+
+    /**
+     * @return bool false only when the config-file step ran and no valid application URL is stored
+     */
+    public function isInstanceBaseUrlStored(): bool
+    {
+        return $this->getSession()->get(self::INSTANCE_BASE_URL_STORED, true) !== false;
     }
 
     /**

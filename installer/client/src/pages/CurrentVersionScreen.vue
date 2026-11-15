@@ -49,7 +49,12 @@
     <oxd-form-row>
       <oxd-grid :cols="2" class="orangehrm-full-width-grid">
         <oxd-grid-item class="--span-column-2">
-          <application-url-field v-model="baseUrl" upgrader />
+          <application-url-field
+            v-model="baseUrl"
+            :stored="storedBaseUrl"
+            :detected="detectedBaseUrl"
+            upgrader
+          />
         </oxd-grid-item>
       </oxd-grid>
     </oxd-form-row>
@@ -96,6 +101,8 @@ export default {
       isLoading: false,
       version: null,
       baseUrl: null,
+      storedBaseUrl: null,
+      detectedBaseUrl: null,
       rules: {
         version: [required],
       },
@@ -124,6 +131,8 @@ export default {
       .then((response) => {
         const {data} = response.data;
         this.baseUrl = data.baseUrl;
+        this.storedBaseUrl = data.stored;
+        this.detectedBaseUrl = data.detected;
       })
       .finally(() => {
         this.isLoading = false;

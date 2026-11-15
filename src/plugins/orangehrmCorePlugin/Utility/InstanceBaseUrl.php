@@ -32,7 +32,7 @@ class InstanceBaseUrl
 {
     public const EXAMPLE = 'https://hr.example.com/orangehrm/web/index.php';
     public const DESCRIPTION = 'the OrangeHRM address up to and including index.php, as shown in the browser ' .
-        'before /auth/login, e.g. ' . self::EXAMPLE;
+        'before /auth/login, e.g. ' . self::EXAMPLE . ' (internationalised domain names in punycode form, xn--...)';
 
     /**
      * Validates the value and returns it in canonical form, or null if it cannot be used as a base URL.
