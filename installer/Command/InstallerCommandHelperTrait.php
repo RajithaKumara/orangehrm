@@ -144,7 +144,8 @@ trait InstallerCommandHelperTrait
     }
 
     /**
-     * Store the application base URL given with `--baseUrl` (replaces a stored one). Never fails the command.
+     * Store the application base URL given with `--baseUrl` (replaces a stored one), and print the URL that is
+     * stored afterwards. Never fails the command.
      *
      * @param AppSetupUtility $appSetupUtility
      * @param string|null $baseUrl
@@ -152,8 +153,17 @@ trait InstallerCommandHelperTrait
     private function storeInstanceBaseUrl(AppSetupUtility $appSetupUtility, ?string $baseUrl): void
     {
         try {
-            if ($appSetupUtility->saveInstanceBaseUrl($baseUrl, true)) {
+            if ($baseUrl !== null && $appSetupUtility->saveInstanceBaseUrl($baseUrl, true)) {
                 $this->getIO()->note("Application URL stored: $baseUrl");
+                return;
+            }
+            $stored = $appSetupUtility->getStoredInstanceBaseUrl();
+            if ($stored !== null) {
+                $this->getIO()->note(
+                    "Application URL kept: $stored\n" .
+                    'Password reset emails link to this address. To change it, run again with `--baseUrl` ' .
+                    'or set `' . ConfigService::KEY_INSTANCE_BASE_URL . '` in the `hs_hr_config` table.'
+                );
                 return;
             }
         } catch (Throwable $e) {
@@ -161,9 +171,9 @@ trait InstallerCommandHelperTrait
             Logger::getLogger()->error($e->getTraceAsString());
         }
         $this->getIO()->note(
-            'Password reset emails are sent only when an application URL is stored. ' .
-            'If none is stored, set `' . ConfigService::KEY_INSTANCE_BASE_URL . '` in the `hs_hr_config` table ' .
-            'to ' . InstanceBaseUrl::DESCRIPTION
+            'No application URL is stored, so password reset emails are not sent. ' .
+            'Run again with `--baseUrl` or set `' . ConfigService::KEY_INSTANCE_BASE_URL . '` in the ' .
+            '`hs_hr_config` table to ' . InstanceBaseUrl::DESCRIPTION
         );
     }
 

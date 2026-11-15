@@ -27,7 +27,8 @@
     <oxd-text tag="p" class="orangehrm-application-url-hint">
       Used in password reset emails. Enter the OrangeHRM address up to and
       including index.php, as shown in your browser before /auth/login, e.g.
-      https://hr.example.com/orangehrm/web/index.php.
+      https://hr.example.com/orangehrm/web/index.php. Enter internationalised
+      domain names in punycode form (xn--...).
       <template v-if="upgrader">
         If you leave it empty, the URL already stored (if any) is kept; without
         one, no password reset emails are sent until it is set in the
@@ -37,6 +38,16 @@
         If you leave it empty, no password reset emails are sent until it is set
         in the hs_hr_config table.
       </template>
+    </oxd-text>
+    <oxd-text
+      v-if="upgrader && urlMismatch"
+      tag="p"
+      class="orangehrm-application-url-hint orangehrm-application-url-mismatch"
+    >
+      The stored URL ({{ stored }}) differs from the URL you are using now ({{
+        detected
+      }}). Password reset emails link to the URL in this field; change it if
+      this instance was moved or copied.
     </oxd-text>
   </div>
 </template>
@@ -55,12 +66,25 @@ export default {
       type: Boolean,
       default: false,
     },
+    stored: {
+      type: String,
+      default: null,
+    },
+    detected: {
+      type: String,
+      default: null,
+    },
   },
   emits: ['update:modelValue'],
   data() {
     return {
       rules: [validBaseUrl],
     };
+  },
+  computed: {
+    urlMismatch() {
+      return !!this.stored && !!this.detected && this.stored !== this.detected;
+    },
   },
 };
 </script>
@@ -69,5 +93,8 @@ export default {
 .orangehrm-application-url-hint {
   font-size: 0.75rem;
   margin-top: 0.25rem;
+}
+.orangehrm-application-url-mismatch {
+  color: $oxd-feedback-warn-color;
 }
 </style>

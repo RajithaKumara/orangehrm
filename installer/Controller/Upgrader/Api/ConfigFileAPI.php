@@ -61,12 +61,7 @@ class ConfigFileAPI extends AbstractInstallerRestController
         $appSetupUtility = new AppSetupUtility();
         $appSetupUtility->writeConfFile();
 
-        try {
-            $this->saveInstanceBaseUrl($appSetupUtility, $request);
-        } catch (Throwable $e) {
-            Logger::getLogger()->error($e->getMessage());
-            Logger::getLogger()->error($e->getTraceAsString());
-        }
+        $baseUrlStored = $this->recordInstanceBaseUrl($appSetupUtility, $request);
 
         try {
             !StateContainer::getInstance()->getRegConsent() ?: $this->sendRegistrationData();
@@ -82,7 +77,29 @@ class ConfigFileAPI extends AbstractInstallerRestController
             Logger::getLogger()->error($e->getMessage());
             Logger::getLogger()->error($e->getTraceAsString());
         }
-        return ['success' => $success];
+        return ['success' => $success, 'baseUrlStored' => $baseUrlStored];
+    }
+
+    /**
+     * Store the application URL (see saveInstanceBaseUrl()) without failing the step, and record in the session,
+     * for the completion screen, whether a valid application URL is stored afterwards.
+     *
+     * @param AppSetupUtility $appSetupUtility
+     * @param Request $request
+     * @return bool true if a valid application URL is stored
+     */
+    protected function recordInstanceBaseUrl(AppSetupUtility $appSetupUtility, Request $request): bool
+    {
+        $baseUrlStored = false;
+        try {
+            $this->saveInstanceBaseUrl($appSetupUtility, $request);
+            $baseUrlStored = $appSetupUtility->getStoredInstanceBaseUrl() !== null;
+        } catch (Throwable $e) {
+            Logger::getLogger()->error($e->getMessage());
+            Logger::getLogger()->error($e->getTraceAsString());
+        }
+        StateContainer::getInstance()->setInstanceBaseUrlStored($baseUrlStored);
+        return $baseUrlStored;
     }
 
     /**

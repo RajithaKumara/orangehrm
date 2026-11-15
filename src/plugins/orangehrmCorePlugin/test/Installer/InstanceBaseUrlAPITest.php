@@ -30,6 +30,8 @@ use OrangeHRM\Framework\Services;
 use OrangeHRM\Installer\Controller\Installer\Api\InstanceBaseUrlAPI as InstallerInstanceBaseUrlAPI;
 use OrangeHRM\Installer\Controller\Upgrader\Api\ConfigFileAPI;
 use OrangeHRM\Installer\Controller\Upgrader\Api\InstanceBaseUrlAPI;
+use OrangeHRM\Installer\Controller\Installer\InstallerCompleteController;
+use OrangeHRM\Installer\Controller\Upgrader\UpgraderCompleteController;
 use OrangeHRM\Installer\Util\AppSetupUtility;
 use OrangeHRM\Installer\Util\StateContainer;
 use OrangeHRM\Tests\Util\TestCase;
@@ -319,6 +321,87 @@ class InstanceBaseUrlAPITest extends TestCase
         $this->callConfigFileStep($appSetupUtility);
     }
 
+    public function testStoredFlagDefaultsToTrue(): void
+    {
+        // Completion screens reached without the config-file step (or from the CLI) show no notice
+        $this->assertTrue(StateContainer::getInstance()->isInstanceBaseUrlStored());
+    }
+
+    public function testConfigFileStepFlagsStoredUrl(): void
+    {
+        StateContainer::getInstance()->storeInstanceBaseUrl('https://hr.example.org/web/index.php');
+        $appSetupUtility = $this->getMockBuilder(AppSetupUtility::class)
+            ->onlyMethods(['saveInstanceBaseUrl', 'getStoredInstanceBaseUrl'])
+            ->getMock();
+        $appSetupUtility->method('saveInstanceBaseUrl')->willReturn(true);
+        $appSetupUtility->method('getStoredInstanceBaseUrl')->willReturn('https://hr.example.org/web/index.php');
+
+        $this->assertTrue($this->recordConfigFileStep($appSetupUtility));
+        $this->assertTrue(StateContainer::getInstance()->isInstanceBaseUrlStored());
+    }
+
+    public function testConfigFileStepFlagsMissingUrl(): void
+    {
+        // Field left empty and nothing stored
+        StateContainer::getInstance()->storeInstanceBaseUrl(null);
+        $appSetupUtility = $this->getMockBuilder(AppSetupUtility::class)
+            ->onlyMethods(['saveInstanceBaseUrl', 'getStoredInstanceBaseUrl'])
+            ->getMock();
+        $appSetupUtility->method('saveInstanceBaseUrl')->willReturn(false);
+        $appSetupUtility->method('getStoredInstanceBaseUrl')->willReturn(null);
+
+        $this->assertFalse($this->recordConfigFileStep($appSetupUtility));
+        $this->assertFalse(StateContainer::getInstance()->isInstanceBaseUrlStored());
+    }
+
+    public function testConfigFileStepFlagsFailedStore(): void
+    {
+        StateContainer::getInstance()->storeInstanceBaseUrl('https://hr.example.org/web/index.php');
+        $appSetupUtility = $this->getMockBuilder(AppSetupUtility::class)
+            ->onlyMethods(['saveInstanceBaseUrl', 'getStoredInstanceBaseUrl'])
+            ->getMock();
+        $appSetupUtility->method('saveInstanceBaseUrl')->willThrowException(new RuntimeException('write failed'));
+        $appSetupUtility->expects($this->never())->method('getStoredInstanceBaseUrl');
+        $logger = $this->getMockBuilder(Logger::class)->disableOriginalConstructor()->getMock();
+        $logger->expects($this->exactly(2))->method('error');
+
+        $stored = $this->withLogger($logger, fn () => $this->recordConfigFileStep($appSetupUtility));
+
+        $this->assertFalse($stored);
+        $this->assertFalse(StateContainer::getInstance()->isInstanceBaseUrlStored());
+    }
+
+    /**
+     * @dataProvider completeControllerDataProvider
+     */
+    public function testCompletionScreenGetsStoredFlag(string $controllerClass, ?bool $flag, bool $expected): void
+    {
+        if ($flag !== null) {
+            StateContainer::getInstance()->setInstanceBaseUrlStored($flag);
+        }
+        $controller = new $controllerClass();
+        $logger = $this->getMockBuilder(Logger::class)->disableOriginalConstructor()->getMock();
+
+        $this->withLogger($logger, fn () => $controller->preRender($this->request('GET')));
+
+        $props = [];
+        foreach ($controller->getComponent()->getProps() as $prop) {
+            $props[$prop->getName()] = $prop->getValue();
+        }
+        $this->assertSame(json_encode($expected), $props['base-url-stored']);
+    }
+
+    public function completeControllerDataProvider(): array
+    {
+        return [
+            'upgrader, no URL stored' => [UpgraderCompleteController::class, false, false],
+            'upgrader, URL stored' => [UpgraderCompleteController::class, true, true],
+            'upgrader, step not run' => [UpgraderCompleteController::class, null, true],
+            'installer, no URL stored' => [InstallerCompleteController::class, false, false],
+            'installer, URL stored' => [InstallerCompleteController::class, true, true],
+        ];
+    }
+
     /**
      * @param string $method
      * @param array $body
@@ -385,6 +468,28 @@ class InstanceBaseUrlAPITest extends TestCase
     private function callConfigFileStep(AppSetupUtility $appSetupUtility): void
     {
         $this->invoke(new ConfigFileAPI(), 'saveInstanceBaseUrl', $appSetupUtility, $this->request('POST'));
+    }
+
+    private function recordConfigFileStep(AppSetupUtility $appSetupUtility): bool
+    {
+        return $this->invoke(new ConfigFileAPI(), 'recordInstanceBaseUrl', $appSetupUtility, $this->request('POST'));
+    }
+
+    /**
+     * @param object $logger
+     * @param callable $callback
+     * @return mixed
+     */
+    private function withLogger(object $logger, callable $callback)
+    {
+        $container = ServiceContainer::getContainer();
+        $previousLogger = $container->has(Services::LOGGER) ? $container->get(Services::LOGGER) : null;
+        $container->set(Services::LOGGER, $logger);
+        try {
+            return $callback();
+        } finally {
+            $container->set(Services::LOGGER, $previousLogger);
+        }
     }
 
     /**
