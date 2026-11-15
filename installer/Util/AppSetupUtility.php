@@ -488,24 +488,36 @@ class AppSetupUtility
     }
 
     /**
-     * Store the application base URL used for links in emails (e.g. password reset),
-     * unless one is already stored. Returns true if the value was stored.
+     * Store the application base URL used for links in emails (e.g. password reset).
+     * A value derived from a request (`$replace` false) is stored only when no valid value is stored yet;
+     * a value the administrator entered (`$replace` true) replaces the stored one.
+     * Returns true if the value was stored.
      *
      * @param string|null $baseUrl
+     * @param bool $replace
      * @return bool
      */
-    public function saveInstanceBaseUrl(?string $baseUrl): bool
+    public function saveInstanceBaseUrl(?string $baseUrl, bool $replace = false): bool
     {
         $baseUrl = InstanceBaseUrl::normalize($baseUrl);
         if ($baseUrl === null) {
             return false;
         }
-        $current = $this->getConfigHelper()->getConfigValue(ConfigService::KEY_INSTANCE_BASE_URL);
-        if (InstanceBaseUrl::normalize($current) !== null) {
+        if (!$replace && $this->getStoredInstanceBaseUrl() !== null) {
             return false;
         }
         $this->getConfigHelper()->setConfigValue(ConfigService::KEY_INSTANCE_BASE_URL, $baseUrl);
         return true;
+    }
+
+    /**
+     * @return string|null the valid application base URL stored in the database, if any
+     */
+    public function getStoredInstanceBaseUrl(): ?string
+    {
+        return InstanceBaseUrl::normalize(
+            $this->getConfigHelper()->getConfigValue(ConfigService::KEY_INSTANCE_BASE_URL)
+        );
     }
 
     /**

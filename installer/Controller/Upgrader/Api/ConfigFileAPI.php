@@ -62,14 +62,7 @@ class ConfigFileAPI extends AbstractInstallerRestController
         $appSetupUtility->writeConfFile();
 
         try {
-            // Web installer/upgrader: record the URL the administrator is using, if none is stored yet
-            $baseUrl = $appSetupUtility->getInstanceBaseUrlFromRequest($request);
-            if (!$appSetupUtility->saveInstanceBaseUrl($baseUrl) && $baseUrl === null && $request->getHost() !== '') {
-                Logger::getLogger()->warning(
-                    'Application URL not recorded from ' . $request->getSchemeAndHttpHost() .
-                    '; password reset emails are sent only when `instance.base_url` is set in `hs_hr_config`'
-                );
-            }
+            $this->saveInstanceBaseUrl($appSetupUtility, $request);
         } catch (Throwable $e) {
             Logger::getLogger()->error($e->getMessage());
             Logger::getLogger()->error($e->getTraceAsString());
@@ -90,6 +83,29 @@ class ConfigFileAPI extends AbstractInstallerRestController
             Logger::getLogger()->error($e->getTraceAsString());
         }
         return ['success' => $success];
+    }
+
+    /**
+     * Web installer/upgrader: store the application URL the administrator entered or confirmed (it may replace
+     * a stored value); an empty field leaves the stored value as it is. Without a submitted field, record the
+     * URL the administrator is using, if none is stored yet.
+     *
+     * @param AppSetupUtility $appSetupUtility
+     * @param Request $request
+     */
+    protected function saveInstanceBaseUrl(AppSetupUtility $appSetupUtility, Request $request): void
+    {
+        if (StateContainer::getInstance()->hasInstanceBaseUrl()) {
+            $appSetupUtility->saveInstanceBaseUrl(StateContainer::getInstance()->getInstanceBaseUrl(), true);
+            return;
+        }
+        $baseUrl = $appSetupUtility->getInstanceBaseUrlFromRequest($request);
+        if (!$appSetupUtility->saveInstanceBaseUrl($baseUrl) && $baseUrl === null && $request->getHost() !== '') {
+            Logger::getLogger()->warning(
+                'Application URL not recorded from ' . $request->getSchemeAndHttpHost() .
+                '; password reset emails are sent only when `instance.base_url` is set in `hs_hr_config`'
+            );
+        }
     }
 
     protected function sendRegistrationData(): void

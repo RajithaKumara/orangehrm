@@ -85,6 +85,26 @@ export const validEmailFormat = function (value: string): boolean | string {
   );
 };
 
+/**
+ * Application base URL: absolute http(s) URL with an ASCII host name or IP address, an optional
+ * port (1-65535) and a path; no credentials, spaces, query or fragment. The server validates again.
+ */
+export const validBaseUrl = function (value: string): boolean | string {
+  const message =
+    'Expected format: https://hr.example.com/orangehrm/web/index.php';
+  if (!value || value.trim() === '') {
+    return true;
+  }
+  const pattern =
+    /^https?:\/\/([A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*|\[[0-9A-Fa-f:.]+\])(?::([0-9]{1,5}))?(\/[A-Za-z0-9\-._~!$&'()*+,;=:@%/]*)?$/;
+  const match = value.trim().match(pattern);
+  if (!match) {
+    return message;
+  }
+  const port = match[2] === undefined ? null : Number(match[2]);
+  return port === null || (port >= 1 && port <= 65535) || message;
+};
+
 export const validPhoneNumberFormat = function (
   value: string,
 ): boolean | string {

@@ -15,7 +15,8 @@ organization:
   country: US
 
 instance:
-  # URL users open OrangeHRM with, used in password reset emails, e.g. https://hr.example.com/orangehrm/web/index.php
+  # Used in password reset emails: the OrangeHRM address up to and including index.php,
+  # as shown in the browser before /auth/login, e.g. https://hr.example.com/orangehrm/web/index.php
   baseUrl: ~
 
 admin:

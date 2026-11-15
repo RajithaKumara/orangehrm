@@ -22,6 +22,7 @@ namespace OrangeHRM\Installer\Command;
 use DateTimeZone;
 use OrangeHRM\Authentication\Dto\UserCredential;
 use OrangeHRM\Config\Config;
+use OrangeHRM\Core\Utility\InstanceBaseUrl;
 use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Installer\Controller\Installer\Api\ConfigFileAPI;
 use OrangeHRM\Installer\Controller\Installer\Api\InstallerDataRegistrationAPI;
@@ -78,7 +79,7 @@ class InstallOnNewDatabaseCommand extends InstallerCommand
             'baseUrl',
             null,
             InputOption::VALUE_REQUIRED,
-            'Application URL used in password reset emails, e.g. https://hr.example.com/orangehrm/web/index.php'
+            'Application URL used in password reset emails: ' . InstanceBaseUrl::DESCRIPTION
         );
     }
 

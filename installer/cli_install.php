@@ -154,7 +154,7 @@ if ($enableDataEncryption) {
     $appSetupUtility->writeKeyFile();
 }
 try {
-    $baseUrlStored = $appSetupUtility->saveInstanceBaseUrl($cliConfig['instance']['baseUrl'] ?? null);
+    $baseUrlStored = $appSetupUtility->saveInstanceBaseUrl($cliConfig['instance']['baseUrl'] ?? null, true);
 } catch (Throwable $e) {
     $baseUrlStored = false;
 }

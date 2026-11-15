@@ -137,14 +137,14 @@ trait InstallerCommandHelperTrait
         $baseUrl = InstanceBaseUrl::normalize($value);
         if ($baseUrl === null) {
             throw new InvalidArgumentException(
-                'Enter an absolute http(s) URL, e.g. https://hr.example.com/orangehrm/web/index.php'
+                'Invalid `--baseUrl`: expected ' . InstanceBaseUrl::DESCRIPTION
             );
         }
         return $baseUrl;
     }
 
     /**
-     * Store the application base URL (`--baseUrl`) unless one is already stored. Never fails the command.
+     * Store the application base URL given with `--baseUrl` (replaces a stored one). Never fails the command.
      *
      * @param AppSetupUtility $appSetupUtility
      * @param string|null $baseUrl
@@ -152,7 +152,7 @@ trait InstallerCommandHelperTrait
     private function storeInstanceBaseUrl(AppSetupUtility $appSetupUtility, ?string $baseUrl): void
     {
         try {
-            if ($appSetupUtility->saveInstanceBaseUrl($baseUrl)) {
+            if ($appSetupUtility->saveInstanceBaseUrl($baseUrl, true)) {
                 $this->getIO()->note("Application URL stored: $baseUrl");
                 return;
             }
@@ -163,7 +163,7 @@ trait InstallerCommandHelperTrait
         $this->getIO()->note(
             'Password reset emails are sent only when an application URL is stored. ' .
             'If none is stored, set `' . ConfigService::KEY_INSTANCE_BASE_URL . '` in the `hs_hr_config` table ' .
-            'to the URL users open OrangeHRM with, e.g. https://hr.example.com/orangehrm/web/index.php'
+            'to ' . InstanceBaseUrl::DESCRIPTION
         );
     }
 
