@@ -19,10 +19,12 @@
 
 namespace OrangeHRM\Tests\Pim\Api;
 
+use OrangeHRM\Entity\User;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\Pim\Api\EmployeeSalaryComponentAPI;
 use OrangeHRM\Tests\Util\EndpointIntegrationTestCase;
 use OrangeHRM\Tests\Util\Integration\TestCaseParams;
+use OrangeHRM\Tests\Util\Mock\MockAuthUser;
 
 /**
  * @group Pim
@@ -102,5 +104,25 @@ class EmployeeSalaryComponentAPITest extends EndpointIntegrationTestCase
         $this->registerServices($testCaseParams);
         $api = $this->getApiEndpointMock(EmployeeSalaryComponentAPI::class, $testCaseParams);
         $this->assertValidTestCase($api, $operation, $testCaseParams);
+    }
+
+    /**
+     * Same as the parent, but also supports a user without an employee record.
+     */
+    protected function getMockAuthUser(TestCaseParams $testCaseParams): MockAuthUser
+    {
+        $authUser = $this->getMockBuilder(MockAuthUser::class)
+            ->onlyMethods(['getUserId', 'getEmpNumber', 'getUserRoleName'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        /** @var User $user */
+        $user = $this->getEntityReference(User::class, $testCaseParams->getUserId());
+        $authUser->method('getUserId')
+            ->willReturn($testCaseParams->getUserId());
+        $authUser->method('getEmpNumber')
+            ->willReturn($user->getEmployee() ? $user->getEmployee()->getEmpNumber() : null);
+        $authUser->method('getUserRoleName')
+            ->willReturn($user->getUserRole()->getName());
+        return $authUser;
     }
 }

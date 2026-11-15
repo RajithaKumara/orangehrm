@@ -6,6 +6,7 @@ Employee:
   - { empNumber: 2, firstName: 'Sam', lastName: 'Supervisor', middleName: '', employeeId: 'E002' }
   - { empNumber: 3, firstName: 'Sue', lastName: 'Subordinate', middleName: '', employeeId: 'E003' }
   - { empNumber: 4, firstName: 'Uma', lastName: 'Unrelated', middleName: '', employeeId: 'E004' }
+  - { empNumber: 5, firstName: 'Ava', lastName: 'Adminsupervisor', middleName: '', employeeId: 'E005' }
 
 UserRole:
   - { id: 1, name: Admin, display_name: Admin, is_assignable: 1, is_predefined: 1 }
@@ -16,12 +17,17 @@ User:
   - { id: 1, user_role_id: 1, emp_number: 1, user_name: 'admin', user_password: 'admin', deleted: 0, status: 1 }
   - { id: 2, user_role_id: 2, emp_number: 2, user_name: 'sam', user_password: 'sam', deleted: 0, status: 1 }
   - { id: 3, user_role_id: 2, emp_number: 3, user_name: 'sue', user_password: 'sue', deleted: 0, status: 1 }
+  # Admin who also supervises Sue
+  - { id: 4, user_role_id: 1, emp_number: 5, user_name: 'ava', user_password: 'ava', deleted: 0, status: 1 }
+  # Admin without an employee record
+  - { id: 5, user_role_id: 1, emp_number: null, user_name: 'sysadmin', user_password: 'sysadmin', deleted: 0, status: 1 }
 
 ReportingMethod:
   - { reporting_method_id: 1, reporting_method_name: 'Direct' }
 
 ReportTo:
   - { erep_sup_emp_number: 2, erep_sub_emp_number: 3, erep_reporting_mode: 1 }
+  - { erep_sup_emp_number: 5, erep_sub_emp_number: 3, erep_reporting_mode: 1 }
 
 Module:
   - { id: 3, name: 'pim', status: 1, displayName: 'PIM' }
