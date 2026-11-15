@@ -436,22 +436,58 @@ class AppSetupUtility
         return [$createQuery, $grantQuery];
     }
 
+    /**
+     * @throws InvalidArgumentException if a stored value is not scalar
+     */
     public function writeConfFile(): void
     {
-        $template = file_get_contents(realpath(__DIR__ . '/../config/Conf.tpl.php'));
-        $search = ['{{dbHost}}', '{{dbPort}}', '{{dbName}}', '{{dbUser}}', '{{dbPass}}'];
-        $dbInfo = StateContainer::getInstance()->getDbInfo();
-        $replace = [
-            $dbInfo[StateContainer::DB_HOST],
-            $dbInfo[StateContainer::DB_PORT],
-            $dbInfo[StateContainer::DB_NAME],
-            $dbInfo[StateContainer::ORANGEHRM_DB_USER] ?? $dbInfo[StateContainer::DB_USER],
-            $dbInfo[StateContainer::ORANGEHRM_DB_PASSWORD] ?? $dbInfo[StateContainer::DB_PASSWORD],
-        ];
+        $content = $this->getConfFileContent(StateContainer::getInstance()->getDbInfo());
 
         $fs = new Filesystem();
-        $fs->dumpFile(Config::get(Config::CONF_FILE_PATH), str_replace($search, $replace, $template));
+        $fs->dumpFile(Config::get(Config::CONF_FILE_PATH), $content);
         clearstatcache(true);
+    }
+
+    /**
+     * Content of `lib/confs/Conf.php` for the given database details.
+     * Every placeholder in `Conf.tpl.php` sits inside a single-quoted string literal,
+     * so each value is escaped for that literal and stays a plain string in the file.
+     *
+     * @param array $dbInfo as returned by StateContainer::getDbInfo()
+     * @return string
+     * @throws InvalidArgumentException if a value is not scalar
+     */
+    public function getConfFileContent(array $dbInfo): string
+    {
+        $template = file_get_contents(realpath(__DIR__ . '/../config/Conf.tpl.php'));
+        $values = [
+            '{{dbHost}}' => $dbInfo[StateContainer::DB_HOST],
+            '{{dbPort}}' => $dbInfo[StateContainer::DB_PORT],
+            '{{dbName}}' => $dbInfo[StateContainer::DB_NAME],
+            '{{dbUser}}' => $dbInfo[StateContainer::ORANGEHRM_DB_USER] ?? $dbInfo[StateContainer::DB_USER],
+            '{{dbPass}}' => $dbInfo[StateContainer::ORANGEHRM_DB_PASSWORD] ?? $dbInfo[StateContainer::DB_PASSWORD],
+        ];
+        foreach ($values as $placeholder => $value) {
+            $values[$placeholder] = $this->escapeForSingleQuotedPhpString($value, $placeholder);
+        }
+        // Single pass: a value that contains a placeholder is not substituted again
+        return strtr($template, $values);
+    }
+
+    /**
+     * @param mixed $value
+     * @param string $placeholder
+     * @return string the value with `\` and `'` escaped, for use between single quotes in PHP source
+     */
+    private function escapeForSingleQuotedPhpString($value, string $placeholder): string
+    {
+        if ($value === null) {
+            return '';
+        }
+        if (!is_scalar($value)) {
+            throw new InvalidArgumentException("Invalid value for $placeholder");
+        }
+        return addcslashes((string)$value, "\\'");
     }
 
     /**
