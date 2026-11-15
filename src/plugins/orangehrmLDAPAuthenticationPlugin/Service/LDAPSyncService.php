@@ -176,27 +176,19 @@ class LDAPSyncService
     }
 
     /**
+     * DNs are compared case-insensitively, as directories treat them
+     *
      * @param string|null $dn
      * @return string
      */
     private function normalizeDN(?string $dn): string
     {
-        return mb_strtolower(trim($dn ?? ''));
+        return strtolower(trim($dn ?? ''));
     }
 
     /**
-     * @param string $userUniqueId
-     * @return string
-     */
-    private function normalizeUserUniqueId(string $userUniqueId): string
-    {
-        // Binary values (e.g. Active Directory objectGUID) are compared as they are
-        return mb_check_encoding($userUniqueId, 'UTF-8') ? mb_strtolower($userUniqueId) : $userUniqueId;
-    }
-
-    /**
-     * Index every entry returned by the current sync, including entries skipped for
-     * duplicate usernames and entries that failed to parse.
+     * Index every entry returned by the current sync, including entries dropped as duplicate
+     * usernames and entries that failed to parse. Runs once per sync over data already in memory.
      *
      * @param LDAPUser[] $ldapUsers
      * @param LDAPUserCollection|null $ldapUserCollection
@@ -225,8 +217,8 @@ class LDAPSyncService
         $userUniqueIdCounts = [];
         foreach ($entries as $dn => $ldapUser) {
             $syncedDNs[$dn] = true;
-            if ($ldapUser->getUserUniqueId() !== null) {
-                $userUniqueId = $this->normalizeUserUniqueId($ldapUser->getUserUniqueId());
+            $userUniqueId = $ldapUser->getUserUniqueId();
+            if ($userUniqueId !== null) {
                 $userUniqueIdCounts[$userUniqueId] = ($userUniqueIdCounts[$userUniqueId] ?? 0) + 1;
             }
         }
@@ -243,29 +235,31 @@ class LDAPSyncService
      */
     private function isUserUniqueIdShared(LDAPUser $ldapUser, array $userUniqueIdCounts): bool
     {
-        if ($ldapUser->getUserUniqueId() === null) {
-            return false;
-        }
-        return ($userUniqueIdCounts[$this->normalizeUserUniqueId($ldapUser->getUserUniqueId())] ?? 0) > 1;
+        $userUniqueId = $ldapUser->getUserUniqueId();
+        return $userUniqueId !== null && ($userUniqueIdCounts[$userUniqueId] ?? 0) > 1;
     }
 
     /**
+     * Whether the configured user unique id attribute of the entry's lookup setting is one the
+     * directory server assigns itself (e.g. entryUUID, objectGUID), see IMMUTABLE_USER_UNIQUE_ID_ATTRIBUTES.
+     * Such values cannot be set or copied onto another entry, so they reliably identify a moved entry.
+     * Other attributes (e.g. employeeNumber, mail) can be edited or reassigned, so they cannot.
+     *
      * @param LDAPUser $ldapUser
      * @return bool
      */
-    private function hasImmutableUserUniqueIdAttribute(LDAPUser $ldapUser): bool
+    private function isUserUniqueIdServerAssigned(LDAPUser $ldapUser): bool
     {
-        $attribute = $ldapUser->getUserLookupSetting() instanceof LDAPUserLookupSetting
-            ? $ldapUser->getUserLookupSetting()->getUserUniqueIdAttribute()
-            : null;
-        return $attribute !== null
-            && in_array(mb_strtolower($attribute), self::IMMUTABLE_USER_UNIQUE_ID_ATTRIBUTES, true);
+        $lookupSetting = $ldapUser->getUserLookupSetting();
+        if (!$lookupSetting instanceof LDAPUserLookupSetting || $lookupSetting->getUserUniqueIdAttribute() === null) {
+            return false;
+        }
+        $attribute = strtolower($lookupSetting->getUserUniqueIdAttribute());
+        return in_array($attribute, self::IMMUTABLE_USER_UNIQUE_ID_ATTRIBUTES, true);
     }
 
     /**
-     * Whether an account found by username may take the incoming entry's DN.
-     * A different DN is only accepted when the bound entry is no longer in the directory
-     * and the unique ids do not contradict each other (the entry was moved or renamed).
+     * A user found by username keeps its LDAP entry, except when that entry was moved or renamed.
      *
      * @param UserAuthProvider $ldapAuthProvider
      * @param LDAPUser $ldapUser
@@ -279,22 +273,27 @@ class LDAPSyncService
     ): bool {
         $boundDN = $this->normalizeDN($ldapAuthProvider->getLDAPUserDN());
         if ($boundDN === $this->normalizeDN($ldapUser->getUserDN())) {
+            // Same entry
             return true;
         }
         if (isset($syncedDNs[$boundDN])) {
+            // The bound entry is still in the directory, so the incoming entry is a different one
             return false;
         }
+
+        // The bound entry is gone, so the incoming entry may be the same entry under a new DN.
+        // Refuse it only when both carry a unique id and the ids differ.
         $boundUserUniqueId = $ldapAuthProvider->getLDAPUserUniqueId();
-        return $boundUserUniqueId === null
-            || $ldapUser->getUserUniqueId() === null
-            || $this->normalizeUserUniqueId($boundUserUniqueId)
-            === $this->normalizeUserUniqueId($ldapUser->getUserUniqueId());
+        $incomingUserUniqueId = $ldapUser->getUserUniqueId();
+        if ($boundUserUniqueId === null || $incomingUserUniqueId === null) {
+            return true;
+        }
+        return $boundUserUniqueId === $incomingUserUniqueId;
     }
 
     /**
-     * Whether an account found by unique id may take the incoming entry's DN.
-     * A different DN is only accepted when the unique id is a server-assigned identifier
-     * and the bound entry is no longer in the directory (the entry was moved or renamed).
+     * A user found by unique id keeps its LDAP entry, except when that entry was moved or renamed.
+     * Only a server-assigned unique id proves that, since other attributes can be copied onto any entry.
      *
      * @param UserAuthProvider $ldapAuthProvider
      * @param LDAPUser $ldapUser
@@ -308,9 +307,15 @@ class LDAPSyncService
     ): bool {
         $boundDN = $this->normalizeDN($ldapAuthProvider->getLDAPUserDN());
         if ($boundDN === $this->normalizeDN($ldapUser->getUserDN())) {
+            // Same entry, only the username changed
             return true;
         }
-        return $this->hasImmutableUserUniqueIdAttribute($ldapUser) && !isset($syncedDNs[$boundDN]);
+        if (isset($syncedDNs[$boundDN])) {
+            // The bound entry is still in the directory, so the incoming entry is a different one
+            return false;
+        }
+        // The bound entry is gone: follow it to the new DN only if the id cannot have been copied
+        return $this->isUserUniqueIdServerAssigned($ldapUser);
     }
 
     /**

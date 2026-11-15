@@ -204,15 +204,16 @@ class LDAPSyncServiceUserBindingTest extends KernelTestCase
         $this->assertWarningLogged('User unique id matches a user bound to a different LDAP entry, skipped');
     }
 
-    public function testUniqueIdSharedIsDetectedCaseInsensitively(): void
+    public function testUniqueIdDifferingOnlyInCaseDoesNotRebind(): void
     {
+        // The database matches unique ids case-insensitively; the DN check still refuses the other entry
         $bound = $this->createLDAPUser('Linda', self::BOUND_DN, $this->getBoundUserUniqueId());
         $other = $this->createLDAPUser('Evil.User', self::OTHER_DN, strtoupper($this->getBoundUserUniqueId()));
 
         (new LDAPSyncService())->createSystemUsers([$other, $bound], $this->createCollection([$other, $bound]));
 
         $this->assertBoundUserUnchanged();
-        $this->assertWarningLogged('User unique id is shared by more than one LDAP entry, skipped');
+        $this->assertWarningLogged('User unique id matches a user bound to a different LDAP entry, skipped');
     }
 
     public function testUniqueIdMatchFromReassignableAttributeDoesNotRebindWhenBoundEntryGone(): void
