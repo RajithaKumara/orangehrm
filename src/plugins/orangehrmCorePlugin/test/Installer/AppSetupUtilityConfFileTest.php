@@ -38,7 +38,7 @@ use OrangeHRM\Tests\Util\TestCase;
  */
 class AppSetupUtilityConfFileTest extends TestCase
 {
-    private const INJECTED_FLAG = 'ohrmConfFileTestInjected';
+    private const MARKER_FLAG = 'ohrmConfFileTestMarker';
 
     private ?string $confPath = null;
     private ?string $previousConfPath = null;
@@ -61,10 +61,10 @@ class AppSetupUtilityConfFileTest extends TestCase
 
     public function valueDataProvider(): array
     {
-        $payload = "\$GLOBALS['" . self::INJECTED_FLAG . "'] = true;";
+        $statement = "\$GLOBALS['" . self::MARKER_FLAG . "'] = true;";
         return [
-            'quote closes the literal' => ["x';$payload//"],
-            'escaped quote' => ["x\\';$payload//"],
+            'quote closes the literal' => ["x';$statement//"],
+            'escaped quote' => ["x\\';$statement//"],
             'trailing backslash' => ['secret\\'],
             'double backslash' => ['a\\\\b'],
             'backslash before quote' => ["a\\'b"],
@@ -72,7 +72,7 @@ class AppSetupUtilityConfFileTest extends TestCase
             'dollar and braces' => ['p$a{$s}${w}'],
             'double quotes' => ['say "hi"'],
             'placeholder of another field' => ['{{dbPass}}{{dbHost}}'],
-            'closing tag' => ["?><?php $payload ?>"],
+            'closing tag' => ["?><?php $statement ?>"],
             'heredoc and comment markers' => ["*/ /* <<<EOT\nEOT; # //"],
             'newline, tab, carriage return' => ["line1\nline2\r\n\tend"],
             'NUL byte' => ["a\0b"],
@@ -89,7 +89,7 @@ class AppSetupUtilityConfFileTest extends TestCase
     public function testValueIsWrittenAsData(string $field, string $value): void
     {
         $expected = [
-            'dbHost' => 'mariadb1011',
+            'dbHost' => 'localhost',
             'dbPort' => '3306',
             'dbName' => 'orangehrm',
             'dbUser' => 'ohrm_user',
@@ -104,7 +104,7 @@ class AppSetupUtilityConfFileTest extends TestCase
             new UserCredential($expected['dbUser'], $expected['dbPass'])
         );
 
-        $this->assertArrayNotHasKey(self::INJECTED_FLAG, $GLOBALS, "code ran from $field");
+        $this->assertArrayNotHasKey(self::MARKER_FLAG, $GLOBALS, "$field was not written as a plain string");
         $this->assertSame($expected['dbHost'], $conf->getDbHost());
         $this->assertSame($expected['dbPort'], $conf->getDbPort());
         $this->assertSame($this->expectedDbName($expected['dbName']), $conf->getDbName());
@@ -117,13 +117,13 @@ class AppSetupUtilityConfFileTest extends TestCase
      */
     public function testProductionDatabaseNameLineHoldsTheEscapedValue(): void
     {
-        $dbName = "n';\$GLOBALS['" . self::INJECTED_FLAG . "'] = true;//\\";
+        $dbName = "n';\$GLOBALS['" . self::MARKER_FLAG . "'] = true;//\\";
         $content = (new AppSetupUtility())->getConfFileContent(
             $this->getDbInfo('localhost', '3306', $dbName, 'root', 'pw')
         );
 
         $this->assertStringContainsString(
-            "\$this->dbName = 'n\\';\$GLOBALS[\\'" . self::INJECTED_FLAG . "\\'] = true;//\\\\';",
+            "\$this->dbName = 'n\\';\$GLOBALS[\\'" . self::MARKER_FLAG . "\\'] = true;//\\\\';",
             $content
         );
     }
@@ -162,39 +162,44 @@ class AppSetupUtilityConfFileTest extends TestCase
     /**
      * With zend.multibyte and e.g. a Shift_JIS source encoding, a lead byte followed by an inserted `\` would
      * read as one character, and raw high bytes may be converted. No byte >= 0x80 is written, so the values
-     * still read back exactly and nothing runs.
+     * still read back exactly and nothing runs. The file is loaded in a separate PHP process without
+     * ENVIRONMENT, so the production `dbName` line is the one read there.
      *
      * @dataProvider multibyteSourceEncodingDataProvider
      */
     public function testValuesReadBackUnderMultibyteSourceEncoding(string $scriptEncoding, ?string $internal): void
     {
-        if (!function_exists('exec') || PHP_BINARY === '') {
-            $this->markTestSkipped('needs exec() and the PHP CLI binary');
-        }
-        $php = escapeshellarg(PHP_BINARY);
-        exec("$php -m 2>/dev/null", $modules);
-        if (!in_array('mbstring', $modules, true)) {
-            $this->markTestSkipped('zend.multibyte needs the mbstring extension');
-        }
-        $host = "x\x83';echo \"INJECTED\";//\\";
-        $port = ';echo "INJECTED";//';
-        $pass = 'pässwörd-密码';
+        $php = $this->getPhpCliWithMbstring();
+        $values = [
+            "x\x83';echo \"MARKER\";//\\",
+            ';echo "MARKER";//',
+            "n\x83';echo \"MARKER\";//\\",
+            "u\x95';echo \"MARKER\";//",
+            'pässwörd-密码',
+        ];
         file_put_contents(
             $this->confPath,
-            (new AppSetupUtility())->getConfFileContent($this->getDbInfo($host, $port, 'orangehrm', 'root', $pass))
+            (new AppSetupUtility())->getConfFileContent($this->getDbInfo(...$values))
         );
 
         $script = 'include ' . var_export($this->confPath, true) . '; $c = new Conf(); echo PHP_EOL, "RESULT:",'
-            . ' json_encode([bin2hex($c->getDbHost()), bin2hex($c->getDbPort()), bin2hex($c->getDbPass())]);';
+            . ' json_encode(array_map("bin2hex", [$c->getDbHost(), $c->getDbPort(), $c->getDbName(),'
+            . ' $c->getDbUser(), $c->getDbPass()]));';
         $options = '-d zend.multibyte=1 -d ' . escapeshellarg("zend.script_encoding=$scriptEncoding")
             . ($internal ? ' -d ' . escapeshellarg("internal_encoding=$internal") : '');
-        exec("$php $options -r " . escapeshellarg($script) . ' 2>/dev/null', $output);
+        $errorPath = tempnam(sys_get_temp_dir(), 'ohrm_conf_err_');
+        $this->assertNotFalse($errorPath);
+        try {
+            exec("$php $options -r " . escapeshellarg($script) . ' 2>' . escapeshellarg($errorPath), $output, $code);
+            $errors = (string)file_get_contents($errorPath);
+        } finally {
+            @unlink($errorPath);
+        }
 
-        $result = preg_grep('/^RESULT:/', $output);
         $this->assertSame(
-            ['RESULT:' . json_encode([bin2hex($host), bin2hex($port), bin2hex($pass)])],
-            array_values($result),
-            implode("\n", $output)
+            ['RESULT:' . json_encode(array_map('bin2hex', $values))],
+            array_values(preg_grep('/^RESULT:/', $output)),
+            "exit code $code\nstdout:\n" . implode("\n", $output) . "\nstderr:\n$errors"
         );
     }
 
@@ -268,13 +273,13 @@ class AppSetupUtilityConfFileTest extends TestCase
     public function testWriteConfFileWritesToTheConfiguredPath(): void
     {
         $this->assertSame($this->confPath, Config::get(Config::CONF_FILE_PATH));
-        $host = "x';\$GLOBALS['" . self::INJECTED_FLAG . "'] = true;//";
+        $host = "x';\$GLOBALS['" . self::MARKER_FLAG . "'] = true;//";
         StateContainer::getInstance()->storeDbInfo($host, '3306', new UserCredential('root', 'pw'), 'orangehrm');
 
         (new AppSetupUtility())->writeConfFile();
 
         $this->assertStringContainsString(
-            "\$this->dbHost = 'x\\';\$GLOBALS[\\'" . self::INJECTED_FLAG . "\\'] = true;//';",
+            "\$this->dbHost = 'x\\';\$GLOBALS[\\'" . self::MARKER_FLAG . "\\'] = true;//';",
             file_get_contents($this->confPath)
         );
     }
@@ -298,7 +303,7 @@ class AppSetupUtilityConfFileTest extends TestCase
         Config::set(Config::CONF_FILE_PATH, $this->previousConfPath);
         ServiceContainer::getContainer()->set(Services::SESSION, $this->previousSession);
         @unlink($this->confPath);
-        unset($GLOBALS[self::INJECTED_FLAG]);
+        unset($GLOBALS[self::MARKER_FLAG]);
     }
 
     /**
@@ -335,6 +340,30 @@ class AppSetupUtilityConfFileTest extends TestCase
             StateContainer::DB_PASSWORD => $password,
             StateContainer::ENABLE_DATA_ENCRYPTION => false,
         ];
+    }
+
+    /**
+     * The PHP CLI binary running this test, shell-quoted. Skips the test, with the reason, when it cannot be
+     * run with exec() or does not load mbstring (zend.multibyte needs it).
+     */
+    private function getPhpCliWithMbstring(): string
+    {
+        $disabled = array_map('trim', explode(',', (string)ini_get('disable_functions')));
+        if (!function_exists('exec') || in_array('exec', $disabled, true)) {
+            $this->markTestSkipped('exec() is disabled, so Conf.php cannot be loaded in a separate PHP process');
+        }
+        if (PHP_BINARY === '' || !is_executable(PHP_BINARY)) {
+            $this->markTestSkipped('PHP_BINARY is not an executable PHP CLI: ' . var_export(PHP_BINARY, true));
+        }
+        $php = escapeshellarg(PHP_BINARY);
+        exec("$php -r " . escapeshellarg('echo extension_loaded("mbstring") ? "yes" : "no";') . ' 2>&1', $out, $code);
+        if ($code !== 0 || !in_array($out, [['yes'], ['no']], true)) {
+            $this->markTestSkipped('Could not run ' . PHP_BINARY . " (exit code $code): " . implode("\n", $out));
+        }
+        if ($out === ['no']) {
+            $this->markTestSkipped('mbstring is not loaded in ' . PHP_BINARY . ', and zend.multibyte needs it');
+        }
+        return $php;
     }
 
     private function expectedDbName(string $dbName): string
