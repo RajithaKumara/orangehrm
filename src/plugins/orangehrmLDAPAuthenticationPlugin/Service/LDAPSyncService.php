@@ -80,6 +80,14 @@ class LDAPSyncService
     private LDAPDao $ldapDao;
     private array $empNumbersWhoHaveManyUsers;
     private array $entryCollectionCache = [];
+    /**
+     * Users for whom createSystemUsers() refused to move the binding to another entry.
+     * The delete pass does not delete them in the same sync, even if their bound entry is no longer returned,
+     * so that a changed directory layout (e.g. a new base DN) does not delete them in bulk.
+     *
+     * @var array<int, true>
+     */
+    private array $userIdsWithRefusedBinding = [];
 
     /**
      * @return LDAPDao
@@ -328,6 +336,9 @@ class LDAPSyncService
         ?UserAuthProvider $ldapAuthProvider,
         LDAPUser $ldapUser
     ): void {
+        if ($ldapAuthProvider instanceof UserAuthProvider) {
+            $this->userIdsWithRefusedBinding[$ldapAuthProvider->getUser()->getId()] = true;
+        }
         $this->getLogger()->warning($message, [
             'incomingDN' => $ldapUser->getUserDN(),
             'incomingUsername' => $ldapUser->getUsername(),
@@ -338,12 +349,28 @@ class LDAPSyncService
     }
 
     /**
+     * @param string $message
+     * @param UserAuthProvider[] $ldapAuthProviders
+     * @param LDAPUser $ldapUser
+     */
+    private function warnBindingConflicts(string $message, array $ldapAuthProviders, LDAPUser $ldapUser): void
+    {
+        if ($ldapAuthProviders === []) {
+            $this->warnBindingConflict($message, null, $ldapUser);
+        }
+        foreach ($ldapAuthProviders as $ldapAuthProvider) {
+            $this->warnBindingConflict($message, $ldapAuthProvider, $ldapUser);
+        }
+    }
+
+    /**
      * @param LDAPUser[] $ldapUsers
      * @param LDAPUserCollection|null $ldapUserCollection all entries returned by this sync,
      *        used to tell a moved entry from a different entry (defaults to $ldapUsers)
      */
     public function createSystemUsers(array $ldapUsers, ?LDAPUserCollection $ldapUserCollection = null): void
     {
+        $this->userIdsWithRefusedBinding = [];
         [$syncedDNs, $userUniqueIdCounts] = $this->indexSyncedEntries($ldapUsers, $ldapUserCollection);
         $defaultUserRole = $this->getUserService()->getUserRole('ESS');
         foreach ($ldapUsers as $ldapUser) {
@@ -427,20 +454,20 @@ class LDAPSyncService
             } else {
                 // try to find a user who have user unique id
                 if ($ldapUser->getUserUniqueId() !== null) {
+                    $ldapAuthProviders = $this->getLDAPDao()
+                        ->getAuthProvidersByUserUniqueId($ldapUser->getUserUniqueId());
                     if ($this->isUserUniqueIdShared($ldapUser, $userUniqueIdCounts)) {
-                        $this->warnBindingConflict(
+                        $this->warnBindingConflicts(
                             'User unique id is shared by more than one LDAP entry, skipped',
-                            null,
+                            $ldapAuthProviders,
                             $ldapUser
                         );
                         continue;
                     }
-                    $ldapAuthProviders = $this->getLDAPDao()
-                        ->getAuthProvidersByUserUniqueId($ldapUser->getUserUniqueId());
                     if (count($ldapAuthProviders) > 1) {
-                        $this->warnBindingConflict(
+                        $this->warnBindingConflicts(
                             'User unique id is bound to more than one user, skipped',
-                            null,
+                            $ldapAuthProviders,
                             $ldapUser
                         );
                         continue;
@@ -734,8 +761,24 @@ class LDAPSyncService
             }
         }
 
+        $userIds = [];
+        foreach ($ldapAuthProviders as $dn => $userIdsOfDN) {
+            foreach ($userIdsOfDN as $userId) {
+                if (isset($this->userIdsWithRefusedBinding[$userId])) {
+                    // Left for an administrator to review instead of being deleted with the rest
+                    $this->getLogger()->warning(
+                        'Bound LDAP entry not found, user not deleted because a rebind to another entry was refused',
+                        ['userId' => $userId, 'boundDN' => $dn]
+                    );
+                    continue;
+                }
+                $userIds[] = $userId;
+            }
+        }
+        $this->userIdsWithRefusedBinding = [];
+
         $this->getUserService()
             ->geUserDao()
-            ->deleteSystemUsers(array_merge([], ...array_values($ldapAuthProviders)));
+            ->deleteSystemUsers($userIds);
     }
 }
