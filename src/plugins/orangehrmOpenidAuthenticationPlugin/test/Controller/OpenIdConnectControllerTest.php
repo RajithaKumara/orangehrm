@@ -140,13 +140,22 @@ class OpenIdConnectControllerTest extends KernelTestCase
         return $client;
     }
 
-    private function callbackController(?LoginService $loginService = null): OpenIdConnectRedirectController
-    {
-        return new class ($loginService) extends OpenIdConnectRedirectController {
-            public function __construct(?LoginService $loginService)
+    /**
+     * @param LoginService|null $loginService
+     * @param bool $realTimeoutRedirect use the real SessionHandlingTrait::handleSessionTimeoutRedirect()
+     */
+    private function callbackController(
+        ?LoginService $loginService = null,
+        bool $realTimeoutRedirect = false
+    ): OpenIdConnectRedirectController {
+        return new class ($loginService, $realTimeoutRedirect) extends OpenIdConnectRedirectController {
+            private bool $realTimeoutRedirect;
+
+            public function __construct(?LoginService $loginService, bool $realTimeoutRedirect)
             {
                 parent::__construct();
                 $this->loginService = $loginService;
+                $this->realTimeoutRedirect = $realTimeoutRedirect;
             }
 
             public function getHomePageService(): HomePageService
@@ -161,7 +170,7 @@ class OpenIdConnectControllerTest extends KernelTestCase
 
             public function handleSessionTimeoutRedirect(): ?string
             {
-                return null;
+                return $this->realTimeoutRedirect ? parent::handleSessionTimeoutRedirect() : null;
             }
 
             protected function redirect(string $path): RedirectResponse
@@ -240,6 +249,27 @@ class OpenIdConnectControllerTest extends KernelTestCase
         $this->assertFalse(AuthUser::getInstance()->isAuthenticated());
         $this->assertNull(AuthUser::getInstance()->getUserId());
         $this->assertFalse($this->getEntityManager()->getConnection()->isTransactionActive());
+    }
+
+    public function testSignInReturnsToPageStoredAtSessionTimeout(): void
+    {
+        $this->mockServices($this->client(
+            ['sub' => self::SUB, 'email' => self::ESS, 'email_verified' => true],
+            ['sub' => self::SUB, 'email' => self::ESS, 'email_verified' => true]
+        ));
+        $this->session->set(AuthUser::OPENID_PROVIDER_ID, 1);
+        $timedOutPage = 'http://orangehrm.test/web/index.php/leave/viewMyLeaveList';
+        AuthUser::getInstance()->setAttribute(AuthUser::SESSION_TIMEOUT_REDIRECT_URL, $timedOutPage);
+
+        $response = $this->callbackController(null, true)->handle(new Request());
+        $this->assertSame($timedOutPage, $response->getTargetUrl());
+        // the session is recreated after sign-in and keeps the signed-in user
+        $this->assertTrue(AuthUser::getInstance()->isAuthenticated());
+        $this->assertSame(2, AuthUser::getInstance()->getUserId());
+        $this->assertFalse(AuthUser::getInstance()->hasAttribute(AuthUser::SESSION_TIMEOUT_REDIRECT_URL));
+        $this->assertFalse($this->getEntityManager()->getConnection()->isTransactionActive());
+        $this->getEntityManager()->clear();
+        $this->assertSame([self::ESS], $this->loginLogUsers());
     }
 
     public function testProviderIdIsRemovedFromSessionOnCallback(): void
