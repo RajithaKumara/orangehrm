@@ -14,6 +14,10 @@ organization:
   name: OrangeHRM
   country: US
 
+instance:
+  # URL users open OrangeHRM with, used in password reset emails, e.g. https://hr.example.com/orangehrm/web/index.php
+  baseUrl: ~
+
 admin:
   adminUserName: Admin
   adminPassword: Ohrm@1423
