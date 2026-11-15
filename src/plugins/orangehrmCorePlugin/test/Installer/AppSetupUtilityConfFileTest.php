@@ -128,6 +128,76 @@ class AppSetupUtilityConfFileTest extends TestCase
         );
     }
 
+    public function testNonAsciiValuesAreWrittenAsAsciiOnly(): void
+    {
+        $content = (new AppSetupUtility())->getConfFileContent($this->getDbInfo(
+            "h\x83\\",
+            '3306',
+            "\xC3\x28\xFF",
+            'üser',
+            'pässwörd-密码'
+        ));
+
+        $this->assertSame(0, preg_match('/[\x80-\xFF]/', $content));
+        $this->assertStringContainsString(
+            "\$this->dbPass = 'p' . hex2bin('c3a4') . 'ssw' . hex2bin('c3b6') . 'rd-'"
+            . " . hex2bin('e5af86e7a081') . '';",
+            $content
+        );
+        $this->assertStringContainsString("\$this->dbHost = 'h' . hex2bin('83') . '\\\\';", $content);
+    }
+
+    public function multibyteSourceEncodingDataProvider(): array
+    {
+        return [
+            'SJIS' => ['SJIS', null],
+            'SJIS, internal_encoding SJIS' => ['SJIS', 'SJIS'],
+            'CP932, internal_encoding CP932' => ['CP932', 'CP932'],
+            'EUC-JP' => ['EUC-JP', null],
+            'BIG5, internal_encoding BIG5' => ['BIG5', 'BIG5'],
+            'GBK (CP936), internal_encoding CP936' => ['CP936', 'CP936'],
+        ];
+    }
+
+    /**
+     * With zend.multibyte and e.g. a Shift_JIS source encoding, a lead byte followed by an inserted `\` would
+     * read as one character, and raw high bytes may be converted. No byte >= 0x80 is written, so the values
+     * still read back exactly and nothing runs.
+     *
+     * @dataProvider multibyteSourceEncodingDataProvider
+     */
+    public function testValuesReadBackUnderMultibyteSourceEncoding(string $scriptEncoding, ?string $internal): void
+    {
+        if (!function_exists('exec') || PHP_BINARY === '') {
+            $this->markTestSkipped('needs exec() and the PHP CLI binary');
+        }
+        $php = escapeshellarg(PHP_BINARY);
+        exec("$php -m 2>/dev/null", $modules);
+        if (!in_array('mbstring', $modules, true)) {
+            $this->markTestSkipped('zend.multibyte needs the mbstring extension');
+        }
+        $host = "x\x83';echo \"INJECTED\";//\\";
+        $port = ';echo "INJECTED";//';
+        $pass = 'pässwörd-密码';
+        file_put_contents(
+            $this->confPath,
+            (new AppSetupUtility())->getConfFileContent($this->getDbInfo($host, $port, 'orangehrm', 'root', $pass))
+        );
+
+        $script = 'include ' . var_export($this->confPath, true) . '; $c = new Conf(); echo PHP_EOL, "RESULT:",'
+            . ' json_encode([bin2hex($c->getDbHost()), bin2hex($c->getDbPort()), bin2hex($c->getDbPass())]);';
+        $options = '-d zend.multibyte=1 -d ' . escapeshellarg("zend.script_encoding=$scriptEncoding")
+            . ($internal ? ' -d ' . escapeshellarg("internal_encoding=$internal") : '');
+        exec("$php $options -r " . escapeshellarg($script) . ' 2>/dev/null', $output);
+
+        $result = preg_grep('/^RESULT:/', $output);
+        $this->assertSame(
+            ['RESULT:' . json_encode([bin2hex($host), bin2hex($port), bin2hex($pass)])],
+            array_values($result),
+            implode("\n", $output)
+        );
+    }
+
     public function testEveryTemplatePlaceholderIsInsideASingleQuotedString(): void
     {
         $template = file_get_contents(

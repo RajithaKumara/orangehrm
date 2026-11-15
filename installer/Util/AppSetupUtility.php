@@ -475,9 +475,18 @@ class AppSetupUtility
     }
 
     /**
+     * Escape a value for use between single quotes in PHP source: `\` and `'` are escaped, and each run of
+     * bytes >= 0x80 is written as a `hex2bin()` call concatenated into the literal, e.g.
+     * `pässwörd` gives `p' . hex2bin('c3a4') . 'ssw' . hex2bin('c3b6') . 'rd`. ASCII values are only escaped
+     * for `\` and `'`, so their output is unchanged.
+     * No byte >= 0x80 is left in the source, so values read back byte for byte also when PHP parses source in
+     * a multibyte encoding (`zend.multibyte` with e.g. SJIS, EUC-JP, BIG5 or GBK), whatever `internal_encoding`
+     * is. Script encodings that change the meaning of ASCII bytes themselves (e.g. SJIS-2004, ISO-2022-JP,
+     * UTF-7) are not supported.
+     *
      * @param mixed $value
      * @param string $placeholder
-     * @return string the value with `\` and `'` escaped, for use between single quotes in PHP source
+     * @return string
      */
     private function escapeForSingleQuotedPhpString($value, string $placeholder): string
     {
@@ -487,7 +496,14 @@ class AppSetupUtility
         if (!is_scalar($value)) {
             throw new InvalidArgumentException("Invalid value for $placeholder");
         }
-        return addcslashes((string)$value, "\\'");
+        $escaped = addcslashes((string)$value, "\\'");
+        return preg_replace_callback(
+            '/[\x80-\xFF]+/',
+            static function (array $matches): string {
+                return "' . hex2bin('" . bin2hex($matches[0]) . "') . '";
+            },
+            $escaped
+        );
     }
 
     /**
