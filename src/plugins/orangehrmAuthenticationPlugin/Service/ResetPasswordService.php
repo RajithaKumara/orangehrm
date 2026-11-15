@@ -25,10 +25,12 @@ use OrangeHRM\Admin\Traits\Service\UserServiceTrait;
 use OrangeHRM\Authentication\Dao\ResetPasswordDao;
 use OrangeHRM\Authentication\Dto\UserCredential;
 use OrangeHRM\Config\Config;
+use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Core\Service\EmailService;
 use OrangeHRM\Core\Traits\ControllerTrait;
 use OrangeHRM\Core\Traits\LoggerTrait;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
+use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
 use OrangeHRM\Core\Traits\Service\DateTimeHelperTrait;
 use OrangeHRM\Core\Utility\Base64Url;
 use OrangeHRM\Entity\Employee;
@@ -39,6 +41,7 @@ use OrangeHRM\Framework\Routing\UrlGenerator;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\ORM\Exception\TransactionException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Routing\RequestContext;
 
 class ResetPasswordService
 {
@@ -47,6 +50,7 @@ class ResetPasswordService
     use LoggerTrait;
     use ControllerTrait;
     use UserServiceTrait;
+    use ConfigServiceTrait;
 
     public const RESET_PASSWORD_TOKEN_RANDOM_BYTES_LENGTH = 16;
     protected ?ResetPasswordDao $resetPasswordDao = null;
@@ -163,20 +167,40 @@ class ResetPasswordService
     }
 
     /**
-     * @param Employee $receiver
+     * Absolute password reset link, built from the configured application base URL (`instance.base_url`),
+     * never from the current request. Null when no valid base URL is configured.
+     *
      * @param string $resetCode
-     * @param string $userName
-     * @return array|string|string[]|null
+     * @return string|null
      */
-    protected function generatePasswordResetEmailBody(Employee $receiver, string $resetCode, string $userName)
+    public function getPasswordResetLink(string $resetCode): ?string
     {
+        $baseUrl = $this->getConfigService()->getInstanceBaseUrl();
+        if ($baseUrl === null) {
+            return null;
+        }
         /** @var UrlGenerator $urlGenerator */
-        $urlGenerator = $this->getContainer()->get(Services::URL_GENERATOR);
-        $resetLink = $urlGenerator->generate(
+        $urlGenerator = clone $this->getContainer()->get(Services::URL_GENERATOR);
+        $urlGenerator->setContext(RequestContext::fromUri($baseUrl));
+        return $urlGenerator->generate(
             'auth_reset_code',
             ['resetCode' => $resetCode],
             UrlGenerator::ABSOLUTE_URL
         );
+    }
+
+    /**
+     * @param Employee $receiver
+     * @param string $resetCode
+     * @param string $userName
+     * @return array|string|string[]|null null when the reset link cannot be built
+     */
+    protected function generatePasswordResetEmailBody(Employee $receiver, string $resetCode, string $userName)
+    {
+        $resetLink = $this->getPasswordResetLink($resetCode);
+        if ($resetLink === null) {
+            return null;
+        }
         $placeholders = [
             'firstName',
             'userName',
@@ -191,7 +215,7 @@ class ResetPasswordService
         $replacements = [
             $sanitizedFirstName,
             $userName,
-            $resetLink
+            htmlspecialchars($resetLink, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false)
         ];
         return $this->generateEmailBody('password-reset-request.txt', $placeholders, $replacements);
     }
@@ -214,14 +238,21 @@ class ResetPasswordService
                 return false;
             }
 
+            $body = $this->generatePasswordResetEmailBody($receiver, $resetCode, $userName);
+            if ($body === null) {
+                $this->getLogger()->error(
+                    'Password reset email suppressed: the application base URL is not configured (`' .
+                    ConfigService::KEY_INSTANCE_BASE_URL . '` in `hs_hr_config`)'
+                );
+                return false;
+            }
+
             $this->getEmailService()->setMessageTo([$workEmail]);
             $this->getEmailService()->setMessageFrom(
                 [$this->getEmailService()->getEmailConfig()->getSentAs() => 'OrangeHRM']
             );
             $this->getEmailService()->setMessageSubject('OrangeHRM Password Reset');
-            $this->getEmailService()->setMessageBody(
-                $this->generatePasswordResetEmailBody($receiver, $resetCode, $userName)
-            );
+            $this->getEmailService()->setMessageBody($body);
             return $this->getEmailService()->sendEmail();
         } catch (TransportExceptionInterface $e) {
             $this->getLogger()->error('Invalid Email configuration');

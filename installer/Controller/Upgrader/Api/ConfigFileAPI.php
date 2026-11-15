@@ -62,6 +62,20 @@ class ConfigFileAPI extends AbstractInstallerRestController
         $appSetupUtility->writeConfFile();
 
         try {
+            // Web installer/upgrader: record the URL the administrator is using, if none is stored yet
+            $baseUrl = $appSetupUtility->getInstanceBaseUrlFromRequest($request);
+            if (!$appSetupUtility->saveInstanceBaseUrl($baseUrl) && $baseUrl === null && $request->getHost() !== '') {
+                Logger::getLogger()->warning(
+                    'Application URL not recorded from ' . $request->getSchemeAndHttpHost() .
+                    '; password reset emails are sent only when `instance.base_url` is set in `hs_hr_config`'
+                );
+            }
+        } catch (Throwable $e) {
+            Logger::getLogger()->error($e->getMessage());
+            Logger::getLogger()->error($e->getTraceAsString());
+        }
+
+        try {
             !StateContainer::getInstance()->getRegConsent() ?: $this->sendRegistrationData();
         } catch (Throwable $e) {
             Logger::getLogger()->error($e->getMessage());

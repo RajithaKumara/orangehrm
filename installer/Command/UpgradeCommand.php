@@ -71,7 +71,13 @@ class UpgradeCommand extends InstallerCommand
             ->addOption('dbUser', null, InputOption::VALUE_REQUIRED)
             ->addOption('dbUserPassword', null, InputOption::VALUE_REQUIRED)
             ->addOption('currentVersion', null, InputOption::VALUE_REQUIRED)
-            ->addOption('systemCheckAcceptRisk', null, InputOption::VALUE_NONE);
+            ->addOption('systemCheckAcceptRisk', null, InputOption::VALUE_NONE)
+            ->addOption(
+                'baseUrl',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Application URL used in password reset emails, e.g. https://hr.example.com/orangehrm/web/index.php'
+            );
     }
 
     /**
@@ -119,6 +125,7 @@ class UpgradeCommand extends InstallerCommand
                 $input->setOption('dbUserPassword', $dbPassword);
             }
         }
+        $baseUrl = $this->instanceBaseUrlValidator($input->getOption('baseUrl'));
         $this->throwIfParamEmpty($input, 'dbHost');
         $this->throwIfParamEmpty($input, 'dbName');
         $this->throwIfParamEmpty($input, 'dbUser');
@@ -238,6 +245,7 @@ class UpgradeCommand extends InstallerCommand
         $request->setMethod(Request::METHOD_POST);
         (new ConfigFileAPI())->handle($request);
         $this->completeStep($step3, self::STEP_3, "\n");
+        $this->storeInstanceBaseUrl($appSetupUtility, $baseUrl);
 
         return self::SUCCESS;
     }

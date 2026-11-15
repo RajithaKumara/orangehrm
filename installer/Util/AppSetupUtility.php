@@ -25,9 +25,12 @@ use Exception;
 use InvalidArgumentException;
 use OrangeHRM\Config\Config;
 use OrangeHRM\Core\Exception\KeyHandlerException;
+use OrangeHRM\Core\Service\ConfigService;
+use OrangeHRM\Core\Utility\InstanceBaseUrl;
 use OrangeHRM\Core\Utility\KeyHandler;
 use OrangeHRM\Core\Utility\PasswordHash;
 use OrangeHRM\Framework\Filesystem\Filesystem;
+use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Installer\Exception\MigrationException;
 use OrangeHRM\Installer\Migration\V3_3_3\Migration;
 use OrangeHRM\Installer\Util\Dto\DatabaseConnectionWrapper;
@@ -457,6 +460,52 @@ class AppSetupUtility
         $fs = new Filesystem();
         $fs->dumpFile(Config::get(Config::CONF_FILE_PATH), str_replace($search, $replace, $template));
         clearstatcache(true);
+    }
+
+    /**
+     * Application base URL derived from a web installer/upgrader request, e.g.
+     * `https://hr.example.com/orangehrm/installer/index.php/...`
+     * gives `https://hr.example.com/orangehrm/web/index.php`.
+     * Null when the request carries no host (CLI) or is not served from the installer front controller.
+     *
+     * @param Request $request
+     * @return string|null
+     */
+    public function getInstanceBaseUrlFromRequest(Request $request): ?string
+    {
+        if ($request->getHost() === '') {
+            return null;
+        }
+        $baseUrl = $request->getBaseUrl();
+        if (substr($baseUrl, -strlen('/installer/index.php')) === '/installer/index.php') {
+            $basePath = substr($baseUrl, 0, -strlen('/installer/index.php'));
+        } elseif (substr($baseUrl, -strlen('/installer')) === '/installer') {
+            $basePath = substr($baseUrl, 0, -strlen('/installer'));
+        } else {
+            return null;
+        }
+        return InstanceBaseUrl::normalize($request->getSchemeAndHttpHost() . $basePath . '/web/index.php');
+    }
+
+    /**
+     * Store the application base URL used for links in emails (e.g. password reset),
+     * unless one is already stored. Returns true if the value was stored.
+     *
+     * @param string|null $baseUrl
+     * @return bool
+     */
+    public function saveInstanceBaseUrl(?string $baseUrl): bool
+    {
+        $baseUrl = InstanceBaseUrl::normalize($baseUrl);
+        if ($baseUrl === null) {
+            return false;
+        }
+        $current = $this->getConfigHelper()->getConfigValue(ConfigService::KEY_INSTANCE_BASE_URL);
+        if (InstanceBaseUrl::normalize($current) !== null) {
+            return false;
+        }
+        $this->getConfigHelper()->setConfigValue(ConfigService::KEY_INSTANCE_BASE_URL, $baseUrl);
+        return true;
     }
 
     /**
