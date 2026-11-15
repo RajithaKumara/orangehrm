@@ -463,64 +463,6 @@ class AppSetupUtility
     }
 
     /**
-     * Application base URL derived from a web installer/upgrader request, e.g.
-     * `https://hr.example.com/orangehrm/installer/index.php/...`
-     * gives `https://hr.example.com/orangehrm/web/index.php`.
-     * Null when the request carries no host (CLI) or is not served from the installer front controller.
-     *
-     * @param Request $request
-     * @return string|null
-     */
-    public function getInstanceBaseUrlFromRequest(Request $request): ?string
-    {
-        if ($request->getHost() === '') {
-            return null;
-        }
-        $baseUrl = $request->getBaseUrl();
-        if (substr($baseUrl, -strlen('/installer/index.php')) === '/installer/index.php') {
-            $basePath = substr($baseUrl, 0, -strlen('/installer/index.php'));
-        } elseif (substr($baseUrl, -strlen('/installer')) === '/installer') {
-            $basePath = substr($baseUrl, 0, -strlen('/installer'));
-        } else {
-            return null;
-        }
-        return InstanceBaseUrl::normalize($request->getSchemeAndHttpHost() . $basePath . '/web/index.php');
-    }
-
-    /**
-     * Store the application base URL used for links in emails (e.g. password reset).
-     * A value derived from a request (`$replace` false) is stored only when no valid value is stored yet;
-     * a value the administrator entered (`$replace` true) replaces the stored one.
-     * Returns true if the value was stored.
-     *
-     * @param string|null $baseUrl
-     * @param bool $replace
-     * @return bool
-     */
-    public function saveInstanceBaseUrl(?string $baseUrl, bool $replace = false): bool
-    {
-        $baseUrl = InstanceBaseUrl::normalize($baseUrl);
-        if ($baseUrl === null) {
-            return false;
-        }
-        if (!$replace && $this->getStoredInstanceBaseUrl() !== null) {
-            return false;
-        }
-        $this->getConfigHelper()->setConfigValue(ConfigService::KEY_INSTANCE_BASE_URL, $baseUrl);
-        return true;
-    }
-
-    /**
-     * @return string|null the valid application base URL stored in the database, if any
-     */
-    public function getStoredInstanceBaseUrl(): ?string
-    {
-        return InstanceBaseUrl::normalize(
-            $this->getConfigHelper()->getConfigValue(ConfigService::KEY_INSTANCE_BASE_URL)
-        );
-    }
-
-    /**
      * @throws KeyHandlerException
      */
     public function writeKeyFile(): void
@@ -675,5 +617,63 @@ class AppSetupUtility
     {
         $dbName = StateContainer::getInstance()->getDbInfo()[StateContainer::DB_NAME];
         Connection::getConnection()->createSchemaManager()->dropDatabase($dbName);
+    }
+
+    /**
+     * Application base URL derived from a web installer/upgrader request, e.g.
+     * `https://hr.example.com/orangehrm/installer/index.php/...`
+     * gives `https://hr.example.com/orangehrm/web/index.php`.
+     * Null when the request carries no host (CLI) or is not served from the installer front controller.
+     *
+     * @param Request $request
+     * @return string|null
+     */
+    public function getInstanceBaseUrlFromRequest(Request $request): ?string
+    {
+        if ($request->getHost() === '') {
+            return null;
+        }
+        $baseUrl = $request->getBaseUrl();
+        if (substr($baseUrl, -strlen('/installer/index.php')) === '/installer/index.php') {
+            $basePath = substr($baseUrl, 0, -strlen('/installer/index.php'));
+        } elseif (substr($baseUrl, -strlen('/installer')) === '/installer') {
+            $basePath = substr($baseUrl, 0, -strlen('/installer'));
+        } else {
+            return null;
+        }
+        return InstanceBaseUrl::normalize($request->getSchemeAndHttpHost() . $basePath . '/web/index.php');
+    }
+
+    /**
+     * Store the application base URL used for links in emails (e.g. password reset).
+     * A value derived from a request (`$replace` false) is stored only when no valid value is stored yet;
+     * a value the administrator entered (`$replace` true) replaces the stored one.
+     * Returns true if the value was stored.
+     *
+     * @param string|null $baseUrl
+     * @param bool $replace
+     * @return bool
+     */
+    public function saveInstanceBaseUrl(?string $baseUrl, bool $replace = false): bool
+    {
+        $baseUrl = InstanceBaseUrl::normalize($baseUrl);
+        if ($baseUrl === null) {
+            return false;
+        }
+        if (!$replace && $this->getStoredInstanceBaseUrl() !== null) {
+            return false;
+        }
+        $this->getConfigHelper()->setConfigValue(ConfigService::KEY_INSTANCE_BASE_URL, $baseUrl);
+        return true;
+    }
+
+    /**
+     * @return string|null the valid application base URL stored in the database, if any
+     */
+    public function getStoredInstanceBaseUrl(): ?string
+    {
+        return InstanceBaseUrl::normalize(
+            $this->getConfigHelper()->getConfigValue(ConfigService::KEY_INSTANCE_BASE_URL)
+        );
     }
 }
