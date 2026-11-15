@@ -116,7 +116,7 @@ class InstanceBaseUrlAPITest extends TestCase
 
     public function testJsonPostInvalidRequestResponse(): void
     {
-        $response = $this->execute(new InstanceBaseUrlAPI(), $this->jsonRequest('{"baseUrl":"evil.attacker.example"}'));
+        $response = $this->execute(new InstanceBaseUrlAPI(), $this->jsonRequest('{"baseUrl":"other.example"}'));
 
         $this->assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $body = json_decode($response->getContent(), true);
@@ -128,7 +128,7 @@ class InstanceBaseUrlAPITest extends TestCase
     public function testHandleRefusesOnInstalledSystem(): void
     {
         // The test environment is installed (Conf.php exists): the installer API answers 502 like every installer route
-        $response = (new InstanceBaseUrlAPI())->handle($this->request('POST', ['baseUrl' => 'https://evil.example/']));
+        $response = (new InstanceBaseUrlAPI())->handle($this->request('POST', ['baseUrl' => 'https://other.example/']));
 
         $this->assertSame(Response::HTTP_BAD_GATEWAY, $response->getStatusCode());
         $this->assertFalse(StateContainer::getInstance()->hasInstanceBaseUrl());

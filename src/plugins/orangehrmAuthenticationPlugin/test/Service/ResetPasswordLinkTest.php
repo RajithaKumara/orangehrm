@@ -48,7 +48,7 @@ use Symfony\Component\Routing\RouteCollection;
 class ResetPasswordLinkTest extends KernelTestCase
 {
     private const BASE_URL = 'https://hr.example.com/orangehrm/web/index.php';
-    private const FORGED_HOST = 'evil.attacker.example';
+    private const REQUEST_HOST = 'other.example';
     private const RESET_CODE = 'UmVudWtzaGFuI1NFUEFSQVRPUiP-random';
 
     private UrlGenerator $urlGenerator;
@@ -60,9 +60,9 @@ class ResetPasswordLinkTest extends KernelTestCase
         );
         $this->setStoredBaseUrl(null);
 
-        // Same wiring as Framework::configureRouter(), for a request that carries a forged Host header
+        // Same wiring as Framework::configureRouter(), for a request whose Host header differs from the stored URL
         $request = Request::create(
-            'http://' . self::FORGED_HOST . '/orangehrm/web/index.php/auth/requestResetPassword',
+            'http://' . self::REQUEST_HOST . '/orangehrm/web/index.php/auth/requestResetPassword',
             'POST',
             [],
             [],
@@ -97,7 +97,7 @@ class ResetPasswordLinkTest extends KernelTestCase
         $link = (new ResetPasswordService())->getPasswordResetLink(self::RESET_CODE);
 
         $this->assertSame(self::BASE_URL . '/auth/resetPassword/resetCode/' . self::RESET_CODE, $link);
-        $this->assertStringNotContainsString(self::FORGED_HOST, $link);
+        $this->assertStringNotContainsString(self::REQUEST_HOST, $link);
     }
 
     public function testResetLinkUsesNormalizedBaseUrl(): void
@@ -125,7 +125,7 @@ class ResetPasswordLinkTest extends KernelTestCase
         return [
             'not set' => [null],
             'empty' => [''],
-            'host only' => [self::FORGED_HOST],
+            'host only' => [self::REQUEST_HOST],
             'not http(s)' => ['ftp://hr.example.com/web/index.php'],
             'with query' => ['https://hr.example.com/web/index.php?x=1'],
         ];
@@ -138,9 +138,9 @@ class ResetPasswordLinkTest extends KernelTestCase
         (new ResetPasswordService())->getPasswordResetLink(self::RESET_CODE);
 
         // Other absolute URLs (redirects to the same client) keep using the request context
-        $this->assertSame(self::FORGED_HOST, $this->urlGenerator->getContext()->getHost());
+        $this->assertSame(self::REQUEST_HOST, $this->urlGenerator->getContext()->getHost());
         $this->assertSame(
-            'http://' . self::FORGED_HOST . '/orangehrm/web/index.php/auth/login',
+            'http://' . self::REQUEST_HOST . '/orangehrm/web/index.php/auth/login',
             $this->urlGenerator->generate('auth_login', [], UrlGenerator::ABSOLUTE_URL)
         );
     }
@@ -159,7 +159,7 @@ class ResetPasswordLinkTest extends KernelTestCase
             self::BASE_URL . '/auth/resetPassword/resetCode/' . self::RESET_CODE,
             $body
         );
-        $this->assertStringNotContainsString(self::FORGED_HOST, $body);
+        $this->assertStringNotContainsString(self::REQUEST_HOST, $body);
     }
 
     public function testEmailNotSentWithoutBaseUrl(): void

@@ -75,11 +75,11 @@ class AppSetupUtilityInstanceBaseUrlTest extends TestCase
                 ),
                 'http://hr.example.com/orangehrm/web/index.php',
             ],
-            'forged X-Forwarded-Host is ignored (no trusted proxies)' => [
+            'X-Forwarded-Host is ignored (no trusted proxies)' => [
                 $installerRequest(
                     'http://hr.example.com/installer/index.php/upgrader/api/config-file',
                     '/installer/index.php',
-                    ['HTTP_X_FORWARDED_HOST' => 'evil.attacker.example', 'HTTP_X_FORWARDED_PROTO' => 'https']
+                    ['HTTP_X_FORWARDED_HOST' => 'other.example', 'HTTP_X_FORWARDED_PROTO' => 'https']
                 ),
                 'http://hr.example.com/web/index.php',
             ],
