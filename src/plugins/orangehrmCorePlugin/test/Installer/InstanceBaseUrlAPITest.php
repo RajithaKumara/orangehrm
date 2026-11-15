@@ -35,6 +35,7 @@ use OrangeHRM\Installer\Util\StateContainer;
 use OrangeHRM\Tests\Util\TestCase;
 use ReflectionMethod;
 use RuntimeException;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Optional "Application URL" field of the web installer/upgrader, and how the config-file step stores it.
@@ -60,6 +61,68 @@ class InstanceBaseUrlAPITest extends TestCase
     protected function tearDown(): void
     {
         ServiceContainer::getContainer()->set(Services::SESSION, $this->previousSession);
+    }
+
+    public function testRoutes(): void
+    {
+        $routes = Yaml::parseFile(realpath(__DIR__ . '/../../../../../installer/config/routes.yaml'));
+
+        $this->assertSame('/installer/api/base-url', $routes['api_installer_base_url']['path']);
+        $this->assertSame(
+            InstallerInstanceBaseUrlAPI::class . '::handle',
+            $routes['api_installer_base_url']['controller']
+        );
+        $this->assertSame(['GET', 'POST'], $routes['api_installer_base_url']['methods']);
+        $this->assertSame('/upgrader/api/base-url', $routes['api_upgrader_base_url']['path']);
+        $this->assertSame(InstanceBaseUrlAPI::class . '::handle', $routes['api_upgrader_base_url']['controller']);
+        $this->assertSame(['GET', 'POST'], $routes['api_upgrader_base_url']['methods']);
+    }
+
+    public function testGetRequestResponse(): void
+    {
+        $response = $this->execute(new InstallerInstanceBaseUrlAPI(), $this->request('GET'));
+
+        $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
+        $this->assertSame('application/json', $response->headers->get('Content-Type'));
+        $this->assertSame(
+            [
+                'data' => [
+                    'baseUrl' => 'https://hr.example.com/orangehrm/web/index.php',
+                    'stored' => null,
+                    'detected' => 'https://hr.example.com/orangehrm/web/index.php',
+                ],
+            ],
+            json_decode($response->getContent(), true)
+        );
+    }
+
+    public function testJsonPostRequestResponse(): void
+    {
+        $response = $this->execute(
+            new InstanceBaseUrlAPI(),
+            $this->jsonRequest('{"baseUrl":"HTTPS://HR.Example.org/orangehrm/web/index.php/"}')
+        );
+
+        $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
+        $this->assertSame(
+            ['data' => ['baseUrl' => 'https://hr.example.org/orangehrm/web/index.php']],
+            json_decode($response->getContent(), true)
+        );
+        $this->assertSame(
+            'https://hr.example.org/orangehrm/web/index.php',
+            StateContainer::getInstance()->getInstanceBaseUrl()
+        );
+    }
+
+    public function testJsonPostInvalidRequestResponse(): void
+    {
+        $response = $this->execute(new InstanceBaseUrlAPI(), $this->jsonRequest('{"baseUrl":"evil.attacker.example"}'));
+
+        $this->assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $body = json_decode($response->getContent(), true);
+        $this->assertSame(Response::HTTP_BAD_REQUEST, $body['error']['status']);
+        $this->assertStringStartsWith('Invalid `baseUrl`: expected the OrangeHRM address', $body['error']['message']);
+        $this->assertFalse(StateContainer::getInstance()->hasInstanceBaseUrl());
     }
 
     public function testHandleRefusesOnInstalledSystem(): void
@@ -283,6 +346,36 @@ class InstanceBaseUrlAPITest extends TestCase
      * @param Request $request
      * @return array{status: int, body: array}
      */
+    private function jsonRequest(string $json): Request
+    {
+        return Request::create(
+            self::UPGRADER_URI,
+            'POST',
+            [],
+            [],
+            [],
+            [
+                'SCRIPT_NAME' => '/orangehrm/installer/index.php',
+                'SCRIPT_FILENAME' => '/var/www/orangehrm/installer/index.php',
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            $json
+        );
+    }
+
+    /**
+     * Request to response through the controller (JSON decoding, status, JSON body), as the router would call it,
+     * minus the "already installed" guard of handle().
+     *
+     * @param InstanceBaseUrlAPI $api
+     * @param Request $request
+     * @return Response
+     */
+    private function execute(InstanceBaseUrlAPI $api, Request $request): Response
+    {
+        return $this->invoke($api, 'execute', $request);
+    }
+
     private function call(InstanceBaseUrlAPI $api, Request $request): array
     {
         $body = $this->invoke($api, $request->getMethod() === 'GET' ? 'handleGet' : 'handlePost', $request);
