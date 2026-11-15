@@ -31,6 +31,7 @@ use OrangeHRM\Core\Controller\PublicControllerInterface;
 use OrangeHRM\Core\Exception\RedirectableException;
 use OrangeHRM\Core\Traits\Auth\AuthUserTrait;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
+use OrangeHRM\Entity\OpenIdProvider;
 use OrangeHRM\Framework\Http\RedirectResponse;
 use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Framework\Routing\UrlGenerator;
@@ -78,15 +79,20 @@ class OpenIdConnectRedirectController extends AbstractVueController implements P
      */
     public function handle(Request $request): RedirectResponse
     {
-        $this->beginTransaction();
         /** @var UrlGenerator $urlGenerator */
         $urlGenerator = $this->getContainer()->get(Services::URL_GENERATOR);
         $loginUrl = $urlGenerator->generate('auth_login', [], UrlGenerator::ABSOLUTE_URL);
 
         try {
+            $this->beginTransaction();
             $providerId = $this->getAuthUser()->getAttribute(AuthUser::OPENID_PROVIDER_ID);
-            $authProvider = $this->getSocialMediaAuthenticationService()->getAuthProviderDao()
-                ->getAuthProviderById($providerId);
+            $this->getAuthUser()->removeAttribute(AuthUser::OPENID_PROVIDER_ID);
+            $authProvider = is_int($providerId)
+                ? $this->getSocialMediaAuthenticationService()->getAuthProviderDao()->getAuthProviderById($providerId)
+                : null;
+            if (!$authProvider instanceof OpenIdProvider || !$authProvider->getStatus()) {
+                throw AuthenticationException::invalidCredentials();
+            }
             $authProviderExtraDetails = $this->getSocialMediaAuthenticationService()->getAuthProviderDao()
                 ->getAuthProviderDetailsByProviderId($providerId);
 
@@ -96,35 +102,37 @@ class OpenIdConnectRedirectController extends AbstractVueController implements P
                 $this->getSocialMediaAuthenticationService()->getRedirectURL()
             );
 
-            $oidcClient->authenticate();
+            if (!$oidcClient->authenticate()) {
+                throw AuthenticationException::invalidCredentials();
+            }
 
             $userCredentials = new UserCredential();
-            $userCredentials->setUsername($oidcClient->requestUserInfo('email'));
+            $userCredentials->setUsername(
+                $this->getSocialMediaAuthenticationService()->getVerifiedEmail(
+                    $oidcClient->getVerifiedClaims(),
+                    $oidcClient->requestUserInfo(),
+                    $authProvider
+                )
+            );
             $user = $this->getSocialMediaAuthenticationService()->getUserForAuthenticate($userCredentials);
 
-            $success = $this->getSocialMediaAuthenticationService()->handleOIDCAuthentication($user);
+            // Record the sign-in before any user attribute is written to the session
+            $this->getLoginService()->addOIDCLogin($user);
+            $this->commitTransaction();
 
-            if ($success) {
-                $this->getSocialMediaAuthenticationService()->setOIDCUserIdentity($user, $authProvider);
-                $this->getAuthUser()->setIsAuthenticated($success);
-                $this->getLoginService()->addOIDCLogin($user);
+            if (!$this->getSocialMediaAuthenticationService()->handleOIDCAuthentication($user)) {
+                throw AuthenticationException::invalidCredentials();
             }
-
-            $redirectUrl = $this->handleSessionTimeoutRedirect();
-            if ($redirectUrl) {
-                return new RedirectResponse($redirectUrl);
-            }
-
-            $homePagePath = $this->getHomePageService()->getHomePagePath();
-            return $this->redirect($homePagePath);
+            $this->getAuthUser()->setIsAuthenticated(true);
         } catch (AuthenticationException $e) {
-            $this->rollBackTransaction();
+            $this->rollBackIfActive();
             $this->getAuthUser()->addFlash(AuthUser::FLASH_LOGIN_ERROR, $e->normalize());
             if ($e instanceof RedirectableException) {
                 return new RedirectResponse($e->getRedirectUrl());
             }
             return new RedirectResponse($loginUrl);
         } catch (Throwable $e) {
+            $this->rollBackIfActive();
             $this->getAuthUser()->addFlash(
                 AuthUser::FLASH_LOGIN_ERROR,
                 [
@@ -133,6 +141,21 @@ class OpenIdConnectRedirectController extends AbstractVueController implements P
                 ]
             );
             return new RedirectResponse($loginUrl);
+        }
+
+        $redirectUrl = $this->handleSessionTimeoutRedirect();
+        if ($redirectUrl) {
+            return new RedirectResponse($redirectUrl);
+        }
+
+        $homePagePath = $this->getHomePageService()->getHomePagePath();
+        return $this->redirect($homePagePath);
+    }
+
+    private function rollBackIfActive(): void
+    {
+        if ($this->getEntityManager()->getConnection()->isTransactionActive()) {
+            $this->rollBackTransaction();
         }
     }
 }

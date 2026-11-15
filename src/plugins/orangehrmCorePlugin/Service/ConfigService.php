@@ -47,6 +47,7 @@ class ConfigService
     public const KEY_ADMIN_DEFAULT_WORKSHIFT_START_TIME = 'admin.default_workshift_start_time';
     public const KEY_ADMIN_DEFAULT_WORKSHIFT_END_TIME = 'admin.default_workshift_end_time';
     public const KEY_OPENID_PROVIDER_ADDED = 'openId.provider.added';
+    public const KEY_OPENID_TRUST_EMAIL_WITHOUT_VERIFIED_CLAIM = 'openId.trust_email_without_verified_claim';
     public const KEY_OPEN_SOURCE_INTEGRATIONS = 'open_source_integrations';
     public const KEY_INSTANCE_IDENTIFIER = 'instance.identifier';
     public const KEY_SENDMAIL_PATH = 'email_config.sendmail_path';
@@ -420,6 +421,30 @@ class ConfigService
     public function setInstanceIdentifier(string $value): void
     {
         $this->_setConfigValue(self::KEY_INSTANCE_IDENTIFIER, $value);
+    }
+
+    /**
+     * Ids of the OpenID providers whose email claim is accepted when the provider sends no
+     * `email_verified` claim for it. Comma-separated ids in the config row; not set by default, so every
+     * provider must send `email_verified` as true. Listing a provider trusts every email it asserts, so
+     * list only a provider whose users cannot choose their own email address (e.g. a single-tenant
+     * directory the organization controls). The trust follows the provider id, also if its URL is edited.
+     * @return int[]
+     */
+    public function getOpenIdProviderIdsTrustingEmailWithoutVerifiedClaim(): array
+    {
+        $value = $this->_getConfigValue(self::KEY_OPENID_TRUST_EMAIL_WITHOUT_VERIFIED_CLAIM);
+        if ($value === null) {
+            return [];
+        }
+        $ids = [];
+        foreach (explode(',', $value) as $id) {
+            $id = trim($id);
+            if (ctype_digit($id) && strlen($id) <= 10) {
+                $ids[] = (int)$id;
+            }
+        }
+        return array_values(array_unique($ids));
     }
 
     /**

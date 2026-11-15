@@ -1,0 +1,22 @@
+OpenIdProvider:
+  0: { id: 1, provider_name: 'Corp IdP', provider_url: 'https://idp.example/realms/corp', status: 1 }
+  1: { id: 2, provider_name: 'Removed IdP', provider_url: 'https://idp.example/realms/removed', status: 0 }
+  2: { id: 3, provider_name: 'Entra-like IdP', provider_url: 'https://idp.example/realms/noverified', status: 1 }
+
+# extra-details ids differ from the provider ids on purpose: the session must carry the provider id
+AuthProviderExtraDetails:
+  0: { id: 11, provider_id: 1, client_id: 'orangehrm-corp', client_secret: 'local-test-secret-1' }
+  1: { id: 12, provider_id: 2, client_id: 'orangehrm-removed', client_secret: 'local-test-secret-2' }
+  2: { id: 13, provider_id: 3, client_id: 'orangehrm-noverified', client_secret: 'local-test-secret-3' }
+
+Employee:
+  - { empNumber: 1, firstName: 'Vera', lastName: 'Admin', employeeId: 'E001', emp_work_email: 'vera.admin@orangehrm.us.com' }
+  - { empNumber: 2, firstName: 'Manul', lastName: 'Madara', employeeId: 'E002', emp_work_email: 'manul@orangehrm.us.com' }
+
+UserRole:
+  - { id: 1, name: Admin, display_name: Admin, is_assignable: 1, is_predefined: 1 }
+  - { id: 2, name: ESS, display_name: ESS, is_assignable: 1, is_predefined: 1 }
+
+User:
+  - { "id": 1, "user_role_id": 1, "emp_number": 1, "user_name": "vera.admin@orangehrm.us.com", "user_password": "x", "deleted": "0", "status": "1" }
+  - { "id": 2, "user_role_id": 2, "emp_number": 2, "user_name": "manul@orangehrm.us.com", "user_password": "x", "deleted": "0", "status": "1" }

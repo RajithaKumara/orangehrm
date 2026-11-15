@@ -61,7 +61,7 @@ class OpenIdConnectLoginController extends AbstractVueController implements Publ
 
         $provider = $this->getSocialMediaAuthenticationService()->getAuthProviderDao()
             ->getAuthProviderDetailsByProviderId($providerId);
-        if ($provider === null) {
+        if ($provider === null || !$provider->getOpenIdProvider()->getStatus()) {
             throw new BadRequestException();
         }
 
@@ -71,7 +71,7 @@ class OpenIdConnectLoginController extends AbstractVueController implements Publ
             $this->getSocialMediaAuthenticationService()->getRedirectURL()
         );
 
-        $this->getAuthUser()->setAttribute(AuthUser::OPENID_PROVIDER_ID, $provider->getId());
+        $this->getAuthUser()->setAttribute(AuthUser::OPENID_PROVIDER_ID, $provider->getOpenIdProvider()->getId());
         $oidcClient->authenticate();
 
         //redirect to consent always
