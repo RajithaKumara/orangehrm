@@ -135,6 +135,40 @@ class AppSetupUtilityInstanceBaseUrlTest extends TestCase
         );
     }
 
+    public function testSaveInstanceBaseUrlReplacesStoredValueWhenEnteredByAdmin(): void
+    {
+        $configHelper = $this->getMockBuilder(ConfigHelper::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getConfigValue', 'setConfigValue'])
+            ->getMock();
+        $configHelper->method('getConfigValue')
+            ->willReturn('http://staging.example.com/web/index.php');
+        $configHelper->expects($this->once())
+            ->method('setConfigValue')
+            ->with(ConfigService::KEY_INSTANCE_BASE_URL, 'https://hr.example.com/orangehrm/web/index.php');
+
+        $this->assertTrue(
+            $this->getAppSetupUtility($configHelper)
+                ->saveInstanceBaseUrl('https://hr.example.com/orangehrm/web/index.php', true)
+        );
+    }
+
+    public function testGetStoredInstanceBaseUrl(): void
+    {
+        $configHelper = $this->getMockBuilder(ConfigHelper::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getConfigValue'])
+            ->getMock();
+        $configHelper->method('getConfigValue')
+            ->with(ConfigService::KEY_INSTANCE_BASE_URL)
+            ->willReturnOnConsecutiveCalls('HTTPS://HR.example.com/web/index.php/', 'not a url', null);
+        $appSetupUtility = $this->getAppSetupUtility($configHelper);
+
+        $this->assertSame('https://hr.example.com/web/index.php', $appSetupUtility->getStoredInstanceBaseUrl());
+        $this->assertNull($appSetupUtility->getStoredInstanceBaseUrl());
+        $this->assertNull($appSetupUtility->getStoredInstanceBaseUrl());
+    }
+
     public function testSaveInstanceBaseUrlReplacesInvalidStoredValue(): void
     {
         $configHelper = $this->getMockBuilder(ConfigHelper::class)
