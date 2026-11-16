@@ -450,8 +450,8 @@ class AppSetupUtility
 
     /**
      * Content of `lib/confs/Conf.php` for the given database details.
-     * Every placeholder in `Conf.tpl.php` sits inside a single-quoted string literal,
-     * so each value is escaped for that literal and stays a plain string in the file.
+     * Each value is written base64-encoded and decoded by `base64_decode()` in `Conf.tpl.php`,
+     * so the generated file only ever holds base64 characters where a value goes.
      *
      * @param array $dbInfo as returned by StateContainer::getDbInfo()
      * @return string
@@ -468,44 +468,15 @@ class AppSetupUtility
             '{{dbPass}}' => $dbInfo[StateContainer::ORANGEHRM_DB_PASSWORD] ?? $dbInfo[StateContainer::DB_PASSWORD],
         ];
         foreach ($values as $placeholder => $value) {
-            $values[$placeholder] = $this->escapeForSingleQuotedPhpString($value, $placeholder);
+            if ($value === null) {
+                $value = '';
+            }
+            if (!is_scalar($value)) {
+                throw new InvalidArgumentException("Invalid value for $placeholder");
+            }
+            $values[$placeholder] = base64_encode((string)$value);
         }
-        // Single pass: a value that contains a placeholder is not substituted again
         return strtr($template, $values);
-    }
-
-    /**
-     * Escape a value for use between single quotes in PHP source: `\` and `'` are escaped, and each run of
-     * bytes >= 0x80 is written as a `hex2bin()` call concatenated into the literal, e.g.
-     * `pässwörd` gives `p' . hex2bin('c3a4') . 'ssw' . hex2bin('c3b6') . 'rd`. ASCII values are only escaped
-     * for `\` and `'`, so their output is unchanged.
-     * No byte >= 0x80 is left in the source, so values read back byte for byte also when PHP parses source in
-     * a multibyte encoding (`zend.multibyte` with e.g. SJIS, EUC-JP, BIG5 or GBK), whatever `internal_encoding`
-     * is. Script encodings that change the meaning of ASCII bytes themselves (e.g. SJIS-2004, ISO-2022-JP,
-     * UTF-7) are not supported.
-     * Conf.php with a non-ASCII value calls `hex2bin()` each time it is loaded, so that function must not be
-     * listed in `disable_functions`; tools that read Conf.php as text see the hex form of such a value.
-     *
-     * @param mixed $value
-     * @param string $placeholder
-     * @return string
-     */
-    private function escapeForSingleQuotedPhpString($value, string $placeholder): string
-    {
-        if ($value === null) {
-            return '';
-        }
-        if (!is_scalar($value)) {
-            throw new InvalidArgumentException("Invalid value for $placeholder");
-        }
-        $escaped = addcslashes((string)$value, "\\'");
-        return preg_replace_callback(
-            '/[\x80-\xFF]+/',
-            static function (array $matches): string {
-                return "' . hex2bin('" . bin2hex($matches[0]) . "') . '";
-            },
-            $escaped
-        );
     }
 
     /**

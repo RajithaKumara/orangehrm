@@ -115,7 +115,7 @@ class AppSetupUtilityConfFileTest extends TestCase
     /**
      * PHPUnit runs with ENVIRONMENT=test, so the production `dbName` line is checked as text.
      */
-    public function testProductionDatabaseNameLineHoldsTheEscapedValue(): void
+    public function testProductionDatabaseNameLineHoldsTheEncodedValue(): void
     {
         $dbName = "n';\$GLOBALS['" . self::MARKER_FLAG . "'] = true;//\\";
         $content = (new AppSetupUtility())->getConfFileContent(
@@ -123,28 +123,23 @@ class AppSetupUtilityConfFileTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            "\$this->dbName = 'n\\';\$GLOBALS[\\'" . self::MARKER_FLAG . "\\'] = true;//\\\\';",
+            "\$this->dbName = base64_decode('" . base64_encode($dbName) . "');",
             $content
         );
     }
 
-    public function testNonAsciiValuesAreWrittenAsAsciiOnly(): void
+    public function testEveryValueIsWrittenBase64Encoded(): void
     {
-        $content = (new AppSetupUtility())->getConfFileContent($this->getDbInfo(
-            "h\x83\\",
-            '3306',
-            "\xC3\x28\xFF",
-            'üser',
-            'pässwörd-密码'
-        ));
+        $values = ["h\x83\\", '3306', "\xC3\x28\xFF", 'üser', 'pässwörd-密码'];
+        $content = (new AppSetupUtility())->getConfFileContent($this->getDbInfo(...$values));
 
         $this->assertSame(0, preg_match('/[\x80-\xFF]/', $content));
-        $this->assertStringContainsString(
-            "\$this->dbPass = 'p' . hex2bin('c3a4') . 'ssw' . hex2bin('c3b6') . 'rd-'"
-            . " . hex2bin('e5af86e7a081') . '';",
-            $content
-        );
-        $this->assertStringContainsString("\$this->dbHost = 'h' . hex2bin('83') . '\\\\';", $content);
+        [$host, $port, $name, $user, $pass] = array_map('base64_encode', $values);
+        $this->assertStringContainsString("\$this->dbHost = base64_decode('$host');", $content);
+        $this->assertStringContainsString("\$this->dbPort = base64_decode('$port');", $content);
+        $this->assertStringContainsString("\$this->dbName = base64_decode('$name');", $content);
+        $this->assertStringContainsString("\$this->dbUser = base64_decode('$user');", $content);
+        $this->assertStringContainsString("\$this->dbPass = base64_decode('$pass');", $content);
     }
 
     public function multibyteSourceEncodingDataProvider(): array
@@ -160,9 +155,9 @@ class AppSetupUtilityConfFileTest extends TestCase
     }
 
     /**
-     * With zend.multibyte and e.g. a Shift_JIS source encoding, a lead byte followed by an inserted `\` would
-     * read as one character, and raw high bytes may be converted. No byte >= 0x80 is written, so the values
-     * still read back exactly and nothing runs. The file is loaded in a separate PHP process without
+     * With zend.multibyte and e.g. a Shift_JIS source encoding, raw high bytes in a literal could combine with
+     * the bytes after them or be converted. Values are written as base64 (ASCII only), so they still read back
+     * exactly and nothing runs. The file is loaded in a separate PHP process without
      * ENVIRONMENT, so the production `dbName` line is the one read there.
      *
      * @dataProvider multibyteSourceEncodingDataProvider
@@ -203,33 +198,16 @@ class AppSetupUtilityConfFileTest extends TestCase
         );
     }
 
-    public function testEveryTemplatePlaceholderIsInsideASingleQuotedString(): void
+    public function testEveryTemplatePlaceholderIsDecodedFromASingleQuotedString(): void
     {
         $template = file_get_contents(
             realpath(__DIR__ . '/../../../../../installer/config/Conf.tpl.php')
         );
         $this->assertSame(6, preg_match_all('/\{\{db(Host|Port|Name|User|Pass)\}\}/', $template));
-        foreach (token_get_all($template) as $token) {
-            if (is_array($token) && strpos($token[1], '{{') !== false) {
-                $this->assertSame(T_CONSTANT_ENCAPSED_STRING, $token[0], $token[1]);
-                $this->assertSame("'", $token[1][0], $token[1]);
-            }
-        }
-    }
-
-    public function testOrdinaryValuesGiveTheSameFileAsBefore(): void
-    {
-        $dbInfo = $this->getDbInfo('db.example.com', '3307', 'orangehrm_5', 'ohrm-user', 'Ohrm@1423#Secure!$x');
-        $template = file_get_contents(
-            realpath(__DIR__ . '/../../../../../installer/config/Conf.tpl.php')
+        $this->assertSame(
+            6,
+            preg_match_all("/base64_decode\\('\\{\\{db(Host|Port|Name|User|Pass)\\}\\}'\\)/", $template)
         );
-        $previous = str_replace(
-            ['{{dbHost}}', '{{dbPort}}', '{{dbName}}', '{{dbUser}}', '{{dbPass}}'],
-            ['db.example.com', '3307', 'orangehrm_5', 'ohrm-user', 'Ohrm@1423#Secure!$x'],
-            $template
-        );
-
-        $this->assertSame($previous, (new AppSetupUtility())->getConfFileContent($dbInfo));
     }
 
     public function testOrangehrmDatabaseUserIsWrittenWhenSet(): void
@@ -279,7 +257,7 @@ class AppSetupUtilityConfFileTest extends TestCase
         (new AppSetupUtility())->writeConfFile();
 
         $this->assertStringContainsString(
-            "\$this->dbHost = 'x\\';\$GLOBALS[\\'" . self::MARKER_FLAG . "\\'] = true;//';",
+            "\$this->dbHost = base64_decode('" . base64_encode($host) . "');",
             file_get_contents($this->confPath)
         );
     }
