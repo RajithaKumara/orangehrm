@@ -93,14 +93,10 @@ class DataGroupService
     /**
      * @param string $apiClassName
      * @param string[]|UserRole[] $roles Array of Role names or Array of UserRole objects
-     * @param bool $includeSelfPermissions Whether to count permissions granted only for the user's own record
      * @return ResourcePermission
      */
-    public function getApiPermissions(
-        string $apiClassName,
-        array $roles,
-        bool $includeSelfPermissions = true
-    ): ResourcePermission {
+    public function getApiPermissions(string $apiClassName, array $roles): ResourcePermission
+    {
         $apiPermissions = $this->getDao()->getApiPermissions($apiClassName, $roles);
 
         $read = false;
@@ -109,9 +105,6 @@ class DataGroupService
         $delete = false;
 
         foreach ($apiPermissions as $apiPermission) {
-            if (!$includeSelfPermissions && $apiPermission->isSelf()) {
-                continue;
-            }
             if ($apiPermission->canRead()) {
                 $read = true;
             }

@@ -33,8 +33,8 @@ use OrangeHRM\Core\Api\V2\Validator\ParamRule;
 use OrangeHRM\Core\Api\V2\Validator\ParamRuleCollection;
 use OrangeHRM\Core\Api\V2\Validator\Rule;
 use OrangeHRM\Core\Api\V2\Validator\Rules;
-use OrangeHRM\Core\Api\V2\Validator\Rules\ApiPermissionForEmpNumber;
 use OrangeHRM\Core\Traits\ServiceContainerTrait;
+use OrangeHRM\Core\Traits\UserRoleManagerTrait;
 use OrangeHRM\Entity\EmpDirectDebit;
 use OrangeHRM\Entity\EmployeeSalary;
 use OrangeHRM\Framework\Services;
@@ -45,6 +45,9 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
 {
     use ServiceContainerTrait;
     use EmployeeSalaryServiceTrait;
+    use UserRoleManagerTrait;
+
+    public const DATA_GROUP_SALARY = 'salary_details';
 
     public const PARAMETER_PAY_GRADE_ID = 'payGradeId';
     public const PARAMETER_SALARY_COMPONENT = 'salaryComponent';
@@ -112,6 +115,7 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
     public function getOne(): EndpointResourceResult
     {
         list($empNumber, $id) = $this->getUrlAttributes();
+        $this->checkSalaryPermission($empNumber, 'canRead');
         $employeeSalary = $this->getEmployeeSalaryService()->getEmployeeSalaryDao()->getEmployeeSalary($empNumber, $id);
         $this->throwRecordNotFoundExceptionIfNotExist($employeeSalary, EmployeeSalary::class);
 
@@ -139,6 +143,22 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
     }
 
     /**
+     * Same per-employee check as the salary screen: permissions granted only for the user's own
+     * record (self) count only when the employee is the logged-in employee.
+     *
+     * @param int $empNumber
+     * @param string $permissionGetter canRead, canCreate, canUpdate or canDelete
+     */
+    private function checkSalaryPermission(int $empNumber, string $permissionGetter): void
+    {
+        $permission = $this->getUserRoleManagerHelper()
+            ->getDataGroupPermissionsForEmployee(self::DATA_GROUP_SALARY, $empNumber);
+        if (!$permission->$permissionGetter()) {
+            throw $this->getForbiddenException();
+        }
+    }
+
+    /**
      * @inheritDoc
      */
     public function getValidationRuleForGetOne(): ParamRuleCollection
@@ -146,11 +166,7 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
         return new ParamRuleCollection(
             new ParamRule(
                 CommonParams::PARAMETER_EMP_NUMBER,
-                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS),
-                new Rule(
-                    Rules::API_PERMISSION_FOR_EMP_NUMBER,
-                    [self::class, ApiPermissionForEmpNumber::OPERATION_READ]
-                )
+                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS)
             ),
             new ParamRule(
                 CommonParams::PARAMETER_ID,
@@ -200,6 +216,7 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
     public function getAll(): EndpointCollectionResult
     {
         list($empNumber) = $this->getUrlAttributes();
+        $this->checkSalaryPermission($empNumber, 'canRead');
         $employeeSalarySearchFilterParams = new EmployeeSalarySearchFilterParams();
         $this->setSortingAndPaginationParams($employeeSalarySearchFilterParams);
         $employeeSalarySearchFilterParams->setEmpNumber($empNumber);
@@ -228,11 +245,7 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
         return new ParamRuleCollection(
             new ParamRule(
                 CommonParams::PARAMETER_EMP_NUMBER,
-                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS),
-                new Rule(
-                    Rules::API_PERMISSION_FOR_EMP_NUMBER,
-                    [self::class, ApiPermissionForEmpNumber::OPERATION_READ]
-                )
+                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS)
             ),
             ...$this->getSortingAndPaginationParamsRules(EmployeeSalarySearchFilterParams::ALLOWED_SORT_FIELDS)
         );
@@ -316,6 +329,7 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
     public function create(): EndpointResourceResult
     {
         list($empNumber) = $this->getUrlAttributes();
+        $this->checkSalaryPermission($empNumber, 'canCreate');
         $employeeSalary = new EmployeeSalary();
         $employeeSalary->getDecorator()->setEmployeeByEmpNumber($empNumber);
         $this->setEmployeeSalary($employeeSalary);
@@ -437,14 +451,10 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
      */
     public function getValidationRuleForCreate(): ParamRuleCollection
     {
-        return $this->getCommonBodyValidationRules(ApiPermissionForEmpNumber::OPERATION_CREATE);
+        return $this->getCommonBodyValidationRules();
     }
 
-    /**
-     * @param string $operation One of ApiPermissionForEmpNumber::OPERATION_*
-     * @return ParamRuleCollection
-     */
-    private function getCommonBodyValidationRules(string $operation): ParamRuleCollection
+    private function getCommonBodyValidationRules(): ParamRuleCollection
     {
         $addDirectDeposit = $this->getRequestParams()->getBoolean(
             RequestParams::PARAM_TYPE_BODY,
@@ -454,11 +464,7 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
         $paramRules = new ParamRuleCollection(
             new ParamRule(
                 CommonParams::PARAMETER_EMP_NUMBER,
-                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS),
-                new Rule(
-                    Rules::API_PERMISSION_FOR_EMP_NUMBER,
-                    [self::class, $operation]
-                )
+                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS)
             ),
             $this->getValidationDecorator()->notRequiredParamRule(
                 new ParamRule(
@@ -605,6 +611,7 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
     public function update(): EndpointResourceResult
     {
         list($empNumber, $id) = $this->getUrlAttributes();
+        $this->checkSalaryPermission($empNumber, 'canUpdate');
         $employeeSalary = $this->getEmployeeSalaryService()
             ->getEmployeeSalaryDao()
             ->getEmployeeSalary($empNumber, $id);
@@ -629,7 +636,7 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
      */
     public function getValidationRuleForUpdate(): ParamRuleCollection
     {
-        $paramRules = $this->getCommonBodyValidationRules(ApiPermissionForEmpNumber::OPERATION_UPDATE);
+        $paramRules = $this->getCommonBodyValidationRules();
         $paramRules->addParamValidation(
             new ParamRule(
                 CommonParams::PARAMETER_ID,
@@ -661,6 +668,7 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
             RequestParams::PARAM_TYPE_ATTRIBUTE,
             CommonParams::PARAMETER_EMP_NUMBER
         );
+        $this->checkSalaryPermission($empNumber, 'canDelete');
         $ids = $this->getEmployeeSalaryService()->getEmployeeSalaryDao()->getExistingEmployeeSalaryIdsByEmpNumber(
             $this->getRequestParams()->getArray(RequestParams::PARAM_TYPE_BODY, CommonParams::PARAMETER_IDS),
             $empNumber
@@ -682,11 +690,7 @@ class EmployeeSalaryComponentAPI extends Endpoint implements CrudEndpoint
         return new ParamRuleCollection(
             new ParamRule(
                 CommonParams::PARAMETER_EMP_NUMBER,
-                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS),
-                new Rule(
-                    Rules::API_PERMISSION_FOR_EMP_NUMBER,
-                    [self::class, ApiPermissionForEmpNumber::OPERATION_DELETE]
-                )
+                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS)
             ),
             new ParamRule(CommonParams::PARAMETER_IDS),
         );
