@@ -20,14 +20,13 @@
 namespace OrangeHRM\Tests\OpenidAuthentication\Controller;
 
 use DateTime;
+use Jumbojett\OpenIDConnectClientException;
 use OrangeHRM\Authentication\Auth\User as AuthUser;
 use OrangeHRM\Authentication\Service\AuthenticationService;
 use OrangeHRM\Authentication\Service\LoginService;
 use RuntimeException;
 use OrangeHRM\Config\Config;
-use OrangeHRM\Core\Api\V2\Exception\BadRequestException;
 use OrangeHRM\Core\Authorization\Service\HomePageService;
-use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Core\Service\DateTimeHelperService;
 use OrangeHRM\Entity\LoginLog;
 use OrangeHRM\Framework\Http\RedirectResponse;
@@ -39,6 +38,7 @@ use OrangeHRM\Framework\Routing\UrlGenerator;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\OpenidAuthentication\Controller\OpenIdConnectLoginController;
 use OrangeHRM\OpenidAuthentication\Controller\OpenIdConnectRedirectController;
+use OrangeHRM\OpenidAuthentication\Exception\OpenIdConnectAuthenticationException;
 use OrangeHRM\OpenidAuthentication\OpenID\OpenIDConnectClient;
 use OrangeHRM\OpenidAuthentication\Service\SocialMediaAuthenticationService;
 use OrangeHRM\Tests\Util\KernelTestCase;
@@ -59,6 +59,7 @@ class OpenIdConnectControllerTest extends KernelTestCase
     private const LOGIN_URL = 'http://orangehrm.test/web/index.php/auth/login';
 
     private Session $session;
+    private array $warnings = [];
 
     protected function setUp(): void
     {
@@ -80,9 +81,8 @@ class OpenIdConnectControllerTest extends KernelTestCase
 
     /**
      * @param OpenIDConnectClient|null $client
-     * @param string|null $trustedProviderIds opt-out config row value, null = no row
      */
-    private function mockServices(?OpenIDConnectClient $client, ?string $trustedProviderIds = null): void
+    private function mockServices(?OpenIDConnectClient $client): void
     {
         $this->session = new Session(new MemorySessionStorage());
 
@@ -102,19 +102,19 @@ class OpenIdConnectControllerTest extends KernelTestCase
             ->getMock();
         $urlGenerator->method('generate')->willReturn(self::LOGIN_URL);
 
-        $configService = $this->getMockBuilder(ConfigService::class)
-            ->onlyMethods(['_getConfigValue'])
-            ->getMock();
-        $configService->method('_getConfigValue')->willReturnCallback(
-            fn (string $key) => $key === ConfigService::KEY_OPENID_TRUST_EMAIL_WITHOUT_VERIFIED_CLAIM
-                ? $trustedProviderIds
-                : null
-        );
-
         $dateTimeHelper = $this->getMockBuilder(DateTimeHelperService::class)
             ->onlyMethods(['getNow'])
             ->getMock();
         $dateTimeHelper->method('getNow')->willReturn(new DateTime('2026-11-16 09:00:00'));
+
+        $this->warnings = [];
+        $logger = $this->getMockBuilder(Logger::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['warning'])
+            ->getMock();
+        $logger->method('warning')->willReturnCallback(function ($message) {
+            $this->warnings[] = $message;
+        });
 
         $this->createKernelWithMockServices([
             Services::SESSION => $this->session,
@@ -122,9 +122,8 @@ class OpenIdConnectControllerTest extends KernelTestCase
             Services::SOCIAL_MEDIA_AUTH_SERVICE => $service,
             Services::AUTHENTICATION_SERVICE => new AuthenticationService(),
             Services::URL_GENERATOR => $urlGenerator,
-            Services::CONFIG_SERVICE => $configService,
             Services::DATETIME_HELPER_SERVICE => $dateTimeHelper,
-            Services::LOGGER => $this->getMockBuilder(Logger::class)->disableOriginalConstructor()->getMock(),
+            Services::LOGGER => $logger,
         ]);
     }
 
@@ -184,9 +183,9 @@ class OpenIdConnectControllerTest extends KernelTestCase
      * @return array{0: RedirectResponse, 1: bool, 2: string|null}
      *         [response, authenticated, flashed login error]
      */
-    private function runCallback(int $sessionProviderId, array $idTokenClaims, array $userInfo, ?string $trusted = null): array
+    private function runCallback(int $sessionProviderId, array $idTokenClaims, array $userInfo): array
     {
-        $this->mockServices($this->client($idTokenClaims, $userInfo), $trusted);
+        $this->mockServices($this->client($idTokenClaims, $userInfo));
         $this->session->set(AuthUser::OPENID_PROVIDER_ID, $sessionProviderId);
         $response = $this->callbackController()->handle(new Request());
         $flash = $this->session->getFlashBag()->get(AuthUser::FLASH_LOGIN_ERROR);
@@ -290,41 +289,80 @@ class OpenIdConnectControllerTest extends KernelTestCase
             ['sub' => self::SUB, 'email' => self::ADMIN, 'email_verified' => false]
         );
         $this->assertRefused($result);
-        $this->assertSame('invalid_credentials', $result[2]);
+        $this->assertSame(OpenIdConnectAuthenticationException::EMAIL_NOT_VERIFIED, $result[2]);
         $this->assertNull(AuthUser::getInstance()->getUserId());
     }
 
     public function testEmailWithoutVerifiedClaimIsRefused(): void
     {
         $result = $this->runCallback(
-            3,
+            1,
             ['sub' => self::SUB, 'email' => self::ADMIN],
             ['sub' => self::SUB, 'email' => self::ADMIN]
         );
         $this->assertRefused($result);
+        $this->assertSame(OpenIdConnectAuthenticationException::EMAIL_NOT_VERIFIED, $result[2]);
     }
 
-    public function testEmailWithoutVerifiedClaimAcceptedForListedProvider(): void
+    /**
+     * A provider that existed before 5.9.1 has both checks off and signs in as before the upgrade.
+     */
+    public function testProviderWithChecksOffSignsInAsBefore(): void
     {
-        [, $authenticated] = $this->runCallback(
+        [, $authenticated, $error] = $this->runCallback(
             3,
-            ['sub' => self::SUB, 'email' => self::ESS],
-            ['sub' => self::SUB, 'email' => self::ESS],
-            '3'
+            ['sub' => self::SUB],
+            ['sub' => 'another-subject', 'email' => self::ESS, 'email_verified' => false]
         );
+        $this->assertNull($error, implode("\n", $this->warnings));
         $this->assertTrue($authenticated);
         $this->assertSame(2, AuthUser::getInstance()->getUserId());
     }
 
-    public function testListingAnotherProviderDoesNotHelp(): void
+    /**
+     * Refusals after the user lookup share one message, so the response does not tell whether
+     * an account exists for the email. The reason is logged for the administrator.
+     *
+     * @dataProvider accountRefusalProvider
+     */
+    public function testAccountRefusalsShareOneMessage(string $email, string $loggedReason): void
     {
         $result = $this->runCallback(
-            3,
-            ['sub' => self::SUB, 'email' => self::ESS],
-            ['sub' => self::SUB, 'email' => self::ESS],
-            '1'
+            1,
+            ['sub' => self::SUB, 'email' => $email, 'email_verified' => true],
+            ['sub' => self::SUB, 'email' => $email, 'email_verified' => true]
         );
         $this->assertRefused($result);
+        $this->assertSame(OpenIdConnectAuthenticationException::ACCOUNT_NOT_AVAILABLE, $result[2]);
+        $this->assertCount(1, $this->warnings);
+        $this->assertStringContainsString($loggedReason, $this->warnings[0]);
+    }
+
+    public function accountRefusalProvider(): array
+    {
+        return [
+            'no account for the email' => ['nobody@orangehrm.us.com', 'No User Found'],
+            'disabled account' => ['dora.disabled@orangehrm.us.com', 'Account disabled'],
+        ];
+    }
+
+    public function testProviderErrorIsReportedAsSignInFailed(): void
+    {
+        $client = $this->getMockBuilder(OpenIDConnectClient::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['authenticate', 'getVerifiedClaims', 'requestUserInfo'])
+            ->getMock();
+        // e.g. the user cancelled at the provider: ?error=access_denied
+        $client->method('authenticate')->willThrowException(new OpenIDConnectClientException('Error: access_denied'));
+        $this->mockServices($client);
+        $this->session->set(AuthUser::OPENID_PROVIDER_ID, 1);
+
+        $response = $this->callbackController()->handle(new Request());
+        $flash = $this->session->getFlashBag()->get(AuthUser::FLASH_LOGIN_ERROR);
+        $this->assertSame(self::LOGIN_URL, $response->getTargetUrl());
+        $this->assertSame(OpenIdConnectAuthenticationException::SIGN_IN_FAILED, $flash[0]['error'] ?? null);
+        $this->assertFalse(AuthUser::getInstance()->isAuthenticated());
+        $this->assertStringContainsString('access_denied', $this->warnings[0]);
     }
 
     public function testUserinfoForAnotherSubjectIsRefused(): void
@@ -335,6 +373,7 @@ class OpenIdConnectControllerTest extends KernelTestCase
             ['sub' => 'another-subject', 'email' => self::ESS, 'email_verified' => true]
         );
         $this->assertRefused($result);
+        $this->assertSame(OpenIdConnectAuthenticationException::INCONSISTENT_USER_DETAILS, $result[2]);
     }
 
     public function testDisabledProviderCallbackIsRefused(): void
@@ -345,7 +384,7 @@ class OpenIdConnectControllerTest extends KernelTestCase
             ['sub' => self::SUB, 'email' => self::ESS, 'email_verified' => true]
         );
         $this->assertRefused($result);
-        $this->assertSame('invalid_credentials', $result[2]);
+        $this->assertSame(OpenIdConnectAuthenticationException::PROVIDER_NOT_AVAILABLE, $result[2]);
     }
 
     public function testCallbackWithoutStartedFlowIsRefused(): void
@@ -390,21 +429,42 @@ class OpenIdConnectControllerTest extends KernelTestCase
         $this->assertSame(1, $this->session->get(AuthUser::OPENID_PROVIDER_ID));
     }
 
-    public function testStartWithDisabledProviderIsRefused(): void
+    /**
+     * @dataProvider unavailableProviderIdProvider
+     */
+    public function testStartWithUnavailableProviderReturnsToLogin(int $providerId): void
     {
         $this->mockServices(null);
         $request = new Request();
-        $request->attributes->set('providerId', 2);
-        $this->expectException(BadRequestException::class);
-        (new OpenIdConnectLoginController())->handle($request);
+        $request->attributes->set('providerId', $providerId);
+        $response = (new OpenIdConnectLoginController())->handle($request);
+        $flash = $this->session->getFlashBag()->get(AuthUser::FLASH_LOGIN_ERROR);
+        $this->assertSame(self::LOGIN_URL, $response->getTargetUrl());
+        $this->assertSame(OpenIdConnectAuthenticationException::PROVIDER_NOT_AVAILABLE, $flash[0]['error'] ?? null);
+        $this->assertFalse($this->session->has(AuthUser::OPENID_PROVIDER_ID));
     }
 
-    public function testStartWithUnknownProviderIsRefused(): void
+    public function unavailableProviderIdProvider(): array
     {
-        $this->mockServices(null);
+        return ['disabled provider' => [2], 'unknown provider' => [99]];
+    }
+
+    public function testStartWithUnreachableProviderReturnsToLogin(): void
+    {
+        $client = $this->getMockBuilder(OpenIDConnectClient::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['authenticate'])
+            ->getMock();
+        $client->method('authenticate')->willThrowException(
+            new OpenIDConnectClientException('Unable to get provider configuration data')
+        );
+        $this->mockServices($client);
         $request = new Request();
-        $request->attributes->set('providerId', 99);
-        $this->expectException(BadRequestException::class);
-        (new OpenIdConnectLoginController())->handle($request);
+        $request->attributes->set('providerId', 1);
+
+        $response = (new OpenIdConnectLoginController())->handle($request);
+        $flash = $this->session->getFlashBag()->get(AuthUser::FLASH_LOGIN_ERROR);
+        $this->assertSame(self::LOGIN_URL, $response->getTargetUrl());
+        $this->assertSame(OpenIdConnectAuthenticationException::SIGN_IN_FAILED, $flash[0]['error'] ?? null);
     }
 }

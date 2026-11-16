@@ -1,0 +1,13 @@
+langStrings:
+  -
+    value: 'Require Verified Email'
+    unitId: require_verified_email
+  -
+    value: 'Allow sign-in only when the provider confirms that the user''s email address is verified'
+    unitId: require_verified_email_hint
+  -
+    value: 'Require Matching User ID'
+    unitId: require_matching_user_id
+  -
+    value: 'Allow sign-in only when the provider returns the same user ID in the ID token and the user info'
+    unitId: require_matching_user_id_hint

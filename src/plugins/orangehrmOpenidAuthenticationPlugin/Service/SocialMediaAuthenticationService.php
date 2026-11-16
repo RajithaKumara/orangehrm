@@ -25,10 +25,8 @@ use OrangeHRM\Authentication\Dto\UserCredential;
 use OrangeHRM\Authentication\Exception\AuthenticationException;
 use OrangeHRM\Authentication\Service\AuthenticationService;
 use OrangeHRM\Authentication\Traits\Service\AuthenticationServiceTrait;
-use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Core\Traits\Auth\AuthUserTrait;
 use OrangeHRM\Core\Traits\LoggerTrait;
-use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
 use OrangeHRM\Core\Utility\EncryptionHelperTrait;
 use OrangeHRM\Entity\AuthProviderExtraDetails;
 use OrangeHRM\Entity\EmployeeTerminationRecord;
@@ -39,6 +37,7 @@ use OrangeHRM\Framework\Routing\UrlGenerator;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\OpenidAuthentication\Dao\AuthProviderDao;
 use OrangeHRM\OpenidAuthentication\Dto\ProviderSearchFilterParams;
+use OrangeHRM\OpenidAuthentication\Exception\OpenIdConnectAuthenticationException;
 use OrangeHRM\OpenidAuthentication\OpenID\OpenIDConnectClient;
 use OrangeHRM\OpenidAuthentication\Traits\Service\SocialMediaAuthenticationServiceTrait;
 
@@ -48,7 +47,6 @@ class SocialMediaAuthenticationService
     use AuthenticationServiceTrait;
     use EncryptionHelperTrait;
     use AuthUserTrait;
-    use ConfigServiceTrait;
     use LoggerTrait;
 
     private AuthenticationService $authenticationService;
@@ -130,42 +128,69 @@ class SocialMediaAuthenticationService
     }
 
     /**
-     * Returns the email address the provider vouches for, to be matched against a username.
-     * The userinfo response must belong to the subject of the verified ID token, carry an email,
-     * and mark it as verified (`email_verified` true). A provider that sends no `email_verified`
-     * claim at all is accepted only if its id is listed in the
-     * `openId.trust_email_without_verified_claim` config row.
+     * Returns the email address to match against a username, applying the provider's sign-in checks.
+     * With both checks off this is the userinfo `email`, as before 5.9.1.
+     *
+     * - Require matching subject: the userinfo `sub` must equal the ID token `sub`
+     *   (OpenID Connect Core 1.0, 5.3.2), so both responses describe the same user.
+     * - Require verified email: `email_verified` must be true for the email used. An ID token email, if
+     *   present, must equal the userinfo email; an explicit non-true `email_verified` in either response
+     *   refuses; a true value counts only from a response that also carries the email.
+     *
+     * Runs before any local user is looked up, so its refusals cannot reveal whether an account exists.
      *
      * @param mixed $idTokenClaims verified ID token claims
      * @param mixed $userInfo userinfo response
      * @param OpenIdProvider $provider
      *
      * @return string
-     * @throws AuthenticationException
+     * @throws OpenIdConnectAuthenticationException
      */
     public function getVerifiedEmail($idTokenClaims, $userInfo, OpenIdProvider $provider): string
     {
         if (!is_object($idTokenClaims) || !is_object($userInfo)) {
-            throw $this->rejectClaims($provider, 'missing ID token claims or userinfo response');
+            $this->logRefusal($provider, 'missing ID token claims or userinfo response');
+            throw OpenIdConnectAuthenticationException::signInFailed();
         }
 
-        $subject = $idTokenClaims->{self::CLAIM_SUBJECT} ?? null;
-        if (!is_string($subject) || $subject === '' || ($userInfo->{self::CLAIM_SUBJECT} ?? null) !== $subject) {
-            throw $this->rejectClaims($provider, 'userinfo subject does not match the ID token subject');
+        if ($provider->isRequireMatchingSubject()) {
+            $subject = $idTokenClaims->{self::CLAIM_SUBJECT} ?? null;
+            if (!is_string($subject) || $subject === ''
+                || ($userInfo->{self::CLAIM_SUBJECT} ?? null) !== $subject) {
+                $this->logRefusal($provider, 'userinfo subject does not match the ID token subject');
+                throw OpenIdConnectAuthenticationException::inconsistentUserDetails();
+            }
         }
 
         $email = $userInfo->{self::CLAIM_EMAIL} ?? null;
         if (!is_string($email) || trim($email) === '') {
-            throw $this->rejectClaims($provider, 'no email claim');
+            $this->logRefusal($provider, 'no email claim in the userinfo response');
+            throw OpenIdConnectAuthenticationException::emailNotShared();
         }
+
+        if ($provider->isRequireVerifiedEmail()) {
+            $this->checkEmailVerified($idTokenClaims, $userInfo, $email, $provider);
+        }
+
+        return $email;
+    }
+
+    /**
+     * @param object $idTokenClaims
+     * @param object $userInfo
+     * @param string $email userinfo email
+     * @param OpenIdProvider $provider
+     * @throws OpenIdConnectAuthenticationException
+     */
+    private function checkEmailVerified(object $idTokenClaims, object $userInfo, string $email, OpenIdProvider $provider): void
+    {
         if (property_exists($idTokenClaims, self::CLAIM_EMAIL)
             && (!is_string($idTokenClaims->{self::CLAIM_EMAIL})
                 || !$this->isSameIdentifier($idTokenClaims->{self::CLAIM_EMAIL}, $email))) {
-            throw $this->rejectClaims($provider, 'ID token email differs from userinfo email');
+            $this->logRefusal($provider, 'ID token email differs from the userinfo email');
+            throw OpenIdConnectAuthenticationException::inconsistentUserDetails();
         }
 
-        // An explicit non-true email_verified in either source refuses. A true value counts only from a
-        // source that also carries the email (the ID token's email was compared above).
         $verifiedForEmail = false;
         foreach ([$userInfo, $idTokenClaims] as $claims) {
             if (!property_exists($claims, self::CLAIM_EMAIL_VERIFIED)) {
@@ -174,40 +199,36 @@ class SocialMediaAuthenticationService
             $verified = $claims->{self::CLAIM_EMAIL_VERIFIED};
             // Some providers (e.g. Amazon Cognito userinfo) send the string "true"
             if ($verified !== true && $verified !== 'true') {
-                throw $this->rejectClaims($provider, 'email is not verified by the provider');
+                $this->logRefusal($provider, 'email_verified is not true');
+                throw OpenIdConnectAuthenticationException::emailNotVerified();
             }
             if (property_exists($claims, self::CLAIM_EMAIL)) {
                 $verifiedForEmail = true;
             }
         }
 
-        if (!$verifiedForEmail && !in_array(
-            $provider->getId(),
-            $this->getConfigService()->getOpenIdProviderIdsTrustingEmailWithoutVerifiedClaim(),
-            true
-        )) {
-            throw $this->rejectClaims(
+        if (!$verifiedForEmail) {
+            $this->logRefusal(
                 $provider,
-                'no email_verified claim for the email; list the provider id in hs_hr_config `'
-                . ConfigService::KEY_OPENID_TRUST_EMAIL_WITHOUT_VERIFIED_CLAIM
-                . '` to accept its emails without it'
+                'no email_verified claim for the email; turn off "Require verified email" for this provider'
+                . ' only if its users cannot choose their own email address'
             );
+            throw OpenIdConnectAuthenticationException::emailNotVerified();
         }
-
-        return $email;
     }
 
     /**
+     * Logs why a sign-in was refused, for the administrator. The user only sees the exception message.
+     * The email address is not logged.
+     *
      * @param OpenIdProvider $provider
      * @param string $reason
-     * @return AuthenticationException
      */
-    private function rejectClaims(OpenIdProvider $provider, string $reason): AuthenticationException
+    public function logRefusal(OpenIdProvider $provider, string $reason): void
     {
         $this->getLogger()->warning(
             sprintf('OpenID Connect sign-in refused (provider id %d): %s', $provider->getId(), $reason)
         );
-        return AuthenticationException::invalidCredentials();
     }
 
     /**

@@ -1,3 +1,20 @@
+New & Changed Features for OrangeHRM ver 5.9.1
+    New Features/Changes
+    -----------
+    - OpenID Connect providers (Admin > Configuration > Social Media Authentication)
+        - New "Require Verified Email" and "Require Matching User ID" options per provider
+        - Enabled by default for new providers; existing providers keep their current behaviour
+          until an administrator enables them
+        - Clearer messages on the login page when an OpenID Connect sign-in is refused
+    - Supported Environments
+        - PHP - 7.4 to 8.5
+        - MariaDB - 5.5 to 12.0
+        - MySQL - 5.5 to 9.4
+
+    Bug Fixes
+    ---------
+    - Security improvements
+
 New & Changed Features for OrangeHRM ver 5.9
     New Features/Changes
     -----------

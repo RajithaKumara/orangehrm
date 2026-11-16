@@ -23,14 +23,15 @@ use OrangeHRM\Admin\Dao\UserDao;
 use OrangeHRM\Authentication\Dto\UserCredential;
 use OrangeHRM\Authentication\Exception\AuthenticationException;
 use OrangeHRM\Config\Config;
-use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Entity\OpenIdProvider;
 use OrangeHRM\Entity\User;
 use OrangeHRM\Framework\Logger\Logger;
 use OrangeHRM\Framework\Services;
+use OrangeHRM\OpenidAuthentication\Exception\OpenIdConnectAuthenticationException;
 use OrangeHRM\OpenidAuthentication\Service\SocialMediaAuthenticationService;
 use OrangeHRM\Tests\Util\KernelTestCase;
 use OrangeHRM\Tests\Util\TestDataService;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * @group OpenId
@@ -54,10 +55,7 @@ class SocialMediaAuthenticationServiceVerifiedEmailTest extends KernelTestCase
         $this->warnings = [];
     }
 
-    /**
-     * @param string|null $trustedProviderIds value of the opt-out config row, null = no row
-     */
-    private function mockServices(?string $trustedProviderIds = null): void
+    private function mockServices(): void
     {
         $logger = $this->getMockBuilder(Logger::class)
             ->disableOriginalConstructor()
@@ -67,28 +65,18 @@ class SocialMediaAuthenticationServiceVerifiedEmailTest extends KernelTestCase
             $this->warnings[] = $message;
         });
 
-        $configService = $this->getMockBuilder(ConfigService::class)
-            ->onlyMethods(['_getConfigValue'])
-            ->getMock();
-        $configService->method('_getConfigValue')->willReturnCallback(
-            fn (string $key) => $key === ConfigService::KEY_OPENID_TRUST_EMAIL_WITHOUT_VERIFIED_CLAIM
-                ? $trustedProviderIds
-                : null
-        );
-
-        $this->createKernelWithMockServices([
-            Services::LOGGER => $logger,
-            Services::CONFIG_SERVICE => $configService,
-        ]);
+        $this->createKernelWithMockServices([Services::LOGGER => $logger]);
     }
 
-    private function provider(int $id = 1): OpenIdProvider
+    private function provider(bool $requireVerifiedEmail = true, bool $requireMatchingSubject = true): OpenIdProvider
     {
         $provider = new OpenIdProvider();
-        $provider->setId($id);
+        $provider->setId(1);
         $provider->setProviderName('Test IdP');
         $provider->setProviderUrl('https://idp.example');
         $provider->setStatus(true);
+        $provider->setRequireVerifiedEmail($requireVerifiedEmail);
+        $provider->setRequireMatchingSubject($requireMatchingSubject);
         return $provider;
     }
 
@@ -143,22 +131,22 @@ class SocialMediaAuthenticationServiceVerifiedEmailTest extends KernelTestCase
         $sub = (object)['sub' => self::SUB];
         $info = fn (array $extra) => (object)(['sub' => self::SUB, 'email' => self::EMAIL] + $extra);
         return [
-            'email_verified false' => [$sub, $info(['email_verified' => false]), 'not verified'],
-            'email_verified string "false"' => [$sub, $info(['email_verified' => 'false']), 'not verified'],
-            'email_verified null' => [$sub, $info(['email_verified' => null]), 'not verified'],
-            'email_verified 1' => [$sub, $info(['email_verified' => 1]), 'not verified'],
-            'email_verified "1"' => [$sub, $info(['email_verified' => '1']), 'not verified'],
-            'email_verified "TRUE"' => [$sub, $info(['email_verified' => 'TRUE']), 'not verified'],
+            'email_verified false' => [$sub, $info(['email_verified' => false]), 'not true'],
+            'email_verified string "false"' => [$sub, $info(['email_verified' => 'false']), 'not true'],
+            'email_verified null' => [$sub, $info(['email_verified' => null]), 'not true'],
+            'email_verified 1' => [$sub, $info(['email_verified' => 1]), 'not true'],
+            'email_verified "1"' => [$sub, $info(['email_verified' => '1']), 'not true'],
+            'email_verified "TRUE"' => [$sub, $info(['email_verified' => 'TRUE']), 'not true'],
             'no email_verified claim anywhere' => [$sub, $info([]), 'no email_verified claim'],
             'ID token false, userinfo true' => [
                 (object)['sub' => self::SUB, 'email_verified' => false],
                 $info(['email_verified' => true]),
-                'not verified',
+                'not true',
             ],
             'userinfo false, ID token true' => [
                 (object)['sub' => self::SUB, 'email_verified' => true],
                 $info(['email_verified' => false]),
-                'not verified',
+                'not true',
             ],
             'userinfo sub differs from ID token sub' => [
                 $sub,
@@ -227,58 +215,134 @@ class SocialMediaAuthenticationServiceVerifiedEmailTest extends KernelTestCase
         try {
             $this->service->getVerifiedEmail($idTokenClaims, $userInfo, $this->provider());
             $this->fail('Expected the claims to be refused');
-        } catch (AuthenticationException $e) {
-            $this->assertSame('Invalid credentials', $e->getMessage());
+        } catch (OpenIdConnectAuthenticationException $e) {
+            $this->assertSame($this->expectedMessage($reason), $e->getMessage());
         }
         $this->assertCount(1, $this->warnings);
         $this->assertStringContainsString('provider id 1', $this->warnings[0]);
         $this->assertStringContainsString($reason, $this->warnings[0]);
+        $this->assertStringNotContainsString(self::EMAIL, $this->warnings[0], 'the email is not logged');
     }
 
-    public function testMissingVerifiedClaimAcceptedForListedProvider(): void
+    /**
+     * The message the user sees for the reason logged for the administrator.
+     */
+    private function expectedMessage(string $reason): string
     {
-        $this->mockServices('3, 1');
+        switch ($reason) {
+            case 'not true':
+            case 'no email_verified claim':
+                return OpenIdConnectAuthenticationException::emailNotVerified()->getMessage();
+            case 'subject':
+            case 'differs':
+                return OpenIdConnectAuthenticationException::inconsistentUserDetails()->getMessage();
+            case 'no email':
+                return OpenIdConnectAuthenticationException::emailNotShared()->getMessage();
+            case 'missing':
+                return OpenIdConnectAuthenticationException::signInFailed()->getMessage();
+        }
+        $this->fail("Unknown reason $reason");
+    }
+
+    /**
+     * With both checks off, sign-in works as before 5.9.1: the userinfo email is used as it is.
+     */
+    public function testBothChecksOffKeepsPreviousBehaviour(): void
+    {
+        $this->mockServices();
+        $cases = [
+            'no email_verified claim' => [['sub' => self::SUB], ['sub' => self::SUB, 'email' => self::EMAIL]],
+            'email_verified false' => [
+                ['sub' => self::SUB],
+                ['sub' => self::SUB, 'email' => self::EMAIL, 'email_verified' => false],
+            ],
+            'sub differs' => [['sub' => self::SUB], ['sub' => 'someone-else', 'email' => self::EMAIL]],
+            'no sub anywhere' => [[], ['email' => self::EMAIL]],
+            'ID token email differs' => [
+                ['sub' => self::SUB, 'email' => 'other@orangehrm.us.com'],
+                ['sub' => self::SUB, 'email' => self::EMAIL],
+            ],
+        ];
+        foreach ($cases as $name => [$idTokenClaims, $userInfo]) {
+            $this->assertSame(
+                self::EMAIL,
+                $this->service->getVerifiedEmail((object)$idTokenClaims, (object)$userInfo, $this->provider(false, false)),
+                $name
+            );
+        }
+        $this->assertSame([], $this->warnings);
+    }
+
+    public function testBothChecksOffStillNeedsAnEmail(): void
+    {
+        $this->mockServices();
+        $this->expectExceptionMessage(OpenIdConnectAuthenticationException::emailNotShared()->getMessage());
+        $this->service->getVerifiedEmail(
+            (object)['sub' => self::SUB],
+            (object)['sub' => self::SUB],
+            $this->provider(false, false)
+        );
+    }
+
+    public function testVerifiedEmailOnlyIgnoresSubject(): void
+    {
+        $this->mockServices();
         $this->assertSame(
             self::EMAIL,
             $this->service->getVerifiedEmail(
                 (object)['sub' => self::SUB],
-                (object)['sub' => self::SUB, 'email' => self::EMAIL],
-                $this->provider(1)
+                (object)['sub' => 'someone-else', 'email' => self::EMAIL, 'email_verified' => true],
+                $this->provider(true, false)
             )
         );
-    }
 
-    public function testMissingVerifiedClaimRefusedForUnlistedProvider(): void
-    {
-        $this->mockServices('2,3');
-        $this->expectException(AuthenticationException::class);
+        $this->expectExceptionMessage(OpenIdConnectAuthenticationException::emailNotVerified()->getMessage());
         $this->service->getVerifiedEmail(
             (object)['sub' => self::SUB],
-            (object)['sub' => self::SUB, 'email' => self::EMAIL],
-            $this->provider(1)
+            (object)['sub' => 'someone-else', 'email' => self::EMAIL, 'email_verified' => false],
+            $this->provider(true, false)
         );
     }
 
-    public function testExplicitFalseRefusedEvenForListedProvider(): void
+    public function testMatchingSubjectOnlyIgnoresEmailVerification(): void
     {
-        $this->mockServices('1');
-        $this->expectException(AuthenticationException::class);
+        $this->mockServices();
+        $this->assertSame(
+            self::EMAIL,
+            $this->service->getVerifiedEmail(
+                (object)['sub' => self::SUB],
+                (object)['sub' => self::SUB, 'email' => self::EMAIL, 'email_verified' => false],
+                $this->provider(false, true)
+            )
+        );
+
+        $this->expectExceptionMessage(OpenIdConnectAuthenticationException::inconsistentUserDetails()->getMessage());
         $this->service->getVerifiedEmail(
             (object)['sub' => self::SUB],
-            (object)['sub' => self::SUB, 'email' => self::EMAIL, 'email_verified' => false],
-            $this->provider(1)
+            (object)['sub' => 'someone-else', 'email' => self::EMAIL, 'email_verified' => true],
+            $this->provider(false, true)
         );
     }
 
-    public function testListedProviderStillNeedsMatchingSubject(): void
+    /**
+     * The login page translates the message by its English text, so each one needs a lang string.
+     */
+    public function testEveryMessageHasALangString(): void
     {
-        $this->mockServices('1');
-        $this->expectException(AuthenticationException::class);
-        $this->service->getVerifiedEmail(
-            (object)['sub' => self::SUB],
-            (object)['sub' => 'someone-else', 'email' => self::EMAIL],
-            $this->provider(1)
-        );
+        $langStrings = Yaml::parseFile(
+            realpath(__DIR__ . '/../../../../../installer/Migration/V5_9_1/lang-string/auth.yaml')
+        )['langStrings'];
+        $values = array_column($langStrings, 'value', 'unitId');
+        foreach ([
+            OpenIdConnectAuthenticationException::providerNotAvailable(),
+            OpenIdConnectAuthenticationException::signInFailed(),
+            OpenIdConnectAuthenticationException::inconsistentUserDetails(),
+            OpenIdConnectAuthenticationException::emailNotShared(),
+            OpenIdConnectAuthenticationException::emailNotVerified(),
+            OpenIdConnectAuthenticationException::accountNotAvailable(),
+        ] as $exception) {
+            $this->assertContains($exception->getMessage(), $values);
+        }
     }
 
     public function testGetUserForAuthenticateMatchesUsernameIgnoringCase(): void

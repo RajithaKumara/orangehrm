@@ -20,6 +20,7 @@
 namespace OrangeHRM\OpenidAuthentication\Controller;
 
 use Exception;
+use Jumbojett\OpenIDConnectClientException;
 use OrangeHRM\Authentication\Auth\User as AuthUser;
 use OrangeHRM\Authentication\Controller\Traits\SessionHandlingTrait;
 use OrangeHRM\Authentication\Dto\UserCredential;
@@ -37,6 +38,7 @@ use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Framework\Routing\UrlGenerator;
 use OrangeHRM\Framework\Services;
 use OrangeHRM\I18N\Traits\Service\I18NHelperTrait;
+use OrangeHRM\OpenidAuthentication\Exception\OpenIdConnectAuthenticationException;
 use OrangeHRM\OpenidAuthentication\Traits\Service\SocialMediaAuthenticationServiceTrait;
 use Throwable;
 
@@ -91,7 +93,7 @@ class OpenIdConnectRedirectController extends AbstractVueController implements P
                 ? $this->getSocialMediaAuthenticationService()->getAuthProviderDao()->getAuthProviderById($providerId)
                 : null;
             if (!$authProvider instanceof OpenIdProvider || !$authProvider->getStatus()) {
-                throw AuthenticationException::invalidCredentials();
+                throw OpenIdConnectAuthenticationException::providerNotAvailable();
             }
             $authProviderExtraDetails = $this->getSocialMediaAuthenticationService()->getAuthProviderDao()
                 ->getAuthProviderDetailsByProviderId($providerId);
@@ -102,26 +104,42 @@ class OpenIdConnectRedirectController extends AbstractVueController implements P
                 $this->getSocialMediaAuthenticationService()->getRedirectURL()
             );
 
-            if (!$oidcClient->authenticate()) {
-                throw AuthenticationException::invalidCredentials();
+            try {
+                if (!$oidcClient->authenticate()) {
+                    throw new OpenIDConnectClientException('authenticate() returned false');
+                }
+                $idTokenClaims = $oidcClient->getVerifiedClaims();
+                $userInfo = $oidcClient->requestUserInfo();
+            } catch (OpenIDConnectClientException $e) {
+                // e.g. the user cancelled at the provider, or the state, token or userinfo response was invalid
+                $this->getSocialMediaAuthenticationService()->logRefusal($authProvider, $e->getMessage());
+                throw OpenIdConnectAuthenticationException::signInFailed();
             }
 
             $userCredentials = new UserCredential();
             $userCredentials->setUsername(
-                $this->getSocialMediaAuthenticationService()->getVerifiedEmail(
-                    $oidcClient->getVerifiedClaims(),
-                    $oidcClient->requestUserInfo(),
-                    $authProvider
-                )
+                $this->getSocialMediaAuthenticationService()->getVerifiedEmail($idTokenClaims, $userInfo, $authProvider)
             );
-            $user = $this->getSocialMediaAuthenticationService()->getUserForAuthenticate($userCredentials);
 
-            // Record the sign-in before any user attribute is written to the session
-            $this->getLoginService()->addOIDCLogin($user);
-            $this->commitTransaction();
+            // From here on the local account is involved: one message for every refusal, so that a sign-in
+            // attempt does not reveal whether an account exists for the email
+            try {
+                // Refuses deleted, disabled, terminated and employee-less users before anything is recorded
+                $user = $this->getSocialMediaAuthenticationService()->getUserForAuthenticate($userCredentials);
 
-            if (!$this->getSocialMediaAuthenticationService()->handleOIDCAuthentication($user)) {
-                throw AuthenticationException::invalidCredentials();
+                // Record the sign-in before any user attribute is written to the session
+                $this->getLoginService()->addOIDCLogin($user);
+                $this->commitTransaction();
+
+                if (!$this->getSocialMediaAuthenticationService()->handleOIDCAuthentication($user)) {
+                    throw AuthenticationException::invalidCredentials();
+                }
+            } catch (AuthenticationException $e) {
+                $this->getSocialMediaAuthenticationService()->logRefusal(
+                    $authProvider,
+                    'local account refused: ' . $e->getMessage()
+                );
+                throw OpenIdConnectAuthenticationException::accountNotAvailable();
             }
             $this->getAuthUser()->setIsAuthenticated(true);
         } catch (AuthenticationException $e) {
