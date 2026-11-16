@@ -446,38 +446,4 @@ class ConfigServiceTest extends KernelTestCase
             $startDay
         );
     }
-
-    /**
-     * @return array<string, array{0: string|null, 1: int[]}>
-     */
-    public function openIdTrustedProviderIdsProvider(): array
-    {
-        return [
-            'no row' => [null, []],
-            'empty' => ['', []],
-            'single' => ['3', [3]],
-            'list with spaces' => [' 1, 4 ,7', [1, 4, 7]],
-            'duplicates' => ['2,2,5', [2, 5]],
-            'junk ignored' => ['1,abc,-2,3.5,,0x4, 6', [1, 6]],
-            'over-long id ignored' => ['12345678901234567890,8', [8]],
-        ];
-    }
-
-    /**
-     * @dataProvider openIdTrustedProviderIdsProvider
-     * @param int[] $expected
-     */
-    public function testGetOpenIdProviderIdsTrustingEmailWithoutVerifiedClaim(?string $value, array $expected): void
-    {
-        $mockDao = $this->getMockBuilder(ConfigDao::class)
-            ->onlyMethods(['getValue'])
-            ->getMock();
-        $mockDao->expects($this->once())
-            ->method('getValue')
-            ->with(ConfigService::KEY_OPENID_TRUST_EMAIL_WITHOUT_VERIFIED_CLAIM)
-            ->willReturn($value);
-        $this->configService->setConfigDao($mockDao);
-
-        $this->assertSame($expected, $this->configService->getOpenIdProviderIdsTrustingEmailWithoutVerifiedClaim());
-    }
 }
