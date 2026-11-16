@@ -436,47 +436,26 @@ class AppSetupUtility
         return [$createQuery, $grantQuery];
     }
 
-    /**
-     * @throws InvalidArgumentException if a stored value is not scalar
-     */
     public function writeConfFile(): void
     {
-        $content = $this->getConfFileContent(StateContainer::getInstance()->getDbInfo());
+        $template = file_get_contents(realpath(__DIR__ . '/../config/Conf.tpl.php'));
+        $search = ['{{dbHost}}', '{{dbPort}}', '{{dbName}}', '{{dbUser}}', '{{dbPass}}'];
+        $dbInfo = StateContainer::getInstance()->getDbInfo();
+        $replace = [
+            $dbInfo[StateContainer::DB_HOST],
+            $dbInfo[StateContainer::DB_PORT],
+            $dbInfo[StateContainer::DB_NAME],
+            $dbInfo[StateContainer::ORANGEHRM_DB_USER] ?? $dbInfo[StateContainer::DB_USER],
+            $dbInfo[StateContainer::ORANGEHRM_DB_PASSWORD] ?? $dbInfo[StateContainer::DB_PASSWORD],
+        ];
+        // Conf.tpl.php decodes each value with base64_decode(), so a value is never read as PHP code
+        $replace = array_map(static function ($value): string {
+            return base64_encode((string)$value);
+        }, $replace);
 
         $fs = new Filesystem();
-        $fs->dumpFile(Config::get(Config::CONF_FILE_PATH), $content);
+        $fs->dumpFile(Config::get(Config::CONF_FILE_PATH), str_replace($search, $replace, $template));
         clearstatcache(true);
-    }
-
-    /**
-     * Content of `lib/confs/Conf.php` for the given database details.
-     * Each value is written base64-encoded and decoded by `base64_decode()` in `Conf.tpl.php`,
-     * so the generated file only ever holds base64 characters where a value goes.
-     *
-     * @param array $dbInfo as returned by StateContainer::getDbInfo()
-     * @return string
-     * @throws InvalidArgumentException if a value is not scalar
-     */
-    public function getConfFileContent(array $dbInfo): string
-    {
-        $template = file_get_contents(realpath(__DIR__ . '/../config/Conf.tpl.php'));
-        $values = [
-            '{{dbHost}}' => $dbInfo[StateContainer::DB_HOST],
-            '{{dbPort}}' => $dbInfo[StateContainer::DB_PORT],
-            '{{dbName}}' => $dbInfo[StateContainer::DB_NAME],
-            '{{dbUser}}' => $dbInfo[StateContainer::ORANGEHRM_DB_USER] ?? $dbInfo[StateContainer::DB_USER],
-            '{{dbPass}}' => $dbInfo[StateContainer::ORANGEHRM_DB_PASSWORD] ?? $dbInfo[StateContainer::DB_PASSWORD],
-        ];
-        foreach ($values as $placeholder => $value) {
-            if ($value === null) {
-                $value = '';
-            }
-            if (!is_scalar($value)) {
-                throw new InvalidArgumentException("Invalid value for $placeholder");
-            }
-            $values[$placeholder] = base64_encode((string)$value);
-        }
-        return strtr($template, $values);
     }
 
     /**

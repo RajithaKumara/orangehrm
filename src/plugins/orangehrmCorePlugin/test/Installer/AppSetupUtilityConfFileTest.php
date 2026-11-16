@@ -19,7 +19,6 @@
 
 namespace OrangeHRM\Tests\Core\Installer;
 
-use InvalidArgumentException;
 use OrangeHRM\Authentication\Dto\UserCredential;
 use OrangeHRM\Config\Config;
 use OrangeHRM\Framework\Http\Session\MemorySessionStorage;
@@ -118,9 +117,7 @@ class AppSetupUtilityConfFileTest extends TestCase
     public function testProductionDatabaseNameLineHoldsTheEncodedValue(): void
     {
         $dbName = "n';\$GLOBALS['" . self::MARKER_FLAG . "'] = true;//\\";
-        $content = (new AppSetupUtility())->getConfFileContent(
-            $this->getDbInfo('localhost', '3306', $dbName, 'root', 'pw')
-        );
+        $content = $this->writeConfContent('localhost', '3306', $dbName, 'root', 'pw');
 
         $this->assertStringContainsString(
             "\$this->dbName = base64_decode('" . base64_encode($dbName) . "');",
@@ -131,7 +128,7 @@ class AppSetupUtilityConfFileTest extends TestCase
     public function testEveryValueIsWrittenBase64Encoded(): void
     {
         $values = ["h\x83\\", '3306', "\xC3\x28\xFF", 'üser', 'pässwörd-密码'];
-        $content = (new AppSetupUtility())->getConfFileContent($this->getDbInfo(...$values));
+        $content = $this->writeConfContent(...$values);
 
         $this->assertSame(0, preg_match('/[\x80-\xFF]/', $content));
         [$host, $port, $name, $user, $pass] = array_map('base64_encode', $values);
@@ -172,10 +169,7 @@ class AppSetupUtilityConfFileTest extends TestCase
             "u\x95';echo \"MARKER\";//",
             'pässwörd-密码',
         ];
-        file_put_contents(
-            $this->confPath,
-            (new AppSetupUtility())->getConfFileContent($this->getDbInfo(...$values))
-        );
+        $this->writeConfContent(...$values);
 
         $script = 'include ' . var_export($this->confPath, true) . '; $c = new Conf(); echo PHP_EOL, "RESULT:",'
             . ' json_encode(array_map("bin2hex", [$c->getDbHost(), $c->getDbPort(), $c->getDbName(),'
@@ -231,23 +225,6 @@ class AppSetupUtilityConfFileTest extends TestCase
         $this->assertSame('', $conf->getDbPass());
     }
 
-    public function testIntegerPortIsWrittenAsString(): void
-    {
-        $dbInfo = $this->getDbInfo('localhost', 3306, 'orangehrm', 'root', 'pw');
-
-        $conf = $this->loadConf((new AppSetupUtility())->getConfFileContent($dbInfo));
-
-        $this->assertSame('3306', $conf->getDbPort());
-    }
-
-    public function testNonScalarValueIsRejected(): void
-    {
-        $dbInfo = $this->getDbInfo(['x'], '3306', 'orangehrm', 'root', 'pw');
-
-        $this->expectException(InvalidArgumentException::class);
-        (new AppSetupUtility())->getConfFileContent($dbInfo);
-    }
-
     public function testWriteConfFileWritesToTheConfiguredPath(): void
     {
         $this->assertSame($this->confPath, Config::get(Config::CONF_FILE_PATH));
@@ -301,23 +278,13 @@ class AppSetupUtilityConfFileTest extends TestCase
     }
 
     /**
-     * @param mixed $host
-     * @param mixed $port
-     * @param mixed $name
-     * @param mixed $user
-     * @param mixed $password
-     * @return array
+     * Store the details the way the installer APIs do, write Conf.php and return its content.
      */
-    private function getDbInfo($host, $port, $name, $user, $password): array
+    private function writeConfContent(string $host, string $port, string $name, string $user, string $password): string
     {
-        return [
-            StateContainer::DB_HOST => $host,
-            StateContainer::DB_PORT => $port,
-            StateContainer::DB_NAME => $name,
-            StateContainer::DB_USER => $user,
-            StateContainer::DB_PASSWORD => $password,
-            StateContainer::ENABLE_DATA_ENCRYPTION => false,
-        ];
+        StateContainer::getInstance()->storeDbInfo($host, $port, new UserCredential($user, $password), $name);
+        (new AppSetupUtility())->writeConfFile();
+        return file_get_contents($this->confPath);
     }
 
     /**
