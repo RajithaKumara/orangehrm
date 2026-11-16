@@ -64,7 +64,7 @@ class RequestTest extends TestCase
         );
         $request = new Request($httpRequest);
         $this->assertEquals(
-            ['all' => 'route', 'queryAndBody' => 'query', 'routeAndBody' => 'route'],
+            ['all' => 'route', 'queryAndBody' => 'body', 'routeAndBody' => 'route'],
             $request->getAllParameters()
         );
     }

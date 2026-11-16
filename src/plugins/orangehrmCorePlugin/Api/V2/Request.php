@@ -120,7 +120,7 @@ class Request
     }
 
     /**
-     * Route attributes take precedence, then query string, then body.
+     * Route attributes take precedence, then body, then query string.
      * Use with `getConflictingQueryKeys`, which rejects a query value that disagrees with
      * the route attribute or the body value of the same name.
      *
@@ -129,8 +129,8 @@ class Request
     public function getAllParameters(): array
     {
         return array_merge(
-            $this->getBody()->all(),
             $this->getQuery()->all(),
+            $this->getBody()->all(),
             $this->getAttributes()->all(),
         );
     }
