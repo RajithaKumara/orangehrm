@@ -240,10 +240,7 @@ class ResetPasswordService
 
             $body = $this->generatePasswordResetEmailBody($receiver, $resetCode, $userName);
             if ($body === null) {
-                $this->getLogger()->error(
-                    'Password reset email suppressed: the application base URL is not configured (`' .
-                    ConfigService::KEY_INSTANCE_BASE_URL . '` in `hs_hr_config`)'
-                );
+                $this->logMissingInstanceBaseUrl();
                 return false;
             }
 
@@ -258,6 +255,17 @@ class ResetPasswordService
             $this->getLogger()->error('Invalid Email configuration');
             return false;
         }
+    }
+
+    /**
+     * Log why no password reset email is sent while the application base URL is not configured.
+     */
+    public function logMissingInstanceBaseUrl(): void
+    {
+        $this->getLogger()->error(
+            'Password reset email suppressed: the application base URL is not configured (`' .
+            ConfigService::KEY_INSTANCE_BASE_URL . '` in `hs_hr_config`)'
+        );
     }
 
     /**

@@ -55,6 +55,7 @@ class RequestResetPasswordControllerTest extends KernelTestCase
     private const BASE_URL = 'https://hr.example.com/orangehrm/web/index.php';
     private const REQUEST_HOST = 'other.example';
     private const USERNAME = 'Renukshan';
+    private const UNKNOWN_USERNAME = 'no.such.user';
 
     private ?string $body = null;
     private int $sendCount = 0;
@@ -113,9 +114,38 @@ class RequestResetPasswordControllerTest extends KernelTestCase
     }
 
     /**
+     * Without a stored application URL the answer must not tell an existing username from an unknown one.
+     */
+    public function testUnknownUsernameGetsTheSameAnswerWithoutStoredBaseUrl(): void
+    {
+        $known = $this->handle();
+        $unknown = $this->handle(self::UNKNOWN_USERNAME);
+
+        $this->assertSame(0, $this->sendCount);
+        $this->assertSame(
+            'http://' . self::REQUEST_HOST . '/orangehrm/web/index.php/auth/sendPasswordResetFailure',
+            $unknown->getTargetUrl()
+        );
+        $this->assertSame($known->getTargetUrl(), $unknown->getTargetUrl());
+    }
+
+    public function testUnknownUsernameWithStoredBaseUrl(): void
+    {
+        $this->setStoredBaseUrl(self::BASE_URL);
+
+        $response = $this->handle(self::UNKNOWN_USERNAME);
+
+        $this->assertSame(0, $this->sendCount);
+        $this->assertSame(
+            'http://' . self::REQUEST_HOST . '/orangehrm/web/index.php/auth/sendPasswordReset',
+            $response->getTargetUrl()
+        );
+    }
+
+    /**
      * POST /auth/requestResetPassword with Host: other.example, through the controller.
      */
-    private function handle()
+    private function handle(string $username = self::USERNAME)
     {
         $request = Request::create(
             'http://' . self::REQUEST_HOST . '/orangehrm/web/index.php/auth/requestResetPassword',
@@ -146,7 +176,7 @@ class RequestResetPasswordControllerTest extends KernelTestCase
         $this->getContainer()->register(Services::CSRF_TOKEN_MANAGER, CsrfTokenManager::class);
 
         $request->request->set('_token', $this->getCsrfTokenManager()->getToken('request-reset-password')->getValue());
-        $request->request->set('username', self::USERNAME);
+        $request->request->set('username', $username);
 
         $service = $this->getMockBuilder(ResetPasswordService::class)
             ->onlyMethods(['getEmailService'])
