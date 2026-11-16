@@ -142,6 +142,14 @@ class OpenIdConnectRedirectController extends AbstractVueController implements P
                 throw OpenIdConnectAuthenticationException::accountNotAvailable();
             }
             $this->getAuthUser()->setIsAuthenticated(true);
+
+            $redirectUrl = $this->handleSessionTimeoutRedirect();
+            if ($redirectUrl) {
+                return new RedirectResponse($redirectUrl);
+            }
+
+            $homePagePath = $this->getHomePageService()->getHomePagePath();
+            return $this->redirect($homePagePath);
         } catch (AuthenticationException $e) {
             $this->rollBackIfActive();
             $this->getAuthUser()->addFlash(AuthUser::FLASH_LOGIN_ERROR, $e->normalize());
@@ -161,13 +169,6 @@ class OpenIdConnectRedirectController extends AbstractVueController implements P
             return new RedirectResponse($loginUrl);
         }
 
-        $redirectUrl = $this->handleSessionTimeoutRedirect();
-        if ($redirectUrl) {
-            return new RedirectResponse($redirectUrl);
-        }
-
-        $homePagePath = $this->getHomePageService()->getHomePagePath();
-        return $this->redirect($homePagePath);
     }
 
     private function rollBackIfActive(): void

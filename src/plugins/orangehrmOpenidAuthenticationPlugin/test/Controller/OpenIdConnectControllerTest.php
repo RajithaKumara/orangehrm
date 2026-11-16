@@ -271,6 +271,32 @@ class OpenIdConnectControllerTest extends KernelTestCase
         $this->assertSame([self::ESS], $this->loginLogUsers());
     }
 
+    public function testFailureWhileRedirectingAfterSignInReturnsToLoginPage(): void
+    {
+        $this->mockServices($this->client(
+            ['sub' => self::SUB, 'email' => self::ESS, 'email_verified' => true],
+            ['sub' => self::SUB, 'email' => self::ESS, 'email_verified' => true]
+        ));
+        $this->session->set(AuthUser::OPENID_PROVIDER_ID, 1);
+        $controller = new class () extends OpenIdConnectRedirectController {
+            public function handleSessionTimeoutRedirect(): ?string
+            {
+                return null;
+            }
+
+            public function getHomePageService(): HomePageService
+            {
+                throw new RuntimeException('database gone');
+            }
+        };
+
+        $response = $controller->handle(new Request());
+        $flash = $this->session->getFlashBag()->get(AuthUser::FLASH_LOGIN_ERROR);
+        $this->assertSame(self::LOGIN_URL, $response->getTargetUrl());
+        $this->assertSame('unexpected_error', $flash[0]['error'] ?? null);
+        $this->assertFalse($this->getEntityManager()->getConnection()->isTransactionActive());
+    }
+
     public function testProviderIdIsRemovedFromSessionOnCallback(): void
     {
         $this->runCallback(
