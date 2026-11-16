@@ -20,6 +20,7 @@
 namespace OrangeHRM\Tests\Pim\Api;
 
 use OrangeHRM\Admin\Service\UserService;
+use OrangeHRM\Core\Authorization\Helper\UserRoleManagerHelper;
 use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Entity\Employee;
 use OrangeHRM\Entity\EmployeeSalary;
@@ -59,6 +60,7 @@ class EmployeeQueryParamConflictTest extends EndpointIntegrationTestCase
         Services::EMPLOYEE_SALARY_SERVICE => EmployeeSalaryService::class,
         Services::CONFIG_SERVICE => ConfigService::class,
         Services::USER_SERVICE => UserService::class,
+        Services::USER_ROLE_MANAGER_HELPER => UserRoleManagerHelper::class,
     ];
 
     protected function setUp(): void
