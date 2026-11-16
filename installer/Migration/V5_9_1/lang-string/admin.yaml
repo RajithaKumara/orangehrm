@@ -7,9 +7,9 @@ langStrings:
     unitId: require_verified_email_hint
     note: 'Keep email_verified as it is: it is the name of an OpenID Connect claim'
   -
-    value: 'Require Matching User ID'
-    unitId: require_matching_user_id
+    value: 'Require Consistent User Details'
+    unitId: require_consistent_user_details
   -
-    value: 'When a user signs in to OrangeHRM with this provider, login is allowed only when the user ID in the ID token matches the user ID in the UserInfo response (sub claim)'
-    unitId: require_matching_user_id_hint
-    note: 'Keep ID token, UserInfo and sub as they are: they are OpenID Connect terms'
+    value: 'When a user signs in to OrangeHRM with this provider, login is allowed only when the sign-in confirmation and the profile details from the provider belong to the same user (sub claim in the ID token and UserInfo response)'
+    unitId: require_consistent_user_details_hint
+    note: 'Keep sub, ID token and UserInfo as they are: they are OpenID Connect terms'

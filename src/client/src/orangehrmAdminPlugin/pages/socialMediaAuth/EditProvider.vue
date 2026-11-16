@@ -76,14 +76,14 @@
             <oxd-grid-item>
               <div class="orangehrm-provider-check">
                 <oxd-text tag="p" class="orangehrm-provider-check-label">
-                  {{ $t('admin.require_matching_user_id') }}
+                  {{ $t('admin.require_consistent_user_details') }}
                 </oxd-text>
                 <oxd-switch-input
                   v-model="authProvider.requireMatchingSubject"
                 />
               </div>
               <oxd-text tag="p" class="orangehrm-provider-check-hint">
-                {{ $t('admin.require_matching_user_id_hint') }}
+                {{ $t('admin.require_consistent_user_details_hint') }}
               </oxd-text>
             </oxd-grid-item>
           </oxd-grid>
