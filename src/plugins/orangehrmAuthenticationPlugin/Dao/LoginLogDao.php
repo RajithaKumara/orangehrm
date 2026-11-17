@@ -22,6 +22,7 @@ namespace OrangeHRM\Authentication\Dao;
 use DateTime;
 use OrangeHRM\Core\Dao\BaseDao;
 use OrangeHRM\Entity\LoginLog;
+use OrangeHRM\ORM\ListSorter;
 
 class LoginLogDao extends BaseDao
 {
@@ -44,16 +45,17 @@ class LoginLogDao extends BaseDao
      */
     public function getAdminBaseUrlsSince(DateTime $since): array
     {
-        $q = $this->createQueryBuilder(LoginLog::class, 'loginLog')
-            ->select('loginLog.baseUrl AS baseUrl', 'MAX(loginLog.loginTime) AS lastLogin')
-            ->andWhere('loginLog.userRoleName = :adminRole')
-            ->setParameter('adminRole', 'Admin')
-            ->andWhere('loginLog.userRolePredefined = 1')
-            ->andWhere('loginLog.baseUrl IS NOT NULL')
-            ->andWhere('loginLog.loginTime >= :since')
-            ->setParameter('since', $since)
-            ->groupBy('loginLog.baseUrl')
-            ->orderBy('lastLogin', 'DESC');
+        $q = $this->createQueryBuilder(LoginLog::class, 'loginLog');
+        $q->select('loginLog.baseUrl AS baseUrl', 'MAX(loginLog.loginTime) AS lastLogin');
+        $q->andWhere($q->expr()->eq('loginLog.userRoleName', ':adminRole'))
+            ->setParameter('adminRole', 'Admin');
+        $q->andWhere($q->expr()->eq('loginLog.userRolePredefined', ':predefined'))
+            ->setParameter('predefined', 1);
+        $q->andWhere($q->expr()->isNotNull('loginLog.baseUrl'));
+        $q->andWhere($q->expr()->gte('loginLog.loginTime', ':since'))
+            ->setParameter('since', $since);
+        $q->groupBy('loginLog.baseUrl');
+        $q->orderBy('lastLogin', ListSorter::DESCENDING);
         return array_column($q->getQuery()->getArrayResult(), 'baseUrl');
     }
 }
