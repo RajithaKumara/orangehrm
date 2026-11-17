@@ -66,9 +66,6 @@
           :options="timezoneList"
         />
       </oxd-grid-item>
-      <oxd-grid-item class="--offset-row-5 --span-column-2">
-        <application-url-field v-model="baseUrl" />
-      </oxd-grid-item>
     </oxd-grid>
 
     <oxd-form-actions class="orangehrm-installer-page-action">
@@ -96,13 +93,9 @@ import {
   shouldNotExceedCharLength,
 } from '@/core/util/validation/rules';
 import {navigate} from '@/core/util/helper/navigation';
-import ApplicationUrlField from '@/components/ApplicationUrlField.vue';
 
 export default {
   name: 'InstanceCreation',
-  components: {
-    'application-url-field': ApplicationUrlField,
-  },
   setup() {
     const http = new APIService(
       window.appGlobal.baseUrl,
@@ -121,7 +114,6 @@ export default {
         langCode: null,
         timezone: null,
       },
-      baseUrl: null,
       countryList: [],
       languageList: [],
       timezoneList: [],
@@ -163,16 +155,6 @@ export default {
       .then((response) => {
         const {data} = response.data;
         this.instance = {...this.instance, ...data};
-        return this.http.request({
-          method: 'GET',
-          url: 'installer/api/base-url',
-        });
-      })
-      .then((response) => {
-        const {data} = response.data;
-        this.baseUrl = data.baseUrl;
-      })
-      .finally(() => {
         this.isLoading = false;
       });
   },
@@ -184,13 +166,6 @@ export default {
           countryCode: this.instance.countryCode.id,
           langCode: this.instance.langCode?.id,
           timezone: this.instance.timezone?.id,
-        })
-        .then(() => {
-          return this.http.request({
-            method: 'POST',
-            url: 'installer/api/base-url',
-            data: {baseUrl: this.baseUrl ?? ''},
-          });
         })
         .then(() => {
           navigate('/installer/admin-user-creation');

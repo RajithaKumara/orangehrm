@@ -19,6 +19,7 @@
 
 namespace OrangeHRM\Authentication\Dao;
 
+use DateTime;
 use OrangeHRM\Core\Dao\BaseDao;
 use OrangeHRM\Entity\LoginLog;
 
@@ -32,5 +33,27 @@ class LoginLogDao extends BaseDao
     {
         $this->persist($loginLog);
         return $loginLog;
+    }
+
+    /**
+     * Base URLs that users with the predefined Admin role signed in on since the given time,
+     * most recently used first
+     *
+     * @param DateTime $since
+     * @return string[]
+     */
+    public function getAdminBaseUrlsSince(DateTime $since): array
+    {
+        $q = $this->createQueryBuilder(LoginLog::class, 'loginLog')
+            ->select('loginLog.baseUrl AS baseUrl', 'MAX(loginLog.loginTime) AS lastLogin')
+            ->andWhere('loginLog.userRoleName = :adminRole')
+            ->setParameter('adminRole', 'Admin')
+            ->andWhere('loginLog.userRolePredefined = 1')
+            ->andWhere('loginLog.baseUrl IS NOT NULL')
+            ->andWhere('loginLog.loginTime >= :since')
+            ->setParameter('since', $since)
+            ->groupBy('loginLog.baseUrl')
+            ->orderBy('lastLogin', 'DESC');
+        return array_column($q->getQuery()->getArrayResult(), 'baseUrl');
     }
 }

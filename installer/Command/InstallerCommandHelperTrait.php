@@ -21,18 +21,13 @@ namespace OrangeHRM\Installer\Command;
 
 use OrangeHRM\Authentication\Dto\UserCredential;
 use OrangeHRM\Authentication\Utility\PasswordStrengthValidation;
-use OrangeHRM\Core\Service\ConfigService;
-use OrangeHRM\Core\Utility\InstanceBaseUrl;
 use OrangeHRM\Installer\Exception\InvalidArgumentException;
-use OrangeHRM\Installer\Util\AppSetupUtility;
-use OrangeHRM\Installer\Util\Logger;
 use OrangeHRM\Installer\Util\Service\InstallerPasswordStrengthService;
 use OrangeHRM\Installer\Util\SystemCheck;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Throwable;
 
 trait InstallerCommandHelperTrait
 {
@@ -123,58 +118,6 @@ trait InstallerCommandHelperTrait
             return $value;
         }
         throw new InvalidArgumentException($message);
-    }
-
-    /**
-     * @param string|null $value
-     * @return string|null normalized URL, or null if empty
-     */
-    private function instanceBaseUrlValidator(?string $value): ?string
-    {
-        if ($value === null || strlen(trim($value)) === 0) {
-            return null;
-        }
-        $baseUrl = InstanceBaseUrl::normalize($value);
-        if ($baseUrl === null) {
-            throw new InvalidArgumentException(
-                'Invalid `--baseUrl`: expected ' . InstanceBaseUrl::DESCRIPTION
-            );
-        }
-        return $baseUrl;
-    }
-
-    /**
-     * Store the application base URL given with `--baseUrl` (replaces a stored one), and print the URL that is
-     * stored afterwards. Never fails the command.
-     *
-     * @param AppSetupUtility $appSetupUtility
-     * @param string|null $baseUrl
-     */
-    private function storeInstanceBaseUrl(AppSetupUtility $appSetupUtility, ?string $baseUrl): void
-    {
-        try {
-            if ($baseUrl !== null && $appSetupUtility->saveInstanceBaseUrl($baseUrl, true)) {
-                $this->getIO()->note("Application URL stored: $baseUrl");
-                return;
-            }
-            $stored = $appSetupUtility->getStoredInstanceBaseUrl();
-            if ($stored !== null) {
-                $this->getIO()->note(
-                    "Application URL kept: $stored\n" .
-                    'Password reset emails link to this address. To change it, run again with `--baseUrl` ' .
-                    'or set `' . ConfigService::KEY_INSTANCE_BASE_URL . '` in the `hs_hr_config` table.'
-                );
-                return;
-            }
-        } catch (Throwable $e) {
-            Logger::getLogger()->error($e->getMessage());
-            Logger::getLogger()->error($e->getTraceAsString());
-        }
-        $this->getIO()->note(
-            'No application URL is stored, so password reset emails are not sent. ' .
-            'Run again with `--baseUrl` or set `' . ConfigService::KEY_INSTANCE_BASE_URL . '` in the ' .
-            '`hs_hr_config` table to ' . InstanceBaseUrl::DESCRIPTION
-        );
     }
 
     /**

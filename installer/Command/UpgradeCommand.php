@@ -22,7 +22,6 @@ namespace OrangeHRM\Installer\Command;
 use InvalidArgumentException;
 use OrangeHRM\Authentication\Dto\UserCredential;
 use OrangeHRM\Config\Config;
-use OrangeHRM\Core\Utility\InstanceBaseUrl;
 use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Installer\Controller\Upgrader\Api\ConfigFileAPI;
 use OrangeHRM\Installer\Controller\Upgrader\Api\UpgraderDataRegistrationAPI;
@@ -72,13 +71,7 @@ class UpgradeCommand extends InstallerCommand
             ->addOption('dbUser', null, InputOption::VALUE_REQUIRED)
             ->addOption('dbUserPassword', null, InputOption::VALUE_REQUIRED)
             ->addOption('currentVersion', null, InputOption::VALUE_REQUIRED)
-            ->addOption('systemCheckAcceptRisk', null, InputOption::VALUE_NONE)
-            ->addOption(
-                'baseUrl',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Application URL used in password reset emails: ' . InstanceBaseUrl::DESCRIPTION
-            );
+            ->addOption('systemCheckAcceptRisk', null, InputOption::VALUE_NONE);
     }
 
     /**
@@ -126,7 +119,6 @@ class UpgradeCommand extends InstallerCommand
                 $input->setOption('dbUserPassword', $dbPassword);
             }
         }
-        $baseUrl = $this->instanceBaseUrlValidator($input->getOption('baseUrl'));
         $this->throwIfParamEmpty($input, 'dbHost');
         $this->throwIfParamEmpty($input, 'dbName');
         $this->throwIfParamEmpty($input, 'dbUser');
@@ -246,7 +238,6 @@ class UpgradeCommand extends InstallerCommand
         $request->setMethod(Request::METHOD_POST);
         (new ConfigFileAPI())->handle($request);
         $this->completeStep($step3, self::STEP_3, "\n");
-        $this->storeInstanceBaseUrl($appSetupUtility, $baseUrl);
 
         return self::SUCCESS;
     }

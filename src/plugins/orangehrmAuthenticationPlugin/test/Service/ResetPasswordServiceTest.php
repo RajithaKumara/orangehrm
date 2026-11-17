@@ -51,9 +51,6 @@ class ResetPasswordServiceTest extends KernelTestCase
             Config::PLUGINS_DIR
         ) . '/orangehrmAuthenticationPlugin/test/fixtures/ResetPasswordService.yml';
         TestDataService::populate($this->fixture);
-        // No application base URL stored (the test DB is a copy of the dev DB, which may have one)
-        $this->getEntityManager()->getConnection()
-            ->delete('hs_hr_config', ['name' => ConfigService::KEY_INSTANCE_BASE_URL]);
         $this->createKernelWithMockServices([
             Services::CONFIG_SERVICE => new ConfigService(),
             Services::DATETIME_HELPER_SERVICE => new DateTimeHelperService(),
@@ -150,11 +147,17 @@ class ResetPasswordServiceTest extends KernelTestCase
             ->onlyMethods(['generate'])
             ->disableOriginalConstructor()
             ->getMock();
-        // No application base URL (`instance.base_url`) is configured, so no reset link is built
-        $urlGenerator->expects($this->never())
-            ->method('generate');
+        $urlGenerator->expects($this->any())
+            ->method('generate')
+            ->willReturn(
+                'http://localhost/orangeHrm/orangehrm/web/index.php/auth/resetPassword/resetCode/YWRtaW4jU0VQQVJBVE9SI6kK4PL4sB8AtJa2y5WNP-Y'
+            );
         $this->createKernelWithMockServices(
-            [Services::URL_GENERATOR => $urlGenerator, Services::CONFIG_SERVICE => new ConfigService()]
+            [
+                Services::URL_GENERATOR => $urlGenerator,
+                Services::CONFIG_SERVICE => new ConfigService(),
+                Services::DATETIME_HELPER_SERVICE => new DateTimeHelperService(),
+            ]
         );
         $employee = $this->getEntityManager()->getRepository(Employee::class)->findOneBy(['empNumber' => '1']);
 
@@ -191,9 +194,11 @@ class ResetPasswordServiceTest extends KernelTestCase
             ->onlyMethods(['generate'])
             ->disableOriginalConstructor()
             ->getMock();
-        // No application base URL (`instance.base_url`) is configured, so no reset link is built
-        $urlGenerator->expects($this->never())
-            ->method('generate');
+        $urlGenerator->expects($this->any())
+            ->method('generate')
+            ->willReturn(
+                'http://localhost/orangeHrm/orangehrm/web/index.php/auth/resetPassword/resetCode/YWRtaW4jU0VQQVJBVE9SI6kK4PL4sB8AtJa2y5WNP-Y'
+            );
         $this->createKernelWithMockServices(
             [
                 Services::URL_GENERATOR => $urlGenerator,

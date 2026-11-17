@@ -153,15 +153,6 @@ $appSetupUtility->writeConfFile();
 if ($enableDataEncryption) {
     $appSetupUtility->writeKeyFile();
 }
-try {
-    $baseUrlStored = $appSetupUtility->saveInstanceBaseUrl($cliConfig['instance']['baseUrl'] ?? null, true);
-} catch (Throwable $e) {
-    $baseUrlStored = false;
-}
-echo $baseUrlStored
-    ? "Application URL stored\n"
-    : "NOTE: No valid application URL (instance.baseUrl) stored. Password reset emails are not sent until\n" .
-    "      `instance.base_url` is set in the `hs_hr_config` table.\n";
 
 $request = new Request();
 $request->setMethod(Request::METHOD_POST);

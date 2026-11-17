@@ -22,7 +22,6 @@ namespace OrangeHRM\Installer\Command;
 use DateTimeZone;
 use OrangeHRM\Authentication\Dto\UserCredential;
 use OrangeHRM\Config\Config;
-use OrangeHRM\Core\Utility\InstanceBaseUrl;
 use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Installer\Controller\Installer\Api\ConfigFileAPI;
 use OrangeHRM\Installer\Controller\Installer\Api\InstallerDataRegistrationAPI;
@@ -37,7 +36,6 @@ use OrangeHRM\Installer\Util\Logger;
 use OrangeHRM\Installer\Util\StateContainer;
 use OrangeHRM\Installer\Util\SystemCheck;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
@@ -60,7 +58,6 @@ class InstallOnNewDatabaseCommand extends InstallerCommand
     private InputInterface $input;
     private OutputInterface $output;
     private AppSetupUtility $appSetupUtility;
-    private ?string $instanceBaseUrl = null;
 
     /**
      * @inheritDoc
@@ -68,19 +65,6 @@ class InstallOnNewDatabaseCommand extends InstallerCommand
     public function getCommandName(): string
     {
         return 'install:on-new-database';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function configure(): void
-    {
-        $this->addOption(
-            'baseUrl',
-            null,
-            InputOption::VALUE_REQUIRED,
-            'Application URL used in password reset emails: ' . InstanceBaseUrl::DESCRIPTION
-        );
     }
 
     /**
@@ -98,12 +82,6 @@ class InstallOnNewDatabaseCommand extends InstallerCommand
         }
         $this->input = $input;
         $this->output = $output;
-        try {
-            $this->instanceBaseUrl = $this->instanceBaseUrlValidator($input->getOption('baseUrl'));
-        } catch (InvalidArgumentException $e) {
-            $this->getIO()->error($e->getMessage());
-            return self::INVALID;
-        }
         try {
             return $this->executeCommand($input, $output);
         } catch (InterruptProcessException $e) {
@@ -452,6 +430,5 @@ class InstallOnNewDatabaseCommand extends InstallerCommand
         $request->setMethod(Request::METHOD_POST);
         (new ConfigFileAPI())->handle($request);
         $this->completeStep($step6, self::STEP_6, "\n");
-        $this->storeInstanceBaseUrl($this->getAppSetupUtility(), $this->instanceBaseUrl);
     }
 }
