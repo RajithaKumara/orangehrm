@@ -113,7 +113,7 @@ class OpenIdConnectRedirectController extends AbstractVueController implements P
             } catch (OpenIDConnectClientException $e) {
                 // e.g. the user cancelled at the provider, or the state, token or userinfo response was invalid
                 $this->getSocialMediaAuthenticationService()->logRefusal($authProvider, $e->getMessage());
-                throw OpenIdConnectAuthenticationException::signInFailed();
+                throw OpenIdConnectAuthenticationException::signInFailed($authProvider->getProviderName());
             }
 
             $userCredentials = new UserCredential();

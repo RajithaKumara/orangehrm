@@ -22,7 +22,8 @@ namespace OrangeHRM\OpenidAuthentication\Exception;
 use OrangeHRM\Authentication\Exception\AuthenticationException;
 
 /**
- * Reasons an OpenID Connect sign-in is refused, shown on the login page.
+ * Reasons an OpenID Connect sign-in is refused, shown on the login page. Where the provider is known, the message
+ * names it, as on the "Login with" button the user clicked.
  * Every reason up to `emailNotVerified()` is decided before a local user is looked up, so those messages
  * cannot tell whether an OrangeHRM account exists. Every refusal after the lookup uses `accountNotAvailable()`.
  */
@@ -34,6 +35,41 @@ class OpenIdConnectAuthenticationException extends AuthenticationException
     public const EMAIL_NOT_SHARED = 'openid_email_not_shared';
     public const EMAIL_NOT_VERIFIED = 'openid_email_not_verified';
     public const ACCOUNT_NOT_AVAILABLE = 'openid_account_not_available';
+    public const PARAMETER_PROVIDER_NAME = 'providerName';
+
+    /**
+     * Values for the placeholders in the message, e.g. ['providerName' => 'Corp Keycloak']
+     */
+    private array $parameters;
+
+    /**
+     * @param string $name
+     * @param string $message source lang string, may contain {providerName}
+     * @param array $parameters
+     */
+    protected function __construct(string $name, string $message, array $parameters = [])
+    {
+        parent::__construct($name, $message);
+        $this->parameters = $parameters;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function normalize(): array
+    {
+        $normalized = parent::normalize();
+        if (!empty($this->parameters)) {
+            $message = $this->getI18NHelper()->transBySource($this->getMessage(), $this->parameters);
+            // Also fills the placeholders when the message is not translated, e.g. with translation turned off
+            $replacements = [];
+            foreach ($this->parameters as $key => $value) {
+                $replacements['{' . $key . '}'] = (string)$value;
+            }
+            $normalized['message'] = strtr($message, $replacements);
+        }
+        return $normalized;
+    }
 
     /**
      * The provider is unknown, disabled, or the sign-in did not start from this session.
@@ -49,35 +85,42 @@ class OpenIdConnectAuthenticationException extends AuthenticationException
     /**
      * The exchange with the provider failed, e.g. the user cancelled, or the response could not be validated.
      */
-    public static function signInFailed(): self
+    public static function signInFailed(string $providerName): self
     {
-        return new self(self::SIGN_IN_FAILED, 'Sign-in with the provider failed. Please try again.');
+        return new self(
+            self::SIGN_IN_FAILED,
+            'Sign-in with {providerName} failed. Please try again.',
+            [self::PARAMETER_PROVIDER_NAME => $providerName]
+        );
     }
 
     /**
      * The ID token and the userinfo response do not describe the same user.
      */
-    public static function inconsistentUserDetails(): self
+    public static function inconsistentUserDetails(string $providerName): self
     {
         return new self(
             self::INCONSISTENT_USER_DETAILS,
-            'The provider returned inconsistent user details. Please contact your administrator.'
+            '{providerName} returned inconsistent user details. Please contact your administrator.',
+            [self::PARAMETER_PROVIDER_NAME => $providerName]
         );
     }
 
-    public static function emailNotShared(): self
+    public static function emailNotShared(string $providerName): self
     {
         return new self(
             self::EMAIL_NOT_SHARED,
-            'The provider did not share an email address for your account. Please contact your administrator.'
+            '{providerName} did not share an email address for your account. Please contact your administrator.',
+            [self::PARAMETER_PROVIDER_NAME => $providerName]
         );
     }
 
-    public static function emailNotVerified(): self
+    public static function emailNotVerified(string $providerName): self
     {
         return new self(
             self::EMAIL_NOT_VERIFIED,
-            'Your email address is not verified by the provider. Please verify it with the provider or contact your administrator.'
+            'Your email address is not verified by {providerName}. Please verify it with {providerName} or contact your administrator.',
+            [self::PARAMETER_PROVIDER_NAME => $providerName]
         );
     }
 

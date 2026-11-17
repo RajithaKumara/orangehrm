@@ -319,6 +319,24 @@ class OpenIdConnectControllerTest extends KernelTestCase
         $this->assertNull(AuthUser::getInstance()->getUserId());
     }
 
+    /**
+     * The login page names the provider the user clicked, translated where a translation exists.
+     */
+    public function testRefusalMessageNamesTheProvider(): void
+    {
+        $this->mockServices($this->client(
+            ['sub' => self::SUB],
+            ['sub' => self::SUB, 'email' => self::ESS, 'email_verified' => false]
+        ));
+        $this->session->set(AuthUser::OPENID_PROVIDER_ID, 1);
+        $this->callbackController()->handle(new Request());
+        $flash = $this->session->getFlashBag()->get(AuthUser::FLASH_LOGIN_ERROR);
+        $this->assertSame(
+            'Your email address is not verified by Corp IdP. Please verify it with Corp IdP or contact your administrator.',
+            $flash[0]['message'] ?? null
+        );
+    }
+
     public function testEmailWithoutVerifiedClaimIsRefused(): void
     {
         $result = $this->runCallback(

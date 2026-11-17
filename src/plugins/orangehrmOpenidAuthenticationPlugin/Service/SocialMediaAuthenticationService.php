@@ -150,7 +150,7 @@ class SocialMediaAuthenticationService
     {
         if (!is_object($idTokenClaims) || !is_object($userInfo)) {
             $this->logRefusal($provider, 'missing ID token claims or userinfo response');
-            throw OpenIdConnectAuthenticationException::signInFailed();
+            throw OpenIdConnectAuthenticationException::signInFailed($provider->getProviderName());
         }
 
         if ($provider->isRequireMatchingSubject()) {
@@ -158,14 +158,14 @@ class SocialMediaAuthenticationService
             if (!is_string($subject) || $subject === ''
                 || ($userInfo->{self::CLAIM_SUBJECT} ?? null) !== $subject) {
                 $this->logRefusal($provider, 'userinfo subject does not match the ID token subject');
-                throw OpenIdConnectAuthenticationException::inconsistentUserDetails();
+                throw OpenIdConnectAuthenticationException::inconsistentUserDetails($provider->getProviderName());
             }
         }
 
         $email = $userInfo->{self::CLAIM_EMAIL} ?? null;
         if (!is_string($email) || trim($email) === '') {
             $this->logRefusal($provider, 'no email claim in the userinfo response');
-            throw OpenIdConnectAuthenticationException::emailNotShared();
+            throw OpenIdConnectAuthenticationException::emailNotShared($provider->getProviderName());
         }
 
         if ($provider->isRequireVerifiedEmail()) {
@@ -188,7 +188,7 @@ class SocialMediaAuthenticationService
             && (!is_string($idTokenClaims->{self::CLAIM_EMAIL})
                 || !$this->isSameIdentifier($idTokenClaims->{self::CLAIM_EMAIL}, $email))) {
             $this->logRefusal($provider, 'ID token email differs from the userinfo email');
-            throw OpenIdConnectAuthenticationException::inconsistentUserDetails();
+            throw OpenIdConnectAuthenticationException::inconsistentUserDetails($provider->getProviderName());
         }
 
         $verifiedForEmail = false;
@@ -200,7 +200,7 @@ class SocialMediaAuthenticationService
             // Some providers (e.g. Amazon Cognito userinfo) send the string "true"
             if ($verified !== true && $verified !== 'true') {
                 $this->logRefusal($provider, 'email_verified is not true');
-                throw OpenIdConnectAuthenticationException::emailNotVerified();
+                throw OpenIdConnectAuthenticationException::emailNotVerified($provider->getProviderName());
             }
             if (property_exists($claims, self::CLAIM_EMAIL)) {
                 $verifiedForEmail = true;
@@ -213,7 +213,7 @@ class SocialMediaAuthenticationService
                 'no email_verified claim for the email; turn off "Require verified email" for this provider'
                 . ' only if its users cannot choose their own email address'
             );
-            throw OpenIdConnectAuthenticationException::emailNotVerified();
+            throw OpenIdConnectAuthenticationException::emailNotVerified($provider->getProviderName());
         }
     }
 

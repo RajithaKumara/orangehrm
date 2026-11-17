@@ -78,7 +78,9 @@ class OpenIdConnectLoginController extends AbstractVueController implements Publ
             } catch (OpenIDConnectClientException $e) {
                 // e.g. the provider URL is wrong or the provider is unreachable
                 $this->getSocialMediaAuthenticationService()->logRefusal($provider->getOpenIdProvider(), $e->getMessage());
-                throw OpenIdConnectAuthenticationException::signInFailed();
+                throw OpenIdConnectAuthenticationException::signInFailed(
+                    $provider->getOpenIdProvider()->getProviderName()
+                );
             }
         } catch (OpenIdConnectAuthenticationException $e) {
             $this->getAuthUser()->addFlash(AuthUser::FLASH_LOGIN_ERROR, $e->normalize());

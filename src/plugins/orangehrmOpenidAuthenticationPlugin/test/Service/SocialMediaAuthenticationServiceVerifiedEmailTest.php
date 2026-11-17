@@ -232,14 +232,14 @@ class SocialMediaAuthenticationServiceVerifiedEmailTest extends KernelTestCase
         switch ($reason) {
             case 'not true':
             case 'no email_verified claim':
-                return OpenIdConnectAuthenticationException::emailNotVerified()->getMessage();
+                return OpenIdConnectAuthenticationException::emailNotVerified('Test IdP')->getMessage();
             case 'subject':
             case 'differs':
-                return OpenIdConnectAuthenticationException::inconsistentUserDetails()->getMessage();
+                return OpenIdConnectAuthenticationException::inconsistentUserDetails('Test IdP')->getMessage();
             case 'no email':
-                return OpenIdConnectAuthenticationException::emailNotShared()->getMessage();
+                return OpenIdConnectAuthenticationException::emailNotShared('Test IdP')->getMessage();
             case 'missing':
-                return OpenIdConnectAuthenticationException::signInFailed()->getMessage();
+                return OpenIdConnectAuthenticationException::signInFailed('Test IdP')->getMessage();
         }
         $this->fail("Unknown reason $reason");
     }
@@ -276,7 +276,7 @@ class SocialMediaAuthenticationServiceVerifiedEmailTest extends KernelTestCase
     public function testBothChecksOffStillNeedsAnEmail(): void
     {
         $this->mockServices();
-        $this->expectExceptionMessage(OpenIdConnectAuthenticationException::emailNotShared()->getMessage());
+        $this->expectExceptionMessage(OpenIdConnectAuthenticationException::emailNotShared('Test IdP')->getMessage());
         $this->service->getVerifiedEmail(
             (object)['sub' => self::SUB],
             (object)['sub' => self::SUB],
@@ -296,7 +296,7 @@ class SocialMediaAuthenticationServiceVerifiedEmailTest extends KernelTestCase
             )
         );
 
-        $this->expectExceptionMessage(OpenIdConnectAuthenticationException::emailNotVerified()->getMessage());
+        $this->expectExceptionMessage(OpenIdConnectAuthenticationException::emailNotVerified('Test IdP')->getMessage());
         $this->service->getVerifiedEmail(
             (object)['sub' => self::SUB],
             (object)['sub' => 'someone-else', 'email' => self::EMAIL, 'email_verified' => false],
@@ -316,7 +316,7 @@ class SocialMediaAuthenticationServiceVerifiedEmailTest extends KernelTestCase
             )
         );
 
-        $this->expectExceptionMessage(OpenIdConnectAuthenticationException::inconsistentUserDetails()->getMessage());
+        $this->expectExceptionMessage(OpenIdConnectAuthenticationException::inconsistentUserDetails('Test IdP')->getMessage());
         $this->service->getVerifiedEmail(
             (object)['sub' => self::SUB],
             (object)['sub' => 'someone-else', 'email' => self::EMAIL, 'email_verified' => true],
@@ -335,10 +335,10 @@ class SocialMediaAuthenticationServiceVerifiedEmailTest extends KernelTestCase
         $values = array_column($langStrings, 'value', 'unitId');
         foreach ([
             OpenIdConnectAuthenticationException::providerNotAvailable(),
-            OpenIdConnectAuthenticationException::signInFailed(),
-            OpenIdConnectAuthenticationException::inconsistentUserDetails(),
-            OpenIdConnectAuthenticationException::emailNotShared(),
-            OpenIdConnectAuthenticationException::emailNotVerified(),
+            OpenIdConnectAuthenticationException::signInFailed('Test IdP'),
+            OpenIdConnectAuthenticationException::inconsistentUserDetails('Test IdP'),
+            OpenIdConnectAuthenticationException::emailNotShared('Test IdP'),
+            OpenIdConnectAuthenticationException::emailNotVerified('Test IdP'),
             OpenIdConnectAuthenticationException::accountNotAvailable(),
         ] as $exception) {
             $this->assertContains($exception->getMessage(), $values);
