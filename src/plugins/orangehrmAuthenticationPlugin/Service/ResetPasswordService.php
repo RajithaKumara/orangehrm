@@ -54,7 +54,7 @@ class ResetPasswordService
     /**
      * Only base URLs of Admin sign-ins within this many days are used in password reset links
      */
-    public const TRUSTED_BASE_URL_DAYS = 90;
+    public const TRUSTED_BASE_URL_DAYS = 30;
     protected ?ResetPasswordDao $resetPasswordDao = null;
     protected ?EmailService $emailService = null;
     protected ?LoginService $loginService = null;

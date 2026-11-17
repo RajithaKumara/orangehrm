@@ -197,7 +197,7 @@ class ResetPasswordLinkTest extends KernelTestCase
     public function testOldAdminSignInsAreNotTrusted(): void
     {
         $this->mockServices(self::EVIL);
-        $this->addSignIn(self::EVIL, '2026-08-01 09:00:00');
+        $this->addSignIn(self::EVIL, '2026-10-10 09:00:00');
 
         $this->assertNull((new ResetPasswordService())->getPasswordResetBaseUrl());
         $this->assertStringNotContainsString('evil.example', $this->getEmailBody());
