@@ -61,33 +61,11 @@ class LDAPSyncService
     use LDAPLoggerTrait;
     use EventDispatcherTrait;
 
-    /**
-     * Server-assigned entry identifiers that directory users and administrators cannot rewrite.
-     * Only these let a user follow its LDAP entry to a different DN (entry moved or renamed).
-     */
-    public const IMMUTABLE_USER_UNIQUE_ID_ATTRIBUTES = [
-        'entryuuid', // OpenLDAP and other RFC 4530 servers
-        'objectguid', // Active Directory
-        'nsuniqueid', // 389 Directory Server, Red Hat DS, Oracle DSEE
-        'ipauniqueid', // FreeIPA
-        'guid', // eDirectory
-        'orclguid', // Oracle Internet Directory
-        'ibm-entryuuid', // IBM Security Directory Server
-    ];
-
     protected ?LDAPService $ldapService = null;
     protected ?LDAPSetting $ldapSetting = null;
     private LDAPDao $ldapDao;
     private array $empNumbersWhoHaveManyUsers;
     private array $entryCollectionCache = [];
-    /**
-     * Users for whom createSystemUsers() refused to move the binding to another entry.
-     * The delete pass does not delete them in the same sync, even if their bound entry is no longer returned,
-     * so that a changed directory layout (e.g. a new base DN) does not delete them in bulk.
-     *
-     * @var array<int, true>
-     */
-    private array $userIdsWithRefusedBinding = [];
 
     /**
      * @return LDAPDao
@@ -184,194 +162,12 @@ class LDAPSyncService
     }
 
     /**
-     * DNs are compared case-insensitively, as directories treat them
-     *
-     * @param string|null $dn
-     * @return string
-     */
-    private function normalizeDN(?string $dn): string
-    {
-        return strtolower(trim($dn ?? ''));
-    }
-
-    /**
-     * Index every entry returned by the current sync, including entries dropped as duplicate
-     * usernames and entries that failed to parse. Runs once per sync over data already in memory.
-     *
      * @param LDAPUser[] $ldapUsers
-     * @param LDAPUserCollection|null $ldapUserCollection
-     * @return array{0: array<string, true>, 1: array<string, int>} [DNs present in the directory, unique id counts]
-     */
-    private function indexSyncedEntries(array $ldapUsers, ?LDAPUserCollection $ldapUserCollection): array
-    {
-        $entries = [];
-        $failedDNs = [];
-        if ($ldapUserCollection instanceof LDAPUserCollection) {
-            foreach ($ldapUserCollection->getLDAPUsers() as $ldapUser) {
-                $entries[$this->normalizeDN($ldapUser->getUserDN())] = $ldapUser;
-            }
-            foreach ($ldapUserCollection->getUsersOfDuplicateUsernames() as $duplicateUsers) {
-                foreach ($duplicateUsers as $ldapUser) {
-                    $entries[$this->normalizeDN($ldapUser->getUserDN())] = $ldapUser;
-                }
-            }
-            $failedDNs = $ldapUserCollection->getFailedUsers();
-        }
-        foreach ($ldapUsers as $ldapUser) {
-            $entries[$this->normalizeDN($ldapUser->getUserDN())] = $ldapUser;
-        }
-
-        $syncedDNs = [];
-        $userUniqueIdCounts = [];
-        foreach ($entries as $dn => $ldapUser) {
-            $syncedDNs[$dn] = true;
-            $userUniqueId = $ldapUser->getUserUniqueId();
-            if ($userUniqueId !== null) {
-                $userUniqueIdCounts[$userUniqueId] = ($userUniqueIdCounts[$userUniqueId] ?? 0) + 1;
-            }
-        }
-        foreach ($failedDNs as $failedDN) {
-            $syncedDNs[$this->normalizeDN($failedDN)] = true;
-        }
-        return [$syncedDNs, $userUniqueIdCounts];
-    }
-
-    /**
-     * @param LDAPUser $ldapUser
-     * @param array<string, int> $userUniqueIdCounts
-     * @return bool
-     */
-    private function isUserUniqueIdShared(LDAPUser $ldapUser, array $userUniqueIdCounts): bool
-    {
-        $userUniqueId = $ldapUser->getUserUniqueId();
-        return $userUniqueId !== null && ($userUniqueIdCounts[$userUniqueId] ?? 0) > 1;
-    }
-
-    /**
-     * Whether the configured user unique id attribute of the entry's lookup setting is one the
-     * directory server assigns itself (e.g. entryUUID, objectGUID), see IMMUTABLE_USER_UNIQUE_ID_ATTRIBUTES.
-     * Such values cannot be set or copied onto another entry, so they reliably identify a moved entry.
-     * Other attributes (e.g. employeeNumber, mail) can be edited or reassigned, so they cannot.
-     *
-     * @param LDAPUser $ldapUser
-     * @return bool
-     */
-    private function isUserUniqueIdServerAssigned(LDAPUser $ldapUser): bool
-    {
-        $lookupSetting = $ldapUser->getUserLookupSetting();
-        if (!$lookupSetting instanceof LDAPUserLookupSetting || $lookupSetting->getUserUniqueIdAttribute() === null) {
-            return false;
-        }
-        $attribute = strtolower($lookupSetting->getUserUniqueIdAttribute());
-        return in_array($attribute, self::IMMUTABLE_USER_UNIQUE_ID_ATTRIBUTES, true);
-    }
-
-    /**
-     * A user found by username keeps its LDAP entry, except when that entry was moved or renamed.
-     *
-     * @param UserAuthProvider $ldapAuthProvider
-     * @param LDAPUser $ldapUser
-     * @param array<string, true> $syncedDNs
-     * @return bool
-     */
-    private function canUpdateBindingFoundByUsername(
-        UserAuthProvider $ldapAuthProvider,
-        LDAPUser $ldapUser,
-        array $syncedDNs
-    ): bool {
-        $boundDN = $this->normalizeDN($ldapAuthProvider->getLDAPUserDN());
-        if ($boundDN === $this->normalizeDN($ldapUser->getUserDN())) {
-            // Same entry
-            return true;
-        }
-        if (isset($syncedDNs[$boundDN])) {
-            // The bound entry is still in the directory, so the incoming entry is a different one
-            return false;
-        }
-
-        // The bound entry is gone, so the incoming entry may be the same entry under a new DN.
-        // Refuse it only when both carry a unique id and the ids differ.
-        $boundUserUniqueId = $ldapAuthProvider->getLDAPUserUniqueId();
-        $incomingUserUniqueId = $ldapUser->getUserUniqueId();
-        if ($boundUserUniqueId === null || $incomingUserUniqueId === null) {
-            return true;
-        }
-        return $boundUserUniqueId === $incomingUserUniqueId;
-    }
-
-    /**
-     * A user found by unique id keeps its LDAP entry, except when that entry was moved or renamed.
-     * Only a server-assigned unique id proves that, since other attributes can be copied onto any entry.
-     *
-     * @param UserAuthProvider $ldapAuthProvider
-     * @param LDAPUser $ldapUser
-     * @param array<string, true> $syncedDNs
-     * @return bool
-     */
-    private function canUpdateBindingFoundByUserUniqueId(
-        UserAuthProvider $ldapAuthProvider,
-        LDAPUser $ldapUser,
-        array $syncedDNs
-    ): bool {
-        $boundDN = $this->normalizeDN($ldapAuthProvider->getLDAPUserDN());
-        if ($boundDN === $this->normalizeDN($ldapUser->getUserDN())) {
-            // Same entry, only the username changed
-            return true;
-        }
-        if (isset($syncedDNs[$boundDN])) {
-            // The bound entry is still in the directory, so the incoming entry is a different one
-            return false;
-        }
-        // The bound entry is gone: follow it to the new DN only if the id cannot have been copied
-        return $this->isUserUniqueIdServerAssigned($ldapUser);
-    }
-
-    /**
-     * @param string $message
-     * @param UserAuthProvider|null $ldapAuthProvider
-     * @param LDAPUser $ldapUser
-     */
-    private function warnBindingConflict(
-        string $message,
-        ?UserAuthProvider $ldapAuthProvider,
-        LDAPUser $ldapUser
-    ): void {
-        if ($ldapAuthProvider instanceof UserAuthProvider) {
-            $this->userIdsWithRefusedBinding[$ldapAuthProvider->getUser()->getId()] = true;
-        }
-        $this->getLogger()->warning($message, [
-            'incomingDN' => $ldapUser->getUserDN(),
-            'incomingUsername' => $ldapUser->getUsername(),
-            'incomingUserUniqueId' => $ldapUser->getUserUniqueId(),
-            'boundUserId' => $ldapAuthProvider ? $ldapAuthProvider->getUser()->getId() : null,
-            'boundDN' => $ldapAuthProvider ? $ldapAuthProvider->getLDAPUserDN() : null,
-        ]);
-    }
-
-    /**
-     * @param string $message
-     * @param UserAuthProvider[] $ldapAuthProviders
-     * @param LDAPUser $ldapUser
-     */
-    private function warnBindingConflicts(string $message, array $ldapAuthProviders, LDAPUser $ldapUser): void
-    {
-        if ($ldapAuthProviders === []) {
-            $this->warnBindingConflict($message, null, $ldapUser);
-        }
-        foreach ($ldapAuthProviders as $ldapAuthProvider) {
-            $this->warnBindingConflict($message, $ldapAuthProvider, $ldapUser);
-        }
-    }
-
-    /**
-     * @param LDAPUser[] $ldapUsers
-     * @param LDAPUserCollection|null $ldapUserCollection all entries returned by this sync,
-     *        used to tell a moved entry from a different entry (defaults to $ldapUsers)
+     * @param LDAPUserCollection|null $ldapUserCollection every entry returned by this sync (defaults to $ldapUsers)
      */
     public function createSystemUsers(array $ldapUsers, ?LDAPUserCollection $ldapUserCollection = null): void
     {
-        $this->userIdsWithRefusedBinding = [];
-        [$syncedDNs, $userUniqueIdCounts] = $this->indexSyncedEntries($ldapUsers, $ldapUserCollection);
+        $syncedDNs = $this->getSyncedDNs($ldapUsers, $ldapUserCollection);
         $defaultUserRole = $this->getUserService()->getUserRole('ESS');
         foreach ($ldapUsers as $ldapUser) {
             $user = $this->getLDAPDao()->getUserByUserName($ldapUser->getUsername());
@@ -380,14 +176,6 @@ class LDAPSyncService
                 $ldapAuthProvider = $this->filterLDAPAuthProvider($user->getAuthProviders());
                 if ($ldapAuthProvider instanceof UserAuthProvider) {
                     if ($ldapAuthProvider->getLDAPUserHash() === $this->getHashOfLDAPUser($ldapUser)) {
-                        continue;
-                    }
-                    if (!$this->canUpdateBindingFoundByUsername($ldapAuthProvider, $ldapUser, $syncedDNs)) {
-                        $this->warnBindingConflict(
-                            'Username matches a user bound to a different LDAP entry, skipped',
-                            $ldapAuthProvider,
-                            $ldapUser
-                        );
                         continue;
                     }
 
@@ -403,17 +191,8 @@ class LDAPSyncService
 
                     // Change user data
                     $ldapAuthProvider->setLDAPUserDN($ldapUser->getUserDN());
-                    if ($this->isUserUniqueIdShared($ldapUser, $userUniqueIdCounts)) {
-                        // Keep the stored unique id, and leave the hash stale so the next sync retries
-                        $this->warnBindingConflict(
-                            'User unique id is shared by more than one LDAP entry, stored unique id kept',
-                            $ldapAuthProvider,
-                            $ldapUser
-                        );
-                    } else {
-                        $ldapAuthProvider->setLDAPUserUniqueId($ldapUser->getUserUniqueId());
-                        $ldapAuthProvider->setLDAPUserHash($this->getHashOfLDAPUser($ldapUser));
-                    }
+                    $ldapAuthProvider->setLDAPUserUniqueId($ldapUser->getUserUniqueId());
+                    $ldapAuthProvider->setLDAPUserHash($this->getHashOfLDAPUser($ldapUser));
 
                     if ($this->trySaveEmployee($employee, $clonedEmployee, $ldapUser) === null) {
                         continue;
@@ -454,34 +233,24 @@ class LDAPSyncService
             } else {
                 // try to find a user who have user unique id
                 if ($ldapUser->getUserUniqueId() !== null) {
-                    $ldapAuthProviders = $this->getLDAPDao()
-                        ->getAuthProvidersByUserUniqueId($ldapUser->getUserUniqueId());
-                    if ($this->isUserUniqueIdShared($ldapUser, $userUniqueIdCounts)) {
-                        $this->warnBindingConflicts(
-                            'User unique id is shared by more than one LDAP entry, skipped',
-                            $ldapAuthProviders,
-                            $ldapUser
-                        );
-                        continue;
-                    }
-                    if (count($ldapAuthProviders) > 1) {
-                        $this->warnBindingConflicts(
-                            'User unique id is bound to more than one user, skipped',
-                            $ldapAuthProviders,
-                            $ldapUser
-                        );
-                        continue;
-                    }
-                    $ldapAuthProvider = $ldapAuthProviders[0] ?? null;
+                    $ldapAuthProvider = $this->getLDAPDao()
+                        ->getAuthProviderByUserUniqueId($ldapUser->getUserUniqueId());
                     if ($ldapAuthProvider instanceof UserAuthProvider) {
-                        if (!$this->canUpdateBindingFoundByUserUniqueId($ldapAuthProvider, $ldapUser, $syncedDNs)) {
-                            $this->warnBindingConflict(
-                                'User unique id matches a user bound to a different LDAP entry, skipped',
-                                $ldapAuthProvider,
-                                $ldapUser
+                        $boundDN = $this->normalizeDN($ldapAuthProvider->getLDAPUserDN());
+                        if ($boundDN !== $this->normalizeDN($ldapUser->getUserDN()) && isset($syncedDNs[$boundDN])) {
+                            // The user is bound to another entry that is still in the directory: the incoming
+                            // entry only carries the same unique id, so it must not take the user over
+                            $this->getLogger()->warning(
+                                'User unique id matches a user bound to another LDAP entry, skipped',
+                                [
+                                    'incomingDN' => $ldapUser->getUserDN(),
+                                    'boundDN' => $ldapAuthProvider->getLDAPUserDN(),
+                                    'boundUserId' => $ldapAuthProvider->getUser()->getId(),
+                                ]
                             );
                             continue;
                         }
+
                         $user = $ldapAuthProvider->getUser();
                         $user->setUserName($ldapUser->getUsername());
                         $user->setStatus($ldapUser->isUserEnabled());
@@ -549,6 +318,43 @@ class LDAPSyncService
                 $this->warnMultiUserEmployee($employee);
             }
         }
+    }
+
+    /**
+     * DNs of every entry returned by this sync, including entries dropped as duplicate usernames
+     * and entries that could not be read
+     *
+     * @param LDAPUser[] $ldapUsers
+     * @param LDAPUserCollection|null $ldapUserCollection
+     * @return array<string, true> normalized DN => true
+     */
+    private function getSyncedDNs(array $ldapUsers, ?LDAPUserCollection $ldapUserCollection): array
+    {
+        $dns = [];
+        if ($ldapUserCollection instanceof LDAPUserCollection) {
+            $ldapUsers = array_merge($ldapUsers, array_values($ldapUserCollection->getLDAPUsers()));
+            foreach ($ldapUserCollection->getUsersOfDuplicateUsernames() as $duplicateUsers) {
+                $ldapUsers = array_merge($ldapUsers, $duplicateUsers);
+            }
+            foreach ($ldapUserCollection->getFailedUsers() as $failedUserDN) {
+                $dns[$this->normalizeDN($failedUserDN)] = true;
+            }
+        }
+        foreach ($ldapUsers as $ldapUser) {
+            $dns[$this->normalizeDN($ldapUser->getUserDN())] = true;
+        }
+        return $dns;
+    }
+
+    /**
+     * Directories compare DNs case-insensitively
+     *
+     * @param string|null $dn
+     * @return string
+     */
+    private function normalizeDN(?string $dn): string
+    {
+        return strtolower(trim($dn ?? ''));
     }
 
     /**
@@ -746,39 +552,23 @@ class LDAPSyncService
     {
         $ldapAuthProviders = [];
         foreach ($this->getLDAPDao()->getAllLDAPAuthProviders() as $authProvider) {
-            $ldapAuthProviders[$this->normalizeDN($authProvider->getUserDN())][] = $authProvider->getUserId();
+            $ldapAuthProviders[$authProvider->getUserDN()] = $authProvider->getUserId();
         }
 
         foreach ($ldapUserCollection->getLDAPUsers() as $ldapUser) {
-            unset($ldapAuthProviders[$this->normalizeDN($ldapUser->getUserDN())]);
+            unset($ldapAuthProviders[$ldapUser->getUserDN()]);
         }
         foreach ($ldapUserCollection->getFailedUsers() as $failedUserDNs) {
-            unset($ldapAuthProviders[$this->normalizeDN($failedUserDNs)]);
+            unset($ldapAuthProviders[$failedUserDNs]);
         }
         foreach ($ldapUserCollection->getUsersOfDuplicateUsernames() as $duplicateUsers) {
             foreach ($duplicateUsers as $ldapUser) {
-                unset($ldapAuthProviders[$this->normalizeDN($ldapUser->getUserDN())]);
+                unset($ldapAuthProviders[$ldapUser->getUserDN()]);
             }
         }
-
-        $userIds = [];
-        foreach ($ldapAuthProviders as $dn => $userIdsOfDN) {
-            foreach ($userIdsOfDN as $userId) {
-                if (isset($this->userIdsWithRefusedBinding[$userId])) {
-                    // Left for an administrator to review instead of being deleted with the rest
-                    $this->getLogger()->warning(
-                        'Bound LDAP entry not found, user not deleted because a rebind to another entry was refused',
-                        ['userId' => $userId, 'boundDN' => $dn]
-                    );
-                    continue;
-                }
-                $userIds[] = $userId;
-            }
-        }
-        $this->userIdsWithRefusedBinding = [];
 
         $this->getUserService()
             ->geUserDao()
-            ->deleteSystemUsers($userIds);
+            ->deleteSystemUsers(array_values($ldapAuthProviders));
     }
 }

@@ -38,8 +38,8 @@ use OrangeHRM\Tests\Util\TestDataService;
 use Symfony\Component\Ldap\Entry;
 
 /**
- * A local user stays bound to its own LDAP entry: another entry that only shares the
- * username or the user unique id must not take the user over.
+ * A local user found by user unique id stays bound to its own LDAP entry while that entry is still
+ * in the directory: another entry that only carries the same unique id must not take the user over.
  *
  * Fixture: user 8 `Linda` (Admin role, employee 2) is bound to
  * `cn=Linda.Anderson,ou=admin,ou=users,dc=example,dc=org` with unique id md5('Linda.Anderson').
@@ -153,47 +153,41 @@ class LDAPSyncServiceUserBindingTest extends KernelTestCase
     }
 
     /**
-     * Report scenario: the bound entry is still in the directory and a second entry carries its unique id.
+     * Report scenario: a second entry carries the unique id of a user whose entry is still in the directory.
      */
-    public function testUniqueIdSharedWithBoundEntryDoesNotRebind(): void
+    public function testUniqueIdOfUserWhoseEntryStillExistsDoesNotRebind(): void
     {
         $bound = $this->createLDAPUser('Linda', self::BOUND_DN, $this->getBoundUserUniqueId());
         $other = $this->createLDAPUser('Other.User', self::OTHER_DN, $this->getBoundUserUniqueId());
 
-        (new LDAPSyncService())->createSystemUsers([$other, $bound], $this->createCollection([$other, $bound]));
-
-        $this->assertBoundUserUnchanged();
-        $this->assertWarningLogged('User unique id is shared by more than one LDAP entry, skipped');
+        foreach ([[$other, $bound], [$bound, $other]] as $ldapUsers) {
+            (new LDAPSyncService())->createSystemUsers($ldapUsers, $this->createCollection($ldapUsers));
+            $this->assertBoundUserUnchanged();
+        }
+        $this->assertWarningLogged('User unique id matches a user bound to another LDAP entry, skipped');
     }
 
-    public function testUniqueIdSharedWithBoundEntryDoesNotRebindInEitherOrder(): void
+    /**
+     * The bound entry counts as still in the directory also when it could not be read in this sync.
+     */
+    public function testBoundEntryThatFailedToLoadStillCounts(): void
     {
-        $bound = $this->createLDAPUser('Linda', self::BOUND_DN, $this->getBoundUserUniqueId());
         $other = $this->createLDAPUser('Other.User', self::OTHER_DN, $this->getBoundUserUniqueId());
-
-        (new LDAPSyncService())->createSystemUsers([$bound, $other], $this->createCollection([$bound, $other]));
-
-        $this->assertBoundUserUnchanged();
-    }
-
-    public function testUniqueIdMatchDoesNotRebindWhenBoundEntryStillInDirectory(): void
-    {
-        // Bound entry failed to parse in this sync (or was dropped as a duplicate username),
-        // so only its DN is known, but it is still in the directory.
-        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, $this->getBoundUserUniqueId(), 'entryUUID');
 
         (new LDAPSyncService())->createSystemUsers([$other], $this->createCollection([$other], [self::BOUND_DN]));
 
         $this->assertBoundUserUnchanged();
-        $this->assertWarningLogged('User unique id matches a user bound to a different LDAP entry, skipped');
+        $this->assertWarningLogged('User unique id matches a user bound to another LDAP entry, skipped');
     }
 
-    public function testUniqueIdMatchDoesNotRebindWhenBoundEntryHiddenByDuplicateUsername(): void
+    /**
+     * ... or when it was dropped as a duplicate username.
+     */
+    public function testBoundEntryDroppedAsDuplicateUsernameStillCounts(): void
     {
-        // The bound entry is dropped from the user list as a duplicate username, but its DN is still known
-        $bound = $this->createLDAPUser('Linda', self::BOUND_DN, null, 'entryUUID');
-        $decoy = $this->createLDAPUser('Linda', 'cn=Linda,ou=sales,ou=users,dc=example,dc=org', null, 'entryUUID');
-        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, $this->getBoundUserUniqueId(), 'entryUUID');
+        $bound = $this->createLDAPUser('Linda', self::BOUND_DN, null);
+        $decoy = $this->createLDAPUser('Linda', 'cn=Linda,ou=sales,ou=users,dc=example,dc=org', null);
+        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, $this->getBoundUserUniqueId());
 
         (new LDAPSyncService())->createSystemUsers(
             [$other],
@@ -201,32 +195,23 @@ class LDAPSyncServiceUserBindingTest extends KernelTestCase
         );
 
         $this->assertBoundUserUnchanged();
-        $this->assertWarningLogged('User unique id matches a user bound to a different LDAP entry, skipped');
+        $this->assertWarningLogged('User unique id matches a user bound to another LDAP entry, skipped');
     }
 
-    public function testUniqueIdDifferingOnlyInCaseDoesNotRebind(): void
+    public function testBoundEntryIsMatchedIgnoringDNCase(): void
     {
-        // The database matches unique ids case-insensitively; the DN check still refuses the other entry
-        $bound = $this->createLDAPUser('Linda', self::BOUND_DN, $this->getBoundUserUniqueId());
-        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, strtoupper($this->getBoundUserUniqueId()));
+        $bound = $this->createLDAPUser('Linda', strtoupper(self::BOUND_DN), $this->getBoundUserUniqueId());
+        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, $this->getBoundUserUniqueId());
 
-        (new LDAPSyncService())->createSystemUsers([$other, $bound], $this->createCollection([$other, $bound]));
+        (new LDAPSyncService())->createSystemUsers([$other], $this->createCollection([$other, $bound]));
 
         $this->assertBoundUserUnchanged();
-        $this->assertWarningLogged('User unique id matches a user bound to a different LDAP entry, skipped');
+        $this->assertWarningLogged('User unique id matches a user bound to another LDAP entry, skipped');
     }
 
-    public function testUniqueIdMatchFromReassignableAttributeDoesNotRebindWhenBoundEntryGone(): void
-    {
-        // e.g. the bound entry was removed and its employeeNumber now appears on another entry
-        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, $this->getBoundUserUniqueId(), 'employeeNumber');
-
-        (new LDAPSyncService())->createSystemUsers([$other], $this->createCollection([$other]));
-
-        $this->assertBoundUserUnchanged();
-        $this->assertWarningLogged('User unique id matches a user bound to a different LDAP entry, skipped');
-    }
-
+    /**
+     * Username change of the same entry: the user follows, as before.
+     */
     public function testUniqueIdMatchWithSameDNUpdatesUsername(): void
     {
         $bound = $this->createLDAPUser('Linda.Anderson', self::BOUND_DN, $this->getBoundUserUniqueId());
@@ -234,12 +219,19 @@ class LDAPSyncServiceUserBindingTest extends KernelTestCase
         (new LDAPSyncService())->createSystemUsers([$bound], $this->createCollection([$bound]));
 
         $this->assertBoundUserUnchanged('Linda.Anderson');
+        $this->assertFalse(
+            $this->logger->getTestHandler()->hasWarningThatContains('User unique id matches'),
+            implode("\n", array_column($this->logger->getTestHandler()->getRecords(), 'message'))
+        );
     }
 
-    public function testUniqueIdMatchFollowsRenamedEntryForServerAssignedId(): void
+    /**
+     * Renamed or moved entry (the bound entry is gone): the user follows, as before.
+     */
+    public function testUniqueIdMatchFollowsRenamedEntryWhenBoundEntryIsGone(): void
     {
         $renamedDN = 'cn=Linda.Smith,ou=finance,ou=users,dc=example,dc=org';
-        $renamed = $this->createLDAPUser('Linda.Smith', $renamedDN, $this->getBoundUserUniqueId(), 'entryUUID');
+        $renamed = $this->createLDAPUser('Linda.Smith', $renamedDN, $this->getBoundUserUniqueId());
 
         (new LDAPSyncService())->createSystemUsers([$renamed], $this->createCollection([$renamed]));
 
@@ -253,127 +245,18 @@ class LDAPSyncServiceUserBindingTest extends KernelTestCase
         $this->assertEquals($renamedDN, $authProvider->getLDAPUserDN());
     }
 
-    public function testUniqueIdMatchFollowsRenamedEntryForObjectGUID(): void
+    /**
+     * Without the collection (callers other than sync()), only the given entries are known, as before.
+     */
+    public function testWithoutCollectionTheGivenEntriesAreUsed(): void
     {
-        $renamedDN = 'CN=Linda.Smith,OU=Finance,DC=example,DC=org';
-        $renamed = $this->createLDAPUser('Linda.Smith', $renamedDN, $this->getBoundUserUniqueId(), 'objectGUID');
+        $bound = $this->createLDAPUser('Linda', self::BOUND_DN, $this->getBoundUserUniqueId());
+        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, $this->getBoundUserUniqueId());
 
-        (new LDAPSyncService())->createSystemUsers([$renamed]);
-
-        $this->getEntityManager()->clear();
-        $authProvider = $this->getEntityManager()->getRepository(UserAuthProvider::class)->find(1);
-        $this->assertEquals($renamedDN, $authProvider->getLDAPUserDN());
-    }
-
-    public function testUsernameMatchFromDifferentEntryDoesNotRebindWhenBoundEntryStillInDirectory(): void
-    {
-        // Same username (case-insensitive in the database) on a different entry
-        $bound = $this->createLDAPUser('Linda.Anderson', self::BOUND_DN, $this->getBoundUserUniqueId());
-        $other = $this->createLDAPUser('LINDA', self::OTHER_DN, '9999');
-
-        (new LDAPSyncService())->createSystemUsers([$other], $this->createCollection([$other, $bound]));
+        (new LDAPSyncService())->createSystemUsers([$other, $bound]);
 
         $this->assertBoundUserUnchanged();
-        $this->assertWarningLogged('Username matches a user bound to a different LDAP entry, skipped');
-    }
-
-    public function testUsernameMatchWithConflictingUniqueIdDoesNotRebind(): void
-    {
-        $other = $this->createLDAPUser('LINDA', self::OTHER_DN, '9999');
-
-        (new LDAPSyncService())->createSystemUsers([$other], $this->createCollection([$other]));
-
-        $this->assertBoundUserUnchanged();
-        $this->assertWarningLogged('Username matches a user bound to a different LDAP entry, skipped');
-    }
-
-    public function testUsernameMatchFollowsMovedEntry(): void
-    {
-        $movedDN = 'cn=Linda,ou=finance,ou=users,dc=example,dc=org';
-        $moved = $this->createLDAPUser('Linda', $movedDN, $this->getBoundUserUniqueId());
-
-        (new LDAPSyncService())->createSystemUsers([$moved], $this->createCollection([$moved]));
-
-        $this->getEntityManager()->clear();
-        $authProvider = $this->getEntityManager()->getRepository(UserAuthProvider::class)->find(1);
-        $this->assertEquals($movedDN, $authProvider->getLDAPUserDN());
-        $this->assertEquals(1, $authProvider->getUser()->getUserRole()->getId());
-    }
-
-    public function testUsernameMatchKeepsStoredUniqueIdWhenShared(): void
-    {
-        // Another provisioned entry changed its unique id to the bound user's value
-        $bound = $this->createLDAPUser('Linda', self::BOUND_DN, '1111');
-        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, '1111');
-
-        (new LDAPSyncService())->createSystemUsers([$bound, $other], $this->createCollection([$bound, $other]));
-
-        $this->getEntityManager()->clear();
-        $authProvider = $this->getEntityManager()->getRepository(UserAuthProvider::class)->find(1);
-        $this->assertEquals(self::BOUND_DN, $authProvider->getLDAPUserDN());
-        $this->assertEquals($this->getBoundUserUniqueId(), $authProvider->getLDAPUserUniqueId());
-        $this->assertNull($this->getEntityManager()->getRepository(User::class)->findOneBy(['userName' => 'Other.User']));
-        $this->assertWarningLogged('User unique id is shared by more than one LDAP entry, stored unique id kept');
-    }
-
-    public function testDeleteLocalUsersMatchesDNCaseInsensitively(): void
-    {
-        $bound = $this->createLDAPUser('Linda', strtoupper(self::BOUND_DN), $this->getBoundUserUniqueId());
-        (new LDAPSyncService())->deleteLocalUsersWhoRemovedFromLDAPServer($this->createCollection([$bound]));
-        $this->getEntityManager()->clear();
-        $this->assertFalse($this->getEntityManager()->getRepository(User::class)->find(8)->isDeleted());
-
-        (new LDAPSyncService())->deleteLocalUsersWhoRemovedFromLDAPServer($this->createCollection([]));
-        $this->getEntityManager()->clear();
-        $this->assertTrue($this->getEntityManager()->getRepository(User::class)->find(8)->isDeleted());
-    }
-
-    public function testUniqueIdBoundToManyUsersIsSkipped(): void
-    {
-        $authProvider = new UserAuthProvider();
-        $authProvider->setUser($this->getEntityManager()->getRepository(User::class)->find(9));
-        $authProvider->setType(UserAuthProvider::TYPE_LDAP);
-        $authProvider->setLDAPUserDN('cn=Jane,ou=admin,ou=users,dc=example,dc=org');
-        $authProvider->setLDAPUserUniqueId($this->getBoundUserUniqueId());
-        $this->getEntityManager()->persist($authProvider);
-        $this->getEntityManager()->flush();
-
-        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, $this->getBoundUserUniqueId(), 'entryUUID');
-        (new LDAPSyncService())->createSystemUsers([$other], $this->createCollection([$other]));
-
-        $this->assertBoundUserUnchanged();
-        $this->assertWarningLogged('User unique id is bound to more than one user, skipped');
-    }
-
-    public function testUsernameMatchFollowsMovedEntryWithoutIncomingUniqueId(): void
-    {
-        $movedDN = 'cn=Linda,ou=finance,ou=users,dc=example,dc=org';
-        $moved = $this->createLDAPUser('Linda', $movedDN, null);
-
-        (new LDAPSyncService())->createSystemUsers([$moved], $this->createCollection([$moved]));
-
-        $this->getEntityManager()->clear();
-        $authProvider = $this->getEntityManager()->getRepository(UserAuthProvider::class)->find(1);
-        $this->assertEquals($movedDN, $authProvider->getLDAPUserDN());
-        $this->assertNull($authProvider->getLDAPUserUniqueId());
-        $this->assertEquals(8, $authProvider->getUser()->getId());
-    }
-
-    public function testUsernameMatchFollowsMovedEntryWithoutStoredUniqueId(): void
-    {
-        $authProvider = $this->getEntityManager()->getRepository(UserAuthProvider::class)->find(1);
-        $authProvider->setLDAPUserUniqueId(null);
-        $this->getEntityManager()->flush();
-
-        $movedDN = 'cn=Linda,ou=finance,ou=users,dc=example,dc=org';
-        $moved = $this->createLDAPUser('Linda', $movedDN, '1234');
-
-        (new LDAPSyncService())->createSystemUsers([$moved], $this->createCollection([$moved]));
-
-        $this->getEntityManager()->clear();
-        $authProvider = $this->getEntityManager()->getRepository(UserAuthProvider::class)->find(1);
-        $this->assertEquals($movedDN, $authProvider->getLDAPUserDN());
-        $this->assertEquals('1234', $authProvider->getLDAPUserUniqueId());
+        $this->assertWarningLogged('User unique id matches a user bound to another LDAP entry, skipped');
     }
 
     public function testUniqueIdMissingOnIncomingEntryCreatesSeparateUser(): void
@@ -383,12 +266,36 @@ class LDAPSyncServiceUserBindingTest extends KernelTestCase
         (new LDAPSyncService())->createSystemUsers([$other], $this->createCollection([$other]));
 
         $this->getEntityManager()->clear();
-        $authProvider = $this->getEntityManager()->getRepository(UserAuthProvider::class)->find(1);
-        $this->assertEquals(self::BOUND_DN, $authProvider->getLDAPUserDN());
         /** @var User $user */
         $user = $this->getEntityManager()->getRepository(User::class)->findOneBy(['userName' => 'Other.User']);
         $this->assertNotEquals(8, $user->getId());
         $this->assertEquals(2, $user->getUserRole()->getId());
+        $authProvider = $this->getEntityManager()->getRepository(UserAuthProvider::class)->find(1);
+        $this->assertEquals(self::BOUND_DN, $authProvider->getLDAPUserDN());
+    }
+
+    /**
+     * Report scenario through sync(): the victim keeps the account and is not deleted, no account for the attacker.
+     */
+    public function testSyncKeepsUserWhenAnotherEntryCopiesItsUniqueId(): void
+    {
+        $bound = $this->createLDAPUser('Linda', self::BOUND_DN, $this->getBoundUserUniqueId());
+        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, $this->getBoundUserUniqueId());
+
+        $this->getSyncServiceReturning($this->createCollection([$other, $bound]))->sync();
+
+        $this->assertFalse($this->isUserDeleted(8));
+        $this->assertBoundUserUnchanged();
+        $this->assertWarningLogged('User unique id matches a user bound to another LDAP entry, skipped');
+    }
+
+    public function testSyncDeletesUserWhoseEntryIsGone(): void
+    {
+        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, '9999');
+
+        $this->getSyncServiceReturning($this->createCollection([$other]))->sync();
+
+        $this->assertTrue($this->isUserDeleted(8));
     }
 
     /**
@@ -408,84 +315,5 @@ class LDAPSyncServiceUserBindingTest extends KernelTestCase
     {
         $this->getEntityManager()->clear();
         return $this->getEntityManager()->getRepository(User::class)->find($userId)->isDeleted();
-    }
-
-    /**
-     * e.g. the directory moved to a new base DN and the username attribute changed with it
-     */
-    public function testSyncDoesNotDeleteUserWhoseUniqueIdRebindWasRefused(): void
-    {
-        $newDN = 'cn=Linda.Anderson,ou=people,dc=corp,dc=example';
-        $moved = $this->createLDAPUser('Linda.Anderson', $newDN, $this->getBoundUserUniqueId());
-
-        $this->getSyncServiceReturning($this->createCollection([$moved]))->sync();
-
-        $this->assertFalse($this->isUserDeleted(8));
-        $this->assertBoundUserUnchanged();
-        $this->assertNull(
-            $this->getEntityManager()->getRepository(User::class)->findOneBy(['userName' => 'Linda.Anderson'])
-        );
-        $this->assertWarningLogged('User unique id matches a user bound to a different LDAP entry, skipped');
-        $this->assertWarningLogged('Bound LDAP entry not found, user not deleted because a rebind');
-    }
-
-    public function testSyncDoesNotDeleteUserWhoseUsernameRebindWasRefused(): void
-    {
-        $other = $this->createLDAPUser('Linda', self::OTHER_DN, '9999');
-
-        $this->getSyncServiceReturning($this->createCollection([$other]))->sync();
-
-        $this->assertFalse($this->isUserDeleted(8));
-        $this->assertBoundUserUnchanged();
-        $this->assertWarningLogged('Username matches a user bound to a different LDAP entry, skipped');
-        $this->assertWarningLogged('Bound LDAP entry not found, user not deleted because a rebind');
-    }
-
-    public function testSyncDeletesUserWhoseEntryIsGone(): void
-    {
-        $other = $this->createLDAPUser('Other.User', self::OTHER_DN, '9999');
-
-        $this->getSyncServiceReturning($this->createCollection([$other]))->sync();
-
-        $this->assertTrue($this->isUserDeleted(8));
-        $this->assertFalse(
-            $this->logger->getTestHandler()->hasWarningThatContains('Bound LDAP entry not found')
-        );
-    }
-
-    public function testSyncWithLookupSettingsOfDifferentUniqueIdAttributes(): void
-    {
-        $authProvider = new UserAuthProvider();
-        $authProvider->setUser($this->getEntityManager()->getRepository(User::class)->find(9));
-        $authProvider->setType(UserAuthProvider::TYPE_LDAP);
-        $authProvider->setLDAPUserDN('cn=Jane,ou=admin,ou=users,dc=example,dc=org');
-        $authProvider->setLDAPUserUniqueId('3f1c9a52-0d7e-4b8e-9a61-2c4d5e6f7a80');
-        $this->getEntityManager()->persist($authProvider);
-        $this->getEntityManager()->flush();
-        $janeProviderId = $authProvider->getId();
-
-        // Both entries moved and renamed; only the entryUUID lookup setting lets the user follow its entry
-        $linda = $this->createLDAPUser(
-            'Linda.Smith',
-            'cn=Linda.Smith,ou=finance,ou=users,dc=example,dc=org',
-            $this->getBoundUserUniqueId(),
-            'employeeNumber'
-        );
-        $janeDN = 'cn=Jane.Doe,ou=finance,ou=users,dc=example,dc=org';
-        $jane = $this->createLDAPUser('Jane.Doe', $janeDN, '3f1c9a52-0d7e-4b8e-9a61-2c4d5e6f7a80', 'entryUUID');
-
-        $this->getSyncServiceReturning($this->createCollection([$linda, $jane]))->sync();
-
-        $this->assertFalse($this->isUserDeleted(8));
-        $authProvider = $this->getEntityManager()->getRepository(UserAuthProvider::class)->find(1);
-        $this->assertEquals(self::BOUND_DN, $authProvider->getLDAPUserDN());
-        $this->assertNull(
-            $this->getEntityManager()->getRepository(User::class)->findOneBy(['userName' => 'Linda.Smith'])
-        );
-
-        $this->assertFalse($this->isUserDeleted(9));
-        $authProvider = $this->getEntityManager()->getRepository(UserAuthProvider::class)->find($janeProviderId);
-        $this->assertEquals($janeDN, $authProvider->getLDAPUserDN());
-        $this->assertEquals('Jane.Doe', $authProvider->getUser()->getUserName());
     }
 }
