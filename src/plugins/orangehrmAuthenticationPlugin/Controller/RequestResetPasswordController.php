@@ -54,7 +54,6 @@ class RequestResetPasswordController extends AbstractController implements Publi
      */
     public function handle(Request $request): RedirectResponse
     {
-        $redirectUrl = "auth/sendPasswordReset";
         $token = $request->request->get('_token');
         if (!$this->getCsrfTokenManager()->isValid('request-reset-password', $token)) {
             throw AuthenticationException::invalidCsrfToken();
@@ -67,8 +66,10 @@ class RequestResetPasswordController extends AbstractController implements Publi
         }
         $username = $request->request->get('username');
         if (($user = $this->getResetPasswordService()->searchForUserRecord($username)) instanceof User) {
-            $redirectUrl = $this->getResetPasswordService()->logPasswordResetRequest($user) ? $redirectUrl : "auth/sendPasswordResetFailure";
+            // The service logs why an email could not be sent. The answer does not depend on it: a different page
+            // when sending fails would tell existing usernames apart from unknown ones, which never send an email.
+            $this->getResetPasswordService()->logPasswordResetRequest($user);
         }
-        return $this->redirect($redirectUrl);
+        return $this->redirect("auth/sendPasswordReset");
     }
 }

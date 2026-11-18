@@ -38,6 +38,7 @@ use OrangeHRM\Tests\Util\KernelTestCase;
 use OrangeHRM\Tests\Util\Mock\ArrayCsrfTokenStorage;
 use OrangeHRM\Tests\Util\TestDataService;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -59,6 +60,10 @@ class RequestResetPasswordControllerTest extends KernelTestCase
 
     private ?string $body = null;
     private int $sendCount = 0;
+    /**
+     * What the mail transport does: 'sent', 'failed' (sendEmail returns false) or 'error' (transport exception)
+     */
+    private string $mailResult = 'sent';
 
     protected function setUp(): void
     {
@@ -69,6 +74,7 @@ class RequestResetPasswordControllerTest extends KernelTestCase
         $this->setStoredBaseUrl(null);
         $this->body = null;
         $this->sendCount = 0;
+        $this->mailResult = 'sent';
     }
 
     protected function tearDown(): void
@@ -143,6 +149,40 @@ class RequestResetPasswordControllerTest extends KernelTestCase
     }
 
     /**
+     * When the email cannot be sent, the answer must not tell an existing username from an unknown one.
+     *
+     * @dataProvider mailFailureDataProvider
+     */
+    public function testFailedEmailGetsTheSameAnswerAsAnUnknownUsername(string $mailResult): void
+    {
+        $this->setStoredBaseUrl(self::BASE_URL);
+        $this->mailResult = $mailResult;
+        $before = $this->countResetRequests();
+
+        $known = $this->handle();
+        $unknown = $this->handle(self::UNKNOWN_USERNAME);
+
+        $this->assertSame(1, $this->sendCount, 'Sending was attempted for the existing username only');
+        $this->assertSame($before, $this->countResetRequests(), 'No reset request is saved when sending fails');
+        $this->assertSame(
+            'http://' . self::REQUEST_HOST . '/orangehrm/web/index.php/auth/sendPasswordReset',
+            $known->getTargetUrl()
+        );
+        $this->assertSame($unknown->getTargetUrl(), $known->getTargetUrl());
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public function mailFailureDataProvider(): array
+    {
+        return [
+            'sendEmail returns false' => ['failed'],
+            'mail transport error' => ['error'],
+        ];
+    }
+
+    /**
      * POST /auth/requestResetPassword with Host: other.example, through the controller.
      */
     private function handle(string $username = self::USERNAME)
@@ -206,7 +246,10 @@ class RequestResetPasswordControllerTest extends KernelTestCase
         });
         $emailService->method('sendEmail')->willReturnCallback(function () {
             $this->sendCount++;
-            return true;
+            if ($this->mailResult === 'error') {
+                throw new TransportException('Connection could not be established with host "smtp.example.test"');
+            }
+            return $this->mailResult === 'sent';
         });
         return $emailService;
     }
