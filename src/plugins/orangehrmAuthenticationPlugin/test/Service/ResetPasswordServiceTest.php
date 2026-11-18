@@ -147,17 +147,13 @@ class ResetPasswordServiceTest extends KernelTestCase
             ->onlyMethods(['generate'])
             ->disableOriginalConstructor()
             ->getMock();
-        $urlGenerator->expects($this->any())
+        $urlGenerator->expects($this->once())
             ->method('generate')
             ->willReturn(
                 'http://localhost/orangeHrm/orangehrm/web/index.php/auth/resetPassword/resetCode/YWRtaW4jU0VQQVJBVE9SI6kK4PL4sB8AtJa2y5WNP-Y'
             );
         $this->createKernelWithMockServices(
-            [
-                Services::URL_GENERATOR => $urlGenerator,
-                Services::CONFIG_SERVICE => new ConfigService(),
-                Services::DATETIME_HELPER_SERVICE => new DateTimeHelperService(),
-            ]
+            [Services::URL_GENERATOR => $urlGenerator, Services::CONFIG_SERVICE => new ConfigService()]
         );
         $employee = $this->getEntityManager()->getRepository(Employee::class)->findOneBy(['empNumber' => '1']);
 
@@ -194,7 +190,7 @@ class ResetPasswordServiceTest extends KernelTestCase
             ->onlyMethods(['generate'])
             ->disableOriginalConstructor()
             ->getMock();
-        $urlGenerator->expects($this->any())
+        $urlGenerator->expects($this->once())
             ->method('generate')
             ->willReturn(
                 'http://localhost/orangeHrm/orangehrm/web/index.php/auth/resetPassword/resetCode/YWRtaW4jU0VQQVJBVE9SI6kK4PL4sB8AtJa2y5WNP-Y'
