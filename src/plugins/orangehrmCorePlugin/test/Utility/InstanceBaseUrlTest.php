@@ -80,6 +80,19 @@ class InstanceBaseUrlTest extends TestCase
             ['https://hr.example.com:0/web/index.php', null],
             ['https://@hr.example.com/web/index.php', null],
             ['https://:@hr.example.com/web/index.php', null],
+            // host names: an empty port and a trailing dot are accepted, a label must not end with a hyphen
+            ['https://hr.example.com:/index.php', 'https://hr.example.com/index.php'],
+            ['https://hr.example.com./index.php', 'https://hr.example.com./index.php'],
+            ['https://hr.example-/index.php', null],
+            ['https://hr.example-./index.php', null],
+            ['https://hr-.example.com/index.php', null],
+            ['https://' . str_repeat('a', 64) . '.example.com/index.php', null],
+            // IPv6: no embedded IPv4 address, malformed groups are rejected
+            ['http://[::ffff:192.168.1.10]/index.php', null],
+            ['http://[1::2::3]/index.php', null],
+            ['http://[1:2:3:4:5:6:7]/index.php', null],
+            // only the characters PHP's trim() removes are trimmed
+            ["https://hr.example.com/index.php\u{00A0}", null],
         ];
     }
 }

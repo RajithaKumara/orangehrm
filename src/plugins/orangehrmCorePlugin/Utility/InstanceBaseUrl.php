@@ -68,6 +68,9 @@ class InstanceBaseUrl
             return null;
         }
         if ($uri->getHost() === ''
+            // FILTER_VALIDATE_URL lets the last label of a host name end with a hyphen (PHP < 8.x even without a
+            // trailing dot); host names do not, and the installer screens reject it
+            || preg_match('/-\.?$/', $uri->getHost()) === 1
             || $uri->getPort() === 0
             || $uri->getQuery() !== ''
             || $uri->getFragment() !== ''
