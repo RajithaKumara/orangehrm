@@ -87,7 +87,8 @@ export const validEmailFormat = function (value: string): boolean | string {
 
 /**
  * Application base URL: absolute http(s) URL with an ASCII host name or IP address, an optional
- * port (1-65535) and a path; no credentials, spaces, query or fragment. The server validates again.
+ * port (1-65535) and a path; no credentials, spaces, query or fragment. The scheme is case-insensitive, as on the
+ * server, which stores it in lower case. The server validates again.
  */
 export const validBaseUrl = function (value: string): boolean | string {
   const message = 'Expected format: https://hr.example.com/orangehrm/index.php';
@@ -95,7 +96,7 @@ export const validBaseUrl = function (value: string): boolean | string {
     return true;
   }
   const pattern =
-    /^https?:\/\/([A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*|\[[0-9A-Fa-f:.]+\])(?::([0-9]{1,5}))?(\/[A-Za-z0-9\-._~!$&'()*+,;=:@%/]*)?$/;
+    /^https?:\/\/([A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*|\[[0-9A-Fa-f:.]+\])(?::([0-9]{1,5}))?(\/[A-Za-z0-9\-._~!$&'()*+,;=:@%/]*)?$/i;
   const match = value.trim().match(pattern);
   if (!match) {
     return message;
