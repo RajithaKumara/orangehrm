@@ -52,7 +52,6 @@
           <application-url-field
             v-model="baseUrl"
             :stored="storedBaseUrl"
-            :detected="detectedBaseUrl"
             upgrader
           />
         </oxd-grid-item>
@@ -102,7 +101,6 @@ export default {
       version: null,
       baseUrl: null,
       storedBaseUrl: null,
-      detectedBaseUrl: null,
       rules: {
         version: [required],
       },
@@ -132,7 +130,6 @@ export default {
         const {data} = response.data;
         this.baseUrl = data.baseUrl;
         this.storedBaseUrl = data.stored;
-        this.detectedBaseUrl = data.detected;
       })
       .finally(() => {
         this.isLoading = false;

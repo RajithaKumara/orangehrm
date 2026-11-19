@@ -20,7 +20,6 @@
 namespace OrangeHRM\Tests\Core\Installer;
 
 use OrangeHRM\Core\Service\ConfigService;
-use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Installer\Util\AppSetupUtility;
 use OrangeHRM\Installer\Util\ConfigHelper;
 use OrangeHRM\Tests\Util\TestCase;
@@ -33,74 +32,6 @@ use OrangeHRM\Tests\Util\TestCase;
  */
 class AppSetupUtilityInstanceBaseUrlTest extends TestCase
 {
-    /**
-     * @dataProvider requestDataProvider
-     */
-    public function testGetInstanceBaseUrlFromRequest(Request $request, ?string $expected): void
-    {
-        $this->assertSame($expected, (new AppSetupUtility())->getInstanceBaseUrlFromRequest($request));
-    }
-
-    public function requestDataProvider(): array
-    {
-        $installerRequest = static function (string $uri, string $scriptName, array $server = []): Request {
-            return Request::create(
-                $uri,
-                'POST',
-                [],
-                [],
-                [],
-                array_merge(['SCRIPT_NAME' => $scriptName, 'SCRIPT_FILENAME' => '/var/www' . $scriptName], $server)
-            );
-        };
-        return [
-            'web installer in a subpath' => [
-                $installerRequest(
-                    'http://hr.example.com/orangehrm/installer/index.php/installer/api/config-file',
-                    '/orangehrm/installer/index.php'
-                ),
-                'http://hr.example.com/orangehrm/web/index.php',
-            ],
-            'web upgrader at the root, https, non-default port' => [
-                $installerRequest(
-                    'https://hr.example.com:8443/installer/index.php/upgrader/api/config-file',
-                    '/installer/index.php'
-                ),
-                'https://hr.example.com:8443/web/index.php',
-            ],
-            'installer behind URL rewriting (no index.php)' => [
-                $installerRequest(
-                    'http://hr.example.com/orangehrm/installer/upgrader/api/config-file',
-                    '/orangehrm/installer'
-                ),
-                'http://hr.example.com/orangehrm/web/index.php',
-            ],
-            'X-Forwarded-Host is ignored (no trusted proxies)' => [
-                $installerRequest(
-                    'http://hr.example.com/installer/index.php/upgrader/api/config-file',
-                    '/installer/index.php',
-                    ['HTTP_X_FORWARDED_HOST' => 'other.example', 'HTTP_X_FORWARDED_PROTO' => 'https']
-                ),
-                'http://hr.example.com/web/index.php',
-            ],
-            'CLI (synthetic request, no host)' => [
-                (static function (): Request {
-                    $request = new Request();
-                    $request->setMethod(Request::METHOD_POST);
-                    return $request;
-                })(),
-                null,
-            ],
-            'not served from the installer front controller' => [
-                $installerRequest(
-                    'http://hr.example.com/orangehrm/web/index.php/auth/login',
-                    '/orangehrm/web/index.php'
-                ),
-                null,
-            ],
-        ];
-    }
-
     public function testSaveInstanceBaseUrlStoresWhenUnset(): void
     {
         $configHelper = $this->getMockBuilder(ConfigHelper::class)

@@ -30,7 +30,6 @@ use OrangeHRM\Core\Utility\InstanceBaseUrl;
 use OrangeHRM\Core\Utility\KeyHandler;
 use OrangeHRM\Core\Utility\PasswordHash;
 use OrangeHRM\Framework\Filesystem\Filesystem;
-use OrangeHRM\Framework\Http\Request;
 use OrangeHRM\Installer\Exception\MigrationException;
 use OrangeHRM\Installer\Migration\V3_3_3\Migration;
 use OrangeHRM\Installer\Util\Dto\DatabaseConnectionWrapper;
@@ -620,34 +619,9 @@ class AppSetupUtility
     }
 
     /**
-     * Application base URL derived from a web installer/upgrader request, e.g.
-     * `https://hr.example.com/orangehrm/installer/index.php/...`
-     * gives `https://hr.example.com/orangehrm/web/index.php`.
-     * Null when the request carries no host (CLI) or is not served from the installer front controller.
-     *
-     * @param Request $request
-     * @return string|null
-     */
-    public function getInstanceBaseUrlFromRequest(Request $request): ?string
-    {
-        if ($request->getHost() === '') {
-            return null;
-        }
-        $baseUrl = $request->getBaseUrl();
-        if (substr($baseUrl, -strlen('/installer/index.php')) === '/installer/index.php') {
-            $basePath = substr($baseUrl, 0, -strlen('/installer/index.php'));
-        } elseif (substr($baseUrl, -strlen('/installer')) === '/installer') {
-            $basePath = substr($baseUrl, 0, -strlen('/installer'));
-        } else {
-            return null;
-        }
-        return InstanceBaseUrl::normalize($request->getSchemeAndHttpHost() . $basePath . '/web/index.php');
-    }
-
-    /**
      * Store the application base URL used for links in emails (e.g. password reset).
-     * A value derived from a request (`$replace` false) is stored only when no valid value is stored yet;
-     * a value the administrator entered (`$replace` true) replaces the stored one.
+     * With `$replace` false the value is stored only when no valid value is stored yet;
+     * with `$replace` true (a value the administrator entered) it replaces the stored one.
      * Returns true if the value was stored.
      *
      * @param string|null $baseUrl

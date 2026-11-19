@@ -61,7 +61,7 @@ class ConfigFileAPI extends AbstractInstallerRestController
         $appSetupUtility = new AppSetupUtility();
         $appSetupUtility->writeConfFile();
 
-        $baseUrlStored = $this->recordInstanceBaseUrl($appSetupUtility, $request);
+        $baseUrlStored = $this->recordInstanceBaseUrl($appSetupUtility);
 
         try {
             !StateContainer::getInstance()->getRegConsent() ?: $this->sendRegistrationData();
@@ -81,18 +81,17 @@ class ConfigFileAPI extends AbstractInstallerRestController
     }
 
     /**
-     * Store the application URL (see saveInstanceBaseUrl()) without failing the step, and record in the session,
+     * Store the application URL the administrator entered without failing the step, and record in the session,
      * for the completion screen, whether a valid application URL is stored afterwards.
      *
      * @param AppSetupUtility $appSetupUtility
-     * @param Request $request
      * @return bool true if a valid application URL is stored
      */
-    protected function recordInstanceBaseUrl(AppSetupUtility $appSetupUtility, Request $request): bool
+    protected function recordInstanceBaseUrl(AppSetupUtility $appSetupUtility): bool
     {
         $baseUrlStored = false;
         try {
-            $this->saveInstanceBaseUrl($appSetupUtility, $request);
+            $this->saveInstanceBaseUrl($appSetupUtility);
             $baseUrlStored = $appSetupUtility->getStoredInstanceBaseUrl() !== null;
         } catch (Throwable $e) {
             Logger::getLogger()->error($e->getMessage());
@@ -103,25 +102,16 @@ class ConfigFileAPI extends AbstractInstallerRestController
     }
 
     /**
-     * Web installer/upgrader: store the application URL the administrator entered or confirmed (it may replace
-     * a stored value); an empty field leaves the stored value as it is. Without a submitted field, record the
-     * URL the administrator is using, if none is stored yet.
+     * Web installer/upgrader: store the application URL the administrator entered (it may replace a stored value).
+     * An empty field leaves the stored value as it is. The URL is never derived from the request: where OrangeHRM
+     * is served (with or without web/ or index.php in the path) cannot be told from the installer's own URL.
      *
      * @param AppSetupUtility $appSetupUtility
-     * @param Request $request
      */
-    protected function saveInstanceBaseUrl(AppSetupUtility $appSetupUtility, Request $request): void
+    protected function saveInstanceBaseUrl(AppSetupUtility $appSetupUtility): void
     {
         if (StateContainer::getInstance()->hasInstanceBaseUrl()) {
             $appSetupUtility->saveInstanceBaseUrl(StateContainer::getInstance()->getInstanceBaseUrl(), true);
-            return;
-        }
-        $baseUrl = $appSetupUtility->getInstanceBaseUrlFromRequest($request);
-        if (!$appSetupUtility->saveInstanceBaseUrl($baseUrl) && $baseUrl === null && $request->getHost() !== '') {
-            Logger::getLogger()->warning(
-                'Application URL not recorded from ' . $request->getSchemeAndHttpHost() .
-                '; password reset emails are sent only when `instance.base_url` is set in `hs_hr_config`'
-            );
         }
     }
 

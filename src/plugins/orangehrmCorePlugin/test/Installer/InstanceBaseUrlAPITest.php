@@ -89,9 +89,8 @@ class InstanceBaseUrlAPITest extends TestCase
         $this->assertSame(
             [
                 'data' => [
-                    'baseUrl' => 'https://hr.example.com/orangehrm/web/index.php',
+                    'baseUrl' => null,
                     'stored' => null,
-                    'detected' => 'https://hr.example.com/orangehrm/web/index.php',
                 ],
             ],
             json_decode($response->getContent(), true)
@@ -184,7 +183,7 @@ class InstanceBaseUrlAPITest extends TestCase
         $this->storeDbInfo('second_db');
         $this->assertFalse(StateContainer::getInstance()->hasInstanceBaseUrl());
         $get = $this->call(new InstallerInstanceBaseUrlAPI(), $this->request('GET'));
-        $this->assertSame('https://hr.example.com/orangehrm/web/index.php', $get['body']['data']['baseUrl']);
+        $this->assertNull($get['body']['data']['baseUrl']);
     }
 
     public function testPostRejectsNonStringValue(): void
@@ -198,17 +197,21 @@ class InstanceBaseUrlAPITest extends TestCase
         $this->assertFalse(StateContainer::getInstance()->hasInstanceBaseUrl());
     }
 
-    public function testGetPrefillsDetectedUrl(): void
+    /**
+     * The address is not guessed from the URL the installer is opened with (web/ or index.php may or may not
+     * be part of it, depending on the deployment)
+     */
+    public function testGetDoesNotPrefillFromTheRequest(): void
     {
         $result = $this->call(new InstallerInstanceBaseUrlAPI(), $this->request('GET'));
 
         $this->assertSame(Response::HTTP_OK, $result['status']);
-        $this->assertSame('https://hr.example.com/orangehrm/web/index.php', $result['body']['data']['baseUrl']);
-        $this->assertSame('https://hr.example.com/orangehrm/web/index.php', $result['body']['data']['detected']);
+        $this->assertNull($result['body']['data']['baseUrl']);
         $this->assertNull($result['body']['data']['stored']);
+        $this->assertArrayNotHasKey('detected', $result['body']['data']);
     }
 
-    public function testUpgraderGetPrefillsStoredUrlOverDetected(): void
+    public function testUpgraderGetPrefillsStoredUrl(): void
     {
         $api = new class () extends InstanceBaseUrlAPI {
             protected function getStoredInstanceBaseUrl(): ?string
@@ -220,7 +223,7 @@ class InstanceBaseUrlAPITest extends TestCase
         $result = $this->call($api, $this->request('GET'));
 
         $this->assertSame('https://hr.example.org/web/index.php', $result['body']['data']['baseUrl']);
-        $this->assertSame('https://hr.example.com/orangehrm/web/index.php', $result['body']['data']['detected']);
+        $this->assertSame('https://hr.example.org/web/index.php', $result['body']['data']['stored']);
     }
 
     public function testPostStoresNormalizedUrlInSession(): void
@@ -279,13 +282,12 @@ class InstanceBaseUrlAPITest extends TestCase
     {
         StateContainer::getInstance()->storeInstanceBaseUrl('https://hr.example.org/web/index.php');
         $appSetupUtility = $this->getMockBuilder(AppSetupUtility::class)
-            ->onlyMethods(['saveInstanceBaseUrl', 'getInstanceBaseUrlFromRequest'])
+            ->onlyMethods(['saveInstanceBaseUrl'])
             ->getMock();
         $appSetupUtility->expects($this->once())
             ->method('saveInstanceBaseUrl')
             ->with('https://hr.example.org/web/index.php', true)
             ->willReturn(true);
-        $appSetupUtility->expects($this->never())->method('getInstanceBaseUrlFromRequest');
 
         $this->callConfigFileStep($appSetupUtility);
     }
@@ -294,29 +296,27 @@ class InstanceBaseUrlAPITest extends TestCase
     {
         StateContainer::getInstance()->storeInstanceBaseUrl(null);
         $appSetupUtility = $this->getMockBuilder(AppSetupUtility::class)
-            ->onlyMethods(['saveInstanceBaseUrl', 'getInstanceBaseUrlFromRequest'])
+            ->onlyMethods(['saveInstanceBaseUrl'])
             ->getMock();
         // normalize(null) is null, so nothing is written
         $appSetupUtility->expects($this->once())
             ->method('saveInstanceBaseUrl')
             ->with(null, true)
             ->willReturn(false);
-        $appSetupUtility->expects($this->never())->method('getInstanceBaseUrlFromRequest');
 
         $this->callConfigFileStep($appSetupUtility);
     }
 
-    public function testConfigFileStepWithoutFieldRecordsRequestUrlOnlyIfNoneStored(): void
+    /**
+     * Without a submitted field (e.g. a client that skips the Application URL step) nothing is stored:
+     * the URL the installer is opened with is not recorded
+     */
+    public function testConfigFileStepWithoutFieldStoresNothing(): void
     {
         $appSetupUtility = $this->getMockBuilder(AppSetupUtility::class)
-            ->onlyMethods(['saveInstanceBaseUrl', 'getInstanceBaseUrlFromRequest'])
+            ->onlyMethods(['saveInstanceBaseUrl'])
             ->getMock();
-        $appSetupUtility->method('getInstanceBaseUrlFromRequest')
-            ->willReturn('https://hr.example.com/orangehrm/web/index.php');
-        $appSetupUtility->expects($this->once())
-            ->method('saveInstanceBaseUrl')
-            ->with('https://hr.example.com/orangehrm/web/index.php')
-            ->willReturn(true);
+        $appSetupUtility->expects($this->never())->method('saveInstanceBaseUrl');
 
         $this->callConfigFileStep($appSetupUtility);
     }
@@ -467,12 +467,12 @@ class InstanceBaseUrlAPITest extends TestCase
 
     private function callConfigFileStep(AppSetupUtility $appSetupUtility): void
     {
-        $this->invoke(new ConfigFileAPI(), 'saveInstanceBaseUrl', $appSetupUtility, $this->request('POST'));
+        $this->invoke(new ConfigFileAPI(), 'saveInstanceBaseUrl', $appSetupUtility);
     }
 
     private function recordConfigFileStep(AppSetupUtility $appSetupUtility): bool
     {
-        return $this->invoke(new ConfigFileAPI(), 'recordInstanceBaseUrl', $appSetupUtility, $this->request('POST'));
+        return $this->invoke(new ConfigFileAPI(), 'recordInstanceBaseUrl', $appSetupUtility);
     }
 
     /**

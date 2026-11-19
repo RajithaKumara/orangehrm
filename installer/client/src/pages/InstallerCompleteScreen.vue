@@ -31,7 +31,7 @@
       <oxd-text tag="p" class="orangehrm-installer-page-content">
         No application URL is stored, so password reset emails are not sent. Set
         <b>instance.base_url</b> in the <b>hs_hr_config</b> table to the
-        OrangeHRM address up to and including index.php, e.g.
+        OrangeHRM address as shown in the browser before /auth/login, e.g.
         https://hr.example.com/orangehrm/index.php.
       </oxd-text>
     </template>

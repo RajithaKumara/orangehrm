@@ -47,25 +47,23 @@ class InstanceBaseUrlAPI extends AbstractInstallerRestController
     }
 
     /**
-     * Prefill: the value entered earlier in this session, else the one already stored in the database,
-     * else the URL the administrator is using now.
+     * Prefill: the value entered earlier in this session, else the one already stored in the database.
+     * Nothing is derived from the request; the administrator enters the address.
      *
      * @inheritDoc
      */
     protected function handleGet(Request $request): array
     {
-        $detected = $this->getAppSetupUtility()->getInstanceBaseUrlFromRequest($request);
         $stored = $this->getStoredInstanceBaseUrl();
         if (StateContainer::getInstance()->hasInstanceBaseUrl()) {
             $baseUrl = StateContainer::getInstance()->getInstanceBaseUrl();
         } else {
-            $baseUrl = $stored ?? $detected;
+            $baseUrl = $stored;
         }
         return [
             'data' => [
                 self::PARAMETER_BASE_URL => $baseUrl,
                 'stored' => $stored,
-                'detected' => $detected,
             ],
         ];
     }
