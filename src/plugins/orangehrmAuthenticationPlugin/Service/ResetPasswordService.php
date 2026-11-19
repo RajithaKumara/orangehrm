@@ -264,7 +264,7 @@ class ResetPasswordService
     {
         $this->getLogger()->error(
             'Password reset email suppressed: the application base URL is not configured (`' .
-            ConfigService::KEY_INSTANCE_BASE_URL . '` in `hs_hr_config`)'
+            ConfigService::KEY_INSTANCE_BASE_URL . '`); set it with `php bin/console orangehrm:set-base-url <url>`'
         );
     }
 

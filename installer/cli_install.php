@@ -161,7 +161,7 @@ try {
 echo $baseUrlStored
     ? "Application URL stored\n"
     : "NOTE: No valid application URL (instance.baseUrl) stored. Password reset emails are not sent until\n" .
-    "      `instance.base_url` is set in the `hs_hr_config` table.\n";
+    "      it is set with `php bin/console orangehrm:set-base-url <url>`.\n";
 
 $request = new Request();
 $request->setMethod(Request::METHOD_POST);

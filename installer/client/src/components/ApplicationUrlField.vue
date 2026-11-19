@@ -36,12 +36,12 @@
           /auth/login, especially if this instance was moved or copied.
         </template>
         If you leave it empty, the URL already stored (if any) is kept; without
-        one, no password reset emails are sent until it is set in the
-        hs_hr_config table.
+        one, no password reset emails are sent until it is set with php
+        bin/console orangehrm:set-base-url.
       </template>
       <template v-else>
         If you leave it empty, no password reset emails are sent until it is set
-        in the hs_hr_config table.
+        with php bin/console orangehrm:set-base-url.
       </template>
     </oxd-text>
   </div>

@@ -62,7 +62,7 @@ class InstallerCommandBaseUrlTest extends TestCase
             'Application URL kept: https://hr.example.com/orangehrm/web/index.php',
             $output
         );
-        $this->assertStringContainsString('--baseUrl', $output);
+        $this->assertStringContainsString('php bin/console orangehrm:set-base-url', $output);
     }
 
     public function testWithoutOptionAndWithoutStoredUrl(): void
@@ -74,6 +74,7 @@ class InstallerCommandBaseUrlTest extends TestCase
 
         $this->assertStringContainsString('No application URL is stored', $output);
         $this->assertStringNotContainsString('kept', $output);
+        $this->assertStringContainsString('php bin/console orangehrm:set-base-url', $output);
     }
 
     /**

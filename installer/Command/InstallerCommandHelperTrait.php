@@ -21,7 +21,6 @@ namespace OrangeHRM\Installer\Command;
 
 use OrangeHRM\Authentication\Dto\UserCredential;
 use OrangeHRM\Authentication\Utility\PasswordStrengthValidation;
-use OrangeHRM\Core\Service\ConfigService;
 use OrangeHRM\Core\Utility\InstanceBaseUrl;
 use OrangeHRM\Installer\Exception\InvalidArgumentException;
 use OrangeHRM\Installer\Util\AppSetupUtility;
@@ -161,8 +160,8 @@ trait InstallerCommandHelperTrait
             if ($stored !== null) {
                 $this->getIO()->note(
                     "Application URL kept: $stored\n" .
-                    'Password reset emails link to this address. To change it, run again with `--baseUrl` ' .
-                    'or set `' . ConfigService::KEY_INSTANCE_BASE_URL . '` in the `hs_hr_config` table.'
+                    'Password reset emails link to this address. To change it, run ' .
+                    '`php bin/console orangehrm:set-base-url <url>`.'
                 );
                 return;
             }
@@ -172,8 +171,7 @@ trait InstallerCommandHelperTrait
         }
         $this->getIO()->note(
             'No application URL is stored, so password reset emails are not sent. ' .
-            'Run again with `--baseUrl` or set `' . ConfigService::KEY_INSTANCE_BASE_URL . '` in the ' .
-            '`hs_hr_config` table to ' . InstanceBaseUrl::DESCRIPTION
+            'Set it with `php bin/console orangehrm:set-base-url <url>`, where <url> is ' . InstanceBaseUrl::DESCRIPTION
         );
     }
 
