@@ -444,6 +444,22 @@ class ConfigService
     }
 
     /**
+     * Validate, normalize and store the application's base URL, replacing a stored one.
+     * Nothing is stored when the value is not a valid base URL.
+     *
+     * @param string $baseUrl
+     * @return string|null the stored (normalized) value, or null if the value is not valid
+     */
+    public function setInstanceBaseUrl(string $baseUrl): ?string
+    {
+        $normalized = InstanceBaseUrl::normalize($baseUrl);
+        if ($normalized !== null) {
+            $this->_setConfigValue(self::KEY_INSTANCE_BASE_URL, $normalized);
+        }
+        return $normalized;
+    }
+
+    /**
      * @return string|null
      */
     public function getSendmailPath(): ?string
