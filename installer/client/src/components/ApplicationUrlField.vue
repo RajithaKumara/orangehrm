@@ -27,8 +27,8 @@
     <oxd-text tag="p" class="orangehrm-application-url-hint">
       Used in password reset emails. Enter the OrangeHRM address up to and
       including index.php, as shown in your browser before /auth/login, e.g.
-      https://hr.example.com/orangehrm/web/index.php. Enter internationalised
-      domain names in punycode form (xn--...).
+      https://hr.example.com/orangehrm/index.php. Enter internationalised domain
+      names in punycode form (xn--...).
       <template v-if="upgrader">
         If you leave it empty, the URL already stored (if any) is kept; without
         one, no password reset emails are sent until it is set in the

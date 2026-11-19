@@ -90,8 +90,7 @@ export const validEmailFormat = function (value: string): boolean | string {
  * port (1-65535) and a path; no credentials, spaces, query or fragment. The server validates again.
  */
 export const validBaseUrl = function (value: string): boolean | string {
-  const message =
-    'Expected format: https://hr.example.com/orangehrm/web/index.php';
+  const message = 'Expected format: https://hr.example.com/orangehrm/index.php';
   if (!value || value.trim() === '') {
     return true;
   }

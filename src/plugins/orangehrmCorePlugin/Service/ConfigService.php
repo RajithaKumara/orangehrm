@@ -434,7 +434,7 @@ class ConfigService
     }
 
     /**
-     * Get the application's base URL (e.g. `https://hr.example.com/orangehrm/web/index.php`).
+     * Get the application's base URL (e.g. `https://hr.example.com/orangehrm/index.php`).
      * Returns null when it is not set or not a valid absolute http(s) URL.
      * @return string|null
      */

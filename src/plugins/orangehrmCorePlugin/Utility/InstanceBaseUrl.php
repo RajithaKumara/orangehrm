@@ -25,12 +25,12 @@ use InvalidArgumentException;
 
 /**
  * The application's base URL: scheme, host, optional port and the path up to and including the front
- * controller (`index.php`), e.g. `https://hr.example.com/orangehrm/web/index.php`. Stored in `hs_hr_config`
+ * controller (`index.php`), e.g. `https://hr.example.com/orangehrm/index.php`. Stored in `hs_hr_config`
  * as `instance.base_url` and used where an absolute link leaves the request/response cycle (e.g. emails).
  */
 class InstanceBaseUrl
 {
-    public const EXAMPLE = 'https://hr.example.com/orangehrm/web/index.php';
+    public const EXAMPLE = 'https://hr.example.com/orangehrm/index.php';
     public const DESCRIPTION = 'the OrangeHRM address up to and including index.php, as shown in the browser ' .
         'before /auth/login, e.g. ' . self::EXAMPLE . ' (internationalised domain names in punycode form, xn--...)';
 

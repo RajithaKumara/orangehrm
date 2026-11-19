@@ -16,7 +16,7 @@ organization:
 
 instance:
   # Used in password reset emails: the OrangeHRM address up to and including index.php,
-  # as shown in the browser before /auth/login, e.g. https://hr.example.com/orangehrm/web/index.php
+  # as shown in the browser before /auth/login, e.g. https://hr.example.com/orangehrm/index.php
   # (internationalised domain names in punycode form, xn--...)
   baseUrl: ~
 
